@@ -16,7 +16,7 @@
     </define>
     <define append="true">
       <name>CONFIG::timeStamp</name>
-      <value>'2013/5/30'</value>
+      <value>'2013/6/1'</value>
     </define>
     <define append="true">
       <name>CONFIG::air</name>
@@ -34,7 +34,7 @@
     <source-path append="true">
       <path-element>D:\flashShader\FlashShader\src</path-element>
       <path-element>C:\Program Files\mrdoob-Hi-ReS-Stats-ad6da5d\src</path-element>
-      <path-element>d:\Program Files\FlashDevelop\Library\AS3\classes</path-element>
+      <path-element>D:\Program Files\FlashDevelop\Library\AS3\classes</path-element>
     </source-path>
   </compiler>
   <file-specs>

@@ -22,6 +22,7 @@ package
 			removeEventListener(Event.ADDED_TO_STAGE, init);
 			var shader:Shader = new Shader;
 			shader.mul(shader.add(1, 2), [1, 2, 3]);
+			shader.build();
 		}
 		
 	}
