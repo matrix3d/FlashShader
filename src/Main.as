@@ -2,7 +2,7 @@ package
 {
 	import flash.display.Sprite;
 	import flash.events.Event;
-	import lz.flShader.Shader;
+	import lz.flShader.FlShader;
 	
 	/**
 	 * ...
@@ -20,9 +20,7 @@ package
 		private function init(e:Event = null):void 
 		{
 			removeEventListener(Event.ADDED_TO_STAGE, init);
-			var shader:Shader = new Shader;
-			shader.mul(shader.add(1, 2), [1, 2, 3]);
-			shader.build();
+			new MyShader;
 		}
 		
 	}
