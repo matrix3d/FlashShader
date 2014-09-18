@@ -23,12 +23,13 @@ package lz.flShader {
 			}
 		}
 		
-		public function f(op:String,a:Var=null, b:Var=null,t:Var=null):Var {
+		public function f(op:String,a:Var=null, b:Var=null,t:Var=null,flag:String=null):Var {
 			var c:Var = t||createTempVar();
 			var line:Array = [op];
 			if (c) line.push(c);
 			if (a) line.push(a);
 			if (b) line.push(b);
+			line.flag = flag;
 			lines.push(line);
 			return c;
 		}
@@ -44,7 +45,9 @@ package lz.flShader {
 						var startEnd:Array = startEnds[v.index];
 						if (startEnd == null) startEnd = startEnds[v.index] = [i, i];
 						startEnd[1] = i;
-						ttypePool[v.index] = v;
+						var vs:Array = ttypePool[v.index];
+						if (vs == null) vs = ttypePool[v.index] = [];
+						vs.push(v);
 					}
 				}
 			}
@@ -53,8 +56,10 @@ package lz.flShader {
 				var start:int = startEnd[0];
 				for (j = 0; j < i;j++ ) {
 					var startEnd2:Array = startEnds[j];
-					if (start>startEnd2[1]) {
-						ttypePool[i].index = j;
+					if (start > startEnd2[1]) {
+						for each(v in ttypePool[i]) {
+							v.index = j;
+						}
 						startEnd2[1] = startEnd[1];
 						startEnd[0] = 0;
 						startEnd[1] = 0;
@@ -102,12 +107,26 @@ package lz.flShader {
 							vtxt = programTypeName+"a" + v.index;
 							break;
 					}
-					txt+= "," + vtxt;
+					txt += "," + vtxt;
+					if (v.component) {
+						txt += "." + v.component;
+					}
+				}
+				if (line.flag) {
+					txt += "," + line.flag;
 				}
 				txt+="\n"
 			}
 			return txt;
 		}
+		
+		public function C(index:int=0):Var { return new Var(Var.TYPE_C,index)};
+		public function T(index:int=0):Var { return new Var(Var.TYPE_T,index)};
+		public function VA(index:int=0):Var { return new Var(Var.TYPE_VA,index)};
+		public function V(index:int=0):Var { return new Var(Var.TYPE_V,index)};
+		public function FS(index:int=0):Var { return new Var(Var.TYPE_FS,index)};
+		
+		public function mov(a:Var=null, b:Var=null, t:Var=null):Var {return f("mov", a, b, t);}
 		public function add(a:Var=null, b:Var=null, t:Var=null):Var {return f("add", a, b, t);}
 		public function sub(a:Var=null, b:Var=null, t:Var=null):Var {return f("sub", a, b, t);}
 		public function mul(a:Var=null, b:Var=null, t:Var=null):Var {return f("mul", a, b, t);}
@@ -143,7 +162,7 @@ package lz.flShader {
 		public function eif(a:Var=null, b:Var=null, t:Var=null):Var {return f("eif", a, b, t);}
 		public function ted(a:Var=null, b:Var=null, t:Var=null):Var {return f("ted", a, b, t);}
 		public function kil(a:Var=null, b:Var=null, t:Var=null):Var {return f("kil", a, b, t);}
-		public function tex(a:Var=null, b:Var=null, t:Var=null):Var {return f("tex", a, b, t);}
+		public function tex(a:Var = null, b:Var = null, t:Var = null, flag:String = null):Var {return f("tex", a, b, t,flag);}
 		public function sge(a:Var=null, b:Var=null, t:Var=null):Var {return f("sge", a, b, t);}
 		public function slt(a:Var=null, b:Var=null, t:Var=null):Var {return f("slt", a, b, t);}
 		public function sgn(a:Var=null, b:Var=null, t:Var=null):Var {return f("sgn", a, b, t);}
