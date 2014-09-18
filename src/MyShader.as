@@ -1,5 +1,6 @@
 package  
 {
+	import flash.display3D.Context3DProgramType;
 	import lz.flShader.FlShader;
 	import lz.flShader.Var;
 	/**
@@ -10,8 +11,8 @@ package
 	{
 		public function MyShader() 
 		{
-			var v0:Var = new Var("v0");
-			//fwidth abs( ddx( v ) ) + abs( ddy( v ) );
+			super(Context3DProgramType.FRAGMENT);
+			var v0:Var = new Var(Var.TYPE_V);
 			add(abs(ddx(v0)),abs(ddy(v0)));
 			trace(code);
 			

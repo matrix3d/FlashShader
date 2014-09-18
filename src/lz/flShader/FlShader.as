@@ -1,38 +1,112 @@
 package lz.flShader {
+	import flash.display3D.Context3DProgramType;
 	/**
 	 * ...
 	 * @author lizhi
 	 */
 	public class FlShader 
 	{
-		//["add","sub","mul","div","rcp","min","max","frc","sqt","rsq","pow","log","exp","nrm","sin","cos","crs","dp3","dp4","abs","neg","sat","m33","m44","m34","ddx","ddy","ife","ine","ifg","ifl","els","eif","ted","kil","tex","sge","slt","sgn","seq","sne"]
 		public var lines:Array = [];
 		private var tempCounter:int = 0;
-		public static var op:Var = new Var("op");
-		public static var oc:Var = new Var("oc");
-		public function FlShader(type:String="vt") 
+		
+		private var programType:String;
+		private var programTypeName:String;
+		public static var op:Var = new Var(Var.TYPE_OP);
+		public static var oc:Var = new Var(Var.TYPE_OC);
+		public function FlShader(programType:String=Context3DProgramType.VERTEX) 
 		{
-			
+			this.programType = programType;
+			if (programType==Context3DProgramType.VERTEX) {
+				programTypeName = "v";
+			}else {
+				programTypeName = "f";
+			}
 		}
 		
 		public function f(op:String,a:Var=null, b:Var=null,t:Var=null):Var {
 			var c:Var = t||createTempVar();
 			var line:Array = [op];
-			if (c) line.push(c.name);
-			if (a) line.push(a.name);
-			if (b) line.push(b.name);
+			if (c) line.push(c);
+			if (a) line.push(a);
+			if (b) line.push(b);
 			lines.push(line);
 			return c;
 		}
 		
+		public function optimize():void {
+			var startEnds:Array = [];
+			var ttypePool:Array = [];
+			for (var i:int = 0; i < lines.length;i++ ) {
+				var line:Array = lines[i];
+				for (var j:int = 1,len:int=line.length; j <len ;j++ ) {
+					var v:Var = line[j];
+					if (v.type==Var.TYPE_T) {
+						var startEnd:Array = startEnds[v.index];
+						if (startEnd == null) startEnd = startEnds[v.index] = [i, i];
+						startEnd[1] = i;
+						ttypePool[v.index] = v;
+					}
+				}
+			}
+			for (i = 1,len=startEnds.length; i <len ;i++ ) {
+				startEnd = startEnds[i];
+				var start:int = startEnd[0];
+				for (j = 0; j < i;j++ ) {
+					var startEnd2:Array = startEnds[j];
+					if (start>startEnd2[1]) {
+						ttypePool[i].index = j;
+						startEnd2[1] = startEnd[1];
+						startEnd[0] = 0;
+						startEnd[1] = 0;
+						break;
+					}
+				}
+			}
+		}
+		
 		private function createTempVar():Var {
-			var v:Var = new Var("ft" + tempCounter);
+			var v:Var = new Var(Var.TYPE_T, tempCounter);
 			tempCounter++;
 			return v;
 		}
 		
 		public function get code():String {
-			return lines.join("\n");
+			optimize();
+			var txt:String = "";
+			for (var i:int = 0; i < lines.length;i++ ) {
+				var line:Array = lines[i];
+				txt += line[0];
+				for (var j:int = 1; j < line.length;j++ ) {
+					var v:Var = line[j];
+					var vtxt:String;
+					switch(v.type) {
+						case Var.TYPE_C:
+							vtxt = programTypeName+"c" + v.index;
+							break;
+						case Var.TYPE_FS:
+							vtxt = programTypeName+"s" + v.index;
+							break;
+						case Var.TYPE_OC:
+							vtxt = "oc";
+							break;
+						case Var.TYPE_OP:
+							vtxt = "op";
+							break;
+						case Var.TYPE_T:
+							vtxt = programTypeName+"t" + v.index;
+							break;
+						case Var.TYPE_V:
+							vtxt = "v" + v.index;
+							break;
+						case Var.TYPE_VA:
+							vtxt = programTypeName+"a" + v.index;
+							break;
+					}
+					txt+= "," + vtxt;
+				}
+				txt+="\n"
+			}
+			return txt;
 		}
 		public function add(a:Var=null, b:Var=null, t:Var=null):Var {return f("add", a, b, t);}
 		public function sub(a:Var=null, b:Var=null, t:Var=null):Var {return f("sub", a, b, t);}
