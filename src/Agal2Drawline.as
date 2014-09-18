@@ -156,9 +156,9 @@ class FShader extends FlShader {
 		var fc0:Var = C();
 		var fwidth:Var = add(abs(ddx(v0)), abs(ddy(v0)));
 		var x:Var = sat(div(v0, fwidth));
-		var smoothstep:Var= mul(mul(x, x), sub(fc0.xyzw("z"), mul(fc0.xyzw("y"), x)));
-		var c:Var =sub(fc0.xyzw("x"),min(min(smoothstep.xyzw("x"),smoothstep.xyzw("y")),smoothstep.xyzw("z")))
-		mov(c.xyzw("x"), null, oc);
+		var smoothstep:Var= mul(mul(x, x), sub(fc0.c("z"), mul(fc0.c("y"), x)));
+		var c:Var =sub(fc0.c("x"),min(min(smoothstep.c("x"),smoothstep.c("y")),smoothstep.c("z")))
+		mov(c.c("x"), null, oc);
 		
 		/*//fwidth abs( ddx( v ) ) + abs( ddy( v ) );
 		"ddx ft0,v0\n"				//ft0 = ddx( v0)

@@ -21,7 +21,7 @@ package lz.flShader
 			this.type = type;
 			this.index = index;
 		}
-		public function xyzw(value:String):Var {
+		public function c(value:String):Var {
 			var v:Var = new Var(type, index);
 			v.component = value;
 			return v;
