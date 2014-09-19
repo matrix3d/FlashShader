@@ -2,7 +2,7 @@ package
 {
 	import flash.display.Sprite;
 	import flash.events.Event;
-	import lz.flShader.FlShader;
+	import flShader.FlShader;
 	
 	/**
 	 * ...

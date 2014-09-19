@@ -15,7 +15,7 @@ package
 	import flash.geom.Matrix3D;
 	import flash.geom.Vector3D;
 	import flash.utils.ByteArray;
-	import lz.flShader.FlShader;
+	import flShader.FlShader;
 	
 	/**
 	 * http://codeflow.org/entries/2012/aug/02/easy-wireframe-display-with-barycentric-coordinates/
@@ -133,9 +133,9 @@ package
 	}
 	
 }
+import flShader.Var;
 import flash.display3D.Context3DProgramType;
-import lz.flShader.FlShader;
-import lz.flShader.Var;
+import flShader.FlShader;
 
 class VShader extends FlShader {
 	public function VShader() 

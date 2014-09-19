@@ -1,5 +1,4 @@
-package lz.flShader 
-{
+package flShader {
 	/**
 	 * ...
 	 * @author lizhi
@@ -17,6 +16,9 @@ package lz.flShader
 		public var index:int;
 		public var type:int;
 		public var component:String;
+		
+		public var data:Object;
+		public var constLenght:int = 1;
 		public function Var(type:int,index:int=0) {
 			this.type = type;
 			this.index = index;

@@ -1,5 +1,7 @@
-package lz.flShader {
+package flShader {
 	import flash.display3D.Context3DProgramType;
+	import flash.geom.Matrix3D;
+	import flShader.Var;
 	/**
 	 * ...
 	 * @author lizhi
@@ -37,6 +39,8 @@ package lz.flShader {
 		public function optimize():void {
 			var startEnds:Array = [];
 			var ttypePool:Array = [];
+			var constMemLen:int = 0;
+			var tempConsts:Array = [];
 			for (var i:int = 0; i < lines.length;i++ ) {
 				var line:Array = lines[i];
 				for (var j:int = 1,len:int=line.length; j <len ;j++ ) {
@@ -48,6 +52,15 @@ package lz.flShader {
 						var vs:Array = ttypePool[v.index];
 						if (vs == null) vs = ttypePool[v.index] = [];
 						vs.push(v);
+					}else if (v.type==Var.TYPE_C) {
+						if (v.index!=-1) {
+							var theConstMemLen:int = v.index + v.constLenght;
+							if (theConstMemLen>constMemLen) {
+								constMemLen = theConstMemLen;
+							}
+						}else {
+							tempConsts.push(v);
+						}
 					}
 				}
 			}
@@ -67,12 +80,30 @@ package lz.flShader {
 					}
 				}
 			}
+			
+			/*trace("constmap");
+			for (var key:String in constMap) {
+				trace(key);
+			}
+			trace("tempconst");
+			
+			for each(v in tempConsts) {
+				trace(v.data);
+			}*/
+			
 		}
 		
 		private function createTempVar():Var {
 			var v:Var = new Var(Var.TYPE_T, tempCounter);
 			tempCounter++;
 			return v;
+		}
+		
+		private function createTempConst(data:Object,len:int=1):Var {
+			var c:Var = C(-1);
+			c.data = data;
+			c.constLenght=len
+			return c;
 		}
 		
 		public function get code():String {
@@ -120,6 +151,9 @@ package lz.flShader {
 			return txt;
 		}
 		
+		/** float */
+		public function F(data:Array,len:int=1):Var { return createTempConst(data,len) };
+		public function M(data:Matrix3D):Var { return createTempConst(data,4) };
 		public function C(index:int=0):Var { return new Var(Var.TYPE_C,index)};
 		public function T(index:int=0):Var { return new Var(Var.TYPE_T,index)};
 		public function VA(index:int=0):Var { return new Var(Var.TYPE_VA,index)};
