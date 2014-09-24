@@ -25,7 +25,8 @@ package flShader {
 			}
 		}
 		
-		public function f(op:String,a:Var=null, b:Var=null,t:Var=null,flag:String=null):Var {
+		public function f(op:String, a:Var = null, b:Var = null, t:Var = null, flag:Array = null, numParam:int = 3 ):Var {
+			if(numParam>1)
 			var c:Var = t||createTempVar();
 			var line:Array = [op];
 			if (c) line.push(c);
@@ -41,24 +42,25 @@ package flShader {
 			var ttypePool:Array = [];
 			var constMemLen:int = 0;
 			var tempConsts:Array = [];
+			var constPool:Array = [];
 			for (var i:int = 0; i < lines.length;i++ ) {
 				var line:Array = lines[i];
 				for (var j:int = 1,len:int=line.length; j <len ;j++ ) {
 					var v:Var = line[j];
-					if (v.type==Var.TYPE_T) {
+					if (v.type==Var.TYPE_T) {//找到所有临时变量，并找到它开始被使用和最后被使用的索引
 						var startEnd:Array = startEnds[v.index];
 						if (startEnd == null) startEnd = startEnds[v.index] = [i, i];
 						startEnd[1] = i;
-						var vs:Array = ttypePool[v.index];
+						var vs:Array = ttypePool[v.index];//把相同索引的临时变量放入数组
 						if (vs == null) vs = ttypePool[v.index] = [];
 						vs.push(v);
-					}else if (v.type==Var.TYPE_C) {
-						if (v.index!=-1) {
+					}else if (v.type==Var.TYPE_C) {//遍历常量
+						if (v.index!=-1) {//找到非临时常量使用的最大内存
 							var theConstMemLen:int = v.index + v.constLenght;
 							if (theConstMemLen>constMemLen) {
 								constMemLen = theConstMemLen;
 							}
-						}else {
+						}else {//找到临时常量
 							tempConsts.push(v);
 						}
 					}
@@ -69,7 +71,7 @@ package flShader {
 				var start:int = startEnd[0];
 				for (j = 0; j < i;j++ ) {
 					var startEnd2:Array = startEnds[j];
-					if (start > startEnd2[1]) {
+					if (start > startEnd2[1]) {//找到没被使用的变量
 						for each(v in ttypePool[i]) {
 							v.index = j;
 						}
@@ -81,19 +83,31 @@ package flShader {
 				}
 			}
 			
-			/*trace("constmap");
-			for (var key:String in constMap) {
-				trace(key);
-			}
+			trace(constMemLen);
 			trace("tempconst");
 			
 			for each(v in tempConsts) {
-				trace(v.data);
-			}*/
-			
+				var floats:Array = v.data as Array;
+				var floatsLen:int = floats.length;
+				var have:Boolean = false;
+				for (var k:int = 0; k < floatsLen;k++ ) {
+					for (i = 0; i < constPool.length; i += 4 ) {
+						
+					}
+				}
+				if (have) {
+					
+				}else {
+					for (k = 0; k < floatsLen; k++ ) {
+						constPool.push(floats[k]);
+					}
+				}
+				trace(floats,have);
+			}
+			trace("pool",constPool);
 		}
 		
-		private function createTempVar():Var {
+		public function createTempVar():Var {
 			var v:Var = new Var(Var.TYPE_T, tempCounter);
 			tempCounter++;
 			return v;
@@ -144,7 +158,7 @@ package flShader {
 					}
 				}
 				if (line.flag) {
-					txt += "," + line.flag;
+					txt += ",<" + line.flag+">";
 				}
 				txt+="\n"
 			}
@@ -195,8 +209,8 @@ package flShader {
 		public function els(a:Var=null, b:Var=null, t:Var=null):Var {return f("els", a, b, t);}
 		public function eif(a:Var=null, b:Var=null, t:Var=null):Var {return f("eif", a, b, t);}
 		public function ted(a:Var=null, b:Var=null, t:Var=null):Var {return f("ted", a, b, t);}
-		public function kil(a:Var=null, b:Var=null, t:Var=null):Var {return f("kil", a, b, t);}
-		public function tex(a:Var = null, b:Var = null, t:Var = null, flag:String = null):Var {return f("tex", a, b, t,flag);}
+		public function kil(a:Var=null, b:Var=null, t:Var=null):Var {return f("kil", a, b, t,null,1);}
+		public function tex(a:Var = null, b:Var = null, t:Var = null, flags:Array = null):Var {return f("tex", a, b, t,flags);}
 		public function sge(a:Var=null, b:Var=null, t:Var=null):Var {return f("sge", a, b, t);}
 		public function slt(a:Var=null, b:Var=null, t:Var=null):Var {return f("slt", a, b, t);}
 		public function sgn(a:Var=null, b:Var=null, t:Var=null):Var {return f("sgn", a, b, t);}

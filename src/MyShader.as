@@ -16,7 +16,9 @@ package
 			var c0:Var = C();
 			var c1:Var = C(1);
 			add(abs(ddx(v0)),abs(ddy(v0)));
-			tex(F([1,2,3,4]), c0, c1, "<2d,3d>");
+			tex(F([1]), F([1]), c1);
+			tex(F([2]), F([3]), c1);
+			tex(F([2,3,3,3]), F([3]), c1);
 			
 			code;
 			//trace(code);

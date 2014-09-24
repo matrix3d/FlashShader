@@ -15,6 +15,7 @@ package
 	import flash.geom.Matrix3D;
 	import flash.geom.Vector3D;
 	import flash.utils.ByteArray;
+	import flash.utils.getTimer;
 	import flShader.FlShader;
 	
 	/**
@@ -49,14 +50,33 @@ package
 			
 			var program:Program3D = context.createProgram();
 			var assembler:AGALMiniAssembler = new AGALMiniAssembler;
+			var max:int = 1000;
+			var c:int = max;
+			var time:int = getTimer();
+			while(c-->0){
 			var vshader:FlShader = new VShader;
 			var fshader:FlShader = new FShader;
 			var vcode:String = vshader.code;
 			var fcode:String = fshader.code;
-			trace("vcode");
+			}
+			trace(getTimer()-time);
+			/*trace("vcode");
 			trace(vcode);
 			trace("fcode");
-			trace(fcode);
+			trace(fcode);*/
+			c = max;
+			time = getTimer();
+			while(c-->0){
+			assembler.assemble(Context3DProgramType.VERTEX,
+					vcode
+					,2
+				),
+				assembler.assemble(Context3DProgramType.FRAGMENT,
+					fcode
+					,2
+				)
+			}
+			trace(getTimer()-time);
 			program.upload(
 				assembler.assemble(Context3DProgramType.VERTEX,
 					vcode
@@ -133,9 +153,9 @@ package
 	}
 	
 }
-import flShader.Var;
 import flash.display3D.Context3DProgramType;
 import flShader.FlShader;
+import flShader.Var;
 
 class VShader extends FlShader {
 	public function VShader() 
@@ -156,9 +176,9 @@ class FShader extends FlShader {
 		var fc0:Var = C();
 		var fwidth:Var = add(abs(ddx(v0)), abs(ddy(v0)));
 		var x:Var = sat(div(v0, fwidth));
-		var smoothstep:Var= mul(mul(x, x), sub(fc0.c("z"), mul(fc0.c("y"), x)));
-		var c:Var =sub(fc0.c("x"),min(min(smoothstep.c("x"),smoothstep.c("y")),smoothstep.c("z")))
-		mov(c.c("x"), null, oc);
+		var smoothstep:Var= mul(mul(x, x), sub(fc0.z, mul(fc0.y, x)));
+		var c:Var =sub(fc0.x,min(min(smoothstep.x,smoothstep.y),smoothstep.z))
+		mov(c.x, null, oc);
 		
 		/*//fwidth abs( ddx( v ) ) + abs( ddy( v ) );
 		"ddx ft0,v0\n"				//ft0 = ddx( v0)
