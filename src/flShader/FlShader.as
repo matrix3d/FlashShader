@@ -25,9 +25,12 @@ package flShader {
 			}
 		}
 		
-		public function f(op:String, a:Var = null, b:Var = null, t:Var = null, flag:Array = null, numParam:int = 3 ):Var {
+		public function f(op:String, a:Var = null, b:Var = null, t:Var = null, flag:Array = null, numParam:int = 3 ,component:String=null):Var {
 			if(numParam>1)
-			var c:Var = t||createTempVar();
+			var c:Var = t || createTempVar();
+			if (component) {
+				c = c.c(component);
+			}
 			var line:Array = [op];
 			if (c) line.push(c);
 			if (a) line.push(a);
@@ -165,6 +168,10 @@ package flShader {
 			return txt;
 		}
 		
+		/*public function mul2(a:Array, t:Var = null):Var {
+			for
+		}*/
+		
 		/** float */
 		public function F(data:Array,len:int=1):Var { return createTempConst(data,len) };
 		public function M(data:Matrix3D):Var { return createTempConst(data,4) };
@@ -188,7 +195,7 @@ package flShader {
 		public function pow(a:Var=null, b:Var=null, t:Var=null):Var {return f("pow", a, b, t);}
 		public function log(a:Var=null, b:Var=null, t:Var=null):Var {return f("log", a, b, t);}
 		public function exp(a:Var=null, b:Var=null, t:Var=null):Var {return f("exp", a, b, t);}
-		public function nrm(a:Var=null, b:Var=null, t:Var=null):Var {return f("nrm", a, b, t);}
+		public function nrm(a:Var=null, b:Var=null, t:Var=null,component:String=null):Var {return f("nrm", a, b, t,null,3,component||"xyz");}
 		public function sin(a:Var=null, b:Var=null, t:Var=null):Var {return f("sin", a, b, t);}
 		public function cos(a:Var=null, b:Var=null, t:Var=null):Var {return f("cos", a, b, t);}
 		public function crs(a:Var=null, b:Var=null, t:Var=null):Var {return f("crs", a, b, t);}
@@ -197,7 +204,7 @@ package flShader {
 		public function abs(a:Var=null, b:Var=null, t:Var=null):Var {return f("abs", a, b, t);}
 		public function neg(a:Var=null, b:Var=null, t:Var=null):Var {return f("neg", a, b, t);}
 		public function sat(a:Var=null, b:Var=null, t:Var=null):Var {return f("sat", a, b, t);}
-		public function m33(a:Var=null, b:Var=null, t:Var=null):Var {return f("m33", a, b, t);}
+		public function m33(a:Var=null, b:Var=null, t:Var=null,component:String=null):Var {return f("m33", a, b, t,null,3,component||"xyz");}
 		public function m44(a:Var=null, b:Var=null, t:Var=null):Var {return f("m44", a, b, t);}
 		public function m34(a:Var=null, b:Var=null, t:Var=null):Var {return f("m34", a, b, t);}
 		public function ddx(a:Var=null, b:Var=null, t:Var=null):Var {return f("ddx", a, b, t);}

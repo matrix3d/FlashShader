@@ -21,7 +21,7 @@ package
 			tex(F([2,3,3,3]), F([3]), c1);
 			
 			code;
-			//trace(code);
+			trace(code);
 		}
 	}
 }
