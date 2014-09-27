@@ -27,8 +27,8 @@ package
 			view = new View3D;
 			addChild(view);
 			
-			view.camera.matrix.appendTranslation(0, 0, -10);
-			view.light.matrix.appendTranslation(0, 0, -1);
+			view.camera.z = -10;
+			view.light.z = -450;
 			
 			cube = new Node3D;
 			cube.material = material;
@@ -37,7 +37,7 @@ package
 			
 			sphere = new Node3D;
 			sphere.material = material;
-			sphere.drawable = Meshs.sphere(14,14);
+			sphere.drawable = Meshs.sphere(20,20);
 			view.scene.addChild(sphere);
 			
 			addEventListener(Event.ENTER_FRAME, enterFrame);
@@ -57,23 +57,20 @@ package
 		
 		private function enterFrame(e:Event):void 
 		{
-			cube.matrix.identity();
-			//cube.matrix.appendRotation(1, Vector3D.Y_AXIS);
-			//cube.matrix.appendRotation(.7, Vector3D.X_AXIS);
-			cube.matrix.appendTranslation( -1.6, 0, 0);
+			cube.x = -1;
+			cube.rotationY += Math.PI / 180;
+			cube.rotationX += 2*Math.PI / 180;
 			
-			sphere.matrix.identity();
-			sphere.matrix.appendScale(.3, .3, .3);
-			sphere.matrix.appendRotation(1, Vector3D.Y_AXIS);
-			sphere.matrix.appendRotation(.7, Vector3D.X_AXIS);
-			sphere.matrix.appendTranslation( 0, 0, 0);
-			
+			sphere.x = 1;
+			sphere.scaleX = sphere.scaleY = sphere.scaleZ = .3;
+			sphere.rotationY += Math.PI / 180;
+			sphere.rotationX += 2*Math.PI / 180;
 			
 			material.color[0] = Math.sin(getTimer()/400)/2+.5;
 			material.color[1] = Math.sin(getTimer()/500)/2+.5;
 			material.color[2] = Math.sin(getTimer()/600)/2+.5;
-			view.light.matrix.identity();
-			view.light.matrix.appendTranslation(mouseX-stage.stageWidth/2, stage.stageHeight/2-mouseY, -400);
+			view.light.x = mouseX - stage.stageWidth / 2
+			view.light.y=stage.stageHeight/2-mouseY, -400
 			
 			view.render();
 		}

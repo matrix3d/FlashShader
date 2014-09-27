@@ -75,7 +75,8 @@ class VShader extends FlShader {
 		var eyeDirection:Var = neg(viewPos, null);
 		mov(eyeDirection, null, V(2));
 		var viewPosLight:Var = add(m44(lightPos, view),eyeDirection,V());
-		var viewNormal:Var = m44(norm, model,V(1));
+		var viewNormal:Var = m33(norm, model);
+		mov(viewNormal, null, V(1));
 		
 	}
 }
