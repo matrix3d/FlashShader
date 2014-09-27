@@ -17,7 +17,7 @@ package
 	public class TestFlash3D extends Sprite
 	{
 		private var view:View3D = new View3D;
-		private var node:Node3D = Meshs.sphere();
+		private var node:Node3D = Meshs.sphere(13,13);
 		public function TestFlash3D() 
 		{
 			view.nodes.push(node);

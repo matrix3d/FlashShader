@@ -40,9 +40,9 @@ package flash3d {
 						vc.y += offset.y;
 						face.scale+= vc.w;
 						face.out[i] = vc;
-						faces.push(face);
 						g.drawCircle(vc.x, vc.y, vc.w / 10);
 					}
+					faces.push(face);
 				}
 			}
 			faces.sortOn("scale", Array.NUMERIC);

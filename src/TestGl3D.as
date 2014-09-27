@@ -27,7 +27,7 @@ package
 			view = new View3D;
 			addChild(view);
 			
-			view.camera.matrix.appendTranslation(0, 0, -1);
+			view.camera.matrix.appendTranslation(0, 0, -10);
 			view.light.matrix.appendTranslation(0, 0, -1);
 			
 			cube = new Node3D;
@@ -37,7 +37,7 @@ package
 			
 			sphere = new Node3D;
 			sphere.material = material;
-			sphere.drawable = Meshs.sphere();
+			sphere.drawable = Meshs.sphere(14,14);
 			view.scene.addChild(sphere);
 			
 			addEventListener(Event.ENTER_FRAME, enterFrame);
@@ -52,7 +52,7 @@ package
 			view.invalid = true;
 			var w:Number = stage.stageWidth;
 			var h:Number = stage.stageHeight;
-			view.camera.perspective.perspectiveLH(w/400, h/400, .3, 1000);
+			view.camera.perspective.perspectiveLH(w/400, h/400, 3.3, 1000);
 		}
 		
 		private function enterFrame(e:Event):void 
@@ -60,12 +60,12 @@ package
 			cube.matrix.identity();
 			//cube.matrix.appendRotation(1, Vector3D.Y_AXIS);
 			//cube.matrix.appendRotation(.7, Vector3D.X_AXIS);
-			cube.matrix.appendTranslation( -.6, 0, 0);
+			cube.matrix.appendTranslation( -1.6, 0, 0);
 			
 			sphere.matrix.identity();
 			sphere.matrix.appendScale(.3, .3, .3);
-			//sphere.matrix.appendRotation(1, Vector3D.Y_AXIS);
-			//sphere.matrix.appendRotation(.7, Vector3D.X_AXIS);
+			sphere.matrix.appendRotation(1, Vector3D.Y_AXIS);
+			sphere.matrix.appendRotation(.7, Vector3D.X_AXIS);
 			sphere.matrix.appendTranslation( 0, 0, 0);
 			
 			
