@@ -8,7 +8,7 @@ package gl3d
 	 */
 	public class IndexBufferSet 
 	{
-		private var data:Vector.<uint>;
+		public var data:Vector.<uint>;
 		private var invalid:Boolean = true;
 		public var buff:IndexBuffer3D;
 		public function IndexBufferSet(data:Vector.<uint>) 

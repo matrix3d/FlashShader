@@ -25,21 +25,6 @@ package flShader {
 			}
 		}
 		
-		public function f(op:String, a:Var = null, b:Var = null, t:Var = null, flag:Array = null, numParam:int = 3 ,component:String=null):Var {
-			if(numParam>1)
-			var c:Var = t || createTempVar();
-			if (component) {
-				c = c.c(component);
-			}
-			var line:Array = [op];
-			if (c) line.push(c);
-			if (a) line.push(a);
-			if (b) line.push(b);
-			line.flag = flag;
-			lines.push(line);
-			return c;
-		}
-		
 		public function optimize():void {
 			var startEnds:Array = [];
 			var ttypePool:Array = [];
@@ -168,9 +153,56 @@ package flShader {
 			return txt;
 		}
 		
-		/*public function mul2(a:Array, t:Var = null):Var {
-			for
-		}*/
+		
+		
+		public function f(op:String, a:Var = null, b:Var = null, t:Var = null, flag:Array = null, numParam:int = 3 ,component:String=null):Var {
+			if(numParam>1)
+			var c:Var = t || createTempVar();
+			if (component) {
+				c = c.c(component);
+			}
+			var line:Array = [op];
+			if (c) line.push(c);
+			if (a) line.push(a);
+			if (b) line.push(b);
+			line.flag = flag;
+			lines.push(line);
+			return c;
+		}
+		
+		public function f2(op:String,arr:Array, t:Var=null):Var {
+			if (arr.length==0) {
+				return t;
+			}else if (arr.length==1) {
+				return mov(arr[0], null, t);
+			}
+			var a:Var = arr[0];
+			for (var i:int = 1; i < arr.length-1;i++ ) {
+				a = f(op,a,arr[i]);
+			}
+			return f(op, a, arr[arr.length - 1], t);
+		}
+		
+		public function distance2(a:Var, b:Var, t:Var=null):Var {
+			var d:Var = sub(a, b);
+			var d2:Var = mul(d, d);
+			var arr:Array = [d2.x, d2.y];
+			return sqt(add2(arr), null, t);
+		}
+		
+		public function distance3(a:Var, b:Var, t:Var=null):Var {
+			var d:Var = sub(a, b);
+			var d2:Var = mul(d, d);
+			var arr:Array = [d2.x, d2.y,d2.z];
+			return sqt(add2(arr), null, t);
+		}
+		
+		public function mul2(arr:Array, t:Var=null):Var {return f2("mul", arr, t);}
+		public function add2(arr:Array, t:Var=null):Var {return f2("add", arr, t);}
+		public function sub2(arr:Array, t:Var=null):Var {return f2("sub", arr, t);}
+		public function div2(arr:Array, t:Var=null):Var {return f2("div", arr, t);}
+		public function max2(arr:Array, t:Var=null):Var {return f2("max", arr, t);}
+		public function min2(arr:Array, t:Var=null):Var {return f2("min", arr, t);}
 		
 		/** float */
 		public function F(data:Array,len:int=1):Var { return createTempConst(data,len) };

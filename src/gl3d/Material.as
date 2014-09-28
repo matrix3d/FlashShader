@@ -96,10 +96,10 @@ class FShader extends FlShader {
 		var cosTheta:Var = sat(dp3(n,l));
 		
 		var e:Var = nrm(V(2));
-		var r:Var = nrm(sub(mul(mul(C(3).y, dp3(l, n)), n), l));
+		var r:Var = nrm(sub(mul2([C(3).y, dp3(l, n), n]), l));
 		var cosAlpha:Var = sat(dp3(e,r));
 		
-		var color:Var =add(ambientColor, mul(mul(mov(lightColor), add(cosTheta,pow(cosAlpha,specularPow))), lightPower));
+		var color:Var = add(ambientColor, mul2([mov(lightColor), add(cosTheta, pow(cosAlpha, specularPow)), lightPower]));
 		mul(color, diffColor, oc);
 	}
 }

@@ -7,9 +7,9 @@ package
 	import flash.text.TextField;
 	import flash.text.TextFormat;
 	import flash.utils.getTimer;
-	import flash3d.Meshs;
 	import flash3d.Node3D;
 	import flash3d.View3D;
+	import gl3d.Meshs;
 	/**
 	 * ...
 	 * @author lizhi
@@ -17,7 +17,7 @@ package
 	public class TestFlash3D extends Sprite
 	{
 		private var view:View3D = new View3D;
-		private var node:Node3D = Meshs.sphere(13,13);
+		private var node:Node3D = Node3D.fromDrawable(Meshs.teapot(2));
 		public function TestFlash3D() 
 		{
 			view.nodes.push(node);
@@ -28,8 +28,8 @@ package
 		{
 			node.rot.x += Math.PI / 180 * 1;
 			node.rot.y += Math.PI / 180 * 1;
-			var scale:Number = Math.sin(getTimer() / 1200);
-			//node.scale.setTo(scale, scale, scale);
+			var scale:Number = .6;// Math.sin(getTimer() / 1200);
+			node.scale.setTo(scale, scale, scale);
 			view.render(graphics);
 			
 		}

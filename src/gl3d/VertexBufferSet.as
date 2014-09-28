@@ -9,7 +9,7 @@ package gl3d
 	public class VertexBufferSet 
 	{
 		private var data32PerVertex:int;
-		private var data:Vector.<Number>;
+		public var data:Vector.<Number>;
 		private var buff:VertexBuffer3D;
 		private var invalid:Boolean = true;
 		public function VertexBufferSet(data:Vector.<Number>,data32PerVertex:int) 

@@ -32,13 +32,14 @@ package
 			
 			cube = new Node3D;
 			cube.material = material;
-			cube.drawable = Meshs.cube(.5,.5,.5);
+			cube.drawable = Meshs.teapot(6);
 			view.scene.addChild(cube);
+			cube.scaleX = cube.scaleY = cube.scaleZ = .3;
 			
 			sphere = new Node3D;
 			sphere.material = material;
 			sphere.drawable = Meshs.sphere(20,20);
-			view.scene.addChild(sphere);
+			//view.scene.addChild(sphere);
 			
 			addEventListener(Event.ENTER_FRAME, enterFrame);
 			stage.align = StageAlign.TOP_LEFT;
@@ -62,13 +63,13 @@ package
 			cube.rotationX += 2*Math.PI / 180;
 			
 			sphere.x = 1;
-			sphere.scaleX = sphere.scaleY = sphere.scaleZ = .3;
+			//sphere.scaleX = sphere.scaleY = sphere.scaleZ = .3;
 			sphere.rotationY += Math.PI / 180;
 			sphere.rotationX += 2*Math.PI / 180;
 			
-			material.color[0] = Math.sin(getTimer()/400)/2+.5;
-			material.color[1] = Math.sin(getTimer()/500)/2+.5;
-			material.color[2] = Math.sin(getTimer()/600)/2+.5;
+			//material.color[0] = Math.sin(getTimer()/400)/2+.5;
+			//material.color[1] = Math.sin(getTimer()/500)/2+.5;
+			//material.color[2] = Math.sin(getTimer()/600)/2+.5;
 			view.light.x = mouseX - stage.stageWidth / 2
 			view.light.y=stage.stageHeight/2-mouseY, -400
 			
