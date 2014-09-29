@@ -52,7 +52,7 @@
   </includeLibraries>
   <!-- SWC Libraries -->
   <libraryPaths>
-    <!-- example: <element path="..." /> -->
+    <element path="lib\MinimalComps_0_9_10.swc" />
   </libraryPaths>
   <!-- External Libraries -->
   <externalLibraryPaths>

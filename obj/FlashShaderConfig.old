@@ -16,7 +16,7 @@
     </define>
     <define append="true">
       <name>CONFIG::timeStamp</name>
-      <value>'2014/9/27 星期六'</value>
+      <value>'2014/9/29'</value>
     </define>
     <define append="true">
       <name>CONFIG::air</name>
@@ -32,12 +32,15 @@
     </define>
     <verbose-stacktraces>true</verbose-stacktraces>
     <source-path append="true">
-      <path-element>C:\Users\llli\Documents\GitHub\FlashShader\src</path-element>
-      <path-element>E:\Program Files (x86)\FlashDevelop\Library\AS3\classes</path-element>
+      <path-element>C:\Users\Administrator\Documents\GitHub\FlashShader\src</path-element>
+      <path-element>D:\Program Files (x86)\FlashDevelop\Library\AS3\classes</path-element>
     </source-path>
+    <library-path append="true">
+      <path-element>C:\Users\Administrator\Documents\GitHub\FlashShader\lib\MinimalComps_0_9_10.swc</path-element>
+    </library-path>
   </compiler>
   <file-specs>
-    <path-element>C:\Users\llli\Documents\GitHub\FlashShader\src\TestGl3D.as</path-element>
+    <path-element>C:\Users\Administrator\Documents\GitHub\FlashShader\src\TestGl3D.as</path-element>
   </file-specs>
   <default-background-color>#FFFFFF</default-background-color>
   <default-frame-rate>30</default-frame-rate>
