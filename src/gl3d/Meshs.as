@@ -152,43 +152,23 @@ package gl3d
 			
 		}
 		
-		public static function sphere(w:Number = 120, h:Number = 105):Drawable3D {
-			var vs:Vector.<Number> = Vector.<Number>([0,-1,0]);
+		public static function sphere(w:Number = 20, h:Number = 20):Drawable3D {
 			var ins:Vector.<uint> = new Vector.<uint>;
-			for (var i:int = 0; i < h - 1; i++ ) {
-				var rot:Number = Math.PI / h * (i+1) -Math.PI/2;
-				var sin:Number = Math.sin(rot);
-				var cos:Number = Math.cos(rot);
-				for (var j:int = 0; j < w;j++ ) {
-					rot = Math.PI * 2 / w*j;
-					vs.push(Math.cos(rot)*cos, sin, Math.sin(rot)*cos);
+			var vs:Vector.<Number> = new Vector.<Number>;
+			var uv:Vector.<Number> = new Vector.<Number>;
+			for (var i:int = 0; i <= h; i++ ) {
+				var roti:Number = Math.PI / h * i -Math.PI/2;
+				for (var j:int = 0; j <= w;j++ ) {
+					var rotj:Number = Math.PI * 2 / w*j;
+					vs.push(Math.cos(rotj)*Math.cos(roti), Math.sin(roti), Math.sin(rotj)*Math.cos(roti));
+					uv.push(j / w, i / h);
 					var ni:int = vs.length/3 - 1;
-					if (i==0) {
-						if (j != 0) {
-							ins.push(ni, ni - 1, 0);
-						}else {
-							ins.push(ni, ni + w - 1, 0);
-						}
-					}
-					if (i > 0) {
-						if (j != 0) {
-							ins.push(ni, ni - 1, ni - w, ni - 1, ni - w - 1, ni - w);
-						}
-						else {
-							ins.push(ni, ni + w - 1, ni - w, ni + w - 1, ni - 1, ni - w);
-						}
-					}
-					if (i==h-2) {
-						if (j != 0) {
-							ins.push(ni, ni - 1, w*(h-1)+1);
-						}else {
-							ins.push(ni, ni + w - 1, w*(h-1)+1);
-						}
+					if (i>0&&j>0) {
+						ins.push(ni, ni - 1, ni - w-1, ni - 1, ni - w - 2, ni - w-1);
 					}
 				}
 			}
-			vs.push(0, 1, 0);
-			return createDrawable(ins, vs, null, vs);
+			return createDrawable(ins, vs,uv, vs);
 		}
 		
 		public static function test():Drawable3D {
@@ -251,9 +231,10 @@ package gl3d
 				
 				currentVertexId += (divs + 1) * (divs + 1);
 			}
-			var drawable:Drawable3D = createDrawable(indexData, vertexData, null, vertexData);
+			var drawable:Drawable3D = createDrawable(indexData, vertexData, vertexData, vertexData);
 			removeDuplicatedVertices(drawable);
 			drawable.norm = computeNormal(drawable);
+			drawable.uv = computeUV(drawable);
 			return drawable;
 		}
 		
@@ -369,6 +350,19 @@ package gl3d
 			}
 		}
 		
+		public static function computeUV(drawable:Drawable3D):VertexBufferSet {
+			var normal:Vector.<Number> = drawable.norm.data;
+			var uv:Vector.<Number> = new Vector.<Number>();
+			for (var i:int = 0,len:int=normal.length/3; i < len;i++ ) {
+				var x:Number = normal[3 * i];
+				var y:Number = normal[3 * i + 1];
+				var z:Number = normal[3 * i + 2];
+				var u:Number = Math.atan2(y, x) / Math.PI / 2+.5;
+				var v:Number = Math.asin(y) / Math.PI + .5;
+				uv.push(u, v);
+			}
+			return new VertexBufferSet(uv, 2);
+		}
 		public static function computeNormal(drawable:Drawable3D):VertexBufferSet
 		{
 			var normVs:Vector.<Vector.<Vector3D>> = new Vector.<Vector.<Vector3D>>();

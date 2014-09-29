@@ -1,5 +1,6 @@
 package  
 {
+	import flash.display.BitmapData;
 	import flash.display.Sprite;
 	import flash.display.StageAlign;
 	import flash.display.StageScaleMode;
@@ -10,6 +11,7 @@ package
 	import gl3d.Material;
 	import gl3d.Meshs;
 	import gl3d.Node3D;
+	import gl3d.TextureSet;
 	import gl3d.View3D;
 	import ui.AttribSeter;
 	/**
@@ -33,6 +35,11 @@ package
 			
 			view.camera.z = -10;
 			view.light.z = -450;
+			view.light.lightPower = 2;
+			
+			var bmd:BitmapData = new BitmapData(128, 128, false, 0xff0000);
+			bmd.perlinNoise(30, 30, 2, 1, true, true);
+			material.textureSet = new TextureSet(bmd);
 			
 			teapot = new Node3D;
 			teapot.material = material;
@@ -62,6 +69,7 @@ package
 			
 			addChild(aui);
 			aui.bind(view.light, "specularPower", AttribSeter.TYPE_NUM);
+			aui.bind(view.light, "lightPower", AttribSeter.TYPE_NUM);
 			aui.bind(view.light, "color", AttribSeter.TYPE_VEC_COLOR);
 			aui.bind(view.light, "ambient", AttribSeter.TYPE_VEC_COLOR);
 			aui.bind(material, "color", AttribSeter.TYPE_VEC_COLOR);
@@ -81,7 +89,7 @@ package
 			teapot.rotationX = sphere.rotationX = cube.rotationX += 2 * Math.PI / 180;
 			
 			view.light.x = mouseX - stage.stageWidth / 2
-			view.light.y=stage.stageHeight/2-mouseY, -400
+			view.light.y = stage.stageHeight / 2 - mouseY ;
 			view.render();
 			
 			aui.update();
