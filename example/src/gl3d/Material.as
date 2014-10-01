@@ -13,7 +13,8 @@ package gl3d
 		public var textureSet:TextureSet;
 		public var programSet:ProgramSet;
 		public var color:Vector.<Number> = Vector.<Number>([1, 1, 1, 1]);
-		private var invalid:Boolean = true;
+		public var invalid:Boolean = true;
+		public var alpha:Number = 1;
 		public function Material() 
 		{
 		}
@@ -21,6 +22,11 @@ package gl3d
 		public function draw(node:Node3D,camera:Camera3D,view:View3D):void {
 			if (node.drawable) {
 				var context:Context3D = view.context;
+				for (var i:int = 0; i < 8;i++ ) {
+					context.setTextureAt(i, null);
+					context.setVertexBufferAt(i, null);
+				}
+				
 				node.drawable.update(context);
 				if (textureSet) {
 					textureSet.update(context);
@@ -40,7 +46,7 @@ package gl3d
 					context.setProgramConstantsFromMatrix(Context3DProgramType.VERTEX, 8, camera.perspective, true);
 					var lightPos:Vector3D = view.light.world.position;
 					context.setProgramConstantsFromVector(Context3DProgramType.VERTEX, 12, Vector.<Number>([lightPos.x,lightPos.y,lightPos.z,1]));//light pos
-					
+					color[3] = alpha;
 					context.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, 0, color);//color
 					view.light.color[3] = view.light.lightPower;
 					context.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, 1,view.light.color);//light color
@@ -53,7 +59,6 @@ package gl3d
 						node.drawable.uv.bind(context, 2);
 						textureSet.bind(context, 0);
 					}
-					
 					context.drawTriangles(node.drawable.index.buff);
 				}
 			}
@@ -102,7 +107,8 @@ class FShader extends FlShader {
 		if (texture == null) {
 			var diffColor:Var = C();
 		}else {
-			diffColor = tex(V(3),FS());
+			diffColor = tex(V(3), FS());
+			mul(C().w, diffColor.w, diffColor.w);
 		}
 		
 		var lightColor:Var = C(1);
@@ -119,6 +125,7 @@ class FShader extends FlShader {
 		var cosAlpha:Var = sat(dp3(e,r));
 		
 		var color:Var = add(ambientColor, mul2([mov(lightColor), add(cosTheta, pow(cosAlpha, specularPow)), lightPower]));
+		mov(diffColor.w, null, color.w);
 		mul(color, diffColor, oc);
 	}
 }

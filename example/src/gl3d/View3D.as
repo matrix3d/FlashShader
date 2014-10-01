@@ -38,7 +38,7 @@ package gl3d
 			
 			context.setCulling(Context3DTriangleFace.NONE);
 			context.enableErrorChecking = true;
-			//context.setBlendFactors(Context3DBlendFactor.SOURCE_ALPHA, Context3DBlendFactor.ONE_MINUS_SOURCE_ALPHA);
+			context.setBlendFactors(Context3DBlendFactor.SOURCE_ALPHA, Context3DBlendFactor.ONE_MINUS_SOURCE_ALPHA);
 		}
 		
 		public function render():void {

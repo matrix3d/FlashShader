@@ -5,6 +5,7 @@ package
 	import flash.display.StageAlign;
 	import flash.display.StageScaleMode;
 	import flash.events.Event;
+	import flash.geom.Point;
 	import flash.geom.Vector3D;
 	import flash.utils.getTimer;
 	import gl3d.Drawable3D;
@@ -28,6 +29,8 @@ package
 		private var sphere:Node3D;
 		
 		private var aui:AttribSeter = new AttribSeter;
+		private var _useTexture:Boolean = true;
+		private var texture:TextureSet;
 		public function TestGl3D() 
 		{
 			view = new View3D;
@@ -39,7 +42,9 @@ package
 			
 			var bmd:BitmapData = new BitmapData(128, 128, false, 0xff0000);
 			bmd.perlinNoise(30, 30, 2, 1, true, true);
-			material.textureSet = new TextureSet(bmd);
+			texture=new TextureSet(bmd);
+			material.textureSet = texture;
+			material.color = Vector.<Number>([.6,.6,.6,1]);
 			
 			teapot = new Node3D;
 			teapot.material = material;
@@ -68,11 +73,13 @@ package
 			stage_resize();
 			
 			addChild(aui);
-			aui.bind(view.light, "specularPower", AttribSeter.TYPE_NUM);
-			aui.bind(view.light, "lightPower", AttribSeter.TYPE_NUM);
+			aui.bind(view.light, "specularPower", AttribSeter.TYPE_NUM,new Point(0,500));
+			aui.bind(view.light, "lightPower", AttribSeter.TYPE_NUM,new Point(0,10));
 			aui.bind(view.light, "color", AttribSeter.TYPE_VEC_COLOR);
 			aui.bind(view.light, "ambient", AttribSeter.TYPE_VEC_COLOR);
 			aui.bind(material, "color", AttribSeter.TYPE_VEC_COLOR);
+			aui.bind(material, "alpha", AttribSeter.TYPE_NUM,new Point(0,1));
+			aui.bind(this, "useTexture", AttribSeter.TYPE_BOOL);
 		}
 		
 		private function stage_resize(e:Event=null):void 
@@ -93,6 +100,20 @@ package
 			view.render();
 			
 			aui.update();
+		}
+		
+		public function get useTexture():Boolean 
+		{
+			return _useTexture;
+		}
+		
+		public function set useTexture(value:Boolean):void 
+		{
+			if (value != _useTexture) {
+				_useTexture = value;
+				material.invalid = true;
+				material.textureSet = value?texture:null;
+			}
 		}
 		
 	}

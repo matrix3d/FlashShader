@@ -264,7 +264,7 @@ package gl3d
 					
 					bernstein(px, temp[0], temp[1], temp[2], temp[3], last[v]);
 					vertexData.push(last[v].x);
-					vertexData.push(last[v].z); // y up in minko, z up in the model
+					vertexData.push(last[v].z);
 					vertexData.push(last[v].y);
 				}
 			}
@@ -365,39 +365,44 @@ package gl3d
 		}
 		public static function computeNormal(drawable:Drawable3D):VertexBufferSet
 		{
-			var normVs:Vector.<Vector.<Vector3D>> = new Vector.<Vector.<Vector3D>>();
-			for (var i:int = 0; i < drawable.pos.data.length / 3;i++ ) {
-				normVs.push(new Vector.<Vector3D>());
-			}
 			var norm:Vector.<Number> = new Vector.<Number>(drawable.pos.data.length);
 			var vin:Vector.<Number> = drawable.pos.data;
-			i = 0;
-			var len:int =int(drawable.index.data.length/3)*3;
-			while(i<len)
-			{
-				var i0:int = drawable.index.data[i] * 3;
-				var i1:int = drawable.index.data[i + 1] * 3;
-				var i2:int = drawable.index.data[i + 2] * 3;
-				var v1:Vector3D = new Vector3D(vin[i0] - vin[i1], vin[i0 + 1] - vin[i1 + 1], vin[i0 + 2] - vin[i1 + 2]);
-				var v2:Vector3D = new Vector3D(vin[i2] - vin[i1], vin[i2 + 1] - vin[i1 + 1], vin[i2 + 2] - vin[i1 + 2]);
-				var normv:Vector3D = v1.crossProduct(v2);
-				normVs[drawable.index.data[i]].push(normv);
-				normVs[drawable.index.data[i+1]].push(normv);
-				normVs[drawable.index.data[i+2]].push(normv);
+			var idata:Vector.<uint> = drawable.index.data;
+			for (var i:int = 0; i < idata.length;i+=3 ) {
+				var i0:int = idata[i]*3;
+				var i1:int = idata[i + 1]*3;
+				var i2:int = idata[i + 2]*3;
+				var x0:Number = vin[i0 ];
+				var y0:Number = vin[i0 +1];
+				var z0:Number = vin[i0 +2];
+				var x1:Number = vin[i1];
+				var y1:Number = vin[i1+1];
+				var z1:Number = vin[i1+2];
+				var x2:Number = vin[i2];
+				var y2:Number = vin[i2+1];
+				var z2:Number = vin[i2+2];
+				var nx:Number = (y0 - y2) * (z0 - z1) - (z0 - z2) * (y0 - y1);
+				var ny:Number = (z0 - z2) * (x0 - x1) - (x0 - x2) * (z0 - z1);
+				var nz:Number = (x0 - x2) * (y0 - y1) - (y0 - y2) * (x0 - x1);
+				norm[i0] += nx;
+				norm[i1] += nx;
+				norm[i2] += nx;
+				norm[i0+1] += ny;
+				norm[i1+1] += ny;
+				norm[i2+1] += ny;
+				norm[i0+2] += nz;
+				norm[i1+2] += nz;
+				norm[i2+2] += nz;
 				i += 3;
 			}
-			for (i = 0; i < normVs.length;i++ ) {
-				normv = new Vector3D();
-				var vs:Vector.<Vector3D> = normVs[i];
-				for each(var v:Vector3D in vs) {
-					normv.x += v.x;
-					normv.y += v.y;
-					normv.z += v.z;
-				}
-				normv.normalize();
-				norm[i * 3] = normv.x;
-				norm[i * 3+1] = normv.y;
-				norm[i * 3+2] = normv.z;
+			for (i = 0; i < norm.length;i+=3 ) {
+				nx = norm[i];
+				ny = norm[i+1];
+				nz = norm[i+2];
+				var distance:Number = Math.sqrt(nx * nx + ny * ny + nz * nz);
+				norm[i] /= distance;
+				norm[i+1] /= distance;
+				norm[i+2] /= distance;
 			}
 			return new VertexBufferSet(norm,3);
 		}
