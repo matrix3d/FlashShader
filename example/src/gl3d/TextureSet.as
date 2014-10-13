@@ -23,7 +23,7 @@ package gl3d
 			if (invalid) {
 				texture = context.createTexture(data.width, data.height, Context3DTextureFormat.BGRA, false);
 				texture.uploadFromBitmapData(data);
-				invalid = true;
+				invalid = false;
 			}
 		}
 		

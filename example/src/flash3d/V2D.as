@@ -1,4 +1,5 @@
 package flash3d {
+	import flash.geom.Point;
 	/**
 	 * ...
 	 * @author lizhi
@@ -27,6 +28,14 @@ package flash3d {
 			var x_:Number = x;
 			x = x * cos - y * sin ;
 			y = x_ * sin + y * cos;
+		}
+		
+		public function rot2(value:Number, op:Point):void {
+			x -= op.x;
+			y -= op.y;
+			rot(value);
+			x += op.x;
+			y += op.y;
 		}
 		
 	}

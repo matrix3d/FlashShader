@@ -181,11 +181,11 @@ package gl3d
 			return createDrawable(
 				Vector.<uint>([
 					0, 1, 2, 0, 2, 3,
-					4, 5, 6, 4, 6, 7,
-					8, 9, 10, 8, 10, 11,
+					4, 6, 5, 4, 7, 6,
+					8, 10, 9, 8, 11, 10,
 					12, 13, 14, 12, 14, 15,
 					16, 17, 18, 16, 18, 19,
-					20, 21, 22, 20, 22, 23
+					20, 22, 21, 20, 23, 22
 					]),
 				Vector.<Number>([
 					hw, hh, hd, hw, -hh, hd, -hw, -hh, hd, -hw, hh, hd,
@@ -264,7 +264,7 @@ package gl3d
 					
 					bernstein(px, temp[0], temp[1], temp[2], temp[3], last[v]);
 					vertexData.push(last[v].x);
-					vertexData.push(last[v].z);
+					vertexData.push(last[v].z); 
 					vertexData.push(last[v].y);
 				}
 			}
