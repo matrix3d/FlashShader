@@ -10,6 +10,8 @@ package gl3d
 	 */
 	public class Material 
 	{
+		private var vs:FlShader;
+		private var fs:FlShader;
 		public var textureSet:TextureSet;
 		public var programSet:ProgramSet;
 		public var color:Vector.<Number> = Vector.<Number>([1, 1, 1, 1]);
@@ -32,9 +34,10 @@ package gl3d
 					textureSet.update(context);
 				}
 				if (invalid) {
-					var vs:FlShader = new VShader(textureSet);
-					var fs:FlShader = new FShader(textureSet);
+					vs = new VShader(textureSet);
+					fs = new FShader(textureSet);
 					programSet = new ProgramSet(vs.code, fs.code);
+					trace(fs.code);
 					invalid = false;
 				}
 				if (programSet) {
@@ -51,7 +54,9 @@ package gl3d
 					view.light.color[3] = view.light.lightPower;
 					context.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, 1,view.light.color);//light color
 					context.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, 2,view.light.ambient);//ambient color 环境光
-					context.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, 3,Vector.<Number>([view.light.specularPower,2,0,0]));//x:specular pow, y:2
+					context.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, 3,Vector.<Number>([view.light.specularPower,0,0,0]));//x:specular pow, y:2
+					
+					context.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, fs.constMemLen, Vector.<Number>(fs.constPool));
 					
 					node.drawable.pos.bind(context, 0);
 					node.drawable.norm.bind(context, 1);
@@ -121,7 +126,7 @@ class FShader extends FlShader {
 		var cosTheta:Var = sat(dp3(n,l));
 		
 		var e:Var = nrm(V(2));
-		var r:Var = nrm(sub(mul2([C(3).y, dp3(l, n), n]), l));
+		var r:Var = nrm(sub(mul2([F([2]), dp3(l, n), n]), l));
 		var cosAlpha:Var = sat(dp3(e,r));
 		
 		var color:Var = add(ambientColor, mul2([mov(lightColor), add(cosTheta, pow(cosAlpha, specularPow)), lightPower]));

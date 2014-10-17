@@ -15,6 +15,11 @@ package flShader {
 		private var programTypeName:String;
 		public static var op:Var = new Var(Var.TYPE_OP);
 		public static var oc:Var = new Var(Var.TYPE_OC);
+		
+		private var optimizeFlag:Boolean = false;
+		
+		public var constPool:Array = [];
+		public var constMemLen:int = 0;
 		public function FlShader(programType:String=Context3DProgramType.VERTEX) 
 		{
 			this.programType = programType;
@@ -26,11 +31,12 @@ package flShader {
 		}
 		
 		public function optimize():void {
+			if (optimizeFlag) return;
+			optimizeFlag = true;
+			var xyzw:String = "xyzw";
 			var startEnds:Array = [];
 			var ttypePool:Array = [];
-			var constMemLen:int = 0;
 			var tempConsts:Array = [];
-			var constPool:Array = [];
 			for (var i:int = 0; i < lines.length;i++ ) {
 				var line:Array = lines[i];
 				for (var j:int = 1,len:int=line.length; j <len ;j++ ) {
@@ -71,28 +77,64 @@ package flShader {
 				}
 			}
 			
-			trace(constMemLen);
-			trace("tempconst");
-			
 			for each(v in tempConsts) {
 				var floats:Array = v.data as Array;
 				var floatsLen:int = floats.length;
+				var floatsLen2:int = floatsLen;
 				var have:Boolean = false;
-				for (var k:int = 0; k < floatsLen;k++ ) {
+				if(floatsLen<=4){
 					for (i = 0; i < constPool.length; i += 4 ) {
-						
+						for (j = 0; j <= 4-floatsLen;j++ ) {
+							have = true;
+							for (var k:int = 0; k < floatsLen; k++ ) {
+								if (floats[k]!=constPool[i*4+j+k]) {
+									have = false;
+									break;
+								}
+							}
+							if (have) {
+								break;
+							}
+						}
+						if (have) {
+							break;
+						}
 					}
+				}else {
+					// TODO : matrix3d >4 vec
 				}
 				if (have) {
-					
+					v.index = int(i / 4)+constMemLen;
+					if ((i%4) > 0||floatsLen2!=4) {
+						v.component = xyzw.substr(i%4,floatsLen);
+					}
 				}else {
+					if (floatsLen2>4) {
+						floatsLen2 = 4;
+					}
+					var startConstIndex:int = constPool.length;
+					while (true) {	
+						var startConstLineIndex:int = startConstIndex % 4;
+						if ((startConstLineIndex+floatsLen2)<=4) {
+							break;
+						}
+						startConstIndex++;
+					}
+					
 					for (k = 0; k < floatsLen; k++ ) {
-						constPool.push(floats[k]);
+						constPool[k + startConstIndex] = floats[k];
+					}
+					v.index = int(startConstIndex / 4)+constMemLen;
+					if (startConstLineIndex > 0||floatsLen2!=4) {
+						v.component = xyzw.substr(startConstLineIndex,floatsLen);
 					}
 				}
-				trace(floats,have);
+				//trace(floats,have);
 			}
-			trace("pool",constPool);
+			while ((constPool.length%4)!=0) {
+				constPool.push(0);
+			}
+			//trace("pool",constPool);
 		}
 		
 		public function createTempVar():Var {
