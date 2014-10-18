@@ -1,5 +1,6 @@
 package  
 {
+	import flash.display.Bitmap;
 	import flash.display.BitmapData;
 	import flash.display.Sprite;
 	import flash.display.StageAlign;
@@ -20,57 +21,55 @@ package
 	 * ...
 	 * @author lizhi
 	 */
-	public class TestGl3D extends Sprite
+	public class TestTerrain extends Sprite
 	{
 		private var view:View3D;
 		private var material:Material = new Material;
 		
-		private var teapot:Node3D
-		private var cube:Node3D;
-		private var sphere:Node3D;
+		private var terrain:Node3D
 		
 		private var aui:AttribSeter = new AttribSeter;
 		private var _useTexture:Boolean = true;
 		private var texture:TextureSet;
-		public function TestGl3D() 
+		public function TestTerrain() 
 		{
 			view = new View3D;
 			addChild(view);
 			
 			view.camera.z = -10;
-			view.light.z = -450;
+			view.camera.y = 0;
+			view.camera.recompose();
+			view.camera.matrix.appendRotation(30, Vector3D.X_AXIS);
+			view.camera.matrix = view.camera.matrix;
+			view.light.z = 800;
+			view.light.y = 200;
 			view.light.lightPower = 2;
+			view.light.ambient = Vector.<Number>([1.5,1.5,1.5,1.5]);
+			
+			[Embed(source = "assets/unityterraintexture/0.jpg")]var c:Class;
+			[Embed(source = "assets/unityterraintexture/Cliff (Layered Rock).jpg")]var c0:Class;
+			[Embed(source = "assets/unityterraintexture/GoodDirt.jpg")]var c1:Class;
+			[Embed(source = "assets/unityterraintexture/Grass (Hill).jpg")]var c2:Class;
+			[Embed(source = "assets/unityterraintexture/Grass&Rock.jpg")]var c3:Class;
+			
 			
 			var bmd:BitmapData = new BitmapData(128, 128, false, 0xff0000);
-			bmd.perlinNoise(30, 30, 2, 1, true, true);
+			bmd.perlinNoise(300, 300, 2, 1, true, true);
 			texture=new TextureSet(bmd);
 			material.textureSets = Vector.<TextureSet>([texture]);
-			material.color = Vector.<Number>([.6,.6,.6,1]);
+			material.color = Vector.<Number>([.6, .6, .6, 1]);
 			
 			if (true) {// test terrain
-				material.textureSets = Vector.<TextureSet>([texture, texture, texture, texture, texture]);
+				material.textureSets = Vector.<TextureSet>([getTerrainTexture(c), getTerrainTexture(c0), getTerrainTexture(c1), getTerrainTexture(c2), getTerrainTexture(c3)]);
 				material.shader = new TerrainPhongShader();
 			}
 			
-			teapot = new Node3D;
-			teapot.material = material;
-			teapot.drawable = Meshs.teapot(6);
-			view.scene.addChild(teapot);
-			teapot.scaleX = teapot.scaleY = teapot.scaleZ = .3;
+			terrain = new Node3D;
+			terrain.material = material;
+			terrain.drawable = Meshs.terrain();
+			terrain.scaleX=terrain.scaleY=terrain.scaleZ=20;
+			view.scene.addChild(terrain);
 			
-			cube = new Node3D;
-			cube.material = material;
-			cube.drawable = Meshs.cube();
-			view.scene.addChild(cube);
-			cube.scaleX = cube.scaleY = cube.scaleZ = .8;
-			cube.x = -2;
-			
-			sphere = new Node3D;
-			sphere.material = material;
-			sphere.drawable = Meshs.sphere(20, 20);
-			view.scene.addChild(sphere);
-			sphere.scaleX = sphere.scaleY = sphere.scaleZ = .5;
-			sphere.x = 2;
 			
 			addEventListener(Event.ENTER_FRAME, enterFrame);
 			stage.align = StageAlign.TOP_LEFT;
@@ -85,7 +84,11 @@ package
 			aui.bind(view.light, "ambient", AttribSeter.TYPE_VEC_COLOR);
 			aui.bind(material, "color", AttribSeter.TYPE_VEC_COLOR);
 			aui.bind(material, "alpha", AttribSeter.TYPE_NUM,new Point(.1,1));
-			aui.bind(this, "useTexture", AttribSeter.TYPE_BOOL);
+		}
+		
+		private function getTerrainTexture(c:Class):TextureSet {
+			var bmd:BitmapData =  (new c as Bitmap).bitmapData;
+			return new TextureSet(bmd);
 		}
 		
 		private function stage_resize(e:Event=null):void 
@@ -98,11 +101,11 @@ package
 		
 		private function enterFrame(e:Event):void 
 		{
-			teapot.rotationY=sphere.rotationY= cube.rotationY += Math.PI / 180;
-			teapot.rotationX = sphere.rotationX = cube.rotationX += 2 * Math.PI / 180;
+			//terrain.rotationY += Math.PI / 180;
+			//terrain.rotationX += 2 * Math.PI / 180;
 			
-			view.light.x = mouseX - stage.stageWidth / 2
-			view.light.y = stage.stageHeight / 2 - mouseY ;
+			//view.light.x = mouseX - stage.stageWidth / 2
+			//view.light.y = stage.stageHeight / 2 - mouseY ;
 			view.render();
 			
 			aui.update();

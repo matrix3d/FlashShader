@@ -16,10 +16,11 @@ package flShader {
 		public static var op:Var = new Var(Var.TYPE_OP);
 		public static var oc:Var = new Var(Var.TYPE_OC);
 		
-		private var optimizeFlag:Boolean = false;
-		
 		public var constPool:Array = [];
 		public var constMemLen:int = 0;
+		
+		public var invalid:Boolean = true;
+		public var _code:String;
 		public function FlShader(programType:String=Context3DProgramType.VERTEX) 
 		{
 			this.programType = programType;
@@ -30,9 +31,18 @@ package flShader {
 			}
 		}
 		
+		public function clear():void {
+			lines = [];
+			tempCounter = 0;
+			constPool = [];
+			constMemLen = 0;
+		}
+		
+		public function build():void {
+			
+		}
+		
 		public function optimize():void {
-			if (optimizeFlag) return;
-			optimizeFlag = true;
 			var xyzw:String = "xyzw";
 			var startEnds:Array = [];
 			var ttypePool:Array = [];
@@ -151,48 +161,54 @@ package flShader {
 		}
 		
 		public function get code():String {
-			optimize();
-			var txt:String = "";
-			for (var i:int = 0; i < lines.length;i++ ) {
-				var line:Array = lines[i];
-				txt += line[0];
-				for (var j:int = 1; j < line.length;j++ ) {
-					var v:Var = line[j];
-					var vtxt:String;
-					switch(v.type) {
-						case Var.TYPE_C:
-							vtxt = programTypeName+"c" + v.index;
-							break;
-						case Var.TYPE_FS:
-							vtxt = programTypeName+"s" + v.index;
-							break;
-						case Var.TYPE_OC:
-							vtxt = "oc";
-							break;
-						case Var.TYPE_OP:
-							vtxt = "op";
-							break;
-						case Var.TYPE_T:
-							vtxt = programTypeName+"t" + v.index;
-							break;
-						case Var.TYPE_V:
-							vtxt = "v" + v.index;
-							break;
-						case Var.TYPE_VA:
-							vtxt = programTypeName+"a" + v.index;
-							break;
+			if (invalid) {
+				invalid = false;
+				build();
+				optimize();
+				var txt:String = "";
+				for (var i:int = 0; i < lines.length;i++ ) {
+					var line:Array = lines[i];
+					txt += line[0];
+					for (var j:int = 1; j < line.length;j++ ) {
+						var v:Var = line[j];
+						var vtxt:String;
+						switch(v.type) {
+							case Var.TYPE_C:
+								vtxt = programTypeName+"c" + v.index;
+								break;
+							case Var.TYPE_FS:
+								vtxt = programTypeName+"s" + v.index;
+								break;
+							case Var.TYPE_OC:
+								vtxt = "oc";
+								break;
+							case Var.TYPE_OP:
+								vtxt = "op";
+								break;
+							case Var.TYPE_T:
+								vtxt = programTypeName+"t" + v.index;
+								break;
+							case Var.TYPE_V:
+								vtxt = "v" + v.index;
+								break;
+							case Var.TYPE_VA:
+								vtxt = programTypeName+"a" + v.index;
+								break;
+						}
+						txt += "," + vtxt;
+						if (v.component) {
+							txt += "." + v.component;
+						}
 					}
-					txt += "," + vtxt;
-					if (v.component) {
-						txt += "." + v.component;
+					if (line.flag) {
+						txt += ",<" + line.flag+">";
 					}
+					txt += "\n"
+					_code = txt;
 				}
-				if (line.flag) {
-					txt += ",<" + line.flag+">";
-				}
-				txt+="\n"
 			}
-			return txt;
+			
+			return _code;
 		}
 		
 		

@@ -8,7 +8,7 @@ package gl3d
 	{
 		public var color:Vector.<Number> = Vector.<Number>([.7,.7,.7,1]);
 		public var ambient:Vector.<Number> = Vector.<Number>([.1, .1, .1, .1]);
-		public var specularPower:Number = 500;
+		public var specularPower:Number = 50;
 		public var lightPower:Number = 1;
 		public function Light() 
 		{

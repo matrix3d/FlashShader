@@ -1,5 +1,6 @@
 package gl3d 
 {
+	import flash.display.BitmapData;
 	import flash.display3D.VertexBuffer3D;
 	import flash.geom.Vector3D;
 	/**
@@ -212,6 +213,27 @@ package gl3d
 					-1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0
 				])
 			);
+		}
+		
+		public static function terrain(w:int=64):Drawable3D {
+			var ins:Vector.<uint> = new Vector.<uint>;
+			var vin:Vector.<Number> = new Vector.<Number>;
+			var uv:Vector.<Number> = new Vector.<Number>;
+            var bmd:BitmapData = new BitmapData(w, w);
+            bmd.perlinNoise(20, 20, 3, 0, true, true);
+            for (var y:int = 0; y < w;y++ ) {
+                for (var x:int = 0; x < w;x++ ) {
+                    vin.push((x / w - .5), ((0xff&bmd.getPixel(x,y))/0xff-.5)*.1, (y / w - .5));
+                    uv.push(x/(w-1),y/(w-1));
+                    if (x!=w-1&&y!=w-1) {
+                        ins.push(y * w + x, y * w + x + 1, (y + 1) * w + x);
+                        ins.push(y * w + x + 1, (y + 1) * w + 1 + x, (y + 1) * w + x);
+                    }
+                }
+            }
+			var drawable:Drawable3D = createDrawable(ins, vin, uv,null);
+			drawable.norm = computeNormal(drawable);
+			return drawable;
 		}
 		
 		public static function teapot(divs:uint = 10):Drawable3D {
