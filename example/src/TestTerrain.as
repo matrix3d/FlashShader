@@ -41,10 +41,8 @@ package
 			view.camera.recompose();
 			view.camera.matrix.appendRotation(30, Vector3D.X_AXIS);
 			view.camera.matrix = view.camera.matrix;
-			view.light.z = 800;
 			view.light.y = 200;
 			view.light.lightPower = 2;
-			view.light.ambient = Vector.<Number>([1.5,1.5,1.5,1.5]);
 			
 			[Embed(source = "assets/unityterraintexture/0.jpg")]var c:Class;
 			[Embed(source = "assets/unityterraintexture/Cliff (Layered Rock).jpg")]var c0:Class;

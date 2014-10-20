@@ -7,8 +7,11 @@ package ui
 	import com.bit101.components.HUISlider;
 	import com.bit101.components.InputText;
 	import com.bit101.components.Label;
+	import com.bit101.components.Panel;
 	import com.bit101.components.Slider;
 	import com.bit101.components.VBox;
+	import com.bit101.components.Window;
+	import flash.display.Sprite;
 	import flash.events.Event;
 	import flash.geom.Point;
 	import flash.utils.Dictionary;
@@ -17,35 +20,38 @@ package ui
 	 * ...
 	 * @author lizhi
 	 */
-	public class AttribSeter extends VBox
+	public class AttribSeter extends Sprite
 	{
 		public static const TYPE_NUM:int = 0;
 		public static const TYPE_VEC_COLOR:int = 1;
 		public static const TYPE_BOOL:int = 2;
 		public var ui2target:Dictionary = new Dictionary;
 		public var targets:Array = [];
+		private var vbox:VBox;
+		private var panel:Window;
 		public function AttribSeter() 
 		{
-			
+			panel = new Window(this);
+			vbox = new VBox(panel,5,5);
 		}
 		
 		public function bind(target:Object, name:String, type:int,range:Point=null):void {
 			var nui:Object;
 			switch(type) {
 				case TYPE_NUM:
-					var hbox:HBox = new HBox(this);
+					var hbox:HBox = new HBox(vbox);
 					var slider:HUISlider = new HUISlider(hbox, 0, 0,"",onChange);
 					nui = slider;
 					slider.setSliderParams(range.x, range.y, 0);
 					break;
 				case TYPE_VEC_COLOR:
-					hbox = new HBox(this);
+					hbox = new HBox(vbox);
 					var color:ColorChooser = new ColorChooser(hbox, 0, 0, 0xffffff, onChange);
 					nui = color;
 					color.usePopup = true;
 					break;
 				case TYPE_BOOL:
-					hbox = new HBox(this);
+					hbox = new HBox(vbox);
 					var cb:CheckBox = new CheckBox(hbox, 0, 0,"",onChange);
 					nui = cb;
 					break;
@@ -56,6 +62,8 @@ package ui
 				ui2target[nui] = targets[targets.length - 1];
 				new Label(hbox, 0, 0, labelStr);
 			}
+			
+			panel.setSize(vbox.width+20, vbox.height+50);
 		}
 		
 		private function onChange(e:Event):void 

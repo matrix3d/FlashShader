@@ -47,11 +47,6 @@ package
 			material.textureSets = Vector.<TextureSet>([texture]);
 			material.color = Vector.<Number>([.6,.6,.6,1]);
 			
-			if (true) {// test terrain
-				material.textureSets = Vector.<TextureSet>([texture, texture, texture, texture, texture]);
-				material.shader = new TerrainPhongShader();
-			}
-			
 			teapot = new Node3D;
 			teapot.material = material;
 			teapot.drawable = Meshs.teapot(6);
