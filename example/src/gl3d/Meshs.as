@@ -215,15 +215,23 @@ package gl3d
 			);
 		}
 		
-		public static function terrain(w:int=64):Drawable3D {
+		public static function terrain(w:int=64,scale:Vector3D=null):Drawable3D {
 			var ins:Vector.<uint> = new Vector.<uint>;
 			var vin:Vector.<Number> = new Vector.<Number>;
 			var uv:Vector.<Number> = new Vector.<Number>;
             var bmd:BitmapData = new BitmapData(w, w);
-            bmd.perlinNoise(20, 20, 3, 0, true, true);
+            bmd.perlinNoise(15, 15, 3, 0, true, true);
             for (var y:int = 0; y < w;y++ ) {
-                for (var x:int = 0; x < w;x++ ) {
-                    vin.push((x / w - .5), ((0xff&bmd.getPixel(x,y))/0xff-.5)*.1, (y / w - .5));
+                for (var x:int = 0; x < w; x++ ) {
+					var px:Number = (x / w - .5);
+					var py:Number = ((0xff & bmd.getPixel(x, y)) / 0xff - .5) * .1;
+					var pz:Number=(y / w - .5)
+                    if (scale) {
+						px *= scale.x;
+						py *= scale.y;
+						pz *= scale.z;
+					}
+					vin.push(px,py ,pz );
                     uv.push(x/(w-1),y/(w-1));
                     if (x!=w-1&&y!=w-1) {
                         ins.push(y * w + x, y * w + x + 1, (y + 1) * w + x);

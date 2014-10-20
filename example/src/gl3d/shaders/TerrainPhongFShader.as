@@ -15,13 +15,14 @@ package gl3d.shaders
 		override public function getDiffColor():Var {
 			var uv:Var = V(3);
 			var scaledUV:Var = mul(V(3), F([10]));
-			var map:Var = tex(uv, FS(), null, ["linear"]);
+			//repeat,miplinear
+			var flags:Array = ["repeat","linear"/*,"miplinear"*/];
+			var map:Var = tex(uv, FS(), null, flags);
 			mov(sub2([F([1]),map.x,map.y,map.z]),null,map.w);
-			var flags:Array = ["repeat"];
 			var diffColor0:Var = tex(scaledUV, FS(1),null,flags);
 			var diffColor1:Var = tex(scaledUV, FS(2),null,flags);
 			var diffColor2:Var = tex(scaledUV, FS(3),null,flags);
-			var diffColor3:Var = tex(scaledUV, FS(4), null, ["repeat"]);
+			var diffColor3:Var = tex(scaledUV, FS(4), null, flags);
 			var diffColor:Var=
 						add2([
 							mul(diffColor0,map.x),
