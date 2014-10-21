@@ -6,14 +6,17 @@ package
 	import flash.display.StageAlign;
 	import flash.display.StageScaleMode;
 	import flash.events.Event;
+	import flash.events.MouseEvent;
 	import flash.geom.Point;
 	import flash.geom.Vector3D;
+	import flash.text.TextField;
 	import flash.utils.ByteArray;
 	import flash.utils.getTimer;
 	import gl3d.Drawable3D;
 	import gl3d.Material;
 	import gl3d.Meshs;
 	import gl3d.Node3D;
+	import gl3d.pick.TerrainPicking;
 	import gl3d.shaders.TerrainPhongShader;
 	import gl3d.TextureSet;
 	import gl3d.View3D;
@@ -28,10 +31,12 @@ package
 		private var material:Material = new Material;
 		
 		private var terrain:Node3D
+		private var cube:Node3D;
 		
 		private var aui:AttribSeter = new AttribSeter;
 		private var _useTexture:Boolean = true;
 		private var texture:TextureSet;
+		private var debug:TextField = new TextField;
 		public function TestTerrain() 
 		{
 			view = new View3D;
@@ -71,10 +76,6 @@ package
 			byte.position = 0;
 			bmd.setPixels(bmd.rect, byte);
 			
-			/*var map:Bitmap=new Bitmap(bmd)
-			addChild(map);
-			map.x = 400;*/
-			
 			texture=new TextureSet(bmd);
 			material.textureSets = Vector.<TextureSet>([texture]);
 			material.color = Vector.<Number>([.6, .6, .6, 1]);
@@ -88,7 +89,12 @@ package
 			terrain.material = material;
 			terrain.drawable = Meshs.terrain(64,new Vector3D(50,50,50));
 			view.scene.addChild(terrain);
+			//terrain.picking = new TerrainPicking(terrain);
 			
+			cube = new Node3D;
+			cube.material = new Material
+			cube.drawable = Meshs.cube();
+			view.scene.addChild(cube);
 			
 			addEventListener(Event.ENTER_FRAME, enterFrame);
 			stage.align = StageAlign.TOP_LEFT;
@@ -96,13 +102,33 @@ package
 			stage.addEventListener(Event.RESIZE, stage_resize);
 			stage_resize();
 			
-			/*addChild(aui);
-			aui.bind(view.light, "specularPower", AttribSeter.TYPE_NUM,new Point(1,100));
-			aui.bind(view.light, "lightPower", AttribSeter.TYPE_NUM,new Point(.5,5));
-			aui.bind(view.light, "color", AttribSeter.TYPE_VEC_COLOR);
-			aui.bind(view.light, "ambient", AttribSeter.TYPE_VEC_COLOR);
-			aui.bind(material, "color", AttribSeter.TYPE_VEC_COLOR);
-			aui.bind(material, "alpha", AttribSeter.TYPE_NUM,new Point(.1,1));*/
+			stage.addEventListener(MouseEvent.CLICK, stage_click);
+			addChild(debug);
+			debug.autoSize = "left";
+			debug.background = true;
+			debug.backgroundColor = 0xffffff;
+		}
+		
+		private function stage_click(e:MouseEvent):void 
+		{
+			var rayOrigin:Vector3D = new Vector3D;
+			var rayDirection:Vector3D = new Vector3D;
+			var pix:Vector3D = new Vector3D;
+			view.camera.computePickRayDirectionMouse(mouseX, mouseY, stage.stageWidth, stage.stageHeight, rayOrigin, rayDirection);
+			
+			var time:Number = getTimer();
+			
+			if (terrain.rayMeshTest(rayOrigin, rayDirection,pix)) {
+				//var tpick:TerrainPicking = new TerrainPicking(terrain);
+				//trace(tpick.getHeight(pix.x,pix.z),pix.y);
+				//pix.y = tpick.getHeight(pix.x, pix.z);
+				cube.x = pix.x;
+				cube.y = pix.y;
+				cube.z = pix.z;
+			}
+			debug.text = (getTimer() - time) + "ms";
+			
+			
 		}
 		
 		private function getTerrainTexture(c:Class):TextureSet {
@@ -115,16 +141,12 @@ package
 			view.invalid = true;
 			var w:Number = stage.stageWidth;
 			var h:Number = stage.stageHeight;
-			view.camera.perspective.perspectiveLH(w/400, h/400, 3.3, 1000);
+			
+			view.camera.perspective.perspectiveFieldOfViewLH(Math.PI / 4, stage.stageWidth / stage.stageHeight, 1, 4000);
 		}
 		
 		private function enterFrame(e:Event):void 
 		{
-			//terrain.rotationY += Math.PI / 180;
-			//terrain.rotationX += 2 * Math.PI / 180;
-			
-			//view.light.x = mouseX - stage.stageWidth / 2
-			//view.light.y = stage.stageHeight / 2 - mouseY ;
 			view.render();
 			
 			aui.update();

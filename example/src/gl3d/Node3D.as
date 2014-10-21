@@ -3,6 +3,9 @@ package gl3d
 	import flash.display3D.Context3D;
 	import flash.geom.Matrix3D;
 	import flash.geom.Vector3D;
+	import flash.utils.getQualifiedClassName;
+	import gl3d.pick.AS3Picking;
+	import gl3d.pick.Picking;
 	/**
 	 * ...
 	 * @author lizhi
@@ -15,10 +18,12 @@ package gl3d
 		public var children:Vector.<Node3D> = new Vector.<Node3D>;
 		public var drawable:Drawable3D;
 		public var material:Material;
-		private var trs:Vector.<Vector3D> = Vector.<Vector3D>([new Vector3D(),new Vector3D(),new Vector3D(1,1,1)]);
-		public function Node3D() 
+		public var name:String;
+		private var trs:Vector.<Vector3D> = Vector.<Vector3D>([new Vector3D(), new Vector3D(), new Vector3D(1, 1, 1)]);
+		public var picking:Picking=new AS3Picking;
+		public function Node3D(name:String=null) 
 		{
-			
+			this.name = name;
 		}
 		
 		public function addChild(n:Node3D):void {
@@ -33,9 +38,9 @@ package gl3d
 				world.identity();
 			}
 			world.append(matrix);
-			for each(var c:Node3D in children) {
+			/*for each(var c:Node3D in children) {
 				c.update(view,camera);
-			}
+			}*/
 			
 			if (material) {
 				material.draw(this,camera,view);
@@ -154,6 +159,18 @@ package gl3d
 		{
 			trs[2].z = value;
 			recompose()
+		}
+		
+		public function rayMeshTest( rayOrigin:Vector3D, rayDirection:Vector3D,pixelPos:Vector3D=null ):Boolean
+		{
+			if (picking) {
+				return picking.pick(this,rayOrigin, rayDirection, pixelPos);
+			}
+			return false;
+		}
+		
+		public function toString():String {
+			return getQualifiedClassName(this).split("::")[1]+":"+name;
 		}
 		
 	}

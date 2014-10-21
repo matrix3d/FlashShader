@@ -5,6 +5,7 @@ package
 	import flash.display.StageAlign;
 	import flash.display.StageScaleMode;
 	import flash.events.Event;
+	import flash.events.MouseEvent;
 	import flash.geom.Point;
 	import flash.geom.Vector3D;
 	import flash.utils.getTimer;
@@ -81,6 +82,23 @@ package
 			aui.bind(material, "color", AttribSeter.TYPE_VEC_COLOR);
 			aui.bind(material, "alpha", AttribSeter.TYPE_NUM,new Point(.1,1));
 			aui.bind(this, "useTexture", AttribSeter.TYPE_BOOL);
+			
+			
+			stage.addEventListener(MouseEvent.CLICK, stage_click);
+		}
+		
+		private function stage_click(e:MouseEvent):void 
+		{
+			trace();
+			var rayOrigin:Vector3D = new Vector3D;
+			var rayDirection:Vector3D = new Vector3D;
+			var pixelPos:Vector3D = new Vector3D;
+			
+			
+			view.camera.computePickRayDirectionMouse(mouseX,mouseY,stage.stageWidth,stage.stageHeight,rayOrigin, rayDirection, pixelPos);
+			for each(var node:Node3D in view.collects) {
+				trace(node,node.rayMeshTest(rayOrigin, rayDirection));
+			}
 		}
 		
 		private function stage_resize(e:Event=null):void 
@@ -88,7 +106,7 @@ package
 			view.invalid = true;
 			var w:Number = stage.stageWidth;
 			var h:Number = stage.stageHeight;
-			view.camera.perspective.perspectiveLH(w/400, h/400, 3.3, 1000);
+			view.camera.perspective.perspectiveFieldOfViewLH(Math.PI / 4, stage.stageWidth / stage.stageHeight, 1, 4000);
 		}
 		
 		private function enterFrame(e:Event):void 

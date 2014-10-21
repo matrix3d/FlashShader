@@ -13,10 +13,11 @@ package gl3d
 	public class View3D extends Sprite
 	{
 		public var context:Context3D;
-		public var scene:Node3D = new Node3D;
+		public var scene:Node3D = new Node3D("scene");
 		public var camera:Camera3D = new Camera3D;
 		public var light:Light = new Light;
 		public var invalid:Boolean = true;
+		public var collects:Vector.<Node3D> = new Vector.<Node3D>;
 		public function View3D() 
 		{
 			scene.addChild(camera);
@@ -46,8 +47,19 @@ package gl3d
 				if(invalid)
 					context.configureBackBuffer(stage.stageWidth, stage.stageHeight, 2);
 				context.clear();
-				scene.update(this,camera);
+				collects.length = 0;
+				collect(scene);
+				for each(var node:Node3D in collects) {
+					node.update(this,camera);
+				}
 				context.present();
+			}
+		}
+		
+		private function collect(node:Node3D):void {
+			collects.push(node);
+			for each(var c:Node3D in node.children) {
+				collect(c);
 			}
 		}
 	}

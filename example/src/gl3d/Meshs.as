@@ -223,9 +223,9 @@ package gl3d
             bmd.perlinNoise(15, 15, 3, 0, true, true);
             for (var y:int = 0; y < w;y++ ) {
                 for (var x:int = 0; x < w; x++ ) {
-					var px:Number = (x / w - .5);
+					var px:Number = (x / (w-1) - .5);
 					var py:Number = ((0xff & bmd.getPixel(x, y)) / 0xff - .5) * .1;
-					var pz:Number=(y / w - .5)
+					var pz:Number=(y / (w-1) - .5)
                     if (scale) {
 						px *= scale.x;
 						py *= scale.y;
