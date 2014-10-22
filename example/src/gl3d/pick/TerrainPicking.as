@@ -79,14 +79,13 @@ package gl3d.pick
 				var sy:Number = localRayOrigin.y + localRayDirection.y * scale;
 				var sz:Number = localRayOrigin.z + localRayDirection.z * scale;
 			}
-			
 			scale = 0;
 			if (localRayDirection.x!=0) {
 				scale = dxEnd / localRayDirection.x;
 			}
 			if (localRayDirection.z!=0) {
 				temp = dzEnd / localRayDirection.z;
-				if (temp>scale) {
+				if (temp<scale) {
 					scale = temp;
 				}
 			}
@@ -129,17 +128,11 @@ package gl3d.pick
 		}
 		
 		public function getHeight(localX:Number, localY:Number):Number {
-			if (localX==width/2) {
-				localX -= .000001;
-			}
-			if (localY==width/2) {
-				localY -= .000001;
-			}
 			var x:Number = (localX + width / 2) * (size-1) / width;
 			var z:Number = (localY + width / 2) * (size-1) / width;
 			var x0:int = x;
 			var y0:int = z;
-			if (x0 >= 0 && y0 >= 0 && x0 < (size-1) && y0 < (size-1)) {
+			if (x0 >= 0 && y0 >= 0 && x0 < size && y0 < size) {
 				var x1:int = x0 + 1;
 				var y1:int = z + 1;
 				var dx0:Number =  x - x0;
@@ -148,10 +141,10 @@ package gl3d.pick
 				var dy1:Number = 1 - dy0;
 				
 				var i:int = x0 + y0 * size;
-				var c0:Number = xyz[i*3+1];
-				var c1:Number = xyz[(i+size)*3+1];
-				var c2:Number = xyz[(i+1)*3+1];
-				var c3:Number = xyz[(i + 1 + size)*3+1];
+				var c0:Number = xyz[i*3+1];// x0 y0
+				var c1:Number = y1<size?xyz[(i+size)*3+1]:0;//x0 y1
+				var c2:Number = x1<size?xyz[(i+1)*3+1]:0;//x1 y0
+				var c3:Number = (x1<size&&y1<size)?xyz[(i + 1 + size)*3+1]:0;//x1 y1
 				
 				c0 *= dx1 * dy1;
 				c1 *= dx1 * dy0;
@@ -159,12 +152,9 @@ package gl3d.pick
 				c3 *= dx0 * dy0;
 				
 				c0 += c1 + c2 + c3;
-				
 				return c0;
 			}
 			return Number.NaN;
 		}
-		
 	}
-
 }
