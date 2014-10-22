@@ -80,16 +80,14 @@ package
 			material.textureSets = Vector.<TextureSet>([texture]);
 			material.color = Vector.<Number>([.6, .6, .6, 1]);
 			
-			if (true) {// test terrain
-				material.textureSets = Vector.<TextureSet>([texture, getTerrainTexture(c0), getTerrainTexture(c1), getTerrainTexture(c2), getTerrainTexture(c3)]);
-				material.shader = new TerrainPhongShader();
-			}
+			material.textureSets = Vector.<TextureSet>([texture, getTerrainTexture(c0), getTerrainTexture(c1), getTerrainTexture(c2), getTerrainTexture(c3)]);
+			material.shader = new TerrainPhongShader();
 			
 			terrain = new Node3D;
 			terrain.material = material;
 			terrain.drawable = Meshs.terrain(64,new Vector3D(50,50,50));
 			view.scene.addChild(terrain);
-			//terrain.picking = new TerrainPicking(terrain);
+			terrain.picking = new TerrainPicking(terrain);
 			
 			cube = new Node3D;
 			cube.material = new Material
@@ -102,7 +100,7 @@ package
 			stage.addEventListener(Event.RESIZE, stage_resize);
 			stage_resize();
 			
-			stage.addEventListener(MouseEvent.CLICK, stage_click);
+			stage.addEventListener(MouseEvent.MOUSE_MOVE, stage_click);
 			addChild(debug);
 			debug.autoSize = "left";
 			debug.background = true;
@@ -116,7 +114,11 @@ package
 			var pix:Vector3D = new Vector3D;
 			view.camera.computePickRayDirectionMouse(mouseX, mouseY, stage.stageWidth, stage.stageHeight, rayOrigin, rayDirection);
 			
-			var time:Number = getTimer();
+			/*var time:Number = getTimer();
+			var c:int = 1000;
+			while(c-->0)
+			terrain.rayMeshTest(rayOrigin, rayDirection,pix)
+			debug.text = (getTimer() - time) + "ms";*/
 			
 			if (terrain.rayMeshTest(rayOrigin, rayDirection,pix)) {
 				//var tpick:TerrainPicking = new TerrainPicking(terrain);
@@ -126,7 +128,6 @@ package
 				cube.y = pix.y;
 				cube.z = pix.z;
 			}
-			debug.text = (getTimer() - time) + "ms";
 			
 			
 		}
