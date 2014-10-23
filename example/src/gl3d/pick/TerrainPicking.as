@@ -15,7 +15,6 @@ package gl3d.pick
 		private var width:Number;
 		
 		private var inv:Matrix3D = new Matrix3D;
-		private var cen:Vector3D =new Vector3D;
 		public function TerrainPicking(node:Node3D) 
 		{
 			this.node = node;

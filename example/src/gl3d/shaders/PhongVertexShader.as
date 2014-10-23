@@ -4,19 +4,20 @@ package gl3d.shaders
 	import flash.display3D.textures.Texture;
 	import flShader.FlShader;
 	import flShader.Var;
+	import gl3d.Material;
 	import gl3d.TextureSet;
 	/**
 	 * ...
 	 * @author lizhi
 	 */
-	public class PhongVShader extends FlShader
+	public class PhongVertexShader extends FlShader
 	{
-		private var texture:TextureSet;
+		private var material:Material;
 		
-		public function PhongVShader(texture:TextureSet=null) 
+		public function PhongVertexShader(material:Material) 
 		{
 			super(Context3DProgramType.VERTEX);
-			this.texture = texture;
+			this.material = material;
 		}
 		
 		override public function build():void {
@@ -37,7 +38,7 @@ package gl3d.shaders
 			var viewNormal:Var = m33(norm, model);
 			mov(viewNormal, null, V(1));
 			
-			if (texture) {
+			if (material.textureSets.length>0) {
 				mov(uv, null, V(3));
 			}
 		}

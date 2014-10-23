@@ -28,18 +28,18 @@ package gl3d.shaders
 			
 		}
 		
-		public function getProgram():ProgramSet {
-			vs = getVertexShader();
-			fs = getFragmentShader(); 
+		public function getProgram(material:Material):ProgramSet {
+			vs = getVertexShader(material);
+			fs = getFragmentShader(material); 
 			programSet = new ProgramSet(vs.code, fs.code);
 			return programSet;
 		}
 		
-		public function getVertexShader():FlShader {
+		public function getVertexShader(material:Material):FlShader {
 			return null;
 		}
 		
-		public function getFragmentShader():FlShader {
+		public function getFragmentShader(material:Material):FlShader {
 			return null;
 		}
 		
@@ -54,7 +54,8 @@ package gl3d.shaders
 		public function update(material:Material):void 
 		{
 			if (invalid) {
-				programSet = getProgram();
+				programSet = getProgram(material);
+				invalid = false;
 			}
 			
 			if(textureSets)

@@ -14,32 +14,28 @@ package gl3d.shaders
 	 * ...
 	 * @author lizhi
 	 */
-	public class PhongShader extends GLShader
+	public class PhongGLShader extends GLShader
 	{
-		public var texture:TextureSet;
-		
-		public function PhongShader(texture:TextureSet=null) 
+		public function PhongGLShader() 
 		{
-			this.texture = texture;
 			textureSets = new Vector.<TextureSet>;
 			buffSets = new Vector.<VertexBufferSet>;
 		}
 		
-		override public function getVertexShader():FlShader {
-			return new PhongVShader(texture);
+		override public function getVertexShader(material:Material):FlShader {
+			return new PhongVertexShader(material);
 		}
 		
-		override public function getFragmentShader():FlShader {
-			return new PhongFShader(texture);
+		override public function getFragmentShader(material:Material):FlShader {
+			return new PhongFragmentShader(material);
 		}
 		
 		override public function preUpdate(material:Material):void {
 			super.preUpdate(material);
-			texture = material.textureSets.length?material.textureSets[0]:null;
-			textureSets[0] = texture;
+			textureSets= material.textureSets;
 			buffSets[0] = material.node.drawable.pos;
 			buffSets[1] = material.node.drawable.norm;
-			buffSets[2] =texture?material.node.drawable.uv:null;
+			buffSets[2] =textureSets.length?material.node.drawable.uv:null;
 		}
 		
 		override public function update(material:Material):void 

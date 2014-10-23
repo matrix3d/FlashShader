@@ -11,9 +11,8 @@ package
 	import flash.utils.getTimer;
 	import gl3d.Drawable3D;
 	import gl3d.Material;
-	import gl3d.Meshs;
+	import gl3d.meshs.Meshs;
 	import gl3d.Node3D;
-	import gl3d.shaders.TerrainPhongShader;
 	import gl3d.TextureSet;
 	import gl3d.View3D;
 	import ui.AttribSeter;
@@ -41,6 +40,9 @@ package
 			view.camera.z = -10;
 			view.light.z = -450;
 			view.light.lightPower = 2;
+			
+			//view.light.lightAble = false;
+			//view.light.lightPowerAble = false;
 			
 			var bmd:BitmapData = new BitmapData(128, 128, false, 0xff0000);
 			bmd.perlinNoise(30, 30, 2, 1, true, true);
@@ -89,7 +91,6 @@ package
 		
 		private function stage_click(e:MouseEvent):void 
 		{
-			trace();
 			var rayOrigin:Vector3D = new Vector3D;
 			var rayDirection:Vector3D = new Vector3D;
 			var pixelPos:Vector3D = new Vector3D;
@@ -111,6 +112,8 @@ package
 		
 		private function enterFrame(e:Event):void 
 		{
+			if(view.context)
+			view.context.enableErrorChecking = true;
 			teapot.rotationY=sphere.rotationY= cube.rotationY += Math.PI / 180;
 			teapot.rotationX = sphere.rotationX = cube.rotationX += 2 * Math.PI / 180;
 			

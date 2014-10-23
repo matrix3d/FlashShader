@@ -5,7 +5,7 @@ package gl3d
 	import flash.geom.Vector3D;
 	import flShader.FlShader;
 	import gl3d.shaders.GLShader;
-	import gl3d.shaders.PhongShader;
+	import gl3d.shaders.PhongGLShader;
 	/**
 	 * ...
 	 * @author lizhi
@@ -24,7 +24,7 @@ package gl3d
 		
 		public function Material() 
 		{
-			shader = new PhongShader(textureSets.length?textureSets[0]:null);
+			shader = new PhongGLShader();
 		}
 		
 		public function draw(node:Node3D,camera:Camera3D,view:View3D):void {

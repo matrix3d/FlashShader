@@ -16,7 +16,7 @@ package flash3d {
 			
 		}
 		
-		public function render(g:Graphics):void {
+		public function render(g:Graphics, showNode:Boolean = true ):void {
 			g.clear();
 			g.lineStyle(0);
 			var faces:Array = [];
@@ -40,6 +40,7 @@ package flash3d {
 						vc.y += offset.y;
 						face.scale+= vc.w;
 						face.out[i] = vc;
+						if(showNode)
 						g.drawCircle(vc.x, vc.y, vc.w / 10);
 					}
 					faces.push(face);

@@ -14,10 +14,10 @@ package
 	import flash.utils.getTimer;
 	import gl3d.Drawable3D;
 	import gl3d.Material;
-	import gl3d.Meshs;
+	import gl3d.meshs.Meshs;
 	import gl3d.Node3D;
 	import gl3d.pick.TerrainPicking;
-	import gl3d.shaders.TerrainPhongShader;
+	import gl3d.shaders.TerrainPhongGLShader;
 	import gl3d.TextureSet;
 	import gl3d.View3D;
 	import ui.AttribSeter;
@@ -81,7 +81,7 @@ package
 			material.color = Vector.<Number>([.6, .6, .6, 1]);
 			
 			material.textureSets = Vector.<TextureSet>([texture, getTerrainTexture(c0), getTerrainTexture(c1), getTerrainTexture(c2), getTerrainTexture(c3)]);
-			material.shader = new TerrainPhongShader();
+			material.shader = new TerrainPhongGLShader();
 			
 			terrain = new Node3D;
 			terrain.material = material;

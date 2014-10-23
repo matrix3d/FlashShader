@@ -19,7 +19,10 @@ package gl3d
 		{
 			this.fcode = fcode;
 			this.vcode = vcode;
-			
+			trace("\nvcode:",vcode.split("\n").length);
+			trace(vcode);
+			trace("\nfcode",fcode.split("\n").length);
+			trace(fcode);
 		}
 		
 		public function update(context:Context3D):void 

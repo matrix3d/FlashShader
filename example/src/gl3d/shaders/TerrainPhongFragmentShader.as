@@ -1,15 +1,16 @@
 package gl3d.shaders 
 {
 	import flShader.Var;
+	import gl3d.Material;
 	/**
 	 * ...
 	 * @author lizhi
 	 */
-	public class TerrainPhongFShader extends PhongFShader
+	public class TerrainPhongFragmentShader extends PhongFragmentShader
 	{
-		
-		public function TerrainPhongFShader() 
+		public function TerrainPhongFragmentShader(material:Material) 
 		{
+			super(material);
 		}
 
 		override public function getDiffColor():Var {

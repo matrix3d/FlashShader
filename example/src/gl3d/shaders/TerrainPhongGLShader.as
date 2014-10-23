@@ -6,16 +6,16 @@ package gl3d.shaders
 	 * ...
 	 * @author lizhi
 	 */
-	public class TerrainPhongShader extends PhongShader
+	public class TerrainPhongGLShader extends PhongGLShader
 	{
 		
-		public function TerrainPhongShader() 
+		public function TerrainPhongGLShader() 
 		{
 			
 		}
 		
-		override public function getFragmentShader():FlShader {
-			return new TerrainPhongFShader();
+		override public function getFragmentShader(material:Material):FlShader {
+			return new TerrainPhongFragmentShader(material);
 		}
 		
 		override public function preUpdate(material:Material):void {
