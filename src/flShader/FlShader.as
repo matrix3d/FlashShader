@@ -1,6 +1,7 @@
 package flShader {
 	import flash.display3D.Context3DProgramType;
 	import flash.geom.Matrix3D;
+	import flash.utils.ByteArray;
 	import flShader.Var;
 	/**
 	 * ...
@@ -11,8 +12,7 @@ package flShader {
 		public var lines:Array = [];
 		private var tempCounter:int = 0;
 		
-		private var programType:String;
-		private var programTypeName:String;
+		public var programType:String;
 		public static var op:Var = new Var(Var.TYPE_OP);
 		public static var oc:Var = new Var(Var.TYPE_OC);
 		
@@ -20,15 +20,11 @@ package flShader {
 		public var constMemLen:int = 0;
 		
 		public var invalid:Boolean = true;
-		public var _code:String;
-		public function FlShader(programType:String=Context3DProgramType.VERTEX) 
+		public var creator:Creator;
+		public function FlShader(programType:String=Context3DProgramType.VERTEX,creator:Creator=null) 
 		{
+			this.creator=creator||new AGALCodeCreator;
 			this.programType = programType;
-			if (programType==Context3DProgramType.VERTEX) {
-				programTypeName = "v";
-			}else {
-				programTypeName = "f";
-			}
 		}
 		
 		public function clear():void {
@@ -165,53 +161,20 @@ package flShader {
 				invalid = false;
 				build();
 				optimize();
-				var txt:String = "";
-				for (var i:int = 0; i < lines.length;i++ ) {
-					var line:Array = lines[i];
-					txt += line[0];
-					for (var j:int = 1; j < line.length;j++ ) {
-						var v:Var = line[j];
-						var vtxt:String;
-						switch(v.type) {
-							case Var.TYPE_C:
-								vtxt = programTypeName+"c" + v.index;
-								break;
-							case Var.TYPE_FS:
-								vtxt = programTypeName+"s" + v.index;
-								break;
-							case Var.TYPE_OC:
-								vtxt = "oc";
-								break;
-							case Var.TYPE_OP:
-								vtxt = "op";
-								break;
-							case Var.TYPE_T:
-								vtxt = programTypeName+"t" + v.index;
-								break;
-							case Var.TYPE_V:
-								vtxt = "v" + v.index;
-								break;
-							case Var.TYPE_VA:
-								vtxt = programTypeName+"a" + v.index;
-								break;
-						}
-						txt += "," + vtxt;
-						if (v.component) {
-							txt += "." + v.component;
-						}
-					}
-					if (line.flag) {
-						txt += ",<" + line.flag+">";
-					}
-					txt += "\n"
-					_code = txt;
-				}
+				creator.creat(this);
 			}
-			
-			return _code;
+			return creator.data + "";
 		}
 		
-		
+		public function get code2():ByteArray {
+			if (invalid) {
+				invalid = false;
+				build();
+				optimize();
+				creator.creat(this);
+			}
+			return creator.data as ByteArray;
+		}
 		
 		public function f(op:String, a:Var = null, b:Var = null, t:Var = null, flag:Array = null, numParam:int = 3 ,component:String=null):Var {
 			if(numParam>1)

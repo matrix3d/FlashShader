@@ -3,6 +3,8 @@ package gl3d.shaders
 	import flash.display3D.Context3D;
 	import flash.display3D.Context3DProgramType;
 	import flash.geom.Vector3D;
+	import flash.utils.ByteArray;
+	import flShader.AGALByteCreator;
 	import flShader.FlShader;
 	import gl3d.Camera3D;
 	import gl3d.Material;
@@ -31,7 +33,9 @@ package gl3d.shaders
 		public function getProgram(material:Material):ProgramSet {
 			vs = getVertexShader(material);
 			fs = getFragmentShader(material); 
-			programSet = new ProgramSet(vs.code, fs.code);
+			vs.creator = new AGALByteCreator;
+			fs.creator = new AGALByteCreator;
+			programSet = new ProgramSet(vs.code2 as ByteArray, fs.code2 as ByteArray);
 			return programSet;
 		}
 		

@@ -1,6 +1,10 @@
 package  
 {
+	import com.adobe.utils.extended.AGALMiniAssembler;
 	import flash.display3D.Context3DProgramType;
+	import flash.utils.ByteArray;
+	import flash.utils.getTimer;
+	import flShader.AGALByteCreator;
 	import flShader.FlShader;
 	import flShader.Var;
 	/**
@@ -11,17 +15,22 @@ package
 	{
 		public function MyShader() 
 		{
-			super(Context3DProgramType.FRAGMENT);
-			var v0:Var = V();
-			var c0:Var = C();
-			var c1:Var = C(1);
-			add(abs(ddx(v0)),abs(ddy(v0)));
-			tex(F([1]), F([1]), c1);
-			tex(F([2]), F([3]), c1);
-			tex(F([2,3,3,3]), F([3]), c1);
+			super(Context3DProgramType.VERTEX);
+			var model:Var = C();
+			var view:Var = C(4);
+			var perspective:Var = C(8);
+			var lightPos:Var = mov(C(12));
+			var pos:Var = VA();
+			var norm:Var = VA(1);
+			var uv:Var = VA(2);
+			var worldPos:Var = m44(pos, model);
+			var viewPos:Var = m44(worldPos, view);
+			m44(viewPos, perspective, op);
 			
-			trace(code);
-			trace(code);
+			var eyeDirection:Var = neg(viewPos, null);
+			mov(eyeDirection, null, V(2));
+			var viewPosLight:Var = add(m44(lightPos, view),eyeDirection,V());
+			var viewNormal:Var = m33(norm, model);
 		}
 	}
 }
