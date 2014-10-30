@@ -15,7 +15,7 @@ package flShader {
 		
 		public var index:int;
 		public var type:int;
-		public var component:String;
+		public var component:Object;
 		
 		public var data:Object;
 		public var constLenght:int = 1;
@@ -23,7 +23,7 @@ package flShader {
 			this.type = type;
 			this.index = index;
 		}
-		public function c(value:String):Var {
+		public function c(value:Object):Var {
 			var v:Var = new Var(type, index);
 			v.component = value;
 			return v;

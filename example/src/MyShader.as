@@ -16,7 +16,8 @@ package
 		public function MyShader() 
 		{
 			super(Context3DProgramType.VERTEX);
-			var model:Var = C();
+			add(C(),C().c(VA(1).x),op);
+			/*var model:Var = C();
 			var view:Var = C(4);
 			var perspective:Var = C(8);
 			var lightPos:Var = mov(C(12));
@@ -26,11 +27,12 @@ package
 			var worldPos:Var = m44(pos, model);
 			var viewPos:Var = m44(worldPos, view);
 			m44(viewPos, perspective, op);
+			mov(C().c(uv.x));
 			
 			var eyeDirection:Var = neg(viewPos, null);
 			mov(eyeDirection, null, V(2));
 			var viewPosLight:Var = add(m44(lightPos, view),eyeDirection,V());
-			var viewNormal:Var = m33(norm, model);
+			var viewNormal:Var = m33(norm, model);*/
 		}
 	}
 }

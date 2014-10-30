@@ -4,8 +4,10 @@ package
 	import flash.display.Sprite;
 	import flash.events.Event;
 	import flash.text.TextField;
+	import flash.utils.ByteArray;
 	import flash.utils.getTimer;
 	import flShader.AGALByteCreator;
+	//import flShader.AGALByteCreator;
 	import flShader.FlShader;
 	
 	/**
@@ -29,6 +31,8 @@ package
 			var shader:MyShader = new MyShader;
 			var code:String = shader.code;
 			
+			trace(code);
+			
 			var max:int = 1000;
 			
 			var c:int = max;
@@ -40,6 +44,8 @@ package
 			debug.appendText(max+"\n");
 			debug.appendText((getTimer() - time)+"ms,AGALMiniAssembler\n");
 			
+			tracebyte(assembler.agalcode);
+			
 			var bytecreator:AGALByteCreator = new AGALByteCreator(2);
 			c = max;
 			time = getTimer();
@@ -48,7 +54,16 @@ package
 				shader.creator = bytecreator;
 				shader.code2
 			}
+			tracebyte(bytecreator.data as ByteArray);
 			debug.appendText((getTimer() - time)+"ms,FLShader\n");
+		}
+		
+		private function tracebyte(byte:ByteArray):void {
+			var a:Array = [];
+			for (var i:int = 0; i < byte.length;i++ ) {
+				a.push(byte[i]);
+			}
+			trace(a);
 		}
 		
 	}

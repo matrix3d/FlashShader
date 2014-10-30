@@ -97,12 +97,7 @@ package flShader
 				{
 					var v:Var = line[j+1];
 					
-					var isRelative:Boolean = false;
-					var relreg:Array = []//regs[ j ].match( /\[.*\]/ig );
-					if ( relreg && relreg.length > 0 )
-					{
-						isRelative = true;
-					}
+					var isRelative:Boolean = v.component is Var
 					
 					var regFound:Register = REGMAP[ programTypeName+v.type ];
 					
@@ -148,7 +143,8 @@ package flShader
 					}
 					
 					var regmask:uint		= 0;
-					var maskmatch:String		= v.component;
+					if(v.component is String)
+					var maskmatch:String		= v.component as String;
 					var isDest:Boolean		= ( j == 0 && !( opFound.flags & OP_NO_DEST ) );
 					var isSampler:Boolean	= ( j == 2 && ( opFound.flags & OP_SPECIAL_TEX ) );
 					var reltype:uint		= 0;
@@ -188,8 +184,8 @@ package flShader
 					
 					if ( isRelative )
 					{
-						var relname:Array = relreg[0].match( /[A-Za-z]{1,2}/ig );						
-						var regFoundRel:Register = REGMAP[ relname[0]];						
+						var relv:Var = v.component as Var;						
+						var regFoundRel:Register = REGMAP[programTypeName+relv.type];						
 						if ( regFoundRel == null )
 						{ 
 							_error = "error: bad index register"; 
@@ -197,19 +193,10 @@ package flShader
 							break;
 						}
 						reltype = regFoundRel.emitCode;
-						var selmatch:Array = relreg[0].match( /(\.[xyzw]{1,1})/ );						
-						if ( selmatch.length==0 )
-						{
-							_error = "error: bad index register select"; 
-							badreg = true; 
-							break;						
-						}
-						relsel = selmatch[0].charCodeAt(1) - "x".charCodeAt(0);
+						relsel = (relv.component as String).charCodeAt(0) - "x".charCodeAt(0);
 						if ( relsel > 2 )
 							relsel = 3; 
-						var relofs:Array = relreg[0].match( /\+\d{1,3}/ig );
-						if ( relofs.length > 0 ) 
-							reloffset = relofs[0]; 						
+						reloffset = relv.index; 						
 						if ( reloffset < 0 || reloffset > 255 )
 						{
 							_error = "error: index offset "+reloffset+" out of bounds. [0..255]"; 
@@ -217,7 +204,7 @@ package flShader
 							break;							
 						}
 						if ( verbose )
-							trace( "RELATIVE: type="+reltype+"=="+relname[0]+" sel="+relsel+"=="+selmatch[0]+" idx="+regidx+" offset="+reloffset ); 
+							trace( "RELATIVE: type="+reltype+"=="+" sel="+relsel+"=="+" idx="+regidx+" offset="+reloffset ); 
 					}
 					
 					if ( verbose )
