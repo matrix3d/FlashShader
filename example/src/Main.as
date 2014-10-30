@@ -7,6 +7,9 @@ package
 	import flash.utils.ByteArray;
 	import flash.utils.getTimer;
 	import flShader.AGALByteCreator;
+	import gl3d.shaders.PhongFragmentShader;
+	import gl3d.shaders.PhongVertexShader;
+	import gl3d.util.Utils;
 	//import flShader.AGALByteCreator;
 	import flShader.FlShader;
 	
@@ -33,10 +36,11 @@ package
 			
 			trace(code);
 			
-			var max:int = 1000;
+			var max:int = 1;
 			
 			var c:int = max;
 			var assembler:AGALMiniAssembler = new AGALMiniAssembler;
+			assembler.verbose = true;
 			var time:int = getTimer();
 			while(c-->0){
 				assembler.assemble(shader.programType, code,2);
@@ -47,6 +51,7 @@ package
 			tracebyte(assembler.agalcode);
 			
 			var bytecreator:AGALByteCreator = new AGALByteCreator(2);
+			bytecreator.verbose = true;
 			c = max;
 			time = getTimer();
 			while (c-->0) {
@@ -55,7 +60,18 @@ package
 				shader.code2
 			}
 			tracebyte(bytecreator.data as ByteArray);
-			debug.appendText((getTimer() - time)+"ms,FLShader\n");
+			debug.appendText((getTimer() - time) + "ms,FLShader agalbyte\n");
+			
+			c = max;
+			time = getTimer();
+			while (c-->0) {
+				shader =new MyShader;
+				shader.code;
+			}
+			//tracebyte(bytecreator.data as ByteArray);
+			debug.appendText((getTimer() - time) + "ms,FLShader agalcode\n");
+			
+			trace(Utils.compareByte(bytecreator.data as ByteArray,assembler.agalcode));
 		}
 		
 		private function tracebyte(byte:ByteArray):void {

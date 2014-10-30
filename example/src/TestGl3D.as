@@ -119,6 +119,7 @@ package
 			
 			view.light.x = mouseX - stage.stageWidth / 2
 			view.light.y = stage.stageHeight / 2 - mouseY ;
+			view.updateCtrl();
 			view.render();
 			
 			aui.update();

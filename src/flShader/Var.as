@@ -14,6 +14,7 @@ package flShader {
 		public static const TYPE_OP:int = 7;
 		
 		public var index:int;
+		public var offset:int;
 		public var type:int;
 		public var component:Object;
 		
@@ -23,9 +24,12 @@ package flShader {
 			this.type = type;
 			this.index = index;
 		}
-		public function c(value:Object):Var {
+		public function c(value:Object,offset:int=0):Var {
 			var v:Var = new Var(type, index);
 			v.component = value;
+			if (value is Var) {
+				(value as Var).offset = offset;
+			}
 			return v;
 		}
 		

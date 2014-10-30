@@ -11,6 +11,7 @@ package gl3d.shaders
 	import gl3d.Node3D;
 	import gl3d.ProgramSet;
 	import gl3d.TextureSet;
+	import gl3d.util.Utils;
 	import gl3d.VertexBufferSet;
 	import gl3d.View3D;
 	/**

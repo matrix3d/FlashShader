@@ -55,7 +55,7 @@ package flShader
 					vtxt = programTypeName+"t";
 					break;
 				case Var.TYPE_V:
-					vtxt = "v" + v.index;
+					vtxt = "v";
 					break;
 				case Var.TYPE_VA:
 					vtxt = programTypeName+"a";
@@ -81,7 +81,7 @@ package flShader
 			if (v.component) {
 				if (v.component is Var) {
 					var cv:Var = v.component as Var;
-					vtxt += "["+var2String(cv)+"+"+v.index+"]";
+					vtxt += "["+var2String(cv)+"+"+cv.offset+"]";
 				}else {
 					vtxt += "." + v.component;
 				}

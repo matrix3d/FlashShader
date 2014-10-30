@@ -6,6 +6,7 @@ package gl3d
 	import flash.display3D.Context3DRenderMode;
 	import flash.display3D.Context3DTriangleFace;
 	import flash.events.Event;
+	import gl3d.ctrl.Ctrl;
 	/**
 	 * ...
 	 * @author lizhi
@@ -18,6 +19,7 @@ package gl3d
 		public var light:Light = new Light;
 		public var invalid:Boolean = true;
 		public var collects:Vector.<Node3D> = new Vector.<Node3D>;
+		public var ctrls:Vector.<Ctrl> = new Vector.<Ctrl>;
 		public function View3D() 
 		{
 			scene.addChild(camera);
@@ -40,6 +42,12 @@ package gl3d
 			context.setCulling(Context3DTriangleFace.NONE);
 			context.enableErrorChecking = true;
 			context.setBlendFactors(Context3DBlendFactor.SOURCE_ALPHA, Context3DBlendFactor.ONE_MINUS_SOURCE_ALPHA);
+		}
+		
+		public function updateCtrl():void {
+			for each(var ctrl:Ctrl in ctrls) {
+				ctrl.update();
+			}
 		}
 		
 		public function render():void {

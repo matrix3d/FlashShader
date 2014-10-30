@@ -96,9 +96,10 @@ package flShader
 				for ( var j:int = 0; j < regLength; j++ )
 				{
 					var v:Var = line[j+1];
-					
+					var regidx:uint = v.index;
 					var isRelative:Boolean = v.component is Var
-					
+					if ( verbose &&isRelative)
+							trace( "IS REL" );
 					var regFound:Register = REGMAP[ programTypeName+v.type ];
 					
 					
@@ -133,8 +134,6 @@ package flShader
 							break;
 						}
 					}
-					
-					var regidx:uint = v.index;
 					if ( regFound.range < regidx )
 					{
 						_error = "error: register operand "+j+" ("+v.type+") index exceeds limit of "+(regFound.range+1)+".";
@@ -143,8 +142,9 @@ package flShader
 					}
 					
 					var regmask:uint		= 0;
+					var maskmatch:String=null
 					if(v.component is String)
-					var maskmatch:String		= v.component as String;
+						maskmatch	= v.component as String;
 					var isDest:Boolean		= ( j == 0 && !( opFound.flags & OP_NO_DEST ) );
 					var isSampler:Boolean	= ( j == 2 && ( opFound.flags & OP_SPECIAL_TEX ) );
 					var reltype:uint		= 0;
@@ -184,7 +184,8 @@ package flShader
 					
 					if ( isRelative )
 					{
-						var relv:Var = v.component as Var;						
+						var relv:Var = v.component as Var;	
+						regidx = relv.index;
 						var regFoundRel:Register = REGMAP[programTypeName+relv.type];						
 						if ( regFoundRel == null )
 						{ 
@@ -196,7 +197,7 @@ package flShader
 						relsel = (relv.component as String).charCodeAt(0) - "x".charCodeAt(0);
 						if ( relsel > 2 )
 							relsel = 3; 
-						reloffset = relv.index; 						
+						reloffset = relv.offset; 						
 						if ( reloffset < 0 || reloffset > 255 )
 						{
 							_error = "error: index offset "+reloffset+" out of bounds. [0..255]"; 
