@@ -139,8 +139,8 @@ package
 					v.normalize();
 					v.scaleBy(speed);
 					cube.x += v.x;
-					cube.y += v.y;
 					cube.z += v.z;
+					cube.y =(terrain.picking as TerrainPicking).getHeight(cube.x,cube.z);
 				}
 			}
 			super.enterFrame(e);

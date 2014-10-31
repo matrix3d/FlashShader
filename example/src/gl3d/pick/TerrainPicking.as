@@ -135,9 +135,9 @@ package gl3d.pick
 			return false;
 		}
 		
-		public function getHeight(localX:Number, localY:Number):Number {
+		public function getHeight(localX:Number, localZ:Number):Number {
 			var x:Number = (localX + width / 2) * (size-1) / width;
-			var z:Number = (localY + width / 2) * (size-1) / width;
+			var z:Number = (localZ + width / 2) * (size-1) / width;
 			var x0:int = x;
 			var y0:int = z;
 			if (x0 >= 0 && y0 >= 0 && x0 < size && y0 < size) {
