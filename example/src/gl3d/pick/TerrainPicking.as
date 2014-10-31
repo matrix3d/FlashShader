@@ -77,6 +77,10 @@ package gl3d.pick
 				var sx:Number = localRayOrigin.x + localRayDirection.x * scale;
 				var sy:Number = localRayOrigin.y + localRayDirection.y * scale;
 				var sz:Number = localRayOrigin.z + localRayDirection.z * scale;
+			}else {
+				sx = localRayOrigin.x;
+				sy = localRayOrigin.y;
+				sz = localRayOrigin.z;
 			}
 			scale = 0;
 			if (localRayDirection.x!=0) {
@@ -102,6 +106,7 @@ package gl3d.pick
 				return false;
 			}
 			
+			var count:int = 0;
 			while (true) {
 				var cx:Number = sx / 2 + ex / 2;
 				var cy:Number = sy / 2 + ey / 2;
@@ -121,6 +126,10 @@ package gl3d.pick
 					pixelPos.z = sz;
 					pixelPos.y = sy;
 					return true;
+				}
+				count++
+				if (count>200) {
+					return false;
 				}
 			}
 			return false;
