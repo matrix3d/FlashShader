@@ -1,10 +1,15 @@
 package  
 {
+	import com.bit101.components.PushButton;
 	import flash.display.Bitmap;
 	import flash.display.BitmapData;
+	import flash.events.Event;
 	import flash.events.MouseEvent;
 	import flash.geom.Vector3D;
 	import flash.utils.ByteArray;
+	import gl3d.ctrl.Ctrl;
+	import gl3d.ctrl.FirstPersonCtrl;
+	import gl3d.ctrl.FollowCtrl;
 	import gl3d.Material;
 	import gl3d.meshs.Meshs;
 	import gl3d.Node3D;
@@ -19,8 +24,33 @@ package
 	{
 		private var terrain:Node3D;
 		private var cube:Node3D;
+		private var gameModeBtn:PushButton;
+		private var pix:Vector3D = new Vector3D;
+		private var moving:Boolean = false;
 		public function TestTerrain() 
 		{
+		}
+		
+		override public function initUI():void 
+		{
+			gameModeBtn = new PushButton(this, 5, 5, "game mode", gameModeBtnClick);
+			gameModeBtn.toggle = true;
+			gameModeBtn.selected = true;
+		}
+		
+		private function gameModeBtnClick(e:Event):void 
+		{
+			initCtrl();
+		}
+		
+		override public function initCtrl():void 
+		{
+			if (gameModeBtn.selected) {
+				view.ctrls=Vector.<Ctrl>([new FollowCtrl(cube,view.camera)]);
+			}else {
+				view.ctrls=Vector.<Ctrl>([new FirstPersonCtrl(view.camera,stage)]);
+			}
+			
 		}
 		
 		override public function initNode():void {
@@ -74,20 +104,18 @@ package
 			cube.material = new Material
 			cube.drawable = Meshs.cube();
 			view.scene.addChild(cube);
-			stage.addEventListener(MouseEvent.MOUSE_MOVE, stage_click);
+			stage.addEventListener(MouseEvent.CLICK, stage_click);
 		}
 		
 		private function stage_click(e:MouseEvent):void 
 		{
 			var rayOrigin:Vector3D = new Vector3D;
 			var rayDirection:Vector3D = new Vector3D;
-			var pix:Vector3D = new Vector3D;
+			pix = new Vector3D;
 			view.camera.computePickRayDirectionMouse(mouseX, mouseY, stage.stageWidth, stage.stageHeight, rayOrigin, rayDirection);
 			
 			if (terrain.rayMeshTest(rayOrigin, rayDirection,pix)) {
-				cube.x = pix.x;
-				cube.y = pix.y;
-				cube.z = pix.z;
+				moving = true;
 			}
 		}
 		
@@ -96,6 +124,27 @@ package
 			return new TextureSet(bmd);
 		}
 		
+		override public function enterFrame(e:Event):void
+		{
+			if (moving) {
+				var distance:Number = Vector3D.distance(pix, cube.world.position);
+				var speed:Number = .1;
+				if (distance<speed) {
+					cube.x = pix.x;
+					cube.y = pix.y;
+					cube.z = pix.z;
+					moving = false;
+				}else {
+					var v:Vector3D = pix.subtract(cube.world.position);
+					v.normalize();
+					v.scaleBy(speed);
+					cube.x += v.x;
+					cube.y += v.y;
+					cube.z += v.z;
+				}
+			}
+			super.enterFrame(e);
+		}
 	}
 
 }
