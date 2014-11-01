@@ -36,7 +36,9 @@ package
 		}
 		
 		private function ccode(c:String):void {
-			trace("public function get "+c+"():Var {return c(\""+c+"\");}");
+			//trace("public function get "+c+"():Var {return c(\""+c+"\");}");
+			//trace("public var "+c+"(get_"+c+", never) : Var;");
+			trace("public function get_"+c+"() : Var {return c(\""+c+"\");}");
 		}
 		
 		//private function get xxx():Var {return c("xxx");}

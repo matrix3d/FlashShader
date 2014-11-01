@@ -18,7 +18,7 @@ package
 			super(Context3DProgramType.VERTEX);
 			//add(C(),C().c(VA(1).x,1),op);
 			
-			
+			tex(op, op, op, ["2d","nomip"]);
 			var model:Var = C();
 			var view:Var = C(4);
 			var perspective:Var = C(8);
