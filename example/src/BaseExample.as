@@ -161,9 +161,9 @@ package
 				_useBlur = value;
 				view.posts.length = 0;
 				if (_useBlur) {
-					var blurSize:Number = 1 / 200;
+					var blurSize:Number = 1 / 400;
 					view.posts.push(new PostEffect(new PostGLShader(null,new BlurShader(blurSize))));
-					//view.posts.push(new PostEffect(new PostGLShader(null,new BlurShader(blurSize,false))));
+					view.posts.push(new PostEffect(new PostGLShader(null,new BlurShader(blurSize,false))));
 				}else {
 					
 				}
