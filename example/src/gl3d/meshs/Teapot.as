@@ -173,6 +173,7 @@ package gl3d.meshs
 			Meshs.removeDuplicatedVertices(drawable);
 			drawable.norm = Meshs.computeNormal(drawable);
 			drawable.uv = Meshs.computeUV(drawable);
+			drawable.tangent = Meshs.computeTangent(drawable);
 			return drawable;
 		}
 		

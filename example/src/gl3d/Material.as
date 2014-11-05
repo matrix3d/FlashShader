@@ -19,6 +19,7 @@ package gl3d
 		public var color:Vector.<Number> = Vector.<Number>([1, 1, 1, 1]);
 		public var alpha:Number = 1;
 		public var invalid:Boolean = true;
+		private var _normalMapAble:Boolean;
 		public var shader:GLShader;
 		
 		
@@ -27,9 +28,9 @@ package gl3d
 			shader = new PhongGLShader();
 		}
 		
-		public function draw(node:Node3D,camera:Camera3D,view:View3D):void {
+		public function draw(node:Node3D,view:View3D):void {
 			this.view = view;
-			this.camera = camera;
+			this.camera = view.camera;
 			this.node = node;
 			if (node.drawable&&shader) {
 				var context:Context3D = view.context;
@@ -48,6 +49,15 @@ package gl3d
 			}
 		}
 		
+		public function get normalMapAble():Boolean 
+		{
+			return _normalMapAble;
+		}
+		
+		public function set normalMapAble(value:Boolean):void 
+		{
+			_normalMapAble = value;
+		}
 	}
 }
 

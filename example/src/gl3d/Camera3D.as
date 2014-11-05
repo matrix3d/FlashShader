@@ -17,8 +17,8 @@ package gl3d
 			super(name);
 		}
 		
-		override public function update(v:View3D,camera:Camera3D):void {
-			super.update(v, camera);
+		override public function update(v:View3D):void {
+			super.update(v);
 			view.copyFrom(world);
 			view.invert();
 		}

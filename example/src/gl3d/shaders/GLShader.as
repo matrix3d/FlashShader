@@ -28,12 +28,17 @@ package gl3d.shaders
 		public var buffSets:Vector.<VertexBufferSet>;
 		public function GLShader() 
 		{
-			
+			textureSets = new Vector.<TextureSet>;
+			buffSets = new Vector.<VertexBufferSet>;
 		}
 		
 		public function getProgram(material:Material):ProgramSet {
 			vs = getVertexShader(material);
-			fs = getFragmentShader(material); 
+			fs = getFragmentShader(material);
+			/*trace("vcode");
+			trace(vs.code);
+			trace("fcode");
+			trace(fs.code);*/
 			vs.creator = new AGALByteCreator;
 			fs.creator = new AGALByteCreator;
 			programSet = new ProgramSet(vs.code2 as ByteArray, fs.code2 as ByteArray);
@@ -66,12 +71,19 @@ package gl3d.shaders
 			if(textureSets)
 			for (var i:int = 0; i < textureSets.length;i++ ) {
 				var textureSet:TextureSet = textureSets[i];
-				if (textureSet) textureSet.bind(material.view.context, i);
+				if (textureSet) {
+					textureSet.bind(material.view.context, i);
+				}
 			}
 			if(buffSets)
 			for (i = 0; i < buffSets.length;i++ ) {
 				var buffSet:VertexBufferSet = buffSets[i];
 				if (buffSet) buffSet.bind(material.view.context, i);
+			}
+			
+			if (programSet) {
+				programSet.update(material.view.context);
+				material.view.context.setProgram(programSet.program);
 			}
 		}
 	}

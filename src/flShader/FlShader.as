@@ -251,7 +251,7 @@ package flShader {
 		public function nrm(a:Var=null, b:Var=null, t:Var=null,component:String=null):Var {return f("nrm", a, b, t,null,3,component||"xyz");}
 		public function sin(a:Var=null, b:Var=null, t:Var=null):Var {return f("sin", a, b, t);}
 		public function cos(a:Var=null, b:Var=null, t:Var=null):Var {return f("cos", a, b, t);}
-		public function crs(a:Var=null, b:Var=null, t:Var=null):Var {return f("crs", a, b, t);}
+		public function crs(a:Var=null, b:Var=null, t:Var=null,component:String=null):Var {return f("crs", a, b, t,null,3,component||"xyz");}
 		public function dp3(a:Var=null, b:Var=null, t:Var=null):Var {return f("dp3", a, b, t);}
 		public function dp4(a:Var=null, b:Var=null, t:Var=null):Var {return f("dp4", a, b, t);}
 		public function abs(a:Var=null, b:Var=null, t:Var=null):Var {return f("abs", a, b, t);}

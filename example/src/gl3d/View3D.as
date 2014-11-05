@@ -7,6 +7,8 @@ package gl3d
 	import flash.display3D.Context3DTriangleFace;
 	import flash.events.Event;
 	import gl3d.ctrl.Ctrl;
+	import gl3d.post.PostEffect;
+	import gl3d.util.Utils;
 	/**
 	 * ...
 	 * @author lizhi
@@ -20,6 +22,8 @@ package gl3d
 		public var invalid:Boolean = true;
 		public var collects:Vector.<Node3D> = new Vector.<Node3D>;
 		public var ctrls:Vector.<Ctrl> = new Vector.<Ctrl>;
+		public var posts:Vector.<PostEffect> = new Vector.<PostEffect>;
+		public var postRTTs:Vector.<TextureSet> = Vector.<TextureSet>([new TextureSet,new TextureSet]);
 		public function View3D() 
 		{
 			scene.addChild(camera);
@@ -54,11 +58,31 @@ package gl3d
 			if (context) {
 				if(invalid)
 					context.configureBackBuffer(stage.stageWidth, stage.stageHeight, 2);
+				if (posts.length) {
+					var len:int = posts.length>1?2:1;
+					for (var i:int = 0; i < len;i++ ) {
+						postRTTs[i].update(context);
+					}
+					context.setRenderToTexture(postRTTs[0].texture, true, 2);
+				}else {
+					context.setRenderToBackBuffer();
+				}
 				context.clear();
 				collects.length = 0;
 				collect(scene);
 				for each(var node:Node3D in collects) {
-					node.update(this,camera);
+					node.update(this);
+				}
+				if (posts.length) {
+					for (i = 0; i < posts.length; i++ ) {
+						var post:PostEffect = posts[i];
+						post.update(this,i==posts.length-1);
+						if (len==2) {
+							var temp:TextureSet = postRTTs[0];
+							postRTTs[0] = postRTTs[1];
+							postRTTs[1] = temp;
+						}
+					}
 				}
 				context.present();
 			}

@@ -49,7 +49,20 @@ package gl3d.shaders
 			var ambientColor:Var = C(2);
 			var specularPow:Var = C(3).x;
 			
-			var n:Var = nrm(V(1));
+			if (material.normalMapAble) {
+				var tangent:Var = V(4);
+				var normal:Var = V(1);
+				var biTangent:Var = crs(normal, tangent);
+				var normalMap:Var = sub(mul(tex(V(3), FS(1)),F([2])),F([1]));
+				var temp:Var = createTempVar();
+				mov(dp3(tangent,normalMap),null,temp.x);
+				mov(dp3(biTangent,normalMap),null,temp.y);
+				mov(dp3(normal, normalMap), null, temp.z);
+				normal = normalMap;
+			}else {
+				normal = V(1);
+			}
+			var n:Var = nrm(normal);
 			var l:Var = nrm(V());
 			var cosTheta:Var = sat(dp3(n,l));
 			

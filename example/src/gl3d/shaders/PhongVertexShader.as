@@ -28,6 +28,7 @@ package gl3d.shaders
 			var pos:Var = VA();
 			var norm:Var = VA(1);
 			var uv:Var = VA(2);
+			var tangent:Var = VA(3);
 			var worldPos:Var = m44(pos, model);
 			var viewPos:Var = m44(worldPos, view);
 			m44(viewPos, perspective, op);
@@ -37,6 +38,19 @@ package gl3d.shaders
 			var viewPosLight:Var = add(m44(lightPos, view),eyeDirection,V());
 			var viewNormal:Var = m33(norm, model);
 			mov(viewNormal, null, V(1));
+			
+			/*if (material.normalMapAble) {
+				var viewTangent:Var = m33(tangent, model);
+				var biTangent:Var = crs(viewNormal, viewTangent);
+				
+				var temp:Var = createTempVar();
+				mov(dp3(tangent,normalMap),null,temp.x);
+				mov(dp3(biTangent,normalMap),null,temp.y);
+				mov(dp3(normal, normalMap), null, temp.z);
+				normal = normalMap;
+			}else {
+				normal = V(1);
+			}*/
 			
 			if (material.textureSets.length>0) {
 				mov(uv, null, V(3));

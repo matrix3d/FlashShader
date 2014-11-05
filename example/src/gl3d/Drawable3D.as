@@ -9,6 +9,7 @@ package gl3d
 	{
 		public var pos:VertexBufferSet;
 		public var norm:VertexBufferSet;
+		public var tangent:VertexBufferSet;
 		public var uv:VertexBufferSet;
 		public var index:IndexBufferSet;
 		public function Drawable3D() 
@@ -24,7 +25,10 @@ package gl3d
 				norm.update(context);
 			}if (uv) {
 				uv.update(context);
-			}if (index) {
+			}if (tangent) {
+				tangent.update(context);
+			}
+			if (index) {
 				index.update(context);
 			}
 		}

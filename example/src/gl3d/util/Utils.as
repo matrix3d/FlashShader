@@ -27,6 +27,19 @@ package gl3d.util
 			return (tracebyte(b1,false)+"")==(tracebyte(b2,false)+"")
 		}
 		
+		public static function getID(obj:Object):String {
+			try
+			{
+				FakeClass(obj);
+			}
+			catch (e:Error)
+			{
+				return String( e ).replace( /.*(@\w+).*/, "$1" );
+			}
+			return null;
+		}
+		
 	}
 
 }
+internal final class FakeClass { }

@@ -17,7 +17,7 @@ package gl3d
 		public var lightPower:Number = 1;
 		public function Light() 
 		{
-			
+			super("def");
 		}
 		
 	}

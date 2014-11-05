@@ -31,7 +31,7 @@ package gl3d
 			n.parent = this;
 		}
 		
-		public function update(view:View3D,camera:Camera3D):void {
+		public function update(view:View3D):void {
 			if (parent) {
 				world.copyFrom(parent.world);
 			}else {
@@ -43,7 +43,7 @@ package gl3d
 			}*/
 			
 			if (material) {
-				material.draw(this,camera,view);
+				material.draw(this,view);
 			}
 		}
 		

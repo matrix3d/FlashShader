@@ -106,6 +106,7 @@ package gl3d.meshs
             }
 			var drawable:Drawable3D = createDrawable(ins, vin, uv,null);
 			drawable.norm = computeNormal(drawable);
+			drawable.tangent = computeTangent(drawable);
 			return drawable;
 		}
 		
@@ -115,12 +116,14 @@ package gl3d.meshs
 		
 		
 		
-		public static function createDrawable(index:Vector.<uint>,pos:Vector.<Number>,uv:Vector.<Number>,norm:Vector.<Number>):Drawable3D {
+		public static function createDrawable(index:Vector.<uint>,pos:Vector.<Number>,uv:Vector.<Number>,norm:Vector.<Number>,tangent:Vector.<Number>=null):Drawable3D {
 			var drawable:Drawable3D = new Drawable3D;
 			drawable.index = new IndexBufferSet(index);
 			drawable.pos = new VertexBufferSet(pos,3);
 			drawable.uv = new VertexBufferSet(uv,2);
 			drawable.norm = new VertexBufferSet(norm, 3);
+			if(tangent)
+			drawable.tangent = new VertexBufferSet(tangent, 3);
 			return drawable;
 		}
 		
@@ -209,6 +212,82 @@ package gl3d.meshs
 				norm[i+2] /= distance;
 			}
 			return new VertexBufferSet(norm,3);
+		}
+		
+		public static function computeTangent(drawable:Drawable3D) : VertexBufferSet
+		{
+			var tangent:Vector.<Number> = new Vector.<Number>(drawable.pos.data.length);
+			var vin:Vector.<Number> = drawable.pos.data;
+			var uv:Vector.<Number> = drawable.uv.data;
+			var idata:Vector.<uint> = drawable.index.data;
+			for (var i:int = 0; i < idata.length; i+=3)
+			{
+				var i0:int = idata[i]*3;
+				var i1:int = idata[i + 1]*3;
+				var i2:int = idata[i + 2]*3;
+				var x0:Number = vin[i0 ];
+				var y0:Number = vin[i0 +1];
+				var z0:Number = vin[i0 +2];
+				var x1:Number = vin[i1];
+				var y1:Number = vin[i1+1];
+				var z1:Number = vin[i1+2];
+				var x2:Number = vin[i2];
+				var y2:Number = vin[i2+1];
+				var z2:Number = vin[i2 + 2];
+				
+				var uvi0:int = idata[i]*2;
+				var uvi1:int = idata[i + 1]*2;
+				var uvi2:int = idata[i + 2]*2;
+				var u0:Number = uv[uvi0];
+				var v0:Number = uv[uvi0+1];
+				var u1:Number = uv[uvi1];
+				var v1:Number = uv[uvi1+1];
+				var u2:Number = uv[uvi2];
+				var v2:Number = uv[uvi2+1];
+				
+				var v0v2	: Number 	= v0 - v2;
+				var v1v2 	: Number 	= v1 - v2;
+				var coef 	: Number 	= (u0 - u2) * v1v2 - (u1 - u2) * v0v2;
+				
+				if (coef == 0.)
+					coef = 1.;
+				else
+					coef = 1. / coef;
+				
+				var tx 	: Number 	= coef * (v1v2 * (x0 - x2) - v0v2 * (x1 - x2));
+				var ty 	: Number 	= coef * (v1v2 * (y0 - y2) - v0v2 * (y1 - y2));
+				var tz 	: Number 	= coef * (v1v2 * (z0 - z2) - v0v2 * (z1 - z2));
+				
+				tangent[i0] += tx;
+				tangent[i1] += tx;
+				tangent[i2] += tx;
+				tangent[i0+1] += ty;
+				tangent[i1+1] += ty;
+				tangent[i2+1] += ty;
+				tangent[i0+2] += tz;
+				tangent[i1+2] += tz;
+				tangent[i2+2] += tz;
+			}
+			
+			for (i = 0; i < tangent.length; i+=3)
+			{
+				tx = tangent[i];
+				ty = tangent[i+1];
+				tz = tangent[i+2];
+				
+				var mag : Number = Math.sqrt(tx * tx + ty * ty + tz * tz);
+				
+				if (mag != 0.)
+				{
+					tx /= mag;
+					ty /= mag;
+					tz /= mag;
+				}
+				tangent[i] = tx;
+				tangent[i+1] = ty;
+				tangent[i+2] = tz;
+			}
+			return new VertexBufferSet(tangent,3);
 		}
 	}
 

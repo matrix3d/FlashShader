@@ -18,8 +18,6 @@ package gl3d.shaders
 	{
 		public function PhongGLShader() 
 		{
-			textureSets = new Vector.<TextureSet>;
-			buffSets = new Vector.<VertexBufferSet>;
 		}
 		
 		override public function getVertexShader(material:Material):FlShader {
@@ -33,9 +31,11 @@ package gl3d.shaders
 		override public function preUpdate(material:Material):void {
 			super.preUpdate(material);
 			textureSets= material.textureSets;
+			buffSets.length = 0;
 			buffSets[0] = material.node.drawable.pos;
 			buffSets[1] = material.node.drawable.norm;
 			buffSets[2] =textureSets.length?material.node.drawable.uv:null;
+			buffSets[3] =material.normalMapAble?material.node.drawable.tangent:null;
 		}
 		
 		override public function update(material:Material):void 
@@ -49,9 +49,6 @@ package gl3d.shaders
 				var alpha:Number = material.alpha;
 				var color:Vector.<Number> = material.color;
 				
-				programSet.update(context);
-				context.setProgram(programSet.program);
-				
 				context.setProgramConstantsFromMatrix(Context3DProgramType.VERTEX, 0, node.world, true);
 				context.setProgramConstantsFromMatrix(Context3DProgramType.VERTEX, 4, camera.view, true);
 				context.setProgramConstantsFromMatrix(Context3DProgramType.VERTEX, 8, camera.perspective, true);
@@ -64,6 +61,7 @@ package gl3d.shaders
 				context.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, 2,view.light.ambient);//ambient color 环境光
 				context.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, 3,Vector.<Number>([view.light.specularPower,0,0,0]));//x:specular pow, y:2
 				
+				context.setProgramConstantsFromVector(Context3DProgramType.VERTEX, vs.constMemLen, Vector.<Number>(vs.constPool));
 				context.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, fs.constMemLen, Vector.<Number>(fs.constPool));
 				context.drawTriangles(node.drawable.index.buff);
 			}
