@@ -24,9 +24,11 @@ package
 	{
 		private var terrain:Node3D;
 		private var cube:Node3D;
+		private var targetCube:Node3D;
 		private var gameModeBtn:PushButton;
 		private var pix:Vector3D = new Vector3D;
 		private var moving:Boolean = false;
+		private var isClick:Boolean = false;
 		public function TestTerrain() 
 		{
 		}
@@ -58,7 +60,9 @@ package
 			view.camera.y = 10;
 			view.camera.rotationX = 20 * Math.PI / 180;
 			view.light.y = 2000;
-			view.light.lightPower = 2;
+			view.light.x = 0;
+			view.light.z = -1000;
+			//view.light.lightPower = 2;
 			
 			[Embed(source = "assets/unityterraintexture/Cliff (Layered Rock).jpg")]var c0:Class;
 			[Embed(source = "assets/unityterraintexture/GoodDirt.jpg")]var c1:Class;
@@ -96,7 +100,7 @@ package
 			
 			terrain = new Node3D;
 			terrain.material = material;
-			terrain.drawable = Meshs.terrain(64,new Vector3D(50,50,50));
+			terrain.drawable = Meshs.terrain(64,new Vector3D(350,350,350));
 			view.scene.addChild(terrain);
 			terrain.picking = new TerrainPicking(terrain);
 			
@@ -104,18 +108,44 @@ package
 			cube.material = new Material
 			cube.drawable = Meshs.cube();
 			view.scene.addChild(cube);
-			stage.addEventListener(MouseEvent.CLICK, stage_click);
+			
+			targetCube = new Node3D;
+			targetCube.material = new Material;
+			targetCube.material.color[1] = 0;
+			targetCube.drawable = cube.drawable;
+			view.scene.addChild(targetCube);
+			stage.addEventListener(MouseEvent.MOUSE_DOWN, stage_mouseDown);
 		}
 		
-		private function stage_click(e:MouseEvent):void 
+		private function stage_mouseDown(e:MouseEvent):void 
 		{
+			stage.addEventListener(Event.ENTER_FRAME, stage_mouseMove);
+			stage.addEventListener(MouseEvent.MOUSE_UP, stage_mouseUp);
+		}
+		
+		private function stage_mouseUp(e:MouseEvent):void 
+		{
+			stage.removeEventListener(Event.ENTER_FRAME, stage_mouseMove);
+			stage.removeEventListener(MouseEvent.MOUSE_UP, stage_mouseUp);
+		}
+		
+		private function stage_mouseMove(e:Event):void 
+		{
+			isClick = true;
+		}
+		
+		private function doClick():void {
 			var rayOrigin:Vector3D = new Vector3D;
 			var rayDirection:Vector3D = new Vector3D;
-			pix = new Vector3D;
+			var pix:Vector3D = new Vector3D;
 			view.camera.computePickRayDirectionMouse(mouseX, mouseY, stage.stageWidth, stage.stageHeight, rayOrigin, rayDirection);
 			
 			if (terrain.rayMeshTest(rayOrigin, rayDirection,pix)) {
 				moving = true;
+				targetCube.x = pix.x;
+				targetCube.y = pix.y;
+				targetCube.z = pix.z;
+				this.pix.copyFrom(pix);
 			}
 		}
 		
@@ -126,6 +156,10 @@ package
 		
 		override public function enterFrame(e:Event):void
 		{
+			if (isClick) {
+				doClick();
+				isClick = false;
+			}
 			if (moving) {
 				var distance:Number = Vector3D.distance(pix, cube.world.position);
 				var speed:Number = .1;
@@ -140,7 +174,7 @@ package
 					v.scaleBy(speed);
 					cube.x += v.x;
 					cube.z += v.z;
-					cube.y =(terrain.picking as TerrainPicking).getHeight(cube.x,cube.z);
+					cube.y = (terrain.picking as TerrainPicking).getHeight(cube.x, cube.z);
 				}
 			}
 			super.enterFrame(e);

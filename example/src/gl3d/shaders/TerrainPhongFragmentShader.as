@@ -15,7 +15,7 @@ package gl3d.shaders
 
 		override public function getDiffColor():Var {
 			var uv:Var = V(3);
-			var scaledUV:Var = mul(V(3), F([10]));
+			var scaledUV:Var = mul(V(3), F([50]));
 			//repeat,miplinear
 			var flags:Array = ["repeat","linear"/*,"miplinear"*/];
 			var map:Var = tex(uv, FS(), null, flags);

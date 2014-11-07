@@ -27,7 +27,7 @@ package gl3d.post
 				var hd:Number = 0;
 				node.drawable=Meshs.createDrawable(
 					Vector.<uint>([
-						0, 1, 2, 0, 2, 3
+						0, 2, 1, 0, 3, 2
 						]),
 					Vector.<Number>([
 						hw, hh, hd, hw, -hh, hd, -hw, -hh, hd, -hw, hh, hd
@@ -52,17 +52,15 @@ package gl3d.post
 		
 		public function update(view3D:View3D,isEnd:Boolean):void 
 		{
-			
 			material.textureSets = Vector.<TextureSet>([view3D.postRTTs[0]]);
 			node.material = material;
 			if (isEnd) {
 				view3D.context.setRenderToBackBuffer();
 			}else {
-				view3D.context.setRenderToTexture(view3D.postRTTs[1].texture);
+				view3D.context.setRenderToTexture(view3D.postRTTs[1].texture,true);
 			}
 			view3D.context.clear();
 			node.update(view3D);
-			
 		}
 		
 	}

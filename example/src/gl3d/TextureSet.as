@@ -4,6 +4,7 @@ package gl3d
 	import flash.display3D.Context3D;
 	import flash.display3D.Context3DTextureFormat;
 	import flash.display3D.textures.Texture;
+	import flash.display3D.textures.TextureBase;
 	import flash.geom.Matrix;
 	/**
 	 * ...
@@ -11,16 +12,17 @@ package gl3d
 	 */
 	public class TextureSet 
 	{
-		private var invalid:Boolean = true;
+		public var invalid:Boolean = true;
 		private var data:BitmapData;
-		public var texture:Texture;
+		public var texture:TextureBase;
 		public function TextureSet(data:BitmapData=null) 
 		{
 			this.data = data;
 			
 		}
 		
-		public function update(context:Context3D):void {
+		public function update(view:View3D):void {
+			var context:Context3D = view.context;
 			if (invalid) {
 				if (texture != null) texture.dispose();
 				if(data){
@@ -59,7 +61,7 @@ package gl3d
 					while (size >= 1)
 					{
 						tmp.draw(_bitmapData, transform, null, null, null, true);
-						texture.uploadFromBitmapData(tmp, level);
+						(texture as Texture).uploadFromBitmapData(tmp, level);
 						
 						transform.scale(.5, .5);
 						level++;
@@ -69,7 +71,8 @@ package gl3d
 					}
 					tmp.dispose();
 				}else {
-					texture = context.createTexture(1024, 1024, Context3DTextureFormat.BGRA, true);
+					//texture = context.createTexture(1024, 1024, Context3DTextureFormat.BGRA, true);// .createTexture(1024, 1024, Context3DTextureFormat.BGRA, true);
+					texture = context.createRectangleTexture(view.stage3dWidth,view.stage3dHeight , Context3DTextureFormat.BGRA, true);
 				}
 				invalid = false;
 			}

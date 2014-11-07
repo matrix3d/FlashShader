@@ -21,6 +21,7 @@ package
 	 * ...
 	 * @author lizhi
 	 */
+	[SWF(frameRate='60', backgroundColor='0x000000', width='800', height='600')]
 	public class BaseExample extends Sprite
 	{
 		public var view:View3D;
@@ -29,6 +30,7 @@ package
 		private var _useBlur:Boolean = false;
 		private var texture:TextureSet;
 		private var normalMapTexture:TextureSet;
+		private var teapot:Node3D;
 		public var material:Material = new Material;
 		public function BaseExample() 
 		{
@@ -94,7 +96,7 @@ package
 			view.light.lightPower = 2;
 		}
 		public function initNode():void {
-			var teapot:Node3D = new Node3D;
+			teapot = new Node3D;
 			teapot.material = material;
 			teapot.drawable = Meshs.teapot(6);
 			view.scene.addChild(teapot);
@@ -128,6 +130,10 @@ package
 		{
 			if (view.context)
 				view.context.enableErrorChecking = true;
+			if(teapot){
+				teapot.rotationX+=.01;
+				teapot.rotationY += .01;
+			}
 			view.updateCtrl();
 			view.render();
 			
@@ -145,7 +151,7 @@ package
 			{
 				_useTexture = value;
 				material.invalid = true;
-				material.textureSets = value ? Vector.<TextureSet>([texture,normalMapTexture]) : new Vector.<TextureSet>;
+				material.textureSets = value ? Vector.<TextureSet>([texture/*,normalMapTexture*/]) : new Vector.<TextureSet>;
 			}
 		}
 		
@@ -164,6 +170,7 @@ package
 					var blurSize:Number = 1 / 400;
 					view.posts.push(new PostEffect(new PostGLShader(null,new BlurShader(blurSize))));
 					view.posts.push(new PostEffect(new PostGLShader(null,new BlurShader(blurSize,false))));
+					//view.posts.push(new PostEffect());
 				}else {
 					
 				}

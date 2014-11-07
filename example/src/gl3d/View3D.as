@@ -3,6 +3,7 @@ package gl3d
 	import flash.display.Sprite;
 	import flash.display3D.Context3D;
 	import flash.display3D.Context3DBlendFactor;
+	import flash.display3D.Context3DProfile;
 	import flash.display3D.Context3DRenderMode;
 	import flash.display3D.Context3DTriangleFace;
 	import flash.events.Event;
@@ -23,7 +24,10 @@ package gl3d
 		public var collects:Vector.<Node3D> = new Vector.<Node3D>;
 		public var ctrls:Vector.<Ctrl> = new Vector.<Ctrl>;
 		public var posts:Vector.<PostEffect> = new Vector.<PostEffect>;
-		public var postRTTs:Vector.<TextureSet> = Vector.<TextureSet>([new TextureSet,new TextureSet]);
+		public var postRTTs:Vector.<TextureSet> = Vector.<TextureSet>([new TextureSet, new TextureSet]);
+		public var antiAlias:int = 16;
+		public var stage3dWidth:Number = 0;
+		public var stage3dHeight:Number = 0;
 		public function View3D() 
 		{
 			scene.addChild(camera);
@@ -43,7 +47,7 @@ package gl3d
 		{
 			context = stage.stage3Ds[0].context3D;
 			
-			context.setCulling(Context3DTriangleFace.NONE);
+			context.setCulling(Context3DTriangleFace.FRONT);
 			context.enableErrorChecking = true;
 			context.setBlendFactors(Context3DBlendFactor.SOURCE_ALPHA, Context3DBlendFactor.ONE_MINUS_SOURCE_ALPHA);
 		}
@@ -56,17 +60,22 @@ package gl3d
 		
 		public function render():void {
 			if (context) {
-				if(invalid)
-					context.configureBackBuffer(stage.stageWidth, stage.stageHeight, 2);
+				if (invalid) {
+					stage3dWidth = stage.stageWidth;
+					stage3dHeight = stage.stageHeight;
+					context.configureBackBuffer(stage3dWidth, stage3dHeight, antiAlias);
+				}
 				if (posts.length) {
 					var len:int = posts.length>1?2:1;
-					for (var i:int = 0; i < len;i++ ) {
-						postRTTs[i].update(context);
+					for (var i:int = 0; i < len; i++ ) {
+						if(invalid)postRTTs[i].invalid = invalid;
+						postRTTs[i].update(this);
 					}
-					context.setRenderToTexture(postRTTs[0].texture, true, 2);
+					context.setRenderToTexture(postRTTs[0].texture, true, antiAlias);
 				}else {
 					context.setRenderToBackBuffer();
 				}
+				invalid = false;
 				context.clear();
 				collects.length = 0;
 				collect(scene);

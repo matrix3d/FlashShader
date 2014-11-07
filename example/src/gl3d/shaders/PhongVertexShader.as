@@ -36,7 +36,7 @@ package gl3d.shaders
 			var eyeDirection:Var = neg(viewPos, null);
 			mov(eyeDirection, null, V(2));
 			var viewPosLight:Var = add(m44(lightPos, view),eyeDirection,V());
-			var viewNormal:Var = m33(norm, model);
+			var viewNormal:Var = m33(m33(norm, model),view);
 			mov(viewNormal, null, V(1));
 			
 			/*if (material.normalMapAble) {

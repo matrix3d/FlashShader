@@ -37,7 +37,7 @@ package gl3d
 				node.drawable.update(context);
 				if (textureSets) {
 					for each(var textureSet:TextureSet in textureSets) {
-						textureSet.update(context);
+						textureSet.update(view);
 					}
 				}
 				if (invalid) {
