@@ -105,14 +105,16 @@ package
 			terrain.picking = new TerrainPicking(terrain);
 			
 			cube = new Node3D;
-			cube.material = new Material
-			cube.drawable = Meshs.cube();
+			cube.material = new Material;
+			cube.drawable = Meshs.teapot(6);
+			cube.scaleX = cube.scaleY = cube.scaleZ = 0.3;
 			view.scene.addChild(cube);
 			
 			targetCube = new Node3D;
 			targetCube.material = new Material;
 			targetCube.material.color[1] = 0;
 			targetCube.drawable = cube.drawable;
+			targetCube.scaleX = targetCube.scaleY = targetCube.scaleZ = cube.scaleX;
 			view.scene.addChild(targetCube);
 			stage.addEventListener(MouseEvent.MOUSE_DOWN, stage_mouseDown);
 		}
@@ -176,6 +178,10 @@ package
 					cube.z += v.z;
 					cube.y = (terrain.picking as TerrainPicking).getHeight(cube.x, cube.z);
 				}
+			}
+			
+			if (v) {
+				cube.rotationY = Math.atan2( -v.z, v.x)+Math.PI/2;
 			}
 			super.enterFrame(e);
 		}

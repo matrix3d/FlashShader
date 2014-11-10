@@ -19,7 +19,7 @@ package gl3d
 		public var drawable:Drawable3D;
 		public var material:Material;
 		public var name:String;
-		private var trs:Vector.<Vector3D> = Vector.<Vector3D>([new Vector3D(), new Vector3D(), new Vector3D(1, 1, 1)]);
+		public var trs:Vector.<Vector3D> = Vector.<Vector3D>([new Vector3D(), new Vector3D(), new Vector3D(1, 1, 1)]);
 		public var picking:Picking=new AS3Picking;
 		public function Node3D(name:String=null) 
 		{
@@ -32,12 +32,10 @@ package gl3d
 		}
 		
 		public function update(view:View3D):void {
+			world.copyFrom(_matrix);
 			if (parent) {
-				world.copyFrom(parent.world);
-			}else {
-				world.identity();
+				world.append(parent.world);
 			}
-			world.append(matrix);
 			/*for each(var c:Node3D in children) {
 				c.update(view,camera);
 			}*/
