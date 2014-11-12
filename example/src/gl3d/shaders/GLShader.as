@@ -26,6 +26,7 @@ package gl3d.shaders
 		public var programSet:ProgramSet;
 		public var textureSets:Vector.<TextureSet>;
 		public var buffSets:Vector.<VertexBufferSet>;
+		public var debug:Boolean = true;
 		public function GLShader() 
 		{
 			textureSets = new Vector.<TextureSet>;
@@ -35,10 +36,17 @@ package gl3d.shaders
 		public function getProgram(material:Material):ProgramSet {
 			vs = getVertexShader(material);
 			fs = getFragmentShader(material);
-			/*trace("vcode");
-			trace(vs.code);
-			trace("fcode");
-			trace(fs.code);*/
+			
+			if (debug) {
+				trace(this);
+				var code:String = vs.code;
+				trace("vcode numline",vs.lines.length);
+				trace(code);
+				code = fs.code;
+				trace("fcode numline",fs.lines.length);
+				trace(code);
+				trace();
+			}
 			vs.creator = new AGALByteCreator;
 			fs.creator = new AGALByteCreator;
 			programSet = new ProgramSet(vs.code2 as ByteArray, fs.code2 as ByteArray);

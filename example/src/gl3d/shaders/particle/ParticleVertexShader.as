@@ -18,8 +18,9 @@ package gl3d.shaders.particle
 			var view:Var = C(4);
 			var perspective:Var = C(8);
 			var pos:Var = VA();
-			var uv:Var = VA(2);
-			var random:Var = VA(3);
+			var uv:Var = VA(1);
+			var random:Var = VA(2);
+			pos = add(pos, sin(uv.x));
 			var worldPos:Var = m44(pos, model);
 			var viewPos:Var = m44(worldPos, view);
 			m44(viewPos, perspective, op);

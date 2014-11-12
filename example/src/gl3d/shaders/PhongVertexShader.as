@@ -34,10 +34,10 @@ package gl3d.shaders
 			m44(viewPos, perspective, op);
 			
 			var eyeDirection:Var = neg(viewPos, null);
-			mov(eyeDirection, null, V(2));
+			mov(eyeDirection, V(2));
 			var viewPosLight:Var = add(m44(lightPos, view),eyeDirection,V());
 			var viewNormal:Var = m33(m33(norm, model),view);
-			mov(viewNormal, null, V(1));
+			mov(viewNormal, V(1));
 			
 			/*if (material.normalMapAble) {
 				var viewTangent:Var = m33(tangent, model);
@@ -53,7 +53,7 @@ package gl3d.shaders
 			}*/
 			
 			if (material.textureSets.length>0) {
-				mov(uv, null, V(3));
+				mov(uv, V(3));
 			}
 		}
 	}

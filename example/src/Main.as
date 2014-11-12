@@ -36,7 +36,7 @@ package
 			
 			trace(code);
 			
-			var max:int = 1;
+			var max:int = 10000;
 			
 			var c:int = max;
 			var assembler:AGALMiniAssembler = new AGALMiniAssembler;

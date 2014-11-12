@@ -82,6 +82,10 @@ package gl3d.pick
 				sy = localRayOrigin.y;
 				sz = localRayOrigin.z;
 			}
+			var sheight:Number = getHeight(sx, sz);
+			if (sy < sheight) {
+				return false;
+			}
 			scale = 0;
 			if (localRayDirection.x!=0) {
 				scale = dxEnd / localRayDirection.x;
@@ -92,17 +96,27 @@ package gl3d.pick
 					scale = temp;
 				}
 			}
-			if (scale > 0) {
-				var ex:Number = localRayOrigin.x + localRayDirection.x * scale;
-				var ey:Number = localRayOrigin.y + localRayDirection.y * scale;
-				var ez:Number = localRayOrigin.z + localRayDirection.z * scale;
-			}else {
+			if (scale <= 0) {
 				return false;
 			}
 			
-			var sheight:Number=getHeight(sx,sz)
-			var eheight:Number=getHeight(ex,ez)
-			if (sy<sheight||ey>eheight) {
+			var find:Boolean = false;
+			var step:Number = 1;
+			for (var i:Number=scale>step?step:scale; i <= scale;i+=step ) {
+				var cex:Number = localRayOrigin.x + localRayDirection.x * i;
+				var cey:Number = localRayOrigin.y + localRayDirection.y * i;
+				var cez:Number = localRayOrigin.z + localRayDirection.z * i;
+				var eheight:Number = getHeight(cex, cez);
+				if (cey<=eheight) {
+					find = true;
+					var ex:Number = cex;
+					var ey:Number = cey;
+					var ez:Number = cez;
+					break;
+				}
+			}
+			
+			if (!find) {
 				return false;
 			}
 			

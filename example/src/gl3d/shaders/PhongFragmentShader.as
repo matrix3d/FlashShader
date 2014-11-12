@@ -26,10 +26,10 @@ package gl3d.shaders
 			var light:Light = material.view.light;
 			if (light.lightAble) {
 				var phongColor:Var = getPhongColor();
-				mov(diffColor.w, null, phongColor.w);
+				mov(diffColor.w, phongColor.w);
 				mul(phongColor, diffColor, oc);
 			}else {
-				mov(diffColor,null,oc);
+				mov(diffColor,oc);
 			}
 		}
 		
@@ -55,9 +55,9 @@ package gl3d.shaders
 				var biTangent:Var = crs(normal, tangent);
 				var normalMap:Var = sub(mul(tex(V(3), FS(1)),F([2])),F([1]));
 				var temp:Var = createTempVar();
-				mov(dp3(tangent,normalMap),null,temp.x);
-				mov(dp3(biTangent,normalMap),null,temp.y);
-				mov(dp3(normal, normalMap), null, temp.z);
+				mov(dp3(tangent,normalMap),temp.x);
+				mov(dp3(biTangent,normalMap),temp.y);
+				mov(dp3(normal, normalMap), temp.z);
 				normal = normalMap;
 			}else {
 				normal = V(1);
@@ -67,7 +67,7 @@ package gl3d.shaders
 			var cosTheta:Var = sat(dp3(n,l));
 			
 			var e:Var = nrm(V(2));
-			var r:Var = nrm(sub(mul2([F([2]), dp3(l, n), n]), l));
+			var r:Var = nrm(sub(mul2([2, dp3(l, n), n]), l));
 			var cosAlpha:Var = sat(dp3(e, r));
 			
 			var light:Light = material.view.light;
