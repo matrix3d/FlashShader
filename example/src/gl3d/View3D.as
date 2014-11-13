@@ -28,6 +28,7 @@ package gl3d
 		public var antiAlias:int = 16;
 		public var stage3dWidth:Number = 0;
 		public var stage3dHeight:Number = 0;
+		public var time:Number = 0;
 		public function View3D() 
 		{
 			scene.addChild(camera);
@@ -46,7 +47,6 @@ package gl3d
 		private function stage_context3dCreate(e:Event):void 
 		{
 			context = stage.stage3Ds[0].context3D;
-			
 			context.setCulling(Context3DTriangleFace.FRONT);
 			context.enableErrorChecking = true;
 			context.setBlendFactors(Context3DBlendFactor.SOURCE_ALPHA, Context3DBlendFactor.ONE_MINUS_SOURCE_ALPHA);
@@ -58,8 +58,14 @@ package gl3d
 			}
 		}
 		
-		public function render():void {
+		public function render(time:Number=0):void {
+			this.time = time;
 			if (context) {
+				if(context.driverInfo == "Disposed"){
+					invalid = true;
+					stage.stage3Ds[0].requestContext3D(Context3DRenderMode.AUTO);
+					return;
+				}
 				if (invalid) {
 					stage3dWidth = stage.stageWidth;
 					stage3dHeight = stage.stageHeight;

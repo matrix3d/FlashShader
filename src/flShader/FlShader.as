@@ -13,8 +13,8 @@ package flShader {
 		private var tempCounter:int = 0;
 		
 		public var programType:String;
-		public static var op:Var = new Var(Var.TYPE_OP);
-		public static var oc:Var = new Var(Var.TYPE_OC);
+		public static const op:Var = new Var(Var.TYPE_OP);
+		public static const oc:Var = new Var(Var.TYPE_OC);
 		
 		public var constPool:Array = [];
 		public var constMemLen:int = 0;
@@ -239,7 +239,11 @@ package flShader {
 			return createTempConst(data, len) 
 		};
 		public function M(data:Matrix3D):Var { return createTempConst(data,4) };
-		public function C(index:int=0):Var { return new Var(Var.TYPE_C,index)};
+		public function C(index:int = 0, len:int=1):Var {
+			var c:Var = new Var(Var.TYPE_C, index);
+			c.constLenght = len;
+			return c;
+		};
 		public function T(index:int=0):Var { return new Var(Var.TYPE_T,index)};
 		public function VA(index:int=0):Var { return new Var(Var.TYPE_VA,index)};
 		public function V(index:int=0):Var { return new Var(Var.TYPE_V,index)};

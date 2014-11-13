@@ -40,10 +40,10 @@ package gl3d.shaders
 			if (debug) {
 				trace(this);
 				var code:String = vs.code;
-				trace("vcode numline",vs.lines.length);
+				trace("vcode "+vs+" numline",vs.lines.length);
 				trace(code);
 				code = fs.code;
-				trace("fcode numline",fs.lines.length);
+				trace("fcode "+fs+" numline",fs.lines.length);
 				trace(code);
 				trace();
 			}

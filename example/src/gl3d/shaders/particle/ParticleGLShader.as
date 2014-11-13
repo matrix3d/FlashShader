@@ -51,8 +51,7 @@ package gl3d.shaders.particle {
 				context.setProgramConstantsFromMatrix(Context3DProgramType.VERTEX, 0, node.world, true);
 				context.setProgramConstantsFromMatrix(Context3DProgramType.VERTEX, 4, camera.view, true);
 				context.setProgramConstantsFromMatrix(Context3DProgramType.VERTEX, 8, camera.perspective, true);
-				var lightPos:Vector3D = view.light.world.position;
-				context.setProgramConstantsFromVector(Context3DProgramType.VERTEX, 12, Vector.<Number>([lightPos.x,lightPos.y,lightPos.z,1]));//light pos
+				context.setProgramConstantsFromVector(Context3DProgramType.VERTEX, 12, Vector.<Number>([view.time,0,0,0]));
 				color[3] = alpha;
 				context.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, 0, color);//color
 				

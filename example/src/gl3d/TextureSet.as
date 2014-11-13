@@ -15,6 +15,7 @@ package gl3d
 		public var invalid:Boolean = true;
 		private var data:BitmapData;
 		public var texture:TextureBase;
+		private var context:Context3D;
 		public function TextureSet(data:BitmapData=null) 
 		{
 			this.data = data;
@@ -23,7 +24,7 @@ package gl3d
 		
 		public function update(view:View3D):void {
 			var context:Context3D = view.context;
-			if (invalid) {
+			if (invalid||this.context!=context) {
 				if (texture != null) texture.dispose();
 				if(data){
 					var w:int = 2048;
@@ -75,6 +76,7 @@ package gl3d
 					texture = context.createRectangleTexture(view.stage3dWidth,view.stage3dHeight , Context3DTextureFormat.BGRA, true);
 				}
 				invalid = false;
+				this.context = context;
 			}
 		}
 		

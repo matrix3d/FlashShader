@@ -13,6 +13,7 @@ package gl3d
 		private var vcode:ByteArray;
 		private var fcode:ByteArray;
 		private var invalid:Boolean = true;
+		private var context:Context3D;
 		public var program:Program3D;
 		public function ProgramSet(vcode:ByteArray,fcode:ByteArray) 
 		{
@@ -22,10 +23,11 @@ package gl3d
 		
 		public function update(context:Context3D):void 
 		{
-			if (invalid) {
+			if (invalid||this.context!=context) {
 				program = context.createProgram();
 				program.upload(vcode,fcode);
 				invalid = false;
+				this.context = context;
 			}
 		}
 		

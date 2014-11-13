@@ -12,6 +12,7 @@ package gl3d
 		public var data:Vector.<Number>;
 		private var buff:VertexBuffer3D;
 		private var invalid:Boolean = true;
+		private var context:Context3D;
 		public function VertexBufferSet(data:Vector.<Number>,data32PerVertex:int) 
 		{
 			this.data = data;
@@ -21,12 +22,13 @@ package gl3d
 		
 		public function update(context:Context3D):void 
 		{
-			if (invalid) {
+			if (invalid||this.context!=context) {
 				if(data){
 					var num:int = data.length / data32PerVertex;
 					buff = context.createVertexBuffer(num, data32PerVertex);
 					buff.uploadFromVector(data, 0, num);
 					invalid = false;
+					this.context = context;
 				}
 			}
 		}

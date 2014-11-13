@@ -53,7 +53,7 @@ package gl3d.shaders
 				var tangent:Var = V(4);
 				var normal:Var = V(1);
 				var biTangent:Var = crs(normal, tangent);
-				var normalMap:Var = sub(mul(tex(V(3), FS(1)),F([2])),F([1]));
+				var normalMap:Var = sub(mul(tex(V(3), FS(1)),2),1);
 				var temp:Var = createTempVar();
 				mov(dp3(tangent,normalMap),temp.x);
 				mov(dp3(biTangent,normalMap),temp.y);

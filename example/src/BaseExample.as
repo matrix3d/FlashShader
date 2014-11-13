@@ -7,6 +7,7 @@ package
 	import flash.events.Event;
 	import flash.geom.Point;
 	import flash.utils.ByteArray;
+	import flash.utils.getTimer;
 	import gl3d.ctrl.FirstPersonCtrl;
 	import gl3d.Material;
 	import gl3d.meshs.Meshs;
@@ -14,6 +15,7 @@ package
 	import gl3d.post.PostEffect;
 	import gl3d.shaders.posts.PostGLShader;
 	import gl3d.shaders.posts.BlurShader;
+	import gl3d.shaders.posts.PulseShader;
 	import gl3d.TextureSet;
 	import gl3d.View3D;
 	import ui.AttribSeter;
@@ -135,7 +137,7 @@ package
 				teapot.rotationY += .01;
 			}
 			view.updateCtrl();
-			view.render();
+			view.render(getTimer());
 			
 			aui.update();
 		}
@@ -170,7 +172,7 @@ package
 					var blurSize:Number = 1 / 400;
 					view.posts.push(new PostEffect(new PostGLShader(null,new BlurShader(blurSize))));
 					view.posts.push(new PostEffect(new PostGLShader(null,new BlurShader(blurSize,false))));
-					//view.posts.push(new PostEffect());
+					//view.posts.push(new PostEffect(new PostGLShader(null,new PulseShader())));
 				}else {
 					
 				}

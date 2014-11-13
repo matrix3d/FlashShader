@@ -52,6 +52,7 @@ package gl3d.shaders.posts
 			var context:Context3D = material.view.context;
 			if (programSet) {
 				var node:Node3D = material.node;
+				context.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, 0, Vector.<Number>([material.view.time,0,0,0]));
 				context.setProgramConstantsFromVector(Context3DProgramType.VERTEX, vshader.constMemLen, Vector.<Number>(vshader.constPool));
 				context.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, fshader.constMemLen, Vector.<Number>(fshader.constPool));
 				context.drawTriangles(node.drawable.index.buff);

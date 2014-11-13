@@ -14,8 +14,8 @@ package gl3d.shaders.particle
 			super(Context3DProgramType.FRAGMENT);
 		}
 		override public function build():void {
-			//tex(V(), FS(), oc);
-			mov(C(), oc);
+			tex(V(), FS(), oc);
+			//mov(C(), oc);
 		}
 		
 	}

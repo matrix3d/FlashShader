@@ -13,14 +13,19 @@ package gl3d.shaders.posts
 		public function PulseShader() 
 		{
 			super(Context3DProgramType.FRAGMENT);
-			var time:Var = F([1]);
-			var resolution:Var = F([2, 2]);
-			var mouse:Var = F([0, 0]);
+			var time:Var = div(C(),mov(1000));
+			var resolution:Array= [800, 600];
 			var tex0:Var = FS();
 			
-			var halfres:Var = div(resolution.xy, F([2]));
-			var cPos:Var = V();
-			
+			var halfres:Var = div(resolution, mov(2));
+			var cPos:Var = mul(V(),resolution);
+			sub(cPos.x, add2([mul2([.5, halfres.x, sin(div(time, 2))]), mul2([.3, halfres.x, cos(time)]), halfres.x]), cPos.x);
+			sub(cPos.y, add2([mul2([.4, halfres.y, sin(div(time, 5))]), mul2([.3, halfres.y, cos(time)]), halfres.y]), cPos.y);
+			var cLength:Var = sqt(dp3(cPos,cPos));
+			var uv:Var = add(V(), div(mul(div(cPos, cLength), sin(sub(div(cLength, 30), mul(time, 10)))), 25));
+			var col:Var= div(mul(tex(uv, tex0), 50), cLength);
+			mov(1, col.w);
+			mov(col, oc);
 			/*
 			uniform float time;
 			uniform vec2 resolution;

@@ -15,23 +15,31 @@ package gl3d.shaders.posts
 			var arr:Array = [0.06, 0.09, 0.12, 0.15, 0.16, 0.15, 0.12, 0.09, 0.06];
 			var color:Var;
 			var blurSizeVar:Var = mov(blurSize);
+			var newuv:Var;
+			
 			for (var i:int = -4; i <= 4;i++ ) {
 				var v:Number = arr[i + 4];
-				var temp:Var = mov(V());
-				if (isVertical) {
-					mov(add(temp.y,mul(i,blurSizeVar)),temp.y);
+				if (newuv==null) {
+					newuv = mov(V());
+					if (isVertical) {
+						add(newuv.y, mul(i, blurSizeVar), newuv.y);
+					}else {
+						add(newuv.x, mul(i, blurSizeVar), newuv.x);
+					}
 				}else {
-					mov(add(temp.x,mul(i,blurSizeVar)),temp.x);
+					if (isVertical) {
+						add(newuv.y,blurSizeVar, newuv.y);
+					}else {
+						add(newuv.x,blurSizeVar, newuv.x);
+					}
 				}
-				var color2:Var = mul(tex(temp,FS()),v);
+				var color2:Var = mul(tex(newuv,FS()),v);
 				if (color==null) {
 					color = mov(color2, color);
 				}else {
-					color = add(color,color2);
+					color = add(color,color2,i==4?oc:null);
 				}
 			}
-			mov(color, oc);
-			
 		}
 		
 	}
