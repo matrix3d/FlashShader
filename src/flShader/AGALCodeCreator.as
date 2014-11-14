@@ -15,6 +15,7 @@ package flShader
 		override public function creat(shader:FlShader):void 
 		{
 			var lines:Array = shader.lines;
+			var logs:Object = shader.logs;
 			if (shader.programType==Context3DProgramType.VERTEX) {
 				programTypeName = "v";
 			}else {
@@ -22,6 +23,12 @@ package flShader
 			}
 			var txt:String = "";
 			for (var i:int = 0; i < lines.length;i++ ) {
+				var log:Array = logs[i];
+				if (log) {
+					for each(var lb:Object in log) {
+						txt +="//"+ lb + "\n";
+					}
+				}
 				var line:Array = lines[i];
 				txt += line[0];
 				for (var j:int = 1; j < line.length;j++ ) {
@@ -32,8 +39,14 @@ package flShader
 					txt += ",<" + line.flag+">";
 				}
 				txt += "\n"
-				data = txt;
 			}
+			log = logs[i];
+			if (log) {
+				for each(lb in log) {
+					txt +="//"+ lb + "\n";
+				}
+			}
+			data = txt;
 		}
 		
 		private function var2StringNoIndex(v:Var):String {

@@ -43,7 +43,7 @@ package gl3d.shaders.posts
 			textureSets= material.textureSets;
 			buffSets.length = 0;
 			buffSets[0] = material.node.drawable.pos;
-			buffSets[1] =textureSets.length?material.node.drawable.uv:null;
+			buffSets[1] = material.node.drawable.uv;
 		}
 		
 		override public function update(material:Material):void 
@@ -52,7 +52,7 @@ package gl3d.shaders.posts
 			var context:Context3D = material.view.context;
 			if (programSet) {
 				var node:Node3D = material.node;
-				context.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, 0, Vector.<Number>([material.view.time,0,0,0]));
+				context.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, 0, Vector.<Number>([material.view.time,material.view.stage3dWidth,material.view.stage3dHeight,0]));
 				context.setProgramConstantsFromVector(Context3DProgramType.VERTEX, vshader.constMemLen, Vector.<Number>(vshader.constPool));
 				context.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, fshader.constMemLen, Vector.<Number>(fshader.constPool));
 				context.drawTriangles(node.drawable.index.buff);

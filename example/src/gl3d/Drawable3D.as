@@ -11,6 +11,7 @@ package gl3d
 		public var norm:VertexBufferSet;
 		public var tangent:VertexBufferSet;
 		public var uv:VertexBufferSet;
+		public var random:VertexBufferSet;
 		public var index:IndexBufferSet;
 		public function Drawable3D() 
 		{
@@ -19,7 +20,7 @@ package gl3d
 		
 		public function update(context:Context3D):void 
 		{
-			if (pos) {
+			/*if (pos) {
 				pos.update(context);
 			}if (norm) {
 				norm.update(context);
@@ -27,7 +28,9 @@ package gl3d
 				uv.update(context);
 			}if (tangent) {
 				tangent.update(context);
-			}
+			}if (random) {
+				random.update(context);
+			}*/
 			if (index) {
 				index.update(context);
 			}

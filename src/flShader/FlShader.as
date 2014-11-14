@@ -10,6 +10,7 @@ package flShader {
 	public class FlShader 
 	{
 		public var lines:Array = [];
+		public var logs:Object = { };
 		private var tempCounter:int = 0;
 		
 		public var programType:String;
@@ -152,7 +153,11 @@ package flShader {
 		private function createTempConst(data:Object,len:int=1):Var {
 			var c:Var = C(-1);
 			c.data = data;
-			c.constLenght=len
+			c.constLenght = len;
+			if (data.length < 4) {
+				var xyzw:String = "xyzw";
+				c.component = xyzw.substr(0, data.length);
+			}
 			return c;
 		}
 		
@@ -176,6 +181,11 @@ package flShader {
 			}
 			if(creator.data==null)creator.creat(this);
 			return creator.data as ByteArray;
+		}
+		
+		public function debug(txt:Object):void {
+			logs[lines.length] = logs[lines.length] || [];
+			logs[lines.length].push(txt);
 		}
 		
 		public function f(op:String, a:Object = null, b:Object = null, t:Var = null, flag:Array = null, numParam:int = 3 ,component:String=null):Var {
@@ -210,18 +220,44 @@ package flShader {
 			return f(op, a, arr[arr.length - 1], t);
 		}
 		
-		public function distance2(a:Var, b:Var, t:Var=null):Var {
+		public function distance(a:Object, b:Object,len:int=2, t:Var=null):Var {
+			return length(sub(a, b), len,t);
+		}
+		
+		public function length(a:Object,len:int=2, t:Var = null):Var {
+			var c:Var = mul(a, a);
+			var arr:Array = [c.x,c.y];
+			if (len>2) {
+				arr.push(c.z);
+			}
+			if (len>3) {
+				arr.push(c.w);
+			}
+			return sqt(add2(arr),t);
+			//return sqt(dp4(a,a).x, t);
+		}
+		
+		/*public function distance2(a:Object, b:Object, t:Var=null):Var {
 			var d:Var = sub(a, b);
 			var d2:Var = mul(d, d);
 			var arr:Array = [d2.x, d2.y];
 			return sqt(add2(arr), t);
 		}
 		
-		public function distance3(a:Var, b:Var, t:Var=null):Var {
+		public function distance3(a:Object, b:Object, t:Var=null):Var {
 			var d:Var = sub(a, b);
 			var d2:Var = mul(d, d);
 			var arr:Array = [d2.x, d2.y,d2.z];
 			return sqt(add2(arr), t);
+		}*/
+		
+		public function mod(a:Object, b:Object, t:Var=null):Var {
+			return mul(modfrc(a,b), b, t);
+		}
+		
+		public function modfrc(a:Object, b:Object, t:Var=null):Var {
+			var c:Var = div(a, b);
+			return frc(c,t);
 		}
 		
 		public function mul2(arr:Array, t:Var=null):Var {return f2("mul", arr, t);}

@@ -162,7 +162,7 @@ class VShader extends FlShader {
 	{
 		super(Context3DProgramType.VERTEX);
 		m44(VA(), C(), op);
-		mov(VA(1), null, V());
+		mov(VA(1), V());
 	/*	"m44 op,va0,vc0\n"
 		+"mov v0 va1"*/
 	}
@@ -178,7 +178,7 @@ class FShader extends FlShader {
 		var x:Var = sat(div(v0, fwidth));
 		var smoothstep:Var= mul(mul(x, x), sub(fc0.z, mul(fc0.y, x)));
 		var c:Var = sub(fc0.x, min2([smoothstep.x, smoothstep.y, smoothstep.z]));
-		mov(c.x, null, oc);
+		mov(c.x, oc);
 		
 		/*//fwidth abs( ddx( v ) ) + abs( ddy( v ) );
 		"ddx ft0,v0\n"				//ft0 = ddx( v0)

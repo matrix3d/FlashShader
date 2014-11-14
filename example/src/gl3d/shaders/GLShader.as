@@ -1,5 +1,6 @@
 package gl3d.shaders 
 {
+	import com.adobe.utils.AGALMiniAssembler;
 	import flash.display3D.Context3D;
 	import flash.display3D.Context3DProgramType;
 	import flash.geom.Vector3D;
@@ -38,17 +39,20 @@ package gl3d.shaders
 			fs = getFragmentShader(material);
 			
 			if (debug) {
+				var agalMiniAssembler:AGALMiniAssembler = new AGALMiniAssembler;
 				trace(this);
 				var code:String = vs.code;
 				trace("vcode "+vs+" numline",vs.lines.length);
 				trace(code);
+				agalMiniAssembler.assemble(vs.programType, code);
 				code = fs.code;
 				trace("fcode "+fs+" numline",fs.lines.length);
 				trace(code);
+				agalMiniAssembler.assemble(fs.programType, code);
 				trace();
 			}
-			vs.creator = new AGALByteCreator;
-			fs.creator = new AGALByteCreator;
+			vs.creator = new AGALByteCreator(material.view.agalVersion);
+			fs.creator = new AGALByteCreator(material.view.agalVersion);
 			programSet = new ProgramSet(vs.code2 as ByteArray, fs.code2 as ByteArray);
 			return programSet;
 		}
@@ -80,13 +84,17 @@ package gl3d.shaders
 			for (var i:int = 0; i < textureSets.length;i++ ) {
 				var textureSet:TextureSet = textureSets[i];
 				if (textureSet) {
+					textureSet.update(material.view);
 					textureSet.bind(material.view.context, i);
 				}
 			}
 			if(buffSets)
 			for (i = 0; i < buffSets.length;i++ ) {
 				var buffSet:VertexBufferSet = buffSets[i];
-				if (buffSet) buffSet.bind(material.view.context, i);
+				if (buffSet) {
+					buffSet.update(material.view.context);
+					buffSet.bind(material.view.context, i);
+				}
 			}
 			
 			if (programSet) {

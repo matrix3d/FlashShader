@@ -16,6 +16,7 @@ package gl3d
 	 */
 	public class View3D extends Sprite
 	{
+		public var agalVersion:int;
 		public var context:Context3D;
 		public var scene:Node3D = new Node3D("scene");
 		public var camera:Camera3D = new Camera3D;
@@ -29,8 +30,9 @@ package gl3d
 		public var stage3dWidth:Number = 0;
 		public var stage3dHeight:Number = 0;
 		public var time:Number = 0;
-		public function View3D() 
+		public function View3D(agalVersion:int=2) 
 		{
+			this.agalVersion = agalVersion;
 			scene.addChild(camera);
 			scene.addChild(light);
 			if (stage) init();
@@ -41,7 +43,7 @@ package gl3d
 		{
 			removeEventListener(Event.ADDED_TO_STAGE, init);
 			stage.stage3Ds[0].addEventListener(Event.CONTEXT3D_CREATE, stage_context3dCreate);
-			stage.stage3Ds[0].requestContext3D(Context3DRenderMode.AUTO);
+			stage.stage3Ds[0].requestContext3D(Context3DRenderMode.AUTO,Context3DProfile.STANDARD);
 		}
 		
 		private function stage_context3dCreate(e:Event):void 

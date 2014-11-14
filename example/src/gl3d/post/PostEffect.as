@@ -16,9 +16,11 @@ package gl3d.post
 	{
 		private static var node:Node3D;
 		private var _material:Material;
+		private var numTexture:int;
 		public var shader:GLShader;
-		public function PostEffect(shader:GLShader=null) 
+		public function PostEffect(shader:GLShader=null,numTexture:int=1) 
 		{
+			this.numTexture = numTexture;
 			this.shader = shader || new PostGLShader;
 			if (node==null) {
 				node = new Node3D;
@@ -52,7 +54,9 @@ package gl3d.post
 		
 		public function update(view3D:View3D,isEnd:Boolean):void 
 		{
-			material.textureSets = Vector.<TextureSet>([view3D.postRTTs[0]]);
+			if (numTexture == 1) material.textureSets = Vector.<TextureSet>([view3D.postRTTs[0]]);
+			else if (numTexture == 0) material.textureSets = Vector.<TextureSet>([]);
+			else throw "post texture num error";
 			node.material = material;
 			if (isEnd) {
 				view3D.context.setRenderToBackBuffer();

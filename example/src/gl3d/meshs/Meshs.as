@@ -289,6 +289,16 @@ package gl3d.meshs
 			}
 			return new VertexBufferSet(tangent,3);
 		}
+		
+		public static function computeRandom(drawable:Drawable3D) : VertexBufferSet
+		{
+			var random:Vector.<Number> = new Vector.<Number>(drawable.pos.data.length/3);
+			for (var i:int = 0; i < random.length; i++)
+			{
+				random[i] = Math.random();
+			}
+			return new VertexBufferSet(random, 1);
+		}
 	}
 
 }

@@ -16,6 +16,7 @@ package
 	import gl3d.shaders.posts.PostGLShader;
 	import gl3d.shaders.posts.BlurShader;
 	import gl3d.shaders.posts.PulseShader;
+	import gl3d.shaders.posts.TileableWaterCausticShader;
 	import gl3d.TextureSet;
 	import gl3d.View3D;
 	import ui.AttribSeter;
@@ -23,7 +24,7 @@ package
 	 * ...
 	 * @author lizhi
 	 */
-	[SWF(frameRate='60', backgroundColor='0x000000', width='800', height='600')]
+	[SWF(frameRate='60', backgroundColor='0x000000', width='500', height='300')]
 	public class BaseExample extends Sprite
 	{
 		public var view:View3D;
@@ -59,6 +60,8 @@ package
 			stage.scaleMode = StageScaleMode.NO_SCALE;
 			stage.addEventListener(Event.RESIZE, stage_resize);
 			stage_resize();
+			
+			//useBlur = true;
 		}
 		
 		public function createNormalMap():TextureSet {
@@ -106,7 +109,7 @@ package
 		}
 		
 		public function initUI():void {
-			addChild(aui);
+			//addChild(aui);
 			aui.bind(view.light, "specularPower", AttribSeter.TYPE_NUM, new Point(1, 100));
 			aui.bind(view.light, "lightPower", AttribSeter.TYPE_NUM, new Point(.5, 5));
 			aui.bind(view.light, "color", AttribSeter.TYPE_VEC_COLOR);
@@ -170,9 +173,10 @@ package
 				view.posts.length = 0;
 				if (_useBlur) {
 					var blurSize:Number = 1 / 400;
-					view.posts.push(new PostEffect(new PostGLShader(null,new BlurShader(blurSize))));
-					view.posts.push(new PostEffect(new PostGLShader(null,new BlurShader(blurSize,false))));
+					///view.posts.push(new PostEffect(new PostGLShader(null,new BlurShader(blurSize))));
+					//view.posts.push(new PostEffect(new PostGLShader(null,new BlurShader(blurSize,false))));
 					//view.posts.push(new PostEffect(new PostGLShader(null,new PulseShader())));
+					view.posts.push(new PostEffect(new PostGLShader(null,new TileableWaterCausticShader()),0));
 				}else {
 					
 				}

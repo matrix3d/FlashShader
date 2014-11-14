@@ -5,6 +5,7 @@ package gl3d.shaders.particle {
 	import flShader.FlShader;
 	import gl3d.Camera3D;
 	import gl3d.Material;
+	import gl3d.meshs.Meshs;
 	import gl3d.Node3D;
 	import gl3d.shaders.GLShader;
 	import gl3d.shaders.PhongFragmentShader;
@@ -35,6 +36,10 @@ package gl3d.shaders.particle {
 			buffSets.length = 0;
 			buffSets[0] = material.node.drawable.pos;
 			buffSets[1] = material.node.drawable.uv;
+			if (material.node.drawable.random==null) {
+				material.node.drawable.random = Meshs.computeRandom(material.node.drawable);
+			}
+			buffSets[2] = material.node.drawable.random;
 		}
 		
 		override public function update(material:Material):void 
