@@ -14,19 +14,18 @@ package gl3d.shaders.posts
 		{
 			super(Context3DProgramType.FRAGMENT);
 			var TAU:Number= 6.28318530718
-			var MAX_ITER:Number = 5;
+			var MAX_ITER:Number = 3;
 			var SEE_TILING:Boolean = false;
-			var iResolution:Var = mov(C().yz);
 			var UV:Var = mov(V());
 			sub(1, UV.y, UV.y);
-			var time:Var = add(mul(div(C().x, mov(1000)) , .5), 23.0).x;
+			var time:Var = add(mul(div(C(), mov(1000)) , .5), 23.0);
 			var sp:Var = UV;
 			if (SEE_TILING) {	
-				var p:Var =sub( mod(mul2([sp ,TAU , 2.0]), TAU) , 250.0).x;
+				var p:Var =sub( mod(mul2([sp ,TAU , 2.0]), TAU) , 250.0);
 			}else{
-				p = sub(mul(sp , TAU) , 250.0).xx;
+				p = sub(mul(sp , TAU) , 250.0);
 			}
-			var i:Var = mov(p.xy);
+			var i:Var = mov(p);
 			var c:Var = F(1);
 			var inten:Number = .005;
 

@@ -24,17 +24,17 @@ package
 	 * ...
 	 * @author lizhi
 	 */
-	[SWF(frameRate='60', backgroundColor='0x000000', width='500', height='300')]
+	[SWF(frameRate='60', backgroundColor='0x000000', width='800', height='600')]
 	public class BaseExample extends Sprite
 	{
 		public var view:View3D;
 		private var aui:AttribSeter = new AttribSeter;
 		private var _useTexture:Boolean = true;
-		private var _useBlur:Boolean = false;
 		private var texture:TextureSet;
 		private var normalMapTexture:TextureSet;
 		private var teapot:Node3D;
 		public var material:Material = new Material;
+		public var _post:String;
 		public function BaseExample() 
 		{
 			view = new View3D;
@@ -61,7 +61,7 @@ package
 			stage.addEventListener(Event.RESIZE, stage_resize);
 			stage_resize();
 			
-			//useBlur = true;
+			post = "null";
 		}
 		
 		public function createNormalMap():TextureSet {
@@ -109,7 +109,7 @@ package
 		}
 		
 		public function initUI():void {
-			//addChild(aui);
+			addChild(aui);
 			aui.bind(view.light, "specularPower", AttribSeter.TYPE_NUM, new Point(1, 100));
 			aui.bind(view.light, "lightPower", AttribSeter.TYPE_NUM, new Point(.5, 5));
 			aui.bind(view.light, "color", AttribSeter.TYPE_VEC_COLOR);
@@ -117,7 +117,7 @@ package
 			aui.bind(material, "color", AttribSeter.TYPE_VEC_COLOR);
 			aui.bind(material, "alpha", AttribSeter.TYPE_NUM, new Point(.1, 1));
 			aui.bind(this, "useTexture", AttribSeter.TYPE_BOOL);
-			aui.bind(this, "useBlur", AttribSeter.TYPE_BOOL);
+			aui.bind(this, "post", AttribSeter.TYPE_LIST_STR,null,["null","blur","water"]);
 		}
 		public function initCtrl():void {
 			view.ctrls.push(new FirstPersonCtrl(view.camera,stage));
@@ -160,26 +160,23 @@ package
 			}
 		}
 		
-		public function get useBlur():Boolean
+		public function get post():String
 		{
-			return _useBlur;
+			return _post;
 		}
 		
-		public function set useBlur(value:Boolean):void
+		public function set post(txt:String):void
 		{
-			if (value != _useBlur)
-			{
-				_useBlur = value;
-				view.posts.length = 0;
-				if (_useBlur) {
+			_post = txt;
+			view.posts.length = 0;
+			switch(txt) {
+				case "blur":
 					var blurSize:Number = 1 / 400;
-					///view.posts.push(new PostEffect(new PostGLShader(null,new BlurShader(blurSize))));
-					//view.posts.push(new PostEffect(new PostGLShader(null,new BlurShader(blurSize,false))));
-					//view.posts.push(new PostEffect(new PostGLShader(null,new PulseShader())));
+					view.posts.push(new PostEffect(new PostGLShader(null,new BlurShader(blurSize))));
+					view.posts.push(new PostEffect(new PostGLShader(null,new BlurShader(blurSize,false))));
+					break;
+				case "water":
 					view.posts.push(new PostEffect(new PostGLShader(null,new TileableWaterCausticShader()),0));
-				}else {
-					
-				}
 			}
 		}
 	}

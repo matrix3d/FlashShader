@@ -55,6 +55,7 @@ package gl3d.shaders.posts
 				context.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, 0, Vector.<Number>([material.view.time,material.view.stage3dWidth,material.view.stage3dHeight,0]));
 				context.setProgramConstantsFromVector(Context3DProgramType.VERTEX, vshader.constMemLen, Vector.<Number>(vshader.constPool));
 				context.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, fshader.constMemLen, Vector.<Number>(fshader.constPool));
+				//trace(fshader.constMemLen,fshader.constPool);
 				context.drawTriangles(node.drawable.index.buff);
 			}
 		}

@@ -2,6 +2,7 @@ package ui
 {
 	import com.bit101.components.CheckBox;
 	import com.bit101.components.ColorChooser;
+	import com.bit101.components.ComboBox;
 	import com.bit101.components.HBox;
 	import com.bit101.components.HSlider;
 	import com.bit101.components.HUISlider;
@@ -25,6 +26,7 @@ package ui
 		public static const TYPE_NUM:int = 0;
 		public static const TYPE_VEC_COLOR:int = 1;
 		public static const TYPE_BOOL:int = 2;
+		public static const TYPE_LIST_STR:int = 3;
 		public var ui2target:Dictionary = new Dictionary;
 		public var targets:Array = [];
 		private var vbox:VBox;
@@ -35,7 +37,7 @@ package ui
 			vbox = new VBox(panel,5,5);
 		}
 		
-		public function bind(target:Object, name:String, type:int,range:Point=null):void {
+		public function bind(target:Object, name:String, type:int,range:Point=null,list:Array=null):void {
 			var nui:Object;
 			switch(type) {
 				case TYPE_NUM:
@@ -54,6 +56,12 @@ package ui
 					hbox = new HBox(vbox);
 					var cb:CheckBox = new CheckBox(hbox, 0, 0,"",onChange);
 					nui = cb;
+					break;
+				case TYPE_LIST_STR:
+					hbox = new HBox(vbox);
+					var cob:ComboBox = new ComboBox(hbox, 0, 0, "", list);
+					cob.addEventListener(Event.SELECT, onChange);
+					nui = cob;
 					break;
 			}
 			if (nui) {
@@ -89,6 +97,10 @@ package ui
 					var cb:CheckBox = nui as CheckBox;
 					target[0][target[1]] = cb.selected;
 					break;
+				case TYPE_LIST_STR:
+					var cob:ComboBox = nui as ComboBox;
+					target[0][target[1]] = cob.selectedItem;
+					break;
 			}
 		}
 		
@@ -100,17 +112,26 @@ package ui
 				switch(type) {
 					case TYPE_NUM:
 						var input:HUISlider = nui as HUISlider;
+						if(input.value!=Number(v))
 						input.value = Number(v);
 						break;
 					case TYPE_VEC_COLOR:
 						var colorui:ColorChooser = nui as ColorChooser;
 						var color:Color = new Color;
 						color.fromRGB(v[0]*0xff, v[1]*0xff, v[2]*0xff);
+						if(colorui.value!=color.toHex())
 						colorui.value = color.toHex();
 						break;
 					case TYPE_BOOL:
 						var cb:CheckBox = nui as CheckBox;
+						if(cb.selected!=v)
 						cb.selected = v as Boolean;
+						break;
+					case TYPE_LIST_STR:
+						var cob:ComboBox = nui as ComboBox;
+						if (cob.selectedItem!=v) {
+							cob.selectedItem = v;
+						}
 						break;
 				}
 			}
