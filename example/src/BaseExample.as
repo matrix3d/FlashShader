@@ -61,7 +61,7 @@ package
 			stage.addEventListener(Event.RESIZE, stage_resize);
 			stage_resize();
 			
-			post = "null";
+			//post = "water";
 		}
 		
 		public function createNormalMap():TextureSet {
@@ -117,7 +117,7 @@ package
 			aui.bind(material, "color", AttribSeter.TYPE_VEC_COLOR);
 			aui.bind(material, "alpha", AttribSeter.TYPE_NUM, new Point(.1, 1));
 			aui.bind(this, "useTexture", AttribSeter.TYPE_BOOL);
-			aui.bind(this, "post", AttribSeter.TYPE_LIST_STR,null,["null","blur","water"]);
+			aui.bind(this, "post", AttribSeter.TYPE_LIST_STR,null,["null","blur","water","bend"]);
 		}
 		public function initCtrl():void {
 			view.ctrls.push(new FirstPersonCtrl(view.camera,stage));
@@ -176,7 +176,11 @@ package
 					view.posts.push(new PostEffect(new PostGLShader(null,new BlurShader(blurSize,false))));
 					break;
 				case "water":
-					view.posts.push(new PostEffect(new PostGLShader(null,new TileableWaterCausticShader()),0));
+					view.posts.push(new PostEffect(new PostGLShader(null, new TileableWaterCausticShader()), 0));
+					break;
+				case "bend":
+					view.posts.push(new PostEffect(new PostGLShader(null, new PulseShader())));
+					break;
 			}
 		}
 	}

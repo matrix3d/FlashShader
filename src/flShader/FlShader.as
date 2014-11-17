@@ -94,7 +94,7 @@ package flShader {
 						for (j = 0; j <= 4-floatsLen;j++ ) {
 							have = true;
 							for (var k:int = 0; k < floatsLen; k++ ) {
-								if (floats[k]!=constPool[i*4+j+k]) {
+								if (floats[k]!=constPool[i+j+k]) {
 									have = false;
 									break;
 								}
@@ -113,7 +113,7 @@ package flShader {
 				if (have) {
 					v.index = int(i / 4)+constMemLen;
 					if ((i%4) > 0||floatsLen2!=4) {
-						v.component = xyzw.substr(i%4,floatsLen);
+						v.component = xyzw.substr((i+j+k-floatsLen)%4,floatsLen);
 					}
 				}else {
 					if (floatsLen2>4) {
