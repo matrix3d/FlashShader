@@ -13,6 +13,8 @@ package
 	import gl3d.meshs.Meshs;
 	import gl3d.Node3D;
 	import gl3d.post.PostEffect;
+	import gl3d.shaders.posts.FlowerShader;
+	import gl3d.shaders.posts.HeartShader;
 	import gl3d.shaders.posts.PostGLShader;
 	import gl3d.shaders.posts.BlurShader;
 	import gl3d.shaders.posts.PulseShader;
@@ -62,6 +64,8 @@ package
 			stage_resize();
 			
 			//post = "water";
+			//post = "heart";
+			//post = "flower";
 		}
 		
 		public function createNormalMap():TextureSet {
@@ -117,7 +121,7 @@ package
 			aui.bind(material, "color", AttribSeter.TYPE_VEC_COLOR);
 			aui.bind(material, "alpha", AttribSeter.TYPE_NUM, new Point(.1, 1));
 			aui.bind(this, "useTexture", AttribSeter.TYPE_BOOL);
-			aui.bind(this, "post", AttribSeter.TYPE_LIST_STR,null,["null","blur","water","bend"]);
+			aui.bind(this, "post", AttribSeter.TYPE_LIST_STR,null,["null","blur","water","bend","heart","flower"]);
 		}
 		public function initCtrl():void {
 			view.ctrls.push(new FirstPersonCtrl(view.camera,stage));
@@ -176,10 +180,16 @@ package
 					view.posts.push(new PostEffect(new PostGLShader(null,new BlurShader(blurSize,false))));
 					break;
 				case "water":
-					view.posts.push(new PostEffect(new PostGLShader(null, new TileableWaterCausticShader()), 0));
+					view.posts.push(new PostEffect(new PostGLShader(null, new TileableWaterCausticShader), 0));
 					break;
 				case "bend":
-					view.posts.push(new PostEffect(new PostGLShader(null, new PulseShader())));
+					view.posts.push(new PostEffect(new PostGLShader(null, new PulseShader)));
+					break;
+				case "heart":
+					view.posts.push(new PostEffect(new PostGLShader(null, new HeartShader),0));
+					break;
+				case "flower":
+					view.posts.push(new PostEffect(new PostGLShader(null, new FlowerShader),0));
 					break;
 			}
 		}

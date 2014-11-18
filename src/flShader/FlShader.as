@@ -196,8 +196,21 @@ package flShader {
 			}
 			var line:Array = [op];
 			if (c) line.push(c);
-			if (a!=null) line.push(object2Var(a));
-			if (b!=null) line.push(object2Var(b));
+			if (a != null) {
+				var av:Var=object2Var(a)
+				line.push(av);
+			}
+			if (b != null) {
+				var bv:Var=object2Var(b)
+				line.push(bv);
+			}
+			if (av&&bv&&av.type==Var.TYPE_C&&bv.type==Var.TYPE_C) {
+				throw "can not all the a,b type const"
+			}
+			if (c==null) {
+				throw "no target"
+			}
+			
 			line.flag = flag;
 			lines.push(line);
 			return c;
@@ -237,19 +250,30 @@ package flShader {
 			//return sqt(dp4(a,a).x, t);
 		}
 		
-		/*public function distance2(a:Object, b:Object, t:Var=null):Var {
-			var d:Var = sub(a, b);
-			var d2:Var = mul(d, d);
-			var arr:Array = [d2.x, d2.y];
-			return sqt(add2(arr), t);
+		//https://gist.github.com/gradbot/1749635
+		public function atan(a:Object,t:Var=null):Var {
+			return div(mul(Math.PI / 2 , a) , add(1 ,abs(a)),t);
 		}
 		
-		public function distance3(a:Object, b:Object, t:Var=null):Var {
-			var d:Var = sub(a, b);
-			var d2:Var = mul(d, d);
-			var arr:Array = [d2.x, d2.y,d2.z];
-			return sqt(add2(arr), t);
-		}*/
+		//http://en.wikipedia.org/wiki/Atan2
+		//return 2 * Math.atan(y/(Math.sqrt(x*x+y*y)+x));
+		//return 2 * Math.atan(y/(Math.sqrt(x*x+y*y)+x));
+		public function atan2(y:Object,x:Object,t:Var=null):Var {
+			return mul(2 , atan(div(y,add(sqt(add(mul(x,x),mul(y,y))),x))),t);
+		}
+		
+		//http://en.wikipedia.org/wiki/Smoothstep
+        public function smoothstep(edge0:Object, edge1:Object, x:Object,t:Var=null):Var
+        {
+            // Scale, bias and saturate x to 0..1 range
+            var x2:Var = sat(div(sub(x , edge0) , sub(edge1 , edge0)));
+            // Evaluate polynomial
+            return mul2([x2,x2,sub(3 , mul(2,x2))],t);
+        }
+		
+		public function mix(a:Object, b:Object, v:Object, t:Var = null):Var {
+			return add(mul(sub(1,v),a),mul(v, b),t);
+		}
 		
 		public function mod(a:Object, b:Object, t:Var=null):Var {
 			return mul(modfrc(a,b), b, t);
@@ -258,6 +282,30 @@ package flShader {
 		public function modfrc(a:Object, b:Object, t:Var=null):Var {
 			var c:Var = div(a, b);
 			return frc(c,t);
+		}
+		
+		public function vec2(a:Object, b:Object, t:Var = null):Var {
+			t = t || createTempVar();
+			mov(a, t.x);
+			mov(b, t.y);
+			return t;
+		}
+		
+		public function vec3(a:Object, b:Object, c:Object,t:Var = null):Var {
+			t = t || createTempVar();
+			mov(a, t.x);
+			mov(b, t.y);
+			mov(c, t.z);
+			return t;
+		}
+		
+		public function vec4(a:Object, b:Object,c:Object,d:Object, t:Var = null):Var {
+			t = t || createTempVar();
+			mov(a, t.x);
+			mov(b, t.y);
+			mov(c, t.z);
+			mov(d, t.w);
+			return t;
 		}
 		
 		public function mul2(arr:Array, t:Var=null):Var {return f2("mul", arr, t);}
@@ -285,48 +333,48 @@ package flShader {
 		public function V(index:int=0):Var { return new Var(Var.TYPE_V,index)};
 		public function FS(index:int=0):Var { return new Var(Var.TYPE_FS,index)};
 		
-		public function mov(a:Object=null, t:Var=null):Var {return f("mov", a, null, t);}
-		public function add(a:Object=null, b:Object=null, t:Var=null):Var {return f("add", a, b, t);}
-		public function sub(a:Object=null, b:Object=null, t:Var=null):Var {return f("sub", a, b, t);}
-		public function mul(a:Object=null, b:Object=null, t:Var=null):Var {return f("mul", a, b, t);}
-		public function div(a:Object=null, b:Object=null, t:Var=null):Var {return f("div", a, b, t);}
-		public function rcp(a:Object=null, t:Var=null):Var {return f("rcp", a, null, t);}
-		public function min(a:Object=null, b:Object=null, t:Var=null):Var {return f("min", a, b, t);}
-		public function max(a:Object=null, b:Object=null, t:Var=null):Var {return f("max", a, b, t);}
-		public function frc(a:Object=null, t:Var=null):Var {return f("frc", a, null, t);}
-		public function sqt(a:Object=null, t:Var=null):Var {return f("sqt", a, null, t);}
-		public function rsq(a:Object=null, t:Var=null):Var {return f("rsq", a, null, t);}
-		public function pow(a:Object=null, b:Object=null, t:Var=null):Var {return f("pow", a, b, t);}
-		public function log(a:Object=null, t:Var=null):Var {return f("log", a, null, t);}
-		public function exp(a:Object=null,  t:Var=null):Var {return f("exp", a, null, t);}
-		public function nrm(a:Object=null, t:Var=null,component:String=null):Var {return f("nrm", a, null, t,null,3,component||"xyz");}
-		public function sin(a:Object=null,  t:Var=null):Var {return f("sin", a, null, t);}
-		public function cos(a:Object=null,  t:Var=null):Var {return f("cos", a, null, t);}
-		public function crs(a:Object=null, b:Object=null, t:Var=null,component:String=null):Var {return f("crs", a, b, t,null,3,component||"xyz");}
-		public function dp3(a:Object=null, b:Object=null, t:Var=null):Var {return f("dp3", a, b, t);}
-		public function dp4(a:Object=null, b:Object=null, t:Var=null):Var {return f("dp4", a, b, t);}
-		public function abs(a:Object=null,  t:Var=null):Var {return f("abs", a, null, t);}
-		public function neg(a:Object=null,  t:Var=null):Var {return f("neg", a, null, t);}
-		public function sat(a:Object=null,  t:Var=null):Var {return f("sat", a, null, t);}
-		public function m33(a:Object=null, b:Object=null, t:Var=null,component:String=null):Var {return f("m33", a, b, t,null,3,component||"xyz");}
-		public function m44(a:Object=null, b:Object=null, t:Var=null):Var {return f("m44", a, b, t);}
-		public function m34(a:Object=null, b:Object=null, t:Var=null):Var {return f("m34", a, b, t);}
-		public function ddx(a:Object=null, t:Var=null):Var {return f("ddx", a, null, t);}
-		public function ddy(a:Object=null, t:Var=null):Var {return f("ddy", a, null, t);}
-		public function ife(a:Object=null, b:Object=null, t:Var=null):Var {return f("ife", a, b, t);}
-		public function ine(a:Object=null, b:Object=null, t:Var=null):Var {return f("ine", a, b, t);}
-		public function ifg(a:Object=null, b:Object=null, t:Var=null):Var {return f("ifg", a, b, t);}
-		public function ifl(a:Object=null, b:Object=null, t:Var=null):Var {return f("ifl", a, b, t);}
-		public function els(a:Object=null, b:Object=null, t:Var=null):Var {return f("els", a, b, t);}
-		public function eif(a:Object=null, b:Object=null, t:Var=null):Var {return f("eif", a, b, t);}
-		public function ted(a:Object=null, b:Object=null, t:Var=null):Var {return f("ted", a, b, t);}
-		public function kil(a:Object=null, b:Object=null, t:Var=null):Var {return f("kil", a, b, t,null,1);}
+		public function mov(a:Object, t:Var=null):Var {return f("mov", a, null, t);}
+		public function add(a:Object, b:Object, t:Var=null):Var {return f("add", a, b, t);}
+		public function sub(a:Object, b:Object, t:Var=null):Var {return f("sub", a, b, t);}
+		public function mul(a:Object, b:Object, t:Var=null):Var {return f("mul", a, b, t);}
+		public function div(a:Object, b:Object, t:Var=null):Var {return f("div", a, b, t);}
+		public function rcp(a:Object, t:Var=null):Var {return f("rcp", a, null, t);}
+		public function min(a:Object, b:Object, t:Var=null):Var {return f("min", a, b, t);}
+		public function max(a:Object, b:Object, t:Var=null):Var {return f("max", a, b, t);}
+		public function frc(a:Object, t:Var=null):Var {return f("frc", a, null, t);}
+		public function sqt(a:Object, t:Var=null):Var {return f("sqt", a, null, t);}
+		public function rsq(a:Object, t:Var=null):Var {return f("rsq", a, null, t);}
+		public function pow(a:Object, b:Object, t:Var=null):Var {return f("pow", a, b, t);}
+		public function log(a:Object, t:Var=null):Var {return f("log", a, null, t);}
+		public function exp(a:Object,  t:Var=null):Var {return f("exp", a, null, t);}
+		public function nrm(a:Object, t:Var=null,component:String=null):Var {return f("nrm", a, null, t,null,3,component||"xyz");}
+		public function sin(a:Object,  t:Var=null):Var {return f("sin", a, null, t);}
+		public function cos(a:Object,  t:Var=null):Var {return f("cos", a, null, t);}
+		public function crs(a:Object, b:Object, t:Var=null,component:String=null):Var {return f("crs", a, b, t,null,3,component||"xyz");}
+		public function dp3(a:Object, b:Object, t:Var=null):Var {return f("dp3", a, b, t);}
+		public function dp4(a:Object, b:Object, t:Var=null):Var {return f("dp4", a, b, t);}
+		public function abs(a:Object,  t:Var=null):Var {return f("abs", a, null, t);}
+		public function neg(a:Object,  t:Var=null):Var {return f("neg", a, null, t);}
+		public function sat(a:Object,  t:Var=null):Var {return f("sat", a, null, t);}
+		public function m33(a:Object, b:Object, t:Var=null,component:String=null):Var {return f("m33", a, b, t,null,3,component||"xyz");}
+		public function m44(a:Object, b:Object, t:Var=null):Var {return f("m44", a, b, t);}
+		public function m34(a:Object, b:Object, t:Var=null):Var {return f("m34", a, b, t);}
+		public function ddx(a:Object, t:Var=null):Var {return f("ddx", a, null, t);}
+		public function ddy(a:Object, t:Var=null):Var {return f("ddy", a, null, t);}
+		public function ife(a:Object, b:Object, t:Var=null):Var {return f("ife", a, b, t);}
+		public function ine(a:Object, b:Object, t:Var=null):Var {return f("ine", a, b, t);}
+		public function ifg(a:Object, b:Object, t:Var=null):Var {return f("ifg", a, b, t);}
+		public function ifl(a:Object, b:Object, t:Var=null):Var {return f("ifl", a, b, t);}
+		public function els(a:Object, b:Object, t:Var=null):Var {return f("els", a, b, t);}
+		public function eif(a:Object, b:Object, t:Var=null):Var {return f("eif", a, b, t);}
+		public function ted(a:Object, b:Object, t:Var=null):Var {return f("ted", a, b, t);}
+		public function kil(a:Object, b:Object, t:Var=null):Var {return f("kil", a, b, t,null,1);}
 		public function tex(a:Object = null, b:Object = null, t:Var = null, flags:Array = null):Var {return f("tex", a, b, t,flags);}
-		public function sge(a:Object=null, b:Object=null, t:Var=null):Var {return f("sge", a, b, t);}
-		public function slt(a:Object=null, b:Object=null, t:Var=null):Var {return f("slt", a, b, t);}
-		public function sgn(a:Object=null, b:Object=null, t:Var=null):Var {return f("sgn", a, b, t);}
-		public function seq(a:Object=null, b:Object=null, t:Var=null):Var {return f("seq", a, b, t);}
-		public function sne(a:Object=null, b:Object=null, t:Var=null):Var {return f("sne", a, b, t);}
+		public function sge(a:Object, b:Object, t:Var=null):Var {return f("sge", a, b, t);}
+		public function slt(a:Object, b:Object, t:Var=null):Var {return f("slt", a, b, t);}
+		public function sgn(a:Object, b:Object, t:Var=null):Var {return f("sgn", a, b, t);}
+		public function seq(a:Object, b:Object, t:Var=null):Var {return f("seq", a, b, t);}
+		public function sne(a:Object, b:Object, t:Var=null):Var {return f("sne", a, b, t);}
 		
 	}
 
