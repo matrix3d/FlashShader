@@ -29,6 +29,7 @@ package gl3d.shaders
 			var norm:Var = VA(1);
 			var uv:Var = VA(2);
 			var tangent:Var = VA(3);
+			var targetPosition:Var = VA(4);
 			var worldPos:Var = m44(pos, model);
 			var viewPos:Var = m44(worldPos, view);
 			m44(viewPos, perspective, op);
@@ -54,6 +55,9 @@ package gl3d.shaders
 			
 			if (material.textureSets.length>0) {
 				mov(uv, V(3));
+			}
+			if (material.wireframeAble) {
+				mov(targetPosition,V(4));
 			}
 		}
 	}

@@ -17,6 +17,7 @@ package gl3d
 		private var _matrix:Matrix3D = new Matrix3D;
 		public var children:Vector.<Node3D> = new Vector.<Node3D>;
 		public var drawable:Drawable3D;
+		public var unpackedDrawable:Drawable3D;
 		public var material:Material;
 		public var name:String;
 		public var trs:Vector.<Vector3D> = Vector.<Vector3D>([new Vector3D(), new Vector3D(), new Vector3D(1, 1, 1)]);

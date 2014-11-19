@@ -4,6 +4,7 @@ package gl3d
 	import flash.display3D.Context3DProgramType;
 	import flash.geom.Vector3D;
 	import flShader.FlShader;
+	import gl3d.meshs.Meshs;
 	import gl3d.shaders.GLShader;
 	import gl3d.shaders.PhongGLShader;
 	/**
@@ -18,6 +19,8 @@ package gl3d
 		public var textureSets:Vector.<TextureSet>=new Vector.<TextureSet>;
 		public var color:Vector.<Number> = Vector.<Number>([1, 1, 1, 1]);
 		public var alpha:Number = 1;
+		private var _wireframeAble:Boolean = false;
+		public var wireframeColor:Vector.<Number> = Vector.<Number>([.5, 0, .5, 0]);
 		public var invalid:Boolean = true;
 		private var _normalMapAble:Boolean;
 		public var shader:GLShader;
@@ -34,6 +37,12 @@ package gl3d
 			this.node = node;
 			if (node.drawable&&shader) {
 				var context:Context3D = view.context;
+				if (wireframeAble) {
+					if (node.unpackedDrawable==null) {
+						node.unpackedDrawable = Meshs.unpack(node.drawable);
+					}
+					node.unpackedDrawable.update(context);
+				}
 				node.drawable.update(context);
 				if (textureSets) {
 					for each(var textureSet:TextureSet in textureSets) {
@@ -57,6 +66,17 @@ package gl3d
 		public function set normalMapAble(value:Boolean):void 
 		{
 			_normalMapAble = value;
+		}
+		
+		public function get wireframeAble():Boolean 
+		{
+			return _wireframeAble;
+		}
+		
+		public function set wireframeAble(value:Boolean):void 
+		{
+			_wireframeAble = value;
+			invalid = true;
 		}
 	}
 }

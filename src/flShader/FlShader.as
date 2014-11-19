@@ -284,6 +284,10 @@ package flShader {
 			return frc(c,t);
 		}
 		
+		public function fwidth(a:Object, t:Var = null):Var {
+			return add(abs( ddx( a ) ) , abs( ddy( a ) ),t);
+		}
+		
 		public function vec2(a:Object, b:Object, t:Var = null):Var {
 			t = t || createTempVar();
 			mov(a, t.x);

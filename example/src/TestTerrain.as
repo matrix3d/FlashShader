@@ -35,6 +35,7 @@ package
 		
 		override public function initUI():void 
 		{
+			super.initUI();
 			gameModeBtn = new PushButton(this, 5, 5, "game mode", gameModeBtnClick);
 			gameModeBtn.toggle = true;
 			gameModeBtn.selected = true;

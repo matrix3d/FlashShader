@@ -22,14 +22,27 @@ package gl3d.shaders
 		}
 		
 		override public function build():void {
+			if (material.wireframeAble) {
+				var tp:Var = mov(V(4));
+				var a3:Var = smoothstep(0, fwidth(tp), tp);
+				var wireframeColor:Var= mul(sub( 1 , min(min(a3.x, a3.y), a3.z).xxx ) , C(5));
+			}
 			var diffColor:Var = getDiffColor();
 			var light:Light = material.view.light;
 			if (light.lightAble) {
 				var phongColor:Var = getPhongColor();
 				mov(diffColor.w, phongColor.w);
-				mul(phongColor, diffColor, oc);
+				if (wireframeColor) {
+					add(wireframeColor,mul(phongColor, diffColor),oc);
+				}else {
+					mul(phongColor, diffColor, oc);
+				}
 			}else {
-				mov(diffColor,oc);
+				if (wireframeColor) {
+					add(diffColor, wireframeColor, oc);
+				}else {
+					mov(diffColor,oc);
+				}
 			}
 		}
 		

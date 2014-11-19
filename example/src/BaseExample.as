@@ -107,7 +107,7 @@ package
 		public function initNode():void {
 			teapot = new Node3D;
 			teapot.material = material;
-			teapot.drawable = Meshs.teapot(6);
+			teapot.drawable = Meshs.teapot(4);
 			view.scene.addChild(teapot);
 			teapot.scaleX = teapot.scaleY = teapot.scaleZ = 0.3;
 		}
@@ -120,6 +120,7 @@ package
 			aui.bind(view.light, "ambient", AttribSeter.TYPE_VEC_COLOR);
 			aui.bind(material, "color", AttribSeter.TYPE_VEC_COLOR);
 			aui.bind(material, "alpha", AttribSeter.TYPE_NUM, new Point(.1, 1));
+			aui.bind(material, "wireframeAble", AttribSeter.TYPE_BOOL);
 			aui.bind(this, "useTexture", AttribSeter.TYPE_BOOL);
 			aui.bind(this, "post", AttribSeter.TYPE_LIST_STR,null,["null","blur","water","bend","heart","flower"]);
 		}

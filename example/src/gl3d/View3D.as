@@ -51,7 +51,7 @@ package gl3d
 			context = stage.stage3Ds[0].context3D;
 			context.setCulling(Context3DTriangleFace.FRONT);
 			context.enableErrorChecking = true;
-			context.setBlendFactors(Context3DBlendFactor.SOURCE_ALPHA, Context3DBlendFactor.ONE_MINUS_SOURCE_ALPHA);
+			//context.setBlendFactors(Context3DBlendFactor.SOURCE_ALPHA, Context3DBlendFactor.ONE_MINUS_SOURCE_ALPHA);
 		}
 		
 		public function updateCtrl():void {

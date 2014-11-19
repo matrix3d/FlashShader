@@ -5,6 +5,7 @@ package gl3d.shaders
 	import flash.geom.Vector3D;
 	import flShader.FlShader;
 	import gl3d.Camera3D;
+	import gl3d.Drawable3D;
 	import gl3d.Material;
 	import gl3d.Node3D;
 	import gl3d.TextureSet;
@@ -16,6 +17,7 @@ package gl3d.shaders
 	 */
 	public class PhongGLShader extends GLShader
 	{
+		private var drawable:Drawable3D;
 		public function PhongGLShader() 
 		{
 		}
@@ -30,12 +32,16 @@ package gl3d.shaders
 		
 		override public function preUpdate(material:Material):void {
 			super.preUpdate(material);
+			
+			drawable = material.wireframeAble?material.node.unpackedDrawable:material.node.drawable;
+			
 			textureSets= material.textureSets;
 			buffSets.length = 0;
-			buffSets[0] = material.node.drawable.pos;
-			buffSets[1] = material.node.drawable.norm;
-			buffSets[2] =textureSets.length?material.node.drawable.uv:null;
-			buffSets[3] =material.normalMapAble?material.node.drawable.tangent:null;
+			buffSets[0] = drawable.pos;
+			buffSets[1] = drawable.norm;
+			buffSets[2] =textureSets.length?drawable.uv:null;
+			buffSets[3] = material.normalMapAble?drawable.tangent:null;
+			buffSets[4] = material.wireframeAble?drawable.targetPosition:null;
 		}
 		
 		override public function update(material:Material):void 
@@ -60,10 +66,11 @@ package gl3d.shaders
 				context.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, 1,view.light.color);//light color
 				context.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, 2,view.light.ambient);//ambient color 环境光
 				context.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, 3,Vector.<Number>([view.light.specularPower,0,0,0]));//x:specular pow, y:2
+				context.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, 5,material.wireframeColor);//x:specular pow, y:2
 				
 				context.setProgramConstantsFromVector(Context3DProgramType.VERTEX, vs.constMemLen, Vector.<Number>(vs.constPool));
 				context.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, fs.constMemLen, Vector.<Number>(fs.constPool));
-				context.drawTriangles(node.drawable.index.buff);
+				context.drawTriangles(drawable.index.buff);
 			}
 		}
 		

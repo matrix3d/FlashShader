@@ -38,7 +38,7 @@ package gl3d.meshs
 		}
 		
 		public static function test():Drawable3D {
-			return createDrawable(Vector.<uint>([0,1,2]), Vector.<Number>([1,1,0,1,0,0,0,1,0]), null, null);
+			return createDrawable(Vector.<uint>([1,0,2]), Vector.<Number>([1,1,0,1,0,0,0,1,0]), null, null);
 		}
 		public static function cube(width:Number=1,heigth:Number=1,depth:Number=1):Drawable3D {
 			var hw:Number = width / 2;
@@ -115,16 +115,44 @@ package gl3d.meshs
 		}
 		
 		
-		
 		public static function createDrawable(index:Vector.<uint>,pos:Vector.<Number>,uv:Vector.<Number>,norm:Vector.<Number>,tangent:Vector.<Number>=null):Drawable3D {
 			var drawable:Drawable3D = new Drawable3D;
 			drawable.index = new IndexBufferSet(index);
+			if(pos)
 			drawable.pos = new VertexBufferSet(pos,3);
-			drawable.uv = new VertexBufferSet(uv,2);
+			if(uv)
+			drawable.uv = new VertexBufferSet(uv, 2);
+			if(norm)
 			drawable.norm = new VertexBufferSet(norm, 3);
 			if(tangent)
 			drawable.tangent = new VertexBufferSet(tangent, 3);
 			return drawable;
+		}
+		
+		public static function unpack(drawable:Drawable3D):Drawable3D {
+			var newDrawable:Drawable3D = new Drawable3D;
+			var idata:Vector.<uint> = drawable.index.data;
+			newDrawable.index = new IndexBufferSet(new Vector.<uint>());
+			var vbnames:Array = ["pos","uv","norm"];
+			for (var i:int = 0; i < idata.length; i += 3 ) {
+				newDrawable.index.data.push(i,i+1,i+2);
+				for each(var name:String in vbnames) {
+					var vb:VertexBufferSet = drawable[name];
+					if (vb) {
+						var newvb:VertexBufferSet = newDrawable[name];
+						if(newvb==null)
+						newvb = newDrawable[name] = new VertexBufferSet(new Vector.<Number>(idata.length * vb.data32PerVertex), vb.data32PerVertex);
+						var d:int=vb.data32PerVertex
+						for (var j:int = 0; j < d; j++) {
+							newvb.data[i * d+j] = vb.data[idata[i]*d+j];
+							newvb.data[(i+1) * d+j] = vb.data[idata[i+1]*d+j];
+							newvb.data[(i+2) * d+j] = vb.data[idata[i+2]*d+j];
+						}
+						
+					}
+				}
+			}
+			return newDrawable;
 		}
 		
 		public static function removeDuplicatedVertices(drawable:Drawable3D):void {
@@ -298,6 +326,28 @@ package gl3d.meshs
 				random[i] = Math.random();
 			}
 			return new VertexBufferSet(random, 1);
+		}
+		
+		public static function computeTargetPosition(drawable:Drawable3D) : VertexBufferSet
+		{
+			var targetPosition:Vector.<Number> = new Vector.<Number>(drawable.pos.data.length);
+			var idata:Vector.<uint> = drawable.index.data;
+			for (var i:int = 0; i < idata.length; i+=3)
+			{
+				var j:int = idata[i] * 3;
+				targetPosition[j++] = 0;
+				targetPosition[j++] = 0;
+				targetPosition[j] = 1;
+				j = idata[i+1] * 3;
+				targetPosition[j++] = 0;
+				targetPosition[j++] = 1;
+				targetPosition[j] = 0;
+				j = idata[i+2] * 3;
+				targetPosition[j++] = 1;
+				targetPosition[j++] = 0;
+				targetPosition[j] = 0;
+			}
+			return new VertexBufferSet(targetPosition, 3);
 		}
 	}
 
