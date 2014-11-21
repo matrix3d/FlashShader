@@ -40,18 +40,9 @@ package gl3d.shaders
 			var viewNormal:Var = m33(m33(norm, model),view);
 			mov(viewNormal, V(1));
 			
-			/*if (material.normalMapAble) {
-				var viewTangent:Var = m33(tangent, model);
-				var biTangent:Var = crs(viewNormal, viewTangent);
-				
-				var temp:Var = createTempVar();
-				mov(dp3(tangent,normalMap),null,temp.x);
-				mov(dp3(biTangent,normalMap),null,temp.y);
-				mov(dp3(normal, normalMap), null, temp.z);
-				normal = normalMap;
-			}else {
-				normal = V(1);
-			}*/
+			if (material.normalMapAble) {
+				mov(tangent,V(4))
+			}
 			
 			if (material.textureSets.length>0) {
 				mov(uv, V(3));

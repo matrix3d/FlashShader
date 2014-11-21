@@ -25,7 +25,7 @@ package gl3d.shaders
 			if (material.wireframeAble) {
 				var tp:Var = mov(V(4));
 				var a3:Var = smoothstep(0, fwidth(tp), tp);
-				var wireframeColor:Var= mul(sub( 1 , min(min(a3.x, a3.y), a3.z).xxx ) , C(5));
+				var wireframeColor:Var = mul(sub( 1 , min(min(a3.x, a3.y), a3.z).xxx ) , C(5));
 			}
 			var diffColor:Var = getDiffColor();
 			var light:Light = material.view.light;
@@ -71,7 +71,7 @@ package gl3d.shaders
 				mov(dp3(tangent,normalMap),temp.x);
 				mov(dp3(biTangent,normalMap),temp.y);
 				mov(dp3(normal, normalMap), temp.z);
-				normal = normalMap;
+				normal = temp;
 			}else {
 				normal = V(1);
 			}

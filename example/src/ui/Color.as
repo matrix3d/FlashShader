@@ -67,6 +67,13 @@ package ui
 			return (Math.round(r) << 16) | (Math.round(g) << 8) | Math.round(b);
 		}
 		
+		public function scale(v:Number):Color {
+			r *= v;
+			g *= v;
+			b *= v;
+			return this;
+		}
+		
 	}
 
 }

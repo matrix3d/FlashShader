@@ -207,9 +207,9 @@ package flShader {
 			if (av&&bv&&av.type==Var.TYPE_C&&bv.type==Var.TYPE_C) {
 				throw "can not all the a,b type const"
 			}
-			if (c==null) {
+			/*if (c==null) {
 				throw "no target"
-			}
+			}*/
 			
 			line.flag = flag;
 			lines.push(line);
@@ -372,7 +372,7 @@ package flShader {
 		public function els(a:Object, b:Object, t:Var=null):Var {return f("els", a, b, t);}
 		public function eif(a:Object, b:Object, t:Var=null):Var {return f("eif", a, b, t);}
 		public function ted(a:Object, b:Object, t:Var=null):Var {return f("ted", a, b, t);}
-		public function kil(a:Object, b:Object, t:Var=null):Var {return f("kil", a, b, t,null,1);}
+		public function kil(a:Object):Var {return f("kil", a, null, null,null,1);}
 		public function tex(a:Object = null, b:Object = null, t:Var = null, flags:Array = null):Var {return f("tex", a, b, t,flags);}
 		public function sge(a:Object, b:Object, t:Var=null):Var {return f("sge", a, b, t);}
 		public function slt(a:Object, b:Object, t:Var=null):Var {return f("slt", a, b, t);}

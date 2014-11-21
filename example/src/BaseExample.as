@@ -1,5 +1,6 @@
 package 
 {
+	import flash.display.Bitmap;
 	import flash.display.BitmapData;
 	import flash.display.Sprite;
 	import flash.display.StageAlign;
@@ -22,11 +23,12 @@ package
 	import gl3d.TextureSet;
 	import gl3d.View3D;
 	import ui.AttribSeter;
+	import ui.Color;
 	/**
 	 * ...
 	 * @author lizhi
 	 */
-	[SWF(frameRate='60', backgroundColor='0x000000', width='800', height='600')]
+	[SWF(frameRate='60', backgroundColor='0x000000', width='280', height='260')]
 	public class BaseExample extends Sprite
 	{
 		public var view:View3D;
@@ -49,7 +51,12 @@ package
 			
 			normalMapTexture = createNormalMap();
 			
-			material.textureSets = Vector.<TextureSet>([texture/*,normalMapTexture*/]);
+			material.normalMapAble = true;
+			material.textureSets = Vector.<TextureSet>([texture]);
+			if (material.normalMapAble) {
+				material.textureSets.push( normalMapTexture);
+			}
+			
 			material.color = Vector.<Number>([.6, .6, .6, 1]);
 			
 			initLight();
@@ -62,7 +69,6 @@ package
 			stage.scaleMode = StageScaleMode.NO_SCALE;
 			stage.addEventListener(Event.RESIZE, stage_resize);
 			stage_resize();
-			
 			//post = "water";
 			//post = "heart";
 			//post = "flower";
@@ -70,34 +76,59 @@ package
 		
 		public function createNormalMap():TextureSet {
 			var bmd:BitmapData = new BitmapData(512, 512, false, 0);
-			bmd.perlinNoise(5, 5, 4, 1,true,true);
-			var byte:ByteArray = bmd.getPixels(bmd.rect);
-			for (var i:int = 0; i < byte.length;i+=4 ) {
-				var r:Number = byte[i + 1]/0xff;
-				var g:Number = byte[i + 2]/0xff;
-				var b:Number = byte[i + 3]/0xff;
-				r = r * 2 - 1;
-				g = g * 2 -1;
-				b = (b+1);
-				var msg:Number = Math.sqrt(r * r + g * g + b * b);
-				r /= msg;
-				g /= msg;
-				b /= msg;
-				
-				r = (r+1)/2;
-				g = (g+1)/2
-				b = (b + 1) / 2;
-				
-				r = .5;
-				g = .5;
-				b = 1;
-				byte[i + 1] = r * 0xff;
-				byte[i + 2] = g * 0xff;
-				byte[i + 3] = b * 0xff;
+			bmd.perlinNoise(50, 50, 4, 1,true,true);
+			//[Embed(source = "mandelbrot.png")]var c:Class;
+			//bmd = (new c as Bitmap).bitmapData;
+			var bmd2:BitmapData = bmd.clone();
+			var valuePX:Color = new Color;
+			var valueNX:Color = new Color;
+			var valuePY:Color = new Color;
+			var valueNY:Color = new Color;
+			var neighbors:Color = new Color;
+			var slope:Color = new Color;
+			var scale:Number = 4.5;
+			var kUseTwoMaps:Boolean = true;
+			for (var x:int = 0; x < bmd.width;x++ ) {
+				for (var y:int = 0; y < bmd.height; y++ ) {
+					valuePX.fromHex(bmd.getPixel(x+1,y));
+					valueNX.fromHex(bmd.getPixel(x-1,y));
+					valuePY.fromHex(bmd.getPixel(x,y+1));
+					valueNY.fromHex(bmd.getPixel(x,y-1));
+					valuePX.scale(1 / 0xff);
+					valueNX.scale(1 / 0xff);
+					valuePY.scale(1 / 0xff);
+					valueNY.scale(1 / 0xff);
+					
+					if (kUseTwoMaps) {
+						var factor:Number = 1.0 / (2.0 * 255.0); // 255.0 * 2.0
+						// Reconstruct the high-precision values from the low precision values
+						valuePX.r += 255.0 * (valuePX.b - 0.5);
+						valueNX.r += 255.0 * (valueNX.b - 0.5);
+						valuePY.r += 255.0 * (valuePY.b - 0.5);
+						valueNY.r += 255.0 * (valueNY.b - 0.5);
+					}else {
+						factor = 1.0 / 2.0;
+					}
+					// Take into account the boundary conditions in the pool
+					
+					neighbors.r = valuePX.r * (valuePX.g) + (1.0 - valuePX.g) * valueNX.r; // Enforce the boundary conditions as mirror reflections
+					neighbors.g = valuePY.r * (valuePY.g) + (1.0 - valuePY.g) * valueNY.r; // Enforce the boundary conditions as mirror reflections
+					neighbors.b = valueNX.r * (valueNX.g) + (1.0 - valueNX.g) * valuePX.r; // Enforce the boundary conditions as mirror reflections
+					var w:Number = valueNY.r * (valueNY.g) + (1.0 - valueNY.g) * valuePY.r; // Enforce the boundary conditions as mirror reflections
+					 
+					slope.fromRGB(scale * (neighbors.b - neighbors.r) * factor, 
+										   scale * (w - neighbors.g) * factor, 1.0);
+					
+					slope.r *= 5.0;
+					slope.g *= 5.0;
+					slope.r += .5;
+					slope.g += .5;
+					slope.scale(0xff);
+					bmd2.setPixel(x,y,slope.toHex() );
+				}
 			}
-			byte.position = 0;
-			bmd.setPixels(bmd.rect, byte);
-			return new TextureSet(bmd);
+			//addChild(new Bitmap(bmd2));
+			return new TextureSet(bmd2);
 		}
 		
 		public function initLight():void {
@@ -109,11 +140,11 @@ package
 			teapot.material = material;
 			teapot.drawable = Meshs.teapot(4);
 			view.scene.addChild(teapot);
-			teapot.scaleX = teapot.scaleY = teapot.scaleZ = 0.3;
+			teapot.scaleX = teapot.scaleY = teapot.scaleZ = 1;
 		}
 		
 		public function initUI():void {
-			addChild(aui);
+			//addChild(aui);
 			aui.bind(view.light, "specularPower", AttribSeter.TYPE_NUM, new Point(1, 100));
 			aui.bind(view.light, "lightPower", AttribSeter.TYPE_NUM, new Point(.5, 5));
 			aui.bind(view.light, "color", AttribSeter.TYPE_VEC_COLOR);
@@ -141,8 +172,8 @@ package
 			if (view.context)
 				view.context.enableErrorChecking = true;
 			if(teapot){
-				teapot.rotationX+=.01;
-				teapot.rotationY += .01;
+				//teapot.rotationX+=.01;
+				//teapot.rotationY += .01;
 			}
 			view.updateCtrl();
 			view.render(getTimer());
