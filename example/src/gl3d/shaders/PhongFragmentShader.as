@@ -4,9 +4,9 @@ package gl3d.shaders
 	import flash.display3D.textures.Texture;
 	import flShader.FlShader;
 	import flShader.Var;
-	import gl3d.Light;
-	import gl3d.Material;
-	import gl3d.TextureSet;
+	import gl3d.core.Light;
+	import gl3d.core.Material;
+	import gl3d.core.TextureSet;
 	/**
 	 * ...
 	 * @author lizhi
@@ -29,7 +29,7 @@ package gl3d.shaders
 			}
 			var diffColor:Var = getDiffColor();
 			var light:Light = material.view.light;
-			if (light.lightAble) {
+			if (material.lightAble) {
 				var phongColor:Var = getPhongColor();
 				mov(diffColor.w, phongColor.w);
 				if (wireframeColor) {
@@ -84,7 +84,7 @@ package gl3d.shaders
 			var cosAlpha:Var = sat(dp3(e, r));
 			
 			var light:Light = material.view.light;
-			if (light.lightAble) {
+			if (material.lightAble) {
 				
 			}else {
 				

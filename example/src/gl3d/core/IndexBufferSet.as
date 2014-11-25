@@ -1,5 +1,4 @@
-package gl3d 
-{
+package gl3d.core {
 	import flash.display3D.Context3D;
 	import flash.display3D.IndexBuffer3D;
 	/**

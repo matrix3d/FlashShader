@@ -1,5 +1,4 @@
-package gl3d 
-{
+package gl3d.core {
 	import flash.display.Sprite;
 	import flash.display3D.Context3D;
 	import flash.display3D.Context3DBlendFactor;
@@ -21,12 +20,13 @@ package gl3d
 		public var scene:Node3D = new Node3D("scene");
 		public var camera:Camera3D = new Camera3D;
 		public var light:Light = new Light;
+		public var fog:Fog;
 		public var invalid:Boolean = true;
 		public var collects:Vector.<Node3D> = new Vector.<Node3D>;
 		public var ctrls:Vector.<Ctrl> = new Vector.<Ctrl>;
 		public var posts:Vector.<PostEffect> = new Vector.<PostEffect>;
 		public var postRTTs:Vector.<TextureSet> = Vector.<TextureSet>([new TextureSet, new TextureSet]);
-		public var antiAlias:int = 16;
+		public var antiAlias:int = 2;
 		public var stage3dWidth:Number = 0;
 		public var stage3dHeight:Number = 0;
 		public var time:Number = 0;

@@ -1,7 +1,7 @@
 package gl3d.shaders 
 {
 	import flShader.FlShader;
-	import gl3d.Material;
+	import gl3d.core.Material;
 	/**
 	 * ...
 	 * @author lizhi

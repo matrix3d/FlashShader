@@ -7,7 +7,7 @@ package gl3d.ctrl
 	import flash.geom.Point;
 	import flash.geom.Vector3D;
 	import flash.ui.Keyboard;
-	import gl3d.Node3D;
+	import gl3d.core.Node3D;
 	
 	/**
 	 * ...

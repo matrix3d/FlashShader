@@ -1,5 +1,4 @@
-package gl3d 
-{
+package gl3d.core {
 	import com.adobe.utils.PerspectiveMatrix3D;
 	import flash.display3D.Context3D;
 	import flash.geom.Matrix3D;

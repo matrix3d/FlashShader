@@ -1,6 +1,6 @@
-package gl3d 
-{
+package gl3d.core {
 	import flash.display3D.Context3D;
+	import flash.geom.Vector3D;
 	import gl3d.meshs.Meshs;
 	/**
 	 * ...
@@ -15,6 +15,7 @@ package gl3d
 		private var _random:VertexBufferSet;
 		private var _targetPosition:VertexBufferSet;
 		public var index:IndexBufferSet;
+		public var id2index:Object = { };
 		public function Drawable3D() 
 		{
 			
@@ -113,6 +114,34 @@ package gl3d
 			_targetPosition = value;
 		}
 		
+		public function addVertex(posV:Array, uvV:Array):int {
+			var id:String = posV + ":" + uvV;
+			if (id2index[id]==null) {
+				var indexV:int = pos.data.length / 3;
+				pos.data.push(posV[0], posV[1], posV[2]);
+				uv.data.push(uvV[0], uvV[1]);
+				id2index[id] = indexV;
+			}else {
+				indexV=id2index[id] as int;
+			}
+			index.data.push(indexV);
+			return indexV;
+		}
+		
+		public function addVertex2(posV:Array, uvV:Array, indexV:int):void {
+			if (pos.data.length<(indexV+1)*3) {
+				pos.data.length = (indexV+1) * 3;
+			}
+			if (uv.data.length<(indexV+1)*2) {
+				uv.data.length = (indexV+1) * 2;
+			}
+			pos.data[indexV * 3 + 0] = posV[0];
+			pos.data[indexV * 3 + 1] = posV[1];
+			pos.data[indexV * 3 + 2] = posV[2];
+			uv.data[indexV * 2 + 0] = uvV[0];
+			uv.data[indexV * 2 + 1] = uvV[1];
+			index.data.push(indexV);
+		}
 	}
 
 }

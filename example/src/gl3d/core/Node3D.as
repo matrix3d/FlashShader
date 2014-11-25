@@ -1,5 +1,4 @@
-package gl3d 
-{
+package gl3d.core {
 	import flash.display3D.Context3D;
 	import flash.geom.Matrix3D;
 	import flash.geom.Vector3D;

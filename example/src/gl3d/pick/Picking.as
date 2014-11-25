@@ -1,7 +1,7 @@
 package gl3d.pick 
 {
 	import flash.geom.Vector3D;
-	import gl3d.Node3D;
+	import gl3d.core.Node3D;
 	/**
 	 * ...
 	 * @author lizhi

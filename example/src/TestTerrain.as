@@ -10,12 +10,12 @@ package
 	import gl3d.ctrl.Ctrl;
 	import gl3d.ctrl.FirstPersonCtrl;
 	import gl3d.ctrl.FollowCtrl;
-	import gl3d.Material;
+	import gl3d.core.Material;
 	import gl3d.meshs.Meshs;
-	import gl3d.Node3D;
+	import gl3d.core.Node3D;
 	import gl3d.pick.TerrainPicking;
 	import gl3d.shaders.TerrainPhongGLShader;
-	import gl3d.TextureSet;
+	import gl3d.core.TextureSet;
 	/**
 	 * ...
 	 * @author lizhi

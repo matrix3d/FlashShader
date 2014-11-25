@@ -3,13 +3,13 @@ package gl3d.shaders.particle {
 	import flash.display3D.Context3DProgramType;
 	import flash.geom.Vector3D;
 	import flShader.FlShader;
-	import gl3d.Camera3D;
-	import gl3d.Material;
+	import gl3d.core.Camera3D;
+	import gl3d.core.Material;
 	import gl3d.meshs.Meshs;
-	import gl3d.Node3D;
+	import gl3d.core.Node3D;
 	import gl3d.shaders.GLShader;
 	import gl3d.shaders.PhongFragmentShader;
-	import gl3d.View3D;
+	import gl3d.core.View3D;
 	/**
 	 * ...
 	 * @author lizhi

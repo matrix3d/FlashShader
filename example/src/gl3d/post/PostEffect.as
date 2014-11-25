@@ -1,13 +1,13 @@
 package gl3d.post 
 {
-	import gl3d.Material;
+	import gl3d.core.Material;
 	import gl3d.meshs.Meshs;
-	import gl3d.Node3D;
+	import gl3d.core.Node3D;
 	import gl3d.shaders.GLShader;
 	import gl3d.shaders.posts.PostGLShader;
-	import gl3d.TextureSet;
+	import gl3d.core.TextureSet;
 	import gl3d.util.Utils;
-	import gl3d.View3D;
+	import gl3d.core.View3D;
 	/**
 	 * ...
 	 * @author lizhi

@@ -10,25 +10,27 @@ package
 	import flash.utils.ByteArray;
 	import flash.utils.getTimer;
 	import gl3d.ctrl.FirstPersonCtrl;
-	import gl3d.Material;
+	import gl3d.core.Material;
 	import gl3d.meshs.Meshs;
-	import gl3d.Node3D;
+	import gl3d.core.Node3D;
+	import gl3d.parser.DAEParser;
 	import gl3d.post.PostEffect;
 	import gl3d.shaders.posts.FlowerShader;
 	import gl3d.shaders.posts.HeartShader;
 	import gl3d.shaders.posts.PostGLShader;
 	import gl3d.shaders.posts.BlurShader;
 	import gl3d.shaders.posts.PulseShader;
+	import gl3d.shaders.posts.SinWaterShader;
 	import gl3d.shaders.posts.TileableWaterCausticShader;
-	import gl3d.TextureSet;
-	import gl3d.View3D;
+	import gl3d.core.TextureSet;
+	import gl3d.core.View3D;
 	import ui.AttribSeter;
 	import ui.Color;
 	/**
 	 * ...
 	 * @author lizhi
 	 */
-	[SWF(frameRate='60', backgroundColor='0x000000', width='280', height='260')]
+	[SWF(frameRate='60', backgroundColor='0x000000', width='800', height='600')]
 	public class BaseExample extends Sprite
 	{
 		public var view:View3D;
@@ -51,7 +53,7 @@ package
 			
 			normalMapTexture = createNormalMap();
 			
-			material.normalMapAble = true;
+			//material.normalMapAble = true;
 			material.textureSets = Vector.<TextureSet>([texture]);
 			if (material.normalMapAble) {
 				material.textureSets.push( normalMapTexture);
@@ -72,6 +74,7 @@ package
 			//post = "water";
 			//post = "heart";
 			//post = "flower";
+			//post="sinwater"
 		}
 		
 		public function createNormalMap():TextureSet {
@@ -140,11 +143,21 @@ package
 			teapot.material = material;
 			teapot.drawable = Meshs.teapot(4);
 			view.scene.addChild(teapot);
-			teapot.scaleX = teapot.scaleY = teapot.scaleZ = 1;
+			teapot.scaleX = teapot.scaleY = teapot.scaleZ = .5;
+			
+			//[Embed(source = "assets/monster.dae", mimeType = "application/octet-stream")]var c:Class;
+			/*[Embed(source = "assets/astroBoy_walk_Max.dae", mimeType = "application/octet-stream")]var c:Class;
+			var b:ByteArray = new c as ByteArray;
+			var p:DAEParser = new DAEParser;
+			p.load(null, b);
+			view.scene.addChild(p.root);
+			p.target.scaleX = p.target.scaleY = p.target.scaleZ = .5// / 500;
+			p.target.rotationX = -Math.PI / 2;
+			p.target.rotationY = Math.PI;*/
 		}
 		
 		public function initUI():void {
-			//addChild(aui);
+			addChild(aui);
 			aui.bind(view.light, "specularPower", AttribSeter.TYPE_NUM, new Point(1, 100));
 			aui.bind(view.light, "lightPower", AttribSeter.TYPE_NUM, new Point(.5, 5));
 			aui.bind(view.light, "color", AttribSeter.TYPE_VEC_COLOR);
@@ -153,7 +166,7 @@ package
 			aui.bind(material, "alpha", AttribSeter.TYPE_NUM, new Point(.1, 1));
 			aui.bind(material, "wireframeAble", AttribSeter.TYPE_BOOL);
 			aui.bind(this, "useTexture", AttribSeter.TYPE_BOOL);
-			aui.bind(this, "post", AttribSeter.TYPE_LIST_STR,null,["null","blur","water","bend","heart","flower"]);
+			aui.bind(this, "post", AttribSeter.TYPE_LIST_STR,null,["null","blur","water","bend","heart","flower","sinwater"]);
 		}
 		public function initCtrl():void {
 			view.ctrls.push(new FirstPersonCtrl(view.camera,stage));
@@ -223,6 +236,8 @@ package
 				case "flower":
 					view.posts.push(new PostEffect(new PostGLShader(null, new FlowerShader),0));
 					break;
+				case "sinwater":
+					view.posts.push(new PostEffect(new PostGLShader(null, new SinWaterShader)));
 			}
 		}
 	}

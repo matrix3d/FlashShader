@@ -7,14 +7,14 @@ package gl3d.shaders
 	import flash.utils.ByteArray;
 	import flShader.AGALByteCreator;
 	import flShader.FlShader;
-	import gl3d.Camera3D;
-	import gl3d.Material;
-	import gl3d.Node3D;
-	import gl3d.ProgramSet;
-	import gl3d.TextureSet;
+	import gl3d.core.Camera3D;
+	import gl3d.core.Material;
+	import gl3d.core.Node3D;
+	import gl3d.core.ProgramSet;
+	import gl3d.core.TextureSet;
 	import gl3d.util.Utils;
-	import gl3d.VertexBufferSet;
-	import gl3d.View3D;
+	import gl3d.core.VertexBufferSet;
+	import gl3d.core.View3D;
 	/**
 	 * ...
 	 * @author lizhi

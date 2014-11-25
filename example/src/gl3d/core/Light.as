@@ -1,12 +1,10 @@
-package gl3d 
-{
+package gl3d.core {
 	/**
 	 * ...
 	 * @author lizhi
 	 */
 	public class Light extends Node3D
 	{
-		public var lightAble:Boolean = true;
 		public var ambientAble:Boolean = true;
 		public var specularAble:Boolean = true;
 		public var lightPowerAble:Boolean = true;

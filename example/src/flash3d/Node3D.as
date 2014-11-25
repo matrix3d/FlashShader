@@ -1,7 +1,7 @@
 
 package flash3d {
 	import flash.geom.Vector3D;
-	import gl3d.Drawable3D;
+	import gl3d.core.Drawable3D;
 	/**
 	 * ...
 	 * @author lizhi

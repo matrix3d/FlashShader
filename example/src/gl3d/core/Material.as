@@ -1,5 +1,4 @@
-package gl3d 
-{
+package gl3d.core {
 	import flash.display3D.Context3D;
 	import flash.display3D.Context3DProgramType;
 	import flash.geom.Vector3D;
@@ -13,6 +12,7 @@ package gl3d
 	 */
 	public class Material 
 	{
+		public var lightAble:Boolean = true;
 		public var view:View3D;
 		public var camera:Camera3D;
 		public var node:Node3D;

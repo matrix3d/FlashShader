@@ -2,7 +2,7 @@ package gl3d.ctrl
 {
 	import flash.geom.Matrix3D;
 	import flash.geom.Vector3D;
-	import gl3d.Node3D;
+	import gl3d.core.Node3D;
 	/**
 	 * ...
 	 * @author lizhi

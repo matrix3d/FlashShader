@@ -3,9 +3,9 @@ package gl3d.meshs
 	import flash.display.BitmapData;
 	import flash.display3D.VertexBuffer3D;
 	import flash.geom.Vector3D;
-	import gl3d.Drawable3D;
-	import gl3d.IndexBufferSet;
-	import gl3d.VertexBufferSet;
+	import gl3d.core.Drawable3D;
+	import gl3d.core.IndexBufferSet;
+	import gl3d.core.VertexBufferSet;
 	/**
 	 * ...
 	 * @author lizhi
@@ -227,8 +227,7 @@ package gl3d.meshs
 				norm[i2+1] += ny;
 				norm[i0+2] += nz;
 				norm[i1+2] += nz;
-				norm[i2+2] += nz;
-				i += 3;
+				norm[i2 + 2] += nz;
 			}
 			for (i = 0; i < norm.length;i+=3 ) {
 				nx = norm[i];
@@ -237,7 +236,7 @@ package gl3d.meshs
 				var distance:Number = Math.sqrt(nx * nx + ny * ny + nz * nz);
 				norm[i] /= distance;
 				norm[i+1] /= distance;
-				norm[i+2] /= distance;
+				norm[i + 2] /= distance;
 			}
 			return new VertexBufferSet(norm,3);
 		}

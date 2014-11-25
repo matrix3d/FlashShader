@@ -4,8 +4,8 @@ package gl3d.shaders
 	import flash.display3D.textures.Texture;
 	import flShader.FlShader;
 	import flShader.Var;
-	import gl3d.Material;
-	import gl3d.TextureSet;
+	import gl3d.core.Material;
+	import gl3d.core.TextureSet;
 	/**
 	 * ...
 	 * @author lizhi
