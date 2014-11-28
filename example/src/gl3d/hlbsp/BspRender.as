@@ -40,13 +40,13 @@ package gl3d.hlbsp
 					count : face.edges
 				};
 				
-				//var texInfo = bsp.textureInfos[face.textureInfo];
+				var texInfo:BspTextureInfo = bsp.textureInfos[face.textureInfo];
 				var plane:BspPlane = bsp.planes[face.plane];
 				
 				var normal:Vector3D = plane.normal;
 				
-				//var faceTexCoords = bsp.textureCoordinates[i];
-				//var faceLightmapCoords = this.lightmapCoordinates[i];
+				var faceTexCoords:Array = bsp.textureCoordinates[i];
+				var faceLightmapCoords:Array = bsp.lightmapCoordinates[i];
 				
 				for (var j:int = 0; j < face.edges; j++)
 				{
@@ -67,19 +67,19 @@ package gl3d.hlbsp
 					
 					var vertex:Vector3D = bsp.vertices[vertexIndex];
 					
-					//var texCoord = faceTexCoords[j];
-					//var lightmapCoord = faceLightmapCoords[j];
+					var texCoord:Object = faceTexCoords[j];
+					var lightmapCoord:Object = faceLightmapCoords[j];
 					
 					// Write to buffers
 					vertices.push(vertex.x);
 					vertices.push(vertex.y);
 					vertices.push(vertex.z);
 					
-					//texCoords.push(texCoord.s);
-					//texCoords.push(texCoord.t);
+					texCoords.push(texCoord.s);
+					texCoords.push(texCoord.t);
 					
-					//lightmapCoords.push(lightmapCoord.s);
-					//lightmapCoords.push(lightmapCoord.t);
+					lightmapCoords.push(lightmapCoord.s);
+					lightmapCoords.push(lightmapCoord.t);
 					
 					normals.push(normal.x);
 					normals.push(normal.y);
@@ -93,7 +93,7 @@ package gl3d.hlbsp
 					}
 				}
 			}
-			var drawable:Drawable3D = Meshs.createDrawable(Vector.<uint>(index), Vector.<Number>(vertices), null, null/*Vector.<Number>(normals)*/);
+			var drawable:Drawable3D = Meshs.createDrawable(Vector.<uint>(index), Vector.<Number>(vertices), Vector.<Number>(texCoords), null/*Vector.<Number>(normals)*/);
 			target.drawable = drawable;
 			target.material = new Material;
 		}

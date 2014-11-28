@@ -11,6 +11,8 @@ package
 	import flash.utils.getTimer;
 	import gl3d.ctrl.FirstPersonCtrl;
 	import gl3d.core.Material;
+	import gl3d.hlbsp.Bsp;
+	import gl3d.hlbsp.BspRender;
 	import gl3d.meshs.Meshs;
 	import gl3d.core.Node3D;
 	import gl3d.parser.DAEParser;
@@ -142,7 +144,7 @@ package
 			teapot = new Node3D;
 			teapot.material = material;
 			teapot.drawable = Meshs.teapot(4);
-			view.scene.addChild(teapot);
+			//view.scene.addChild(teapot);
 			teapot.scaleX = teapot.scaleY = teapot.scaleZ = .5;
 			
 			//[Embed(source = "assets/monster.dae", mimeType = "application/octet-stream")]var c:Class;
@@ -154,6 +156,24 @@ package
 			p.target.scaleX = p.target.scaleY = p.target.scaleZ = .5// / 500;
 			p.target.rotationX = -Math.PI / 2;
 			p.target.rotationY = Math.PI;*/
+			
+			//[Embed(source = "assets/webgl.bsp", mimeType = "application/octet-stream")]var c:Class;
+			[Embed(source = "assets/fy_iceworld.bsp", mimeType = "application/octet-stream")]var c:Class;
+			//[Embed(source = "assets/de_dust2.bsp", mimeType = "application/octet-stream")]var c:Class;
+			var b:ByteArray = new c;
+			var bsp:Bsp=new Bsp;
+			bsp.loadBSP(b);
+			var render:BspRender = new BspRender(bsp);
+			render.preRender();
+			render.target.scaleX = render.target.scaleY = render.target.scaleZ = .1;
+			render.target.rotationX = -Math.PI / 2;
+			render.target.material = material;
+			view.light.ambient = Vector.<Number>([.4,.4,.4,1]);
+			view.scene.addChild(render.target);
+			
+			view.camera.z = 0;
+			view.light.x = view.light.y = view.light.z = 0;
+			view.light.y = .1;
 		}
 		
 		public function initUI():void {

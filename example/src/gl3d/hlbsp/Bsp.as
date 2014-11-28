@@ -42,9 +42,9 @@ package gl3d.hlbsp
 		public var edges:Array;
 		public var faces:Array;
 		public var surfEdges:Array;
-		//public var textureHeader;
-		//public var mipTextures;
-		//public var textureInfos;
+		public var textureHeader:BspTextureHeader;
+		public var mipTextures:Array;
+		public var textureInfos:Array;
 		public var models:Array;
 		public var clipNodes:Array;
 		
@@ -63,24 +63,24 @@ package gl3d.hlbsp
 
 		/** Array (for each face) of arrays (for each vertex of a face) of JSONs holding s and t coordinate. */
 		public var textureCoordinates:Array;
-		//public var lightmapCoordinates;
+		public var lightmapCoordinates:Array;
 		
 		/**
 		 * Contains a plan white 1x1 texture to be used, when a texture could not be loaded yet.
 		 */
-		//public var whiteTexture;
+		public var whiteTexture:Object;
 		
 		/** 
 		 * Stores the texture IDs of the textures for each face.
 		 * Most of them will be dummy textures until they are later loaded from the Wad files.
 		 */
-		//public var textureLookup;
+		public var textureLookup:Object;
 		
 		/** Stores the texture IDs of the lightmaps for each face */
-		//public var lightmapLookup;
+		public var lightmapLookup:Object;
 		
 		/** Stores a list of missing textures */
-		//public var missingTextures;
+		public var missingTextures:Array;
 		
 		/** An array (for each leaf) of arrays (for each leaf) of booleans. */
 		public var visLists:Array;
@@ -380,14 +380,14 @@ package gl3d.hlbsp
 			this.readEdges(src);
 			this.readFaces(src);
 			this.readSurfEdges(src);
-			//this.readMipTextures(src);
-			//this.readTextureInfos(src);
+			this.readMipTextures(src);
+			this.readTextureInfos(src);
 			this.readModels(src);
 			this.readClipNodes(src);
 			
 			this.loadEntities(src);   // muast be loaded before textures
-			//this.loadTextures(src);   // plus coordinates
-			//this.loadLightmaps(src);  // plus coordinates
+			this.loadTextures(src);   // plus coordinates
+			this.loadLightmaps(src);  // plus coordinates
 			//this.loadVIS(src);
 			
 			// FINALLY create buffers for rendering
@@ -627,56 +627,56 @@ package gl3d.hlbsp
 			console.log('Read ' + this.surfEdges.length + ' SurfEdges');
 		}
 
-		/*public function readTextureHeader(src)
+		public function readTextureHeader(src:ByteArray):void
 		{
-			src.seek(this.header.lumps[LUMP_TEXTURES].offset);
+			src.position=(this.header.lumps[LUMP_TEXTURES].offset);
 			
 			this.textureHeader = new BspTextureHeader();
 			
-			this.textureHeader.textures = src.readULong();
+			this.textureHeader.textures = src.readUnsignedInt();
 			
 			this.textureHeader.offsets = new Array();
-			for(var i = 0; i < this.textureHeader.textures; i++)
-				this.textureHeader.offsets.push(src.readLong());
+			for(var i:int = 0; i < this.textureHeader.textures; i++)
+				this.textureHeader.offsets.push(src.readInt());
 			
 			console.log('Read TextureHeader. Bsp files references/contains ' + this.textureHeader.textures + ' textures');
-		}*/
+		}
 
-		/*public function readMipTextures(src)
+		public function readMipTextures(src:ByteArray):void
 		{
 			this.readTextureHeader(src);
 			
 			this.mipTextures = new Array();
 			
-			for(var i = 0; i < this.textureHeader.textures; i++)
+			for(var i:int = 0; i < this.textureHeader.textures; i++)
 			{
-				src.seek(this.header.lumps[LUMP_TEXTURES].offset + this.textureHeader.offsets[i]);
+				src.position=(this.header.lumps[LUMP_TEXTURES].offset + this.textureHeader.offsets[i]);
 				
-				var miptex = new BspMipTexture();
+				var miptex:BspMipTexture = new BspMipTexture();
 				
-				miptex.name = src.readString(MAXTEXTURENAME);
+				miptex.name = src.readUTFBytes(MAXTEXTURENAME);
 				
-				miptex.width = src.readULong();
+				miptex.width = src.readUnsignedInt();
 				
-				miptex.height = src.readULong();
+				miptex.height = src.readUnsignedInt();
 				
 				miptex.offsets = new Array();
-				for(var j = 0; j < MIPLEVELS; j++)
-					miptex.offsets.push(src.readULong());
+				for(var j:int = 0; j < MIPLEVELS; j++)
+					miptex.offsets.push(src.readUnsignedInt());
 				
 				this.mipTextures.push(miptex);
 			}
-		}*/
+		}
 
-		/*public function readTextureInfos(src)
+		public function readTextureInfos(src:ByteArray):void
 		{
-			src.seek(this.header.lumps[LUMP_TEXINFO].offset);
+			src.position=(this.header.lumps[LUMP_TEXINFO].offset);
 			
 			this.textureInfos = new Array();
 			
-			for(var i = 0; i < this.header.lumps[LUMP_TEXINFO].length / SIZE_OF_BSPTEXTUREINFO; i++)
+			for(var i:int = 0; i < this.header.lumps[LUMP_TEXINFO].length / SIZE_OF_BSPTEXTUREINFO; i++)
 			{
-				var texInfo = new BspTextureInfo();
+				var texInfo:BspTextureInfo = new BspTextureInfo();
 				
 				texInfo.s = new Vector3D();
 				texInfo.s.x = src.readFloat();
@@ -692,15 +692,15 @@ package gl3d.hlbsp
 				
 				texInfo.tShift = src.readFloat();
 				
-				texInfo.mipTexture = src.readULong();
+				texInfo.mipTexture = src.readUnsignedInt();
 				
-				texInfo.flags = src.readULong();
+				texInfo.flags = src.readUnsignedInt();
 				
 				this.textureInfos.push(texInfo);
 			}
 			
 			console.log('Read ' + this.textureInfos.length + ' TextureInfos');
-		}*/
+		}
 
 		public function readModels(src:ByteArray):void
 		{
@@ -957,7 +957,7 @@ package gl3d.hlbsp
 		/**
 		 * Loads all the texture data from the bsp file and generates texture coordinates.
 		 */
-		/*public function loadTextures(src)
+		public function loadTextures(src:ByteArray):void
 		{
 			this.textureCoordinates = new Array();
 			
@@ -965,36 +965,36 @@ package gl3d.hlbsp
 			// Texture coordinates
 			//
 			
-			for (var i = 0; i < this.faces.length; i++)
+			for (var i:int = 0; i < this.faces.length; i++)
 			{
-				var face = this.faces[i];
-				var texInfo = this.textureInfos[face.textureInfo];
+				var face:BspFace = this.faces[i];
+				var texInfo:BspTextureInfo = this.textureInfos[face.textureInfo];
 				
-				var faceCoords = new Array();
+				var faceCoords:Array = new Array();
 
-				for (var j = 0; j < face.edges; j++)
+				for (var j:int = 0; j < face.edges; j++)
 				{
-					var edgeIndex = this.surfEdges[face.firstEdge + j];
+					var edgeIndex:int = this.surfEdges[face.firstEdge + j];
 
-					var vertexIndex;
+					var vertexIndex:int;
 					if (edgeIndex > 0)
 					{
-						var edge = this.edges[edgeIndex];
+						var edge:BspEdge = this.edges[edgeIndex];
 						vertexIndex = edge.vertices[0];
 					}
 					else
 					{
 						edgeIndex *= -1;
-						var edge = this.edges[edgeIndex];
+						edge = this.edges[edgeIndex];
 						vertexIndex = edge.vertices[1];
 					}
 					
-					var vertex = this.vertices[vertexIndex];
-					var mipTexture = this.mipTextures[texInfo.mipTexture];
+					var vertex:Vector3D = this.vertices[vertexIndex];
+					var mipTexture:BspMipTexture = this.mipTextures[texInfo.mipTexture];
 					
-					var coord = {
-						s : (dotProduct(vertex, texInfo.s) + texInfo.sShift) / mipTexture.width,
-						t : (dotProduct(vertex, texInfo.t) + texInfo.tShift) / mipTexture.height
+					var coord:Object = {
+						s : (vertex.dotProduct( texInfo.s) + texInfo.sShift) / mipTexture.width,
+						t : (vertex.dotProduct( texInfo.t) + texInfo.tShift) / mipTexture.height
 					};
 					
 					faceCoords.push(coord);
@@ -1008,7 +1008,7 @@ package gl3d.hlbsp
 			//
 			
 			// Create white texture
-			this.whiteTexture =  pixelsToTexture(new Array(255, 255, 255), 1, 1, 3, function(texture, image)
+			/*this.whiteTexture =  pixelsToTexture(new Array(255, 255, 255), 1, 1, 3, function(texture, image)
 			{
 				gl.bindTexture(gl.TEXTURE_2D, texture);
 				gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
@@ -1018,15 +1018,15 @@ package gl3d.hlbsp
 				gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, image);
 				gl.generateMipmap(gl.TEXTURE_2D);
 				gl.bindTexture(gl.TEXTURE_2D, null);
-			});
+			});*/
 
 			
 			this.textureLookup = new Array(this.faces.length);
 			this.missingTextures = new Array();
 			
-			for(var i = 0; i < this.mipTextures.length; i++)
+			for(i = 0; i < this.mipTextures.length; i++)
 			{
-				var mipTexture = this.mipTextures[i];
+				mipTexture = this.mipTextures[i];
 				
 				if(mipTexture.offsets[0] == 0)
 				{
@@ -1035,7 +1035,7 @@ package gl3d.hlbsp
 					//
 				
 					// search texture in loaded wads
-					var texture = this.loadTextureFromWad(mipTexture.name);
+					var texture:Object //= this.loadTextureFromWad(mipTexture.name);
 					
 					if(texture != null)
 					{
@@ -1065,18 +1065,18 @@ package gl3d.hlbsp
 					//
 					
 					// Calculate offset of the texture in the bsp file
-					var offset = this.header.lumps[LUMP_TEXTURES].offset + this.textureHeader.offsets[i];
+					//var offset:int = this.header.lumps[LUMP_TEXTURES].offset + this.textureHeader.offsets[i];
 					
 					// Use the texture loading procedure from the Wad class
-					this.textureLookup[i] = Wad.prototype.fetchTextureAtOffset(src, offset);
+					//this.textureLookup[i] = Wad.prototype.fetchTextureAtOffset(src, offset);
 					
 					console.log("Fetched interal texture " + mipTexture.name);
 				}
 			}
 			
 			// Now that all dummy texture unit IDs have been created, alert the user to select wads for them
-			this.showMissingWads();
-		}*/
+			//this.showMissingWads();
+		}
 
 		/**
 		 * Tries to load all missing textures from the currently loaded Wad files.
@@ -1160,131 +1160,131 @@ package gl3d.hlbsp
 		/**
 		 * Loads all the lightmaps from bsp file, generates textures and texture coordinates.
 		 */
-		///*public function loadLightmaps(src)
-		//{
-			//this.lightmapCoordinates = new Array();
-			//this.lightmapLookup = new Array(this.faces.length);
-			//
-			//var loadedData = 0;
-			//var loadedLightmaps = 0;
-//
-			//for (var i = 0; i < this.faces.length; i++)
-			//{
-				//var face = this.faces[i];
-				//
-				//var faceCoords = new Array();
-			//
-				//if (face.styles[0] != 0 || face.lightmapOffset == -1)
-				//{
-					//this.lightmapLookup[i] = 0;
-					//
-					//// create dummy lightmap coords
-					//for (var j = 0; j < face.edges; j++)
-						//faceCoords.push({ s: 0, t : 0});
-					//this.lightmapCoordinates.push(faceCoords);
-					//
-					//continue;
-				//}
-//
-				///* *********** QRAD ********** */
-//
-				//var minU = 999999.0;
-				//var minV = 999999.0;
-				//var maxU = -99999.0;
-				//var maxV = -99999.0;
-//
-				//var texInfo = this.textureInfos[face.textureInfo];
-				//
-				//for (var j = 0; j < face.edges; j++)
-				//{
-					//var edgeIndex = this.surfEdges[face.firstEdge + j];
-					//var vertex;
-					//if (edgeIndex >= 0)
-						//vertex = this.vertices[this.edges[edgeIndex].vertices[0]];
-					//else
-						//vertex = this.vertices[this.edges[-edgeIndex].vertices[1]];
-//
-					//var u = Math.round(dotProduct(texInfo.s, vertex) + texInfo.sShift);
-					//if (u < minU)
-						//minU = u;
-					//if (u > maxU)
-						//maxU = u;
-//
-					//var v = Math.round(dotProduct(texInfo.t, vertex) + texInfo.tShift);
-					//if (v < minV)
-						//minV = v;
-					//if (v > maxV)
-						//maxV = v;
-				//}
-//
-				//var texMinU = Math.floor(minU / 16.0);
-				//var texMinV = Math.floor(minV / 16.0);
-				//var texMaxU = Math.ceil(maxU / 16.0);
-				//var texMaxV = Math.ceil(maxV / 16.0);
-//
-				//var width = Math.floor((texMaxU - texMinU) + 1);
-				//var height = Math.floor((texMaxV - texMinV) + 1);
-//
-				///* *********** end QRAD ********* */
-//
-				///* ********** http://www.gamedev.net/community/forums/topic.asp?topic_id=538713 (last refresh: 20.02.2010) ********** */
-//
-				//var midPolyU = (minU + maxU) / 2.0;
-				//var midPolyV = (minV + maxV) / 2.0;
-				//var midTexU = width / 2.0;
-				//var midTexV = height / 2.0;
-				//
-				//var coord;
-//
-				//for (var j = 0; j < face.edges; ++j)
-				//{
-					//var edgeIndex = this.surfEdges[face.firstEdge + j];
-					//var vertex;
-					//if (edgeIndex >= 0)
-						//vertex = this.vertices[this.edges[edgeIndex].vertices[0]];
-					//else
-						//vertex = this.vertices[this.edges[-edgeIndex].vertices[1]];
-//
-					//var u = Math.round(dotProduct(texInfo.s, vertex) + texInfo.sShift);
-					//var v = Math.round(dotProduct(texInfo.t, vertex) + texInfo.tShift);
-//
-					//var lightMapU = midTexU + (u - midPolyU) / 16.0;
-					//var lightMapV = midTexV + (v - midPolyV) / 16.0;
-//
-					//coord = {
-						//s : lightMapU / width,
-						//t : lightMapV / height
-					//}
-					//
-					//faceCoords.push(coord);
-				//}
-//
-				///* ********** end http://www.gamedev.net/community/forums/topic.asp?topic_id=538713 ********** */
-//
+		public function loadLightmaps(src:ByteArray):void
+		{
+			this.lightmapCoordinates = new Array();
+			this.lightmapLookup = new Array(this.faces.length);
+			
+			var loadedData:int = 0;
+			var loadedLightmaps:int = 0;
+
+			for (var i:int = 0; i < this.faces.length; i++)
+			{
+				var face:BspFace = this.faces[i];
+				
+				var faceCoords:Array = new Array();
+			
+				if (face.styles[0] != 0 || face.lightmapOffset == -1)
+				{
+					this.lightmapLookup[i] = 0;
+					
+					// create dummy lightmap coords
+					for (var j:int = 0; j < face.edges; j++)
+						faceCoords.push({ s: 0, t : 0});
+					this.lightmapCoordinates.push(faceCoords);
+					
+					continue;
+				}
+
+				/* *********** QRAD ********** */
+
+				var minU:Number = 999999.0;
+				var minV:Number = 999999.0;
+				var maxU:Number = -99999.0;
+				var maxV:Number = -99999.0;
+
+				var texInfo:BspTextureInfo = this.textureInfos[face.textureInfo];
+				
+				for (j = 0; j < face.edges; j++)
+				{
+					var edgeIndex:int = this.surfEdges[face.firstEdge + j];
+					var vertex:Vector3D;
+					if (edgeIndex >= 0)
+						vertex = this.vertices[this.edges[edgeIndex].vertices[0]];
+					else
+						vertex = this.vertices[this.edges[-edgeIndex].vertices[1]];
+
+					var u:Number = Math.round(texInfo.s.dotProduct(vertex) + texInfo.sShift);
+					if (u < minU)
+						minU = u;
+					if (u > maxU)
+						maxU = u;
+
+					var v:Number = Math.round(texInfo.t.dotProduct( vertex) + texInfo.tShift);
+					if (v < minV)
+						minV = v;
+					if (v > maxV)
+						maxV = v;
+				}
+
+				var texMinU:Number = Math.floor(minU / 16.0);
+				var texMinV:Number = Math.floor(minV / 16.0);
+				var texMaxU:Number = Math.ceil(maxU / 16.0);
+				var texMaxV:Number = Math.ceil(maxV / 16.0);
+
+				var width:int = Math.floor((texMaxU - texMinU) + 1);
+				var height:int = Math.floor((texMaxV - texMinV) + 1);
+
+				/* *********** end QRAD ********* */
+
+				/* ********** http://www.gamedev.net/community/forums/topic.asp?topic_id=538713 (last refresh: 20.02.2010) ********** */
+
+				var midPolyU:Number = (minU + maxU) / 2.0;
+				var midPolyV:Number = (minV + maxV) / 2.0;
+				var midTexU:Number = width / 2.0;
+				var midTexV:Number = height / 2.0;
+				
+				var coord:Object;
+
+				for (j = 0; j < face.edges; ++j)
+				{
+					edgeIndex = this.surfEdges[face.firstEdge + j];
+					vertex;
+					if (edgeIndex >= 0)
+						vertex = this.vertices[this.edges[edgeIndex].vertices[0]];
+					else
+						vertex = this.vertices[this.edges[-edgeIndex].vertices[1]];
+
+					u = Math.round(texInfo.s.dotProduct( vertex) + texInfo.sShift);
+					v = Math.round(texInfo.t.dotProduct( vertex) + texInfo.tShift);
+
+					var lightMapU:Number = midTexU + (u - midPolyU) / 16.0;
+					var lightMapV:Number = midTexV + (v - midPolyV) / 16.0;
+
+					coord = {
+						s : lightMapU / width,
+						t : lightMapV / height
+					}
+					
+					faceCoords.push(coord);
+				}
+
+				/* ********** end http://www.gamedev.net/community/forums/topic.asp?topic_id=538713 ********** */
+
 				//var pixels = new Uint8Array(src.buffer, this.header.lumps[LUMP_LIGHTING].offset + face.lightmapOffset, width * height * 3)
-				//
-				//var texture = pixelsToTexture(pixels, width, height, 3, function(texture, image)
-				//{
-					//gl.bindTexture(gl.TEXTURE_2D, texture);
-					//gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-					//gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR_MIPMAP_LINEAR);
-					//gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-					//gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-					//gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
-					//gl.generateMipmap(gl.TEXTURE_2D);
-					//gl.bindTexture(gl.TEXTURE_2D, null);
-					////$('body').append('<span>Texture (' + image.width + 'x' + image.height + ')</span>').append(image);
-				//});
-//
+				
+				/*var texture = pixelsToTexture(pixels, width, height, 3, function(texture, image)
+				{
+					gl.bindTexture(gl.TEXTURE_2D, texture);
+					gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+					gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR_MIPMAP_LINEAR);
+					gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+					gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+					gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
+					gl.generateMipmap(gl.TEXTURE_2D);
+					gl.bindTexture(gl.TEXTURE_2D, null);
+					//$('body').append('<span>Texture (' + image.width + 'x' + image.height + ')</span>').append(image);
+				});*/
+
 				//this.lightmapLookup[i] = texture;
-				//this.lightmapCoordinates.push(faceCoords);
-				//
-				//loadedLightmaps++;
-				//loadedData += width * height * 3;
-			//}
-			//
-			//console.log('Loaded ' + loadedLightmaps + ' lightmaps, lightmapdatadiff: ' + (loadedData - this.header.lumps[LUMP_LIGHTING].length) + ' Bytes ');
-		//}
+				this.lightmapCoordinates.push(faceCoords);
+				
+				loadedLightmaps++;
+				loadedData += width * height * 3;
+			}
+			
+			console.log('Loaded ' + loadedLightmaps + ' lightmaps, lightmapdatadiff: ' + (loadedData - this.header.lumps[LUMP_LIGHTING].length) + ' Bytes ');
+		}
 
 		/**
 		 * Unloads all allocated data of the Bsp class. This should be mostly OpenGL releated stuff.
@@ -1446,14 +1446,7 @@ package gl3d.hlbsp
 		typedef int32_t BSPSURFEDGE;
 		*/
 		public static var SIZE_OF_BSPSURFEDGE:int = 4;
-
-		// Textures lump begins with a header, followed by offsets to BSPMIPTEX structures, then BSPMIPTEX structures
-		/*
-		typedef struct _BSPTEXTUREHEADER
-		{
-			uint32_t nMipTextures;
-		};
-		*/
+		
 		// 32-bit offsets (within texture lump) to (nMipTextures) BSPMIPTEX structures
 		/*
 		typedef int32_t BSPMIPTEXOFFSET;
@@ -1469,19 +1462,6 @@ package gl3d.hlbsp
 			char     szName[MAXTEXTURENAME]; 
 			uint32_t nWidth, nHeight;        
 			uint32_t nOffsets[MIPLEVELS];
-		};
-		*/
-
-		// Texinfo lump contains information about how textures are applied to surfaces
-		/*
-		typedef struct _BSPTEXTUREINFO
-		{
-			VECTOR3D vS;      
-			float    fSShift; 
-			VECTOR3D vT;      
-			float    fTShift; 
-			uint32_t iMiptex; 
-			uint32_t nFlags; 
 		};
 		*/
 		public static var SIZE_OF_BSPTEXTUREINFO:int = 40;

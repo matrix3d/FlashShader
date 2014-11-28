@@ -50,7 +50,7 @@ package gl3d.shaders
 			if (material.textureSets.length==0) {
 				var diffColor:Var = C();
 			}else {
-				diffColor = tex(V(3), FS());
+				diffColor = tex(V(3), FS(),null,["repeat","linear"]);
 				mul(C().w, diffColor.w, diffColor.w);
 			}
 			return diffColor;
