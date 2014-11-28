@@ -22,7 +22,7 @@ package gl3d.shaders.posts
 			var tex0:Var = FS();
 			var scale:Number = .01;
 			
-			var offset:Var = mul(sin(add(mul(uv, Math.PI * 10), time)), scale);
+			var offset:Var = mul(sin(add(mul(uv.yx, Math.PI * 10), time)), scale);
 			tex(add(offset, uv), tex0, oc);
 		}
 		
