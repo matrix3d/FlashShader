@@ -71,8 +71,8 @@ package gl3d.core {
 					}
 					tmp.dispose();
 				}else {
-					texture = context.createTexture(1024, 1024, Context3DTextureFormat.BGRA, true);// .createTexture(1024, 1024, Context3DTextureFormat.BGRA, true);
-					//texture = context.createRectangleTexture(view.stage3dWidth,view.stage3dHeight , Context3DTextureFormat.BGRA, true);
+					//texture = context.createTexture(1024, 1024, Context3DTextureFormat.BGRA, true);// .createTexture(1024, 1024, Context3DTextureFormat.BGRA, true);
+					texture = context.createRectangleTexture(view.stage3dWidth,view.stage3dHeight , Context3DTextureFormat.BGRA, true);
 				}
 				invalid = false;
 				this.context = context;
