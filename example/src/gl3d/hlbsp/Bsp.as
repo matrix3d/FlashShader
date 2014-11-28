@@ -62,7 +62,7 @@ package gl3d.hlbsp
 		//public var missingWads;
 
 		/** Array (for each face) of arrays (for each vertex of a face) of JSONs holding s and t coordinate. */
-		//public var textureCoordinates;
+		public var textureCoordinates:Array;
 		//public var lightmapCoordinates;
 		
 		/**
@@ -356,96 +356,6 @@ package gl3d.hlbsp
 
 
 			gl.drawArrays(polygonMode ? gl.LINE_STRIP : gl.TRIANGLE_FAN, this.faceBufferRegions[faceIndex].start, this.faceBufferRegions[faceIndex].count);
-		}*/
-
-		/**
-		 * Runs through all faces and generates the OpenGL buffers required for rendering.
-		 */
-		/*public function preRender()
-		{
-			var vertices = new Array();
-			var texCoords = new Array();
-			var lightmapCoords = new Array();
-			var normals = new Array();
-			
-			this.faceBufferRegions = new Array(this.faces.length);
-			var elements = 0;
-
-			// for each face
-			for(var i = 0; i < this.faces.length; i++)
-			{
-				var face = this.faces[i];
-			
-				this.faceBufferRegions[i] = {
-					start : elements,
-					count : face.edges
-				};
-				
-				var texInfo = this.textureInfos[face.textureInfo];
-				var plane = this.planes[face.plane];
-				
-				var normal = plane.normal;
-				
-				var faceTexCoords = this.textureCoordinates[i];
-				var faceLightmapCoords = this.lightmapCoordinates[i];
-				
-				for (var j = 0; j < face.edges; j++)
-				{
-					var edgeIndex = this.surfEdges[face.firstEdge + j]; // This gives the index into the edge lump
-
-					var vertexIndex;
-					if (edgeIndex > 0)
-					{
-						var edge = this.edges[edgeIndex];
-						vertexIndex = edge.vertices[0];
-					}
-					else
-					{
-						edgeIndex *= -1;
-						var edge = this.edges[edgeIndex];
-						vertexIndex = edge.vertices[1];
-					}
-					
-					var vertex = this.vertices[vertexIndex];
-					
-					var texCoord = faceTexCoords[j];
-					var lightmapCoord = faceLightmapCoords[j];
-					
-					// Write to buffers
-					vertices.push(vertex.x);
-					vertices.push(vertex.y);
-					vertices.push(vertex.z);
-					
-					texCoords.push(texCoord.s);
-					texCoords.push(texCoord.t);
-					
-					lightmapCoords.push(lightmapCoord.s);
-					lightmapCoords.push(lightmapCoord.t);
-					
-					normals.push(normal.x);
-					normals.push(normal.y);
-					normals.push(normal.z);
-					
-					elements += 1;
-				}
-			}
-
-			// Create ALL the buffers !!!
-			this.vertexBuffer = gl.createBuffer();
-			gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
-			gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW); 
-			
-			this.texCoordBuffer = gl.createBuffer();
-			gl.bindBuffer(gl.ARRAY_BUFFER, this.texCoordBuffer);
-			gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(texCoords), gl.STATIC_DRAW); 
-			
-			this.lightmapCoordBuffer = gl.createBuffer();
-			gl.bindBuffer(gl.ARRAY_BUFFER, this.lightmapCoordBuffer);
-			gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(lightmapCoords), gl.STATIC_DRAW); 
-			
-			this.normalBuffer = gl.createBuffer();
-			gl.bindBuffer(gl.ARRAY_BUFFER, this.normalBuffer);
-			gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(normals), gl.STATIC_DRAW); 
 		}*/
 
 		/**

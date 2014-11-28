@@ -117,6 +117,7 @@ package gl3d.meshs
 		
 		public static function createDrawable(index:Vector.<uint>,pos:Vector.<Number>,uv:Vector.<Number>,norm:Vector.<Number>,tangent:Vector.<Number>=null):Drawable3D {
 			var drawable:Drawable3D = new Drawable3D;
+			if(index)
 			drawable.index = new IndexBufferSet(index);
 			if(pos)
 			drawable.pos = new VertexBufferSet(pos,3);
@@ -347,6 +348,17 @@ package gl3d.meshs
 				targetPosition[j] = 0;
 			}
 			return new VertexBufferSet(targetPosition, 3);
+		}
+		
+		public static function computeIndex(drawable:Drawable3D) : IndexBufferSet
+		{
+			var index:Vector.<uint> = new Vector.<uint>;
+			var numt:int = drawable.pos.data.length / 3 / 3;
+			for (var i:int = 0; i < numt; i++)
+			{
+				index.push(i * 3, i * 3 + 1, i * 3 + 2);
+			}
+			return new IndexBufferSet(index);
 		}
 	}
 

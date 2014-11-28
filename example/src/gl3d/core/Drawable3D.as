@@ -14,7 +14,7 @@ package gl3d.core {
 		private var _uv:VertexBufferSet;
 		private var _random:VertexBufferSet;
 		private var _targetPosition:VertexBufferSet;
-		public var index:IndexBufferSet;
+		private var _index:IndexBufferSet;
 		public var id2index:Object = { };
 		public function Drawable3D() 
 		{
@@ -112,6 +112,19 @@ package gl3d.core {
 		public function set targetPosition(value:VertexBufferSet):void 
 		{
 			_targetPosition = value;
+		}
+		
+		public function get index():IndexBufferSet 
+		{
+			if (_index==null) {
+				_index = Meshs.computeIndex(this);
+			}
+			return _index;
+		}
+		
+		public function set index(value:IndexBufferSet):void 
+		{
+			_index = value;
 		}
 		
 		public function addVertex(posV:Array, uvV:Array):int {
