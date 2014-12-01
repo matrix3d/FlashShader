@@ -13,6 +13,7 @@ package
 	import gl3d.core.Material;
 	import gl3d.hlbsp.Bsp;
 	import gl3d.hlbsp.BspRender;
+	import gl3d.hlbsp.Wad;
 	import gl3d.meshs.Meshs;
 	import gl3d.core.Node3D;
 	import gl3d.parser.DAEParser;
@@ -36,6 +37,7 @@ package
 	[SWF(frameRate='60', backgroundColor='0x000000', width='800', height='600')]
 	public class BaseExample extends Sprite
 	{
+		public var speed:Number = .3;
 		public var view:View3D;
 		private var aui:AttribSeter = new AttribSeter;
 		private var _useTexture:Boolean = true;
@@ -78,7 +80,7 @@ package
 			//post = "heart";
 			//post = "flower";
 			//post="sinwater"
-			post="hdr"
+			//post="hdr"
 		}
 		
 		public function createNormalMap():TextureSet {
@@ -146,7 +148,7 @@ package
 			teapot = new Node3D;
 			teapot.material = material;
 			teapot.drawable = Meshs.teapot(4);
-			//view.scene.addChild(teapot);
+			view.scene.addChild(teapot);
 			teapot.scaleX = teapot.scaleY = teapot.scaleZ = .5;
 			
 			//[Embed(source = "assets/monster.dae", mimeType = "application/octet-stream")]var c:Class;
@@ -158,24 +160,6 @@ package
 			p.target.scaleX = p.target.scaleY = p.target.scaleZ = .5// / 500;
 			p.target.rotationX = -Math.PI / 2;
 			p.target.rotationY = Math.PI;*/
-			
-			//[Embed(source = "assets/webgl.bsp", mimeType = "application/octet-stream")]var c:Class;
-			[Embed(source = "assets/fy_iceworld.bsp", mimeType = "application/octet-stream")]var c:Class;
-			//[Embed(source = "assets/de_dust2.bsp", mimeType = "application/octet-stream")]var c:Class;
-			var b:ByteArray = new c;
-			var bsp:Bsp=new Bsp;
-			bsp.loadBSP(b);
-			var render:BspRender = new BspRender(bsp);
-			render.preRender();
-			render.target.scaleX = render.target.scaleY = render.target.scaleZ = .1;
-			render.target.rotationX = -Math.PI / 2;
-			render.target.material = material;
-			view.light.ambient = Vector.<Number>([.4,.4,.4,1]);
-			view.scene.addChild(render.target);
-			
-			view.camera.z = 0;
-			view.light.x = view.light.y = view.light.z = 0;
-			view.light.y = .1;
 		}
 		
 		public function initUI():void {
@@ -191,7 +175,9 @@ package
 			aui.bind(this, "post", AttribSeter.TYPE_LIST_STR,null,["null","blur","water","bend","heart","flower","sinwater","hdr"]);
 		}
 		public function initCtrl():void {
-			view.ctrls.push(new FirstPersonCtrl(view.camera,stage));
+			var fc:FirstPersonCtrl = new FirstPersonCtrl(view.camera, stage);
+			fc.speed = speed;
+			view.ctrls.push(fc);
 		}
 		
 		private function stage_resize(e:Event = null):void

@@ -296,18 +296,13 @@ package flShader {
 		}
 		
 		public function vec3(a:Object, b:Object, c:Object,t:Var = null):Var {
-			t = t || createTempVar();
-			mov(a, t.x);
-			mov(b, t.y);
+			t = vec2(a, b, t);
 			mov(c, t.z);
 			return t;
 		}
 		
 		public function vec4(a:Object, b:Object,c:Object,d:Object, t:Var = null):Var {
-			t = t || createTempVar();
-			mov(a, t.x);
-			mov(b, t.y);
-			mov(c, t.z);
+			t = vec3(a, b, c, t);
 			mov(d, t.w);
 			return t;
 		}

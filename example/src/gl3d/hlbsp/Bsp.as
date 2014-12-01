@@ -22,13 +22,11 @@
 //'use strict';
 package gl3d.hlbsp
 {
+	import flash.display.BitmapData;
 	import flash.geom.Vector3D;
 	import flash.utils.ByteArray;
 	import flash.utils.Endian;
 	public class Bsp {
-		public var console:Console = new Console;
-		
-		
 		//
 		// Data loaded form the bsp file
 		//
@@ -59,7 +57,7 @@ package gl3d.hlbsp
 		//
 		
 		/** Stores the missing wads for this bsp file */
-		//public var missingWads;
+		public var missingWads:Array;
 
 		/** Array (for each face) of arrays (for each vertex of a face) of JSONs holding s and t coordinate. */
 		public var textureCoordinates:Array;
@@ -68,16 +66,16 @@ package gl3d.hlbsp
 		/**
 		 * Contains a plan white 1x1 texture to be used, when a texture could not be loaded yet.
 		 */
-		public var whiteTexture:Object;
+		public var whiteTexture:BitmapData;
 		
 		/** 
 		 * Stores the texture IDs of the textures for each face.
 		 * Most of them will be dummy textures until they are later loaded from the Wad files.
 		 */
-		public var textureLookup:Object;
+		public var textureLookup:Array;
 		
 		/** Stores the texture IDs of the lightmaps for each face */
-		public var lightmapLookup:Object;
+		public var lightmapLookup:Array;
 		
 		/** Stores a list of missing textures */
 		public var missingTextures:Array;
@@ -85,6 +83,7 @@ package gl3d.hlbsp
 		/** An array (for each leaf) of arrays (for each leaf) of booleans. */
 		public var visLists:Array;
 		
+		public var loadedWads:Array=[];
 		//
 		// Buffers
 		//
@@ -94,7 +93,7 @@ package gl3d.hlbsp
 		var normalBuffer;*/
 		
 		/** Holds start index and count of indexes into the buffers for each face. Array of JSONs { start, count } */
-		//var faceBufferRegions;
+		public var faceBufferRegions:Array;
 		
 		/** If set to true, all resources are ready to render */
 		public var loaded:Boolean = false;
@@ -114,15 +113,15 @@ package gl3d.hlbsp
 		 * @param pos A Vector3D describing the position to search for.
 		 * @return Returns the leaf index where the position is found or -1 otherwise.
 		 */
-		/*public function traverseTree(pos, nodeIndex)
+		public function traverseTree(pos:Vector3D, nodeIndex:int):int
 		{
-			if(nodeIndex == undefined)
+			if(nodeIndex < 0)
 				nodeIndex = 0;
 				
-			var node = this.nodes[nodeIndex];
+			var node:BspNode = this.nodes[nodeIndex];
 				
 			// Run once for each child
-			for (var i = 0; i < 2; i++)
+			for (var i:int = 0; i < 2; i++)
 			{
 				// If the index is positive  it is an index into the nodes array
 				if ((node.children[i]) >= 0)
@@ -140,223 +139,7 @@ package gl3d.hlbsp
 			}
 
 			return -1;
-		}*/
-
-		/**
-		 * Renders the complete level.
-		 */
-		/*public function render(cameraPos)
-		{
-			// enable/disable the required attribute arrays
-			gl.enableVertexAttribArray(texCoordLocation);  	
-			gl.enableVertexAttribArray(lightmapCoordLocation);  
-			gl.enableVertexAttribArray(normalLocation); 
-			gl.disableVertexAttribArray(colorLocation);
-			
-			// Bind the vertex buffer
-			gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);  
-			gl.vertexAttribPointer(positionLocation, 3, gl.FLOAT, false, 0, 0);
-			
-			// Bind texture coordinate buffer
-			gl.bindBuffer(gl.ARRAY_BUFFER, this.texCoordBuffer);
-			gl.vertexAttribPointer(texCoordLocation, 2, gl.FLOAT, false, 0, 0);
-			
-			// Bind lightmap coordinate buffer
-			gl.bindBuffer(gl.ARRAY_BUFFER, this.lightmapCoordBuffer);
-			gl.vertexAttribPointer(lightmapCoordLocation, 2, gl.FLOAT, false, 0, 0);
-			
-			// Bind normal coordinate buffer
-			gl.bindBuffer(gl.ARRAY_BUFFER, this.normalBuffer);
-			gl.vertexAttribPointer(normalLocation, 3, gl.FLOAT, false, 0, 0);
-			
-			// Get the leaf where the camera is in
-			var cameraLeaf = this.traverseTree(cameraPos);
-			//console.log("Camera in leaf " + cameraLeaf);
-			
-			// Start the render traversal on the static geometry
-			this.renderNode(0, cameraLeaf, cameraPos);
-			
-			// Now render all the entities
-			for (var i = 0; i < this.brushEntities.length; i++)
-				this.renderBrushEntity(this.brushEntities[i], cameraPos);
-		}*/
-
-		/**
-		 * Renders the given brush entity.
-		 *
-		 * @param entity An instance of Entity which is a brush entity (it must have a property "model").
-		 * @param cameraPos The current camera position.
-		 */
-		/*public function renderBrushEntity(entity, cameraPos)
-		{
-			// Model
-			var modelIndex = parseInt(entity.properties["model"].substring(1));
-			var model = this.models[modelIndex];
-
-			// Alpha value
-			var alpha;
-			var renderamt = entity.properties["renderamt"];
-			if(renderamt == undefined)
-				alpha = 255;
-			else
-				alpha = parseInt(renderamt);
-
-			// Rendermode
-			var renderMode;
-			var renderModeString = entity.properties["rendermode"];
-			if(renderModeString == undefined)
-				renderMode = RENDER_MODE_NORMAL;
-			else
-				renderMode = parseInt(renderModeString);
-
-			// push matrix and translate to model origin
-			var oldModelviewMatrix = new J3DIMatrix4(modelviewMatrix);
-			modelviewMatrix.translate(model.origin.x, model.origin.y, model.origin.z);
-			modelviewMatrix.setUniform(gl, modelviewMatrixLocation, false);
-
-			switch (renderMode)
-			{
-				case RENDER_MODE_NORMAL:
-					break;
-				case RENDER_MODE_TEXTURE:
-					gl.uniform1f(alphaLocation, alpha / 255.0);
-					gl.enable(gl.BLEND);
-					gl.blendFunc(gl.SRC_ALPHA, gl.ONE);
-					gl.depthMask(false); // make z buffer readonly
-
-					break;
-				case RENDER_MODE_SOLID:
-					gl.uniform1i(alphaTestLocation, 1);
-					break;
-				case RENDER_MODE_ADDITIVE:
-					gl.uniform1f(alphaLocation, alpha / 255.0);
-					gl.enable(gl.BLEND);
-					gl.blendFunc(gl.ONE, gl.ONE);
-					gl.depthMask(false); // make z buffer readonly
-
-					break;
-			}
-
-			this.renderNode(model.headNodes[0], -1, cameraPos);
-
-			switch (renderMode)
-			{
-				case RENDER_MODE_NORMAL:
-					break;
-				case RENDER_MODE_TEXTURE:
-				case RENDER_MODE_ADDITIVE:
-					gl.uniform1f(alphaLocation, 1.0);
-					gl.disable(gl.BLEND);
-					gl.depthMask(true);
-
-					break;
-				case RENDER_MODE_SOLID:
-					gl.uniform1i(alphaTestLocation, 0);
-					break;
-			}
-
-			// pop matrix
-			modelviewMatrix = oldModelviewMatrix;
-			modelviewMatrix.setUniform(gl, modelviewMatrixLocation, false);
-		}*/
-
-		/**
-		 * Renders a node of the bsp tree. Called by Bsp.render().
-		 *
-		 * @param nodeIndex The index of the node to render.
-		 * @param cameraLeaf The leaf the camera is in. Used for PVS.
-		 * @param cameraPos The position of the camera.
-		 */
-		/*public function renderNode(nodeIndex, cameraLeaf, cameraPos)
-		{
-			if (nodeIndex < 0)
-			{
-				if (nodeIndex == -1) // Solid leaf 0
-					return;
-
-				// perform vis check
-				if (cameraLeaf > 0)
-					if (this.header.lumps[LUMP_VISIBILITY].length != 0 &&
-						this.visLists[cameraLeaf - 1] != null &&
-						!this.visLists[cameraLeaf - 1][~nodeIndex - 1])
-						return;
-
-				this.renderLeaf(~nodeIndex);
-
-				return;
-			}
-
-			var distance;
-			
-			var node = this.nodes[nodeIndex];
-			var plane = this.planes[node.plane];
-
-			switch (plane.type)
-			{
-			case PLANE_X:
-				distance = cameraPos.x - plane.dist;
-				break;
-			case PLANE_Y:
-				distance = cameraPos.y - plane.dist;
-				break;
-			case PLANE_Z:
-				distance = cameraPos.z - plane.dist;
-				break;
-			default:
-				distance = dotProduct(plane.normal, cameraPos) - plane.dist;
-			}
-
-			if (distance > 0.0)
-			{
-				this.renderNode(node.children[1], cameraLeaf, cameraPos);
-				this.renderNode(node.children[0], cameraLeaf, cameraPos);
-			}
-			else
-			{
-				this.renderNode(node.children[0], cameraLeaf, cameraPos);
-				this.renderNode(node.children[1], cameraLeaf, cameraPos);
-			}
-		}*/
-
-		/**
-		 * Renders a leaf of the bsp tree. Called by Bsp.renderNode().
-		 *
-		 * @param leafIndex The index of the leaf to render.
-		 */
-		/*Bsp.prototype.renderLeaf = function(leafIndex)
-		{
-			var leaf = this.leaves[leafIndex];
-			
-			// Loop through each face in this leaf
-			for (var i = 0; i < leaf.markSurfaces; i++)
-				this.renderFace(this.markSurfaces[leaf.firstMarkSurface + i]);
-		}*/
-
-		/**
-		 * Renders a face of the bsp tree. Called by Bsp.renderLeaf().
-		 *
-		 * @param faceIndex The index of the face to render.
-		 */
-		/*public function renderFace(faceIndex)
-		{
-			var face = this.faces[faceIndex];
-			var texInfo = this.textureInfos[face.textureInfo];
-			
-			if (face.styles[0] == 0xFF)
-				return; // Skip sky faces
-
-			// if the light map offset is not -1 and the lightmap lump is not empty, there are lightmaps
-			var lightmapAvailable = face.lightmapOffset != -1 && this.header.lumps[LUMP_LIGHTING].length > 0;
-			
-			gl.activeTexture(gl.TEXTURE0);
-			gl.bindTexture(gl.TEXTURE_2D, this.textureLookup[texInfo.mipTexture]);
-			
-			gl.activeTexture(gl.TEXTURE1);
-			gl.bindTexture(gl.TEXTURE_2D, this.lightmapLookup[faceIndex]);
-
-
-			gl.drawArrays(polygonMode ? gl.LINE_STRIP : gl.TRIANGLE_FAN, this.faceBufferRegions[faceIndex].start, this.faceBufferRegions[faceIndex].count);
-		}*/
+		}
 
 		/**
 		 * Loades the complete level and prepares it for rendering
@@ -388,7 +171,7 @@ package gl3d.hlbsp
 			this.loadEntities(src);   // muast be loaded before textures
 			this.loadTextures(src);   // plus coordinates
 			this.loadLightmaps(src);  // plus coordinates
-			//this.loadVIS(src);
+			this.loadVIS(src);
 			
 			// FINALLY create buffers for rendering
 			//this.preRender();
@@ -848,15 +631,15 @@ package gl3d.hlbsp
 		/**
 		 * Loads and decompresses the PVS (Potentially Visible Set, or VIS for short) from the bsp file.
 		 */
-		/*public function loadVIS(src)
+		public function loadVIS(src:ByteArray):void
 		{
 			if(this.header.lumps[LUMP_VISIBILITY].length > 0)
 			{
-				var visLeaves = this.countVisLeaves(0);
+				var visLeaves:int = this.countVisLeaves(0);
 				
 				this.visLists = new Array(visLeaves);
 				
-				for (var i = 0; i < visLeaves; i++)
+				for (var i:int = 0; i < visLeaves; i++)
 				{
 					if (this.leaves[i + 1].visOffset >= 0)
 						this.visLists[i] = this.getPVS(src, i + 1, visLeaves);
@@ -866,7 +649,7 @@ package gl3d.hlbsp
 			}
 			else
 				console.log("No VIS found\n");
-		}*/
+		}
 
 		/**
 		 * Counts the number of so-called VisLeaves (leafs that have VIS/PVS information) in the bsp file.
@@ -879,7 +662,7 @@ package gl3d.hlbsp
 				if(nodeIndex == -1)
 					return 0;
 
-				if(this.leaves[~nodeIndex].contents == CONTENTS_SOLID)
+				if(this.leaves[~nodeIndex].content == CONTENTS_SOLID)
 					return 0;
 
 				return 1;
@@ -898,18 +681,19 @@ package gl3d.hlbsp
 		 * @param visLeaves The number of VisLeaves as returned by Bsp.countVisLeaves().
 		 * @return Returns an array of boolean values representing the visibility list for the given leaf.
 		 */
-		/*public function getPVS(src, leafIndex, visLeaves)
+		public function getPVS(src:ByteArray, leafIndex:int, visLeaves:int):Array
 		{
-			var list = new Array(this.leaves.length - 1);
+			var list:Array = new Array(this.leaves.length - 1);
 			
-			for(var i = 0; i < list.length; i++)
+			for(var i:int = 0; i < list.length; i++)
 				list[i] = false;
 
-			var compressed = new Uint8Array(src.buffer, this.header.lumps[LUMP_VISIBILITY].offset + this.leaves[leafIndex].visOffset);
+			var compressed:ByteArray = new ByteArray
+			compressed.writeBytes(src, this.header.lumps[LUMP_VISIBILITY].offset + this.leaves[leafIndex].visOffset);
 
-			var writeIndex = 0; // Index that moves through the destination bool array (list)
+			var writeIndex:int = 0; // Index that moves through the destination bool array (list)
 
-			for (var curByte = 0; writeIndex < visLeaves; curByte++)
+			for (var curByte:int = 0; writeIndex < visLeaves; curByte++)
 			{
 				// Check for a run of 0s
 				if (compressed[curByte] == 0)
@@ -922,7 +706,7 @@ package gl3d.hlbsp
 				else
 				{
 					// Iterate through this byte with bit shifting till the bit has moved beyond the 8th digit
-					for (var mask = 0x01; mask != 0x0100; writeIndex++, mask <<= 1)
+					for (var mask:int = 0x01; mask != 0x0100; writeIndex++, mask <<= 1)
 					{
 						// Test a bit of the compressed PVS with the bit mask
 						if ((compressed[curByte] & mask) && (writeIndex  < visLeaves))
@@ -934,17 +718,17 @@ package gl3d.hlbsp
 			//console.log("List for leaf " + leafIndex + ": " + list);
 			
 			return list;
-		}*/
+		}
 
 		/**
 		 * Tries to load the texture identified by name from the loaded wad files.
 		 *
 		 * @return Returns the texture identifier if the texture has been found, otherwise null.
 		 */
-		/*public function loadTextureFromWad(name)
+		public function loadTextureFromWad(name:String):BitmapData
 		{
-			var texture = null;
-			for(var k = 0; k < loadedWads.length; k++)
+			var texture:BitmapData = null;
+			for(var k:int = 0; k < loadedWads.length; k++)
 			{
 				texture = loadedWads[k].loadTexture(name);
 				if(texture != null)
@@ -952,7 +736,7 @@ package gl3d.hlbsp
 			}
 			
 			return texture;
-		}*/
+		}
 
 		/**
 		 * Loads all the texture data from the bsp file and generates texture coordinates.
@@ -1007,6 +791,7 @@ package gl3d.hlbsp
 			// Texture images
 			//
 			
+			whiteTexture = new BitmapData(1, 1, true, 0xffffffff);
 			// Create white texture
 			/*this.whiteTexture =  pixelsToTexture(new Array(255, 255, 255), 1, 1, 3, function(texture, image)
 			{
@@ -1065,28 +850,29 @@ package gl3d.hlbsp
 					//
 					
 					// Calculate offset of the texture in the bsp file
-					//var offset:int = this.header.lumps[LUMP_TEXTURES].offset + this.textureHeader.offsets[i];
+					var offset:int = this.header.lumps[LUMP_TEXTURES].offset + this.textureHeader.offsets[i];
 					
 					// Use the texture loading procedure from the Wad class
-					//this.textureLookup[i] = Wad.prototype.fetchTextureAtOffset(src, offset);
+					var wad:Wad = new Wad;
+					this.textureLookup[i] = wad.fetchTextureAtOffset(src, offset);
 					
 					console.log("Fetched interal texture " + mipTexture.name);
 				}
 			}
 			
 			// Now that all dummy texture unit IDs have been created, alert the user to select wads for them
-			//this.showMissingWads();
+			this.showMissingWads();
 		}
 
 		/**
 		 * Tries to load all missing textures from the currently loaded Wad files.
 		 */
-		/*public function loadMissingTextures()
+		public function loadMissingTextures():void
 		{
-			for(var i = 0; i < this.missingTextures.length; i++)
+			for(var i:int = 0; i < this.missingTextures.length; i++)
 			{
-				var missingTexture = this.missingTextures[i];
-				var texture = this.loadTextureFromWad(missingTexture.name);
+				var missingTexture:Object = this.missingTextures[i];
+				var texture:BitmapData = this.loadTextureFromWad(missingTexture.name);
 				
 				if(texture != null)
 				{
@@ -1102,60 +888,58 @@ package gl3d.hlbsp
 				else
 					console.log("Texture " + missingTexture.name + " is still missing");
 			}
-		}*/
+		}
 
 		/**
 		 * Updates the gui by the wad files needed by the bsp file but currently not loaded.
 		 */
-		//public function showMissingWads()
-		//{
-			//this.missingWads = new Array();
-			//
-			//var worldspawn = this.findEntities('worldspawn')[0];
-			//var wadString = worldspawn.properties['wad'];
-			//var wads = wadString.split(';');
-			//
-			//for(var i = 0; i < wads.length; i++)
-			//{
-				//var wad = wads[i];
-				//if(wad == '')
-					//continue;
-				//
-				//// shorten path
-				//var pos = wad.lastIndexOf('\\');
-				//var file = wad.substring(pos + 1);
-				////var dir = wad.substring(wad.lastIndexOf('\\', pos - 1) + 1, pos);
-				//
-				//// store the missing wad file
-				////this.missingWads.push({ name: file, dir: dir });
-				//var found = false;
-				//for(var j = 0; j < loadedWads.length; j++)
-					//if(loadedWads[j].name == file)
-						//found = true;
-				//
-				//if(!found) // the wad file hasn't already been added loaded
-					//this.missingWads.push(file);
-			//}
-			//
-			//if(this.missingWads.length == 0)
-				//return;
-			//
-			//$('#wadmissing p:first-child').html('The bsp file references the following missing Wad files:');
-			//
-			//for(var i = 0; i < this.missingWads.length; i++)
-			//{
-				//var name = this.missingWads[i];
-				////var dir = this.missingWads[i].dir;
-			//
-				////if(dir == 'cstrike' || dir == 'valve')
-				////	caption += ' (' + dir + ')';
-				//
-				////$('#wadmissing ul').append('<li><span data-name="' + name + '" data-dir="' + dir + '" class="error">' + caption + '</span></li>');
-				//$('#wadmissing ul').append('<li data-name="' + name + '"><span class="error">' + name + '</span></li>');
-			//}
-			//
-			//setTimeout($('#wadmissing').slideDown(300), 0);
-		//}*/
+		public function showMissingWads():void
+		{
+			this.missingWads = new Array();
+			
+			var worldspawn:Entity = this.findEntities('worldspawn')[0];
+			var wadString:String = worldspawn.properties['wad'];
+			var wads:Array = wadString.split(';');
+			
+			for(var i:int = 0; i < wads.length; i++)
+			{
+				var wad:String = wads[i];
+				if(wad == '')
+					continue;
+				
+				// shorten path
+				var pos:int = wad.lastIndexOf('\\');
+				var file:String = wad.substring(pos + 1);
+				//var dir = wad.substring(wad.lastIndexOf('\\', pos - 1) + 1, pos);
+				
+				// store the missing wad file
+				//this.missingWads.push({ name: file, dir: dir });
+				var found:Boolean = false;
+				for(var j:int = 0; j < loadedWads.length; j++)
+					if(loadedWads[j].name == file)
+						found = true;
+				
+				if(!found) // the wad file hasn't already been added loaded
+					this.missingWads.push(file);
+			}
+			
+			if(this.missingWads.length == 0)
+				return;
+			
+			console.log('The bsp file references the following missing Wad files:');
+			
+			for(i = 0; i < this.missingWads.length; i++)
+			{
+				var name:String = this.missingWads[i];
+				//var dir = this.missingWads[i].dir;
+			
+				//if(dir == 'cstrike' || dir == 'valve')
+				//	caption += ' (' + dir + ')';
+				
+				//$('#wadmissing ul').append('<li><span data-name="' + name + '" data-dir="' + dir + '" class="error">' + caption + '</span></li>');
+				console.log('<li data-name="' + name + '"><span class="error">' + name + '</span></li>');
+			}
+		}
 
 		/**
 		 * Loads all the lightmaps from bsp file, generates textures and texture coordinates.
@@ -1261,22 +1045,16 @@ package gl3d.hlbsp
 
 				/* ********** end http://www.gamedev.net/community/forums/topic.asp?topic_id=538713 ********** */
 
-				//var pixels = new Uint8Array(src.buffer, this.header.lumps[LUMP_LIGHTING].offset + face.lightmapOffset, width * height * 3)
+				var pixels:ByteArray = new ByteArray;
+				pixels.writeBytes(src,this.header.lumps[LUMP_LIGHTING].offset + face.lightmapOffset, width * height * 3)
 				
-				/*var texture = pixelsToTexture(pixels, width, height, 3, function(texture, image)
-				{
-					gl.bindTexture(gl.TEXTURE_2D, texture);
-					gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-					gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR_MIPMAP_LINEAR);
-					gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-					gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-					gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
-					gl.generateMipmap(gl.TEXTURE_2D);
-					gl.bindTexture(gl.TEXTURE_2D, null);
-					//$('body').append('<span>Texture (' + image.width + 'x' + image.height + ')</span>').append(image);
-				});*/
-
-				//this.lightmapLookup[i] = texture;
+				var texture:BitmapData = new BitmapData(width, height, false, 0);
+				texture.lock();
+				for (j = 0; j < pixels.length;j+=3 ) {
+					texture.setPixel((j / 4) % width, (j / 4) / width, (pixels[j]<<16)|(pixels[j+1]<<8)|(pixels[j+2]));
+				}
+				texture.unlock();
+				this.lightmapLookup[i] = texture;
 				this.lightmapCoordinates.push(faceCoords);
 				
 				loadedLightmaps++;
@@ -1284,6 +1062,24 @@ package gl3d.hlbsp
 			}
 			
 			console.log('Loaded ' + loadedLightmaps + ' lightmaps, lightmapdatadiff: ' + (loadedData - this.header.lumps[LUMP_LIGHTING].length) + ' Bytes ');
+		}
+		
+		/**
+		 * Tests whether or not the given point is in the axis aligned bounding box spaned by mins and maxs.
+		 *
+		 * @return Returns true when the point is inside or directly on the box surface.
+		 */
+		public function pointInBox(point:Vector3D, mins:Array, maxs:Array):Boolean
+		{
+			if((mins[0] <= point.x && point.x <= maxs[0] &&
+				mins[1] <= point.y && point.y <= maxs[1] &&
+				mins[2] <= point.z && point.z <= maxs[2]) ||
+			   (mins[0] >= point.x && point.x >= maxs[0] &&
+				mins[1] >= point.y && point.y >= maxs[1] &&
+				mins[2] >= point.z && point.z >= maxs[2]))
+				return true;
+			else
+				return false;
 		}
 
 		/**
@@ -1329,7 +1125,6 @@ package gl3d.hlbsp
 		 * MA 02110-1301  USA
 		 */
 
-		'use strict';
 
 		/**
 		 * Contains the standard BSP v30 file definitions.
@@ -1471,11 +1266,5 @@ package gl3d.hlbsp
 
 
 		public static var SIZE_OF_BSPCLIPNODE:int = 8;
-	}
-}
-
-class Console {
-	public function log(...args):void {
-		trace(args);
 	}
 }

@@ -5,6 +5,7 @@ package gl3d.core {
 	import flash.display3D.Context3DProfile;
 	import flash.display3D.Context3DRenderMode;
 	import flash.display3D.Context3DTriangleFace;
+	import flash.events.ErrorEvent;
 	import flash.events.Event;
 	import gl3d.ctrl.Ctrl;
 	import gl3d.post.PostEffect;
@@ -43,7 +44,14 @@ package gl3d.core {
 		{
 			removeEventListener(Event.ADDED_TO_STAGE, init);
 			stage.stage3Ds[0].addEventListener(Event.CONTEXT3D_CREATE, stage_context3dCreate);
+			stage.stage3Ds[0].addEventListener(ErrorEvent.ERROR, stage3Ds_error);
 			stage.stage3Ds[0].requestContext3D(Context3DRenderMode.AUTO,Context3DProfile.STANDARD);
+		}
+		
+		private function stage3Ds_error(e:ErrorEvent):void 
+		{
+			agalVersion = 1;
+			stage.stage3Ds[0].requestContext3D(Context3DRenderMode.AUTO);
 		}
 		
 		private function stage_context3dCreate(e:Event):void 
@@ -65,7 +73,7 @@ package gl3d.core {
 			if (context) {
 				if(context.driverInfo == "Disposed"){
 					invalid = true;
-					stage.stage3Ds[0].requestContext3D(Context3DRenderMode.AUTO);
+					//stage.stage3Ds[0].requestContext3D(Context3DRenderMode.AUTO);
 					return;
 				}
 				if (invalid) {
