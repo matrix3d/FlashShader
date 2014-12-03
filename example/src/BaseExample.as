@@ -38,6 +38,7 @@ package
 	public class BaseExample extends Sprite
 	{
 		public var speed:Number = .3;
+		public var movementFunc:Function;
 		public var view:View3D;
 		private var aui:AttribSeter = new AttribSeter;
 		private var _useTexture:Boolean = true;
@@ -177,6 +178,7 @@ package
 		public function initCtrl():void {
 			var fc:FirstPersonCtrl = new FirstPersonCtrl(view.camera, stage);
 			fc.speed = speed;
+			fc.movementFunc = movementFunc;
 			view.ctrls.push(fc);
 		}
 		

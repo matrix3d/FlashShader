@@ -1051,7 +1051,7 @@ package gl3d.hlbsp
 				var texture:BitmapData = new BitmapData(width, height, false, 0);
 				texture.lock();
 				for (j = 0; j < pixels.length;j+=3 ) {
-					texture.setPixel((j / 4) % width, (j / 4) / width, (pixels[j]<<16)|(pixels[j+1]<<8)|(pixels[j+2]));
+					texture.setPixel((j / 3) % width, (j / 3) / width, (pixels[j]<<16)|(pixels[j+1]<<8)|(pixels[j+2]));
 				}
 				texture.unlock();
 				this.lightmapLookup[i] = texture;

@@ -8,8 +8,10 @@ package gl3d.hlbsp
 	import gl3d.core.Material;
 	import gl3d.core.Node3D;
 	import gl3d.core.TextureSet;
+	import gl3d.core.VertexBufferSet;
 	import gl3d.core.View3D;
 	import gl3d.meshs.Meshs;
+	import gl3d.shaders.LightMapGLShader;
 	
 	/**
 	 * ...
@@ -102,13 +104,15 @@ package gl3d.hlbsp
 					if (j > 1)
 					{
 						var start:int = bsp.faceBufferRegions[i].start
-						index.push(start, j + start - 1, j + start);
+						index.push(start, j + start, j + start-1);
 					}
 				}
 			}
 			var drawable:Drawable3D = Meshs.createDrawable(null, Vector.<Number>(vertices), Vector.<Number>(texCoords),Vector.<Number>(normals),null);
 			target.drawable = drawable;
+			drawable.lightmapUV = new VertexBufferSet(Vector.<Number>(lightmapCoords), 2);
 			target.material = new Material;
+			target.material.shader = new LightMapGLShader;
 		}
 		
 		/**
@@ -317,12 +321,18 @@ package gl3d.hlbsp
 			//gl.activeTexture(gl.TEXTURE1);
 			//gl.bindTexture(gl.TEXTURE_2D, this.lightmapLookup[faceIndex]);
 			var bmd:BitmapData= bsp.textureLookup[texInfo.mipTexture];
+			var lbmd:BitmapData= bsp.lightmapLookup[faceIndex];
 			target.drawable.index = indexs[faceIndex];
 			var texture:TextureSet = bmd2texture[bmd];
+			var ltexture:TextureSet = bmd2texture[lbmd];
 			if (texture==null) {
 				texture=bmd2texture[bmd]=new TextureSet(bmd);
 			}
+			if (ltexture==null) {
+				ltexture=bmd2texture[lbmd]=new TextureSet(lbmd);
+			}
 			target.material.textureSets[0] = texture;
+			target.material.textureSets[1] = ltexture;
 			target.world = bspRenderNode.world;
 			target.material.draw(target, view);
 			//gl.drawArrays(polygonMode ? gl.LINE_STRIP : gl.TRIANGLE_FAN, this.faceBufferRegions[faceIndex].start, this.faceBufferRegions[faceIndex].count);

@@ -7,6 +7,7 @@ package gl3d.shaders
 	import flash.utils.ByteArray;
 	import flShader.AGALByteCreator;
 	import flShader.FlShader;
+	import flShader.GLCodeCreator;
 	import gl3d.core.Camera3D;
 	import gl3d.core.Material;
 	import gl3d.core.Node3D;
@@ -50,6 +51,13 @@ package gl3d.shaders
 				trace(code);
 				agalMiniAssembler.assemble(fs.programType, code);
 				trace();
+				
+				vs.creator = new GLCodeCreator();
+				fs.creator = new GLCodeCreator();
+				trace("glvcode "+vs);
+				trace(vs.code);
+				trace("glfcode "+fs);
+				trace(fs.code);
 			}
 			vs.creator = new AGALByteCreator(material.view.agalVersion);
 			fs.creator = new AGALByteCreator(material.view.agalVersion);

@@ -14,6 +14,7 @@ package gl3d.core {
 		private var _uv:VertexBufferSet;
 		private var _random:VertexBufferSet;
 		private var _targetPosition:VertexBufferSet;
+		public var lightmapUV:VertexBufferSet;
 		private var _index:IndexBufferSet;
 		public var id2index:Object = { };
 		public function Drawable3D() 

@@ -28,7 +28,7 @@ package gl3d.ctrl
 		private var lastRotation:Vector3D;
 		public var position:Vector3D=new Vector3D;
 		private var isMouseDown:Boolean=false;
-		
+		public var movementFunc:Function;//start end -> end
 		public function FirstPersonCtrl(node:Node3D, stage:Stage)
 		{
 			position.copyFrom(node.matrix.position);
@@ -85,9 +85,14 @@ package gl3d.ctrl
 				helpV.x += speed;
 			}
 			helpV = helpMatrix.transformVector(helpV);
-			position.x += helpV.x;
-			position.y += helpV.y;
-			position.z += helpV.z;
+			if (movementFunc!=null) {
+				position.copyFrom(movementFunc(position,position.clone().add(helpV)));
+			}else {
+				position.x += helpV.x;
+				position.y += helpV.y;
+				position.z += helpV.z;
+			}
+			
 			helpMatrix.appendTranslation(position.x, position.y, position.z);
 			node.matrix.copyFrom(helpMatrix);
 			node.matrix = node.matrix;

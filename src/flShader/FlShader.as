@@ -14,8 +14,6 @@ package flShader {
 		private var tempCounter:int = 0;
 		
 		public var programType:String;
-		public static const op:Var = new Var(Var.TYPE_OP);
-		public static const oc:Var = new Var(Var.TYPE_OC);
 		
 		public var constPool:Array = [];
 		public var constMemLen:int = 0;
@@ -183,6 +181,26 @@ package flShader {
 			return creator.data as ByteArray;
 		}
 		
+		public function get op():Var 
+		{
+			return new Var(Var.TYPE_OP);
+		}
+		
+		public function set op(value:Var):void 
+		{
+			mov(value, op);
+		}
+		
+		public function get oc():Var 
+		{
+			return new Var(Var.TYPE_OC);;
+		}
+		
+		public function set oc(value:Var):void 
+		{
+			mov(value, oc);
+		}
+		
 		public function debug(txt:Object):void {
 			logs[lines.length] = logs[lines.length] || [];
 			logs[lines.length].push(txt);
@@ -272,7 +290,7 @@ package flShader {
         }
 		
 		public function mix(a:Object, b:Object, v:Object, t:Var = null):Var {
-			return add(mul(sub(1,v),a),mul(v, b),t);
+			return add(a,mul(v, sub(b,a)),t);
 		}
 		
 		public function mod(a:Object, b:Object, t:Var=null):Var {
