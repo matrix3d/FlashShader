@@ -50,8 +50,16 @@ package gl3d.shaders
 			if (material.textureSets.length==0) {
 				var diffColor:Var = C();
 			}else {
-				diffColor = tex(V(3), FS(),null,["repeat","linear"]);
-				mul(C().w, diffColor.w, diffColor.w);
+				if (!material.isDistanceField) {
+					diffColor = tex(V(3), FS(),null,["repeat","linear"]);
+					mul(C().w, diffColor.w, diffColor.w);
+				}else {
+					//http://www.valvesoftware.com/publications/2007/SIGGRAPH2007_AlphaTestedMagnification.pdf
+					var distance:Var = tex(V(3),FS(),null,["repeat","linear"]).w;
+					var smoothing:Var = fwidth(distance);
+					var alpha:Var = sat(smoothstep(sub(0.5 , smoothing),add( 0.5 , smoothing), distance));
+					diffColor = sub(1, alpha);
+				}
 			}
 			return diffColor;
 		}

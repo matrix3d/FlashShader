@@ -20,6 +20,7 @@ package gl3d.core {
 		public var color:Vector.<Number> = Vector.<Number>([1, 1, 1, 1]);
 		public var alpha:Number = 1;
 		private var _wireframeAble:Boolean = false;
+		public var isDistanceField:Boolean = false;
 		public var wireframeColor:Vector.<Number> = Vector.<Number>([.5, 0, .5, 0]);
 		public var invalid:Boolean = true;
 		private var _normalMapAble:Boolean;

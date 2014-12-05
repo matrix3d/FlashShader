@@ -24,6 +24,7 @@ package
 	import gl3d.shaders.posts.PostGLShader;
 	import gl3d.shaders.posts.BlurShader;
 	import gl3d.shaders.posts.PulseShader;
+	import gl3d.shaders.posts.ShapeShader;
 	import gl3d.shaders.posts.SinWaterShader;
 	import gl3d.shaders.posts.TileableWaterCausticShader;
 	import gl3d.core.TextureSet;
@@ -82,6 +83,7 @@ package
 			//post = "flower";
 			//post="sinwater"
 			//post="hdr"
+			//post="shape"
 		}
 		
 		public function createNormalMap():TextureSet {
@@ -173,7 +175,7 @@ package
 			aui.bind(material, "alpha", AttribSeter.TYPE_NUM, new Point(.1, 1));
 			aui.bind(material, "wireframeAble", AttribSeter.TYPE_BOOL);
 			aui.bind(this, "useTexture", AttribSeter.TYPE_BOOL);
-			aui.bind(this, "post", AttribSeter.TYPE_LIST_STR,null,["null","blur","water","bend","heart","flower","sinwater","hdr"]);
+			aui.bind(this, "post", AttribSeter.TYPE_LIST_STR,null,["null","blur","water","bend","heart","flower","sinwater","hdr","shape"]);
 		}
 		public function initCtrl():void {
 			var fc:FirstPersonCtrl = new FirstPersonCtrl(view.camera, stage);
@@ -251,6 +253,9 @@ package
 					break
 				case "hdr":
 					view.posts.push(new PostEffect(new PostGLShader(null, new HdrShader)));
+					break;
+				case "shape":
+					view.posts.push(new PostEffect(new PostGLShader(null, new ShapeShader),0));
 			}
 		}
 	}
