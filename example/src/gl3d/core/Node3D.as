@@ -36,9 +36,6 @@ package gl3d.core {
 			if (parent) {
 				world.append(parent.world);
 			}
-			/*for each(var c:Node3D in children) {
-				c.update(view,camera);
-			}*/
 			
 			if (material) {
 				material.draw(this,view);
@@ -171,6 +168,13 @@ package gl3d.core {
 			return getQualifiedClassName(this).split("::")[1]+":"+name;
 		}
 		
+		public function clone():Node3D {
+			var node:Node3D = new Node3D;
+			node.drawable = drawable;
+			node.material = material;
+			node.matrix = matrix.clone();
+			return node;
+		}
 	}
 
 }

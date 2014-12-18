@@ -27,10 +27,11 @@ package gl3d.core {
 		public var ctrls:Vector.<Ctrl> = new Vector.<Ctrl>;
 		public var posts:Vector.<PostEffect> = new Vector.<PostEffect>;
 		public var postRTTs:Vector.<TextureSet> = Vector.<TextureSet>([new TextureSet, new TextureSet]);
-		public var antiAlias:int = 2;
+		private var _antiAlias:int = 2;
 		public var stage3dWidth:Number = 0;
 		public var stage3dHeight:Number = 0;
 		public var time:Number = 0;
+		public var drawTriangleCounter:int = 0;
 		public function View3D(agalVersion:int=2) 
 		{
 			this.agalVersion = agalVersion;
@@ -94,6 +95,7 @@ package gl3d.core {
 				invalid = false;
 				context.clear();
 				collects.length = 0;
+				drawTriangleCounter = 0;
 				collect(scene);
 				for each(var node:Node3D in collects) {
 					node.update(this);
@@ -115,9 +117,23 @@ package gl3d.core {
 		
 		private function collect(node:Node3D):void {
 			collects.push(node);
+			if (node.drawable) {
+				drawTriangleCounter += node.drawable.index.data.length / 3;
+			}
 			for each(var c:Node3D in node.children) {
 				collect(c);
 			}
+		}
+		
+		public function get antiAlias():int 
+		{
+			return _antiAlias;
+		}
+		
+		public function set antiAlias(value:int):void 
+		{
+			_antiAlias = value;
+			invalid = true;
 		}
 	}
 

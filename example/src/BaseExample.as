@@ -7,6 +7,8 @@ package
 	import flash.display.StageScaleMode;
 	import flash.events.Event;
 	import flash.geom.Point;
+	import flash.ui.Multitouch;
+	import flash.ui.MultitouchInputMode;
 	import flash.utils.ByteArray;
 	import flash.utils.getTimer;
 	import gl3d.ctrl.FirstPersonCtrl;
@@ -29,8 +31,10 @@ package
 	import gl3d.shaders.posts.TileableWaterCausticShader;
 	import gl3d.core.TextureSet;
 	import gl3d.core.View3D;
+	import gl3d.util.Stats;
 	import ui.AttribSeter;
 	import ui.Color;
+	import ui.Gamepad;
 	/**
 	 * ...
 	 * @author lizhi
@@ -41,15 +45,21 @@ package
 		public var speed:Number = .3;
 		public var movementFunc:Function;
 		public var view:View3D;
-		private var aui:AttribSeter = new AttribSeter;
+		public var aui:AttribSeter = new AttribSeter;
 		private var _useTexture:Boolean = true;
 		private var texture:TextureSet;
 		private var normalMapTexture:TextureSet;
-		private var teapot:Node3D;
+		public var stats:Stats;
+		public var teapot:Node3D;
 		public var material:Material = new Material;
 		public var _post:String;
+		public var gamepad:Gamepad=new Gamepad;
+		public var fc:FirstPersonCtrl;
 		public function BaseExample() 
 		{
+			if (Multitouch.supportsTouchEvents) {
+				Multitouch.inputMode = MultitouchInputMode.TOUCH_POINT;
+			}
 			view = new View3D;
 			addChild(view);
 			view.camera.z = -10;
@@ -84,6 +94,8 @@ package
 			//post="sinwater"
 			//post="hdr"
 			//post="shape"
+			stats = new Stats(view);
+			addChild(stats);
 		}
 		
 		public function createNormalMap():TextureSet {
@@ -169,16 +181,21 @@ package
 			addChild(aui);
 			aui.bind(view.light, "specularPower", AttribSeter.TYPE_NUM, new Point(1, 100));
 			aui.bind(view.light, "lightPower", AttribSeter.TYPE_NUM, new Point(.5, 5));
+			aui.bind(view, "antiAlias", AttribSeter.TYPE_NUM, new Point(0, 16));
 			aui.bind(view.light, "color", AttribSeter.TYPE_VEC_COLOR);
 			aui.bind(view.light, "ambient", AttribSeter.TYPE_VEC_COLOR);
 			aui.bind(material, "color", AttribSeter.TYPE_VEC_COLOR);
 			aui.bind(material, "alpha", AttribSeter.TYPE_NUM, new Point(.1, 1));
 			aui.bind(material, "wireframeAble", AttribSeter.TYPE_BOOL);
 			aui.bind(this, "useTexture", AttribSeter.TYPE_BOOL);
-			aui.bind(this, "post", AttribSeter.TYPE_LIST_STR,null,["null","blur","water","bend","heart","flower","sinwater","hdr","shape"]);
+			aui.bind(this, "post", AttribSeter.TYPE_LIST_STR, null, ["null", "blur", "water", "bend", "heart", "flower", "sinwater", "hdr", "shape"]);
+			
+			addChild(gamepad);
+			gamepad.x = 200;
+			gamepad.y = 200;
 		}
 		public function initCtrl():void {
-			var fc:FirstPersonCtrl = new FirstPersonCtrl(view.camera, stage);
+			fc = new FirstPersonCtrl(view.camera, stage);
 			fc.speed = speed;
 			fc.movementFunc = movementFunc;
 			view.ctrls.push(fc);
@@ -204,6 +221,9 @@ package
 			view.render(getTimer());
 			
 			aui.update();
+			if (gamepad) {
+				fc.inputSpeed = gamepad.speed;
+			}
 		}
 		
 		public function get useTexture():Boolean

@@ -4,14 +4,15 @@
   <output>
     <movie outputType="Application" />
     <movie input="" />
-    <movie path="bin\FlashShader.swf" />
+    <movie path="bin2\FlashShaderAIR.swf" />
     <movie fps="60" />
-    <movie width="800" />
-    <movie height="600" />
+    <movie width="480" />
+    <movie height="762" />
     <movie version="14" />
     <movie minorVersion="0" />
-    <movie platform="Flash Player" />
+    <movie platform="AIR Mobile" />
     <movie background="#FFFFFF" />
+    <movie preferredSDK="AIR 16.0.0;16.0.0;" />
   </output>
   <!-- Other classes to be compiled into your SWF -->
   <classpaths>
@@ -73,7 +74,7 @@
   </library>
   <!-- Class files to compile (other referenced classes will automatically be included) -->
   <compileTargets>
-    <compile path="src\TestBsp.as" />
+    <compile path="src\TestMT.as" />
   </compileTargets>
   <!-- Paths to exclude from the Project Explorer tree -->
   <hiddenPaths>
@@ -86,12 +87,12 @@
   <!-- Other project options -->
   <options>
     <option showHiddenPaths="False" />
-    <option testMovie="Default" />
-    <option testMovieCommand="" />
+    <option testMovie="Custom" />
+    <option testMovieCommand="Run.bat" />
   </options>
   <!-- Plugin storage -->
   <storage>
-    <entry key="at_enabled"><![CDATA[1]]></entry>
+    <entry key="at_enabled"><![CDATA[0]]></entry>
     <entry key="at_password"><![CDATA[]]></entry>
   </storage>
 </project>

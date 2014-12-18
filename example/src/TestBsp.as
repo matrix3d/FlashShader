@@ -56,7 +56,7 @@ package
 			
 			//addChild(new Bitmap(wad.loadTexture("{webgl")));
 			
-			speed = 3;
+			speed = .3;
 			movementFunc = playerMove;
 		}
 		
@@ -68,6 +68,9 @@ package
 		}
 		
 		override public function initUI():void {
+			super.initUI();
+			if (aui.parent) aui.parent.removeChild(aui);
+			
 			resetTexMenu();
 			image = new Bitmap;
 			image.x = 130;
@@ -94,18 +97,20 @@ package
 		}
 		
 		private function resetTexMenu():void {
-			var con:ContextMenu = new ContextMenu;
-			for each(var b:BspMipTexture in bsp.bsp.mipTextures) {
-				var item:ContextMenuItem = new ContextMenuItem(b.name);
-				con.customItems.push(item);
-				item.addEventListener(ContextMenuEvent.MENU_ITEM_SELECT, item_menuItemSelect);
-			}
-			for (var i:int = 0; i < bsp.bsp.faces.length;i++ ) {
-				item = new ContextMenuItem(i+"");
-				con.customItems.push(item);
-				item.addEventListener(ContextMenuEvent.MENU_ITEM_SELECT, item_menuItemSelect);
-			}
-			contextMenu = con;
+			try{
+				var con:ContextMenu = new ContextMenu;
+				for each(var b:BspMipTexture in bsp.bsp.mipTextures) {
+					var item:ContextMenuItem = new ContextMenuItem(b.name);
+					con.customItems.push(item);
+					item.addEventListener(ContextMenuEvent.MENU_ITEM_SELECT, item_menuItemSelect);
+				}
+				for (var i:int = 0; i < bsp.bsp.faces.length;i++ ) {
+					item = new ContextMenuItem(i+"");
+					con.customItems.push(item);
+					item.addEventListener(ContextMenuEvent.MENU_ITEM_SELECT, item_menuItemSelect);
+				}
+				contextMenu = con;
+			}catch(err:Error){}
 		}
 		
 		private function loadbsp(e:Event):void {

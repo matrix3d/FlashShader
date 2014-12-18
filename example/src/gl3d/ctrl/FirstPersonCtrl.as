@@ -1,13 +1,14 @@
 package gl3d.ctrl
 {
 	import flash.display.Stage;
+	import flash.events.Event;
 	import flash.events.KeyboardEvent;
-	import flash.events.MouseEvent;
 	import flash.geom.Matrix3D;
 	import flash.geom.Point;
 	import flash.geom.Vector3D;
 	import flash.ui.Keyboard;
 	import gl3d.core.Node3D;
+	import gl3d.events.GLTouchEvent;
 	
 	/**
 	 * ...
@@ -29,13 +30,17 @@ package gl3d.ctrl
 		public var position:Vector3D=new Vector3D;
 		private var isMouseDown:Boolean=false;
 		public var movementFunc:Function;//start end -> end
+		public var inputSpeed:Vector3D;
+		
+		private var nowMouseDownEvent:Event;
+		private var stagePos:Point=new Point
 		public function FirstPersonCtrl(node:Node3D, stage:Stage)
 		{
 			position.copyFrom(node.matrix.position);
 			rotation.setTo(node.rotationX, node.rotationY, node.rotationZ);
 			this.stage = stage;
 			this.node = node;
-			stage.addEventListener(MouseEvent.MOUSE_DOWN, stage_mouseDown);
+			stage.addEventListener(GLTouchEvent.TOUCH_BEGIN, stage_mouseDown);
 			stage.addEventListener(KeyboardEvent.KEY_DOWN, stage_keyDown);
 			stage.addEventListener(KeyboardEvent.KEY_UP, stage_keyUp);
 		}
@@ -50,25 +55,40 @@ package gl3d.ctrl
 			keydownMap[e.keyCode] = true;
 		}
 		
-		private function stage_mouseDown(e:MouseEvent):void
+		private function stage_mouseDown(e:Event):void
 		{
-			isMouseDown=true;
-			lastPos = new Point(stage.mouseX, stage.mouseY);
-			lastRotation = rotation.clone();
-			stage.addEventListener(MouseEvent.MOUSE_UP, stage_mouseUp);
+			nowMouseDownEvent = e;
+			if(e.target is Stage){
+				isMouseDown = true;
+				stagePos = GLTouchEvent.getMousePos(e);
+				lastPos = GLTouchEvent.getMousePos(e);
+				lastRotation = rotation.clone();
+				stage.addEventListener(GLTouchEvent.TOUCH_END, stage_mouseUp);
+				stage.addEventListener(GLTouchEvent.TOUCH_MOVE, stage_touchMove);
+			}
 		}
 		
-		private function stage_mouseUp(e:MouseEvent):void
+		private function stage_touchMove(e:Event):void 
 		{
-			isMouseDown=false;
-			stage.removeEventListener(MouseEvent.MOUSE_UP, stage_mouseUp);
+			if (GLTouchEvent.isSameTouch(nowMouseDownEvent, e)) {
+				stagePos = GLTouchEvent.getMousePos(e);
+			}
+		}
+		
+		private function stage_mouseUp(e:Event):void
+		{
+			if (GLTouchEvent.isSameTouch(nowMouseDownEvent, e)) {
+				isMouseDown=false;
+				stage.removeEventListener(GLTouchEvent.TOUCH_END, stage_mouseUp);
+				stage.removeEventListener(GLTouchEvent.TOUCH_MOVE, stage_touchMove);
+			}
 		}
 		
 		override public function update():void
 		{
 			if(isMouseDown){
-				rotation.y = lastRotation.y + (stage.mouseX - lastPos.x)/5;
-				rotation.x = lastRotation.x + (stage.mouseY - lastPos.y)/5;
+				rotation.y = lastRotation.y + (stagePos.x - lastPos.x)*rotSpeed;
+				rotation.x = lastRotation.x + (stagePos.y - lastPos.y)*rotSpeed;
 			}
 			helpMatrix.identity();
 			helpMatrix.appendRotation(rotation.x, Vector3D.X_AXIS);
@@ -84,6 +104,12 @@ package gl3d.ctrl
 			}else if (keydownMap[Keyboard.D]) {
 				helpV.x += speed;
 			}
+			if (inputSpeed) {
+				inputSpeed.scaleBy(speed);
+				helpV.x += inputSpeed.x;
+				helpV.z -= inputSpeed.y;
+			}
+			
 			helpV = helpMatrix.transformVector(helpV);
 			if (movementFunc!=null) {
 				position.copyFrom(movementFunc(position,position.clone().add(helpV)));
