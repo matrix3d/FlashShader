@@ -34,14 +34,19 @@ package gl3d.shaders
 			var viewPos:Var = m44(worldPos, view);
 			m44(viewPos, perspective, op);
 			
-			var eyeDirection:Var = neg(viewPos, null);
-			mov(eyeDirection, V(2));
-			var viewPosLight:Var = add(m44(lightPos, view),eyeDirection,V());
-			var viewNormal:Var = m33(m33(norm, model),view);
-			mov(viewNormal, V(1));
-			
-			if (material.normalMapAble) {
-				mov(tangent,V(4))
+			if (material.lightAble) {
+				if(material.specularAble){
+					var eyeDirection:Var = nrm(neg(viewPos, null));
+					mov(eyeDirection, V(2));
+				}
+				
+				var modelPosLight:Var = nrm(sub(lightPos, worldPos));
+				var modelNormal:Var = nrm(m33(norm, model));
+				mov(modelPosLight, V());
+				mov(modelNormal, V(1));
+				if (material.normalMapAble) {
+					mov(tangent,V(4))
+				}
 			}
 			
 			if (material.textureSets.length>0) {

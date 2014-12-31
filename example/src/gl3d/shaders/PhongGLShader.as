@@ -18,6 +18,8 @@ package gl3d.shaders
 	public class PhongGLShader extends GLShader
 	{
 		private var drawable:Drawable3D;
+		private var lightPosVec:Vector.<Number> = Vector.<Number>([0,0,0,1]);
+		private var specularPowerVec:Vector.<Number> = Vector.<Number>([0,0,0,0]);
 		public function PhongGLShader() 
 		{
 		}
@@ -38,7 +40,7 @@ package gl3d.shaders
 			textureSets= material.textureSets;
 			buffSets.length = 0;
 			buffSets[0] = drawable.pos;
-			buffSets[1] = drawable.norm;
+			buffSets[1] = material.lightAble?drawable.norm:null;
 			buffSets[2] =textureSets.length?drawable.uv:null;
 			buffSets[3] = material.normalMapAble?drawable.tangent:null;
 			buffSets[4] = material.wireframeAble?drawable.targetPosition:null;
@@ -52,24 +54,35 @@ package gl3d.shaders
 				var view:View3D = material.view;
 				var camera:Camera3D = material.camera;
 				var node:Node3D = material.node;
-				var alpha:Number = material.alpha;
-				var color:Vector.<Number> = material.color;
 				
 				context.setProgramConstantsFromMatrix(Context3DProgramType.VERTEX, 0, node.world, true);
 				context.setProgramConstantsFromMatrix(Context3DProgramType.VERTEX, 4, camera.view, true);
 				context.setProgramConstantsFromMatrix(Context3DProgramType.VERTEX, 8, camera.perspective, true);
-				var lightPos:Vector3D = view.light.world.position;
-				context.setProgramConstantsFromVector(Context3DProgramType.VERTEX, 12, Vector.<Number>([lightPos.x,lightPos.y,lightPos.z,1]));//light pos
+				
+				var alpha:Number = material.alpha;
+				var color:Vector.<Number> = material.color;
 				color[3] = alpha;
 				context.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, 0, color);//color
-				view.light.color[3] = view.light.lightPower;
-				context.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, 1,view.light.color);//light color
-				context.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, 2,view.light.ambient);//ambient color 环境光
-				context.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, 3,Vector.<Number>([view.light.specularPower,0,0,0]));//x:specular pow, y:2
-				context.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, 5,material.wireframeColor);//x:specular pow, y:2
+				if(material.lightAble){
+					var lightPos:Vector3D = view.light.world.position;
+					lightPosVec[0] = lightPos.x;
+					lightPosVec[1] = lightPos.y;
+					lightPosVec[2] = lightPos.z;
+					context.setProgramConstantsFromVector(Context3DProgramType.VERTEX, 12,lightPosVec);//light pos
+					view.light.color[3] = material.shininess;
+					context.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, 1,view.light.color);//light color
+					context.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, 2, material.ambient);//ambient color 环境光
+					if(material.specularAble){
+						specularPowerVec[0] = material.specularPower;
+						context.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, 3, specularPowerVec);//x:specular pow, y:2
+					}
+				}
+				if(material.wireframeAble){
+					context.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, 5, material.wireframeColor);//x:specular pow, y:2
+				}
 				
-				context.setProgramConstantsFromVector(Context3DProgramType.VERTEX, vs.constMemLen, Vector.<Number>(vs.constPool));
-				context.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, fs.constMemLen, Vector.<Number>(fs.constPool));
+				context.setProgramConstantsFromVector(Context3DProgramType.VERTEX, vs.constMemLen, vs.constPoolVec);
+				context.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, fs.constMemLen, fs.constPoolVec);
 				context.drawTriangles(drawable.index.buff);
 			}
 		}

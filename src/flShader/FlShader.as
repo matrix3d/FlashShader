@@ -15,7 +15,8 @@ package flShader {
 		
 		public var programType:String;
 		
-		public var constPool:Array = [];
+		private var constPool:Array = [];
+		public var constPoolVec:Vector.<Number>;
 		public var constMemLen:int = 0;
 		
 		public var invalid:Boolean = true;
@@ -139,6 +140,7 @@ package flShader {
 			while ((constPool.length%4)!=0) {
 				constPool.push(0);
 			}
+			constPoolVec = Vector.<Number>(constPool);
 			//trace("pool",constPool);
 		}
 		
@@ -294,12 +296,8 @@ package flShader {
 		}
 		
 		public function mod(a:Object, b:Object, t:Var=null):Var {
-			return mul(modfrc(a,b), b, t);
-		}
-		
-		public function modfrc(a:Object, b:Object, t:Var=null):Var {
 			var c:Var = div(a, b);
-			return frc(c,t);
+			return mul(frc(c), b, t);
 		}
 		
 		public function fwidth(a:Object, t:Var = null):Var {
@@ -331,6 +329,12 @@ package flShader {
 		public function div2(arr:Array, t:Var=null):Var {return f2("div", arr, t);}
 		public function max2(arr:Array, t:Var=null):Var {return f2("max", arr, t);}
 		public function min2(arr:Array, t:Var=null):Var {return f2("min", arr, t);}
+		public function clamp(a:Object, minValue:Object, maxValue:Object, t:Var = null):Var {
+			return min(maxValue, max(a, minValue), t);
+		}
+		public function floor(a:Object, t:Var = null):Var {
+			return sub(a, frc(a), t);
+		}
 		
 		/** float */
 		public function F(data:Object, len:int = 1):Var { 

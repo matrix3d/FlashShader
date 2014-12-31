@@ -52,12 +52,12 @@ package gl3d.shaders
 				agalMiniAssembler.assemble(fs.programType, code);
 				trace();
 				
-				vs.creator = new GLCodeCreator();
-				fs.creator = new GLCodeCreator();
-				trace("glvcode "+vs);
-				trace(vs.code);
-				trace("glfcode "+fs);
-				trace(fs.code);
+				//vs.creator = new GLCodeCreator();
+				//fs.creator = new GLCodeCreator();
+				//trace("glvcode "+vs);
+				//trace(vs.code);
+				//trace("glfcode "+fs);
+				//trace(fs.code);
 			}
 			vs.creator = new AGALByteCreator(material.view.agalVersion);
 			fs.creator = new AGALByteCreator(material.view.agalVersion);

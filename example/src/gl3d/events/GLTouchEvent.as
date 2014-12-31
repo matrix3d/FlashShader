@@ -6,6 +6,7 @@ package gl3d.events
 	import flash.events.TouchEvent;
 	import flash.geom.Point;
 	import flash.ui.Multitouch;
+	import gl3d.hlbsp.console;
 	/**
 	 * ...
 	 * @author lizhi
@@ -42,8 +43,8 @@ package gl3d.events
 		
 		static public function getMousePos(e:Event):Point {
 			if (e is TouchEvent) {
-				var te:TouchEvent = e.currentTarget as TouchEvent;
-				return new Point(te.localX,te.localY);
+				var te:TouchEvent = e as TouchEvent;
+				return new Point(te.stageX,te.stageY);
 			}
 			var t:DisplayObject = e.currentTarget as DisplayObject;
 			return new Point(t.mouseX,t.mouseY);

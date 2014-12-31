@@ -43,8 +43,9 @@ package
 		
 		override public function enterFrame(e:Event):void 
 		{
-			if (stats.fps>30) {
-				addNode((stats.fps-30)*2);
+			if (stats.fps > 30) {
+				var base:int = stats.fps - 30;
+				addNode(base*3);
 			}
 			super.enterFrame(e);
 		}

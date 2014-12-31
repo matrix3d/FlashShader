@@ -83,24 +83,27 @@ package gl3d.shaders
 			}else {
 				normal = V(1);
 			}
-			var n:Var = nrm(normal);
-			var l:Var = nrm(V());
+			var n:Var = normal;
+			var l:Var = V();
 			var cosTheta:Var = sat(dp3(n,l));
 			
-			var e:Var = nrm(V(2));
-			var r:Var = nrm(sub(mul2([2, dp3(l, n), n]), l));
-			var cosAlpha:Var = sat(dp3(e, r));
-			
-			var light:Light = material.view.light;
-			if (material.lightAble) {
-				
-			}else {
-				
+			if(material.specularAble){
+				var e:Var = V(2);
+				var r:Var = nrm(sub(mul2([2, dp3(l, n), n]), l));
+				var cosAlpha:Var = sat(dp3(e, r));
 			}
-			if (material.view.light.lightPowerAble) {
-				return add(ambientColor, mul2([lightColor, add(cosTheta, pow(cosAlpha, specularPow)), lightPower]));
+			if (material.shininess!=1) {
+				if (material.specularAble) {
+					return add(ambientColor, mul2([lightColor, add(cosTheta, pow(cosAlpha, specularPow)), lightPower]));
+				}else {
+					return add(ambientColor, mul2([lightColor, cosTheta, lightPower]));
+				}
 			}else {
-				return add(ambientColor, mul2([lightColor, add(cosTheta, pow(cosAlpha, specularPow))]));
+				if (material.specularAble) {
+					return add(ambientColor, mul2([lightColor, add(cosTheta, pow(cosAlpha, specularPow))]));
+				}else {
+					return add(ambientColor, mul2([lightColor, cosTheta]));
+				}
 			}
 			return null;
 		}

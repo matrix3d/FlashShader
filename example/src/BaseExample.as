@@ -7,6 +7,7 @@ package
 	import flash.display.StageScaleMode;
 	import flash.events.Event;
 	import flash.geom.Point;
+	import flash.text.TextField;
 	import flash.ui.Multitouch;
 	import flash.ui.MultitouchInputMode;
 	import flash.utils.ByteArray;
@@ -15,11 +16,13 @@ package
 	import gl3d.core.Material;
 	import gl3d.hlbsp.Bsp;
 	import gl3d.hlbsp.BspRender;
+	import gl3d.hlbsp.console;
 	import gl3d.hlbsp.Wad;
 	import gl3d.meshs.Meshs;
 	import gl3d.core.Node3D;
 	import gl3d.parser.DAEParser;
 	import gl3d.post.PostEffect;
+	import gl3d.shaders.posts.AsciiArtShader;
 	import gl3d.shaders.posts.FlowerShader;
 	import gl3d.shaders.posts.HdrShader;
 	import gl3d.shaders.posts.HeartShader;
@@ -49,6 +52,7 @@ package
 		private var _useTexture:Boolean = true;
 		private var texture:TextureSet;
 		private var normalMapTexture:TextureSet;
+		private var debug:TextField;
 		public var stats:Stats;
 		public var teapot:Node3D;
 		public var material:Material = new Material;
@@ -59,6 +63,12 @@ package
 		{
 			if (Multitouch.supportsTouchEvents) {
 				Multitouch.inputMode = MultitouchInputMode.TOUCH_POINT;
+				debug = new TextField;
+				debug.mouseEnabled = debug.mouseWheelEnabled = false;
+				addChild(debug);
+				debug.width = stage.stageWidth;
+				debug.height = stage.stageHeight;
+				//console.textfield = debug;
 			}
 			view = new View3D;
 			addChild(view);
@@ -75,8 +85,8 @@ package
 			if (material.normalMapAble) {
 				material.textureSets.push( normalMapTexture);
 			}
-			
-			material.color = Vector.<Number>([.6, .6, .6, 1]);
+			material.specularAble = true;
+			material.lightAble = true;
 			
 			initLight();
 			initNode();
@@ -94,6 +104,7 @@ package
 			//post="sinwater"
 			//post="hdr"
 			//post="shape"
+			//post="asciiart"
 			stats = new Stats(view);
 			addChild(stats);
 		}
@@ -157,7 +168,6 @@ package
 		
 		public function initLight():void {
 			view.light.z = -450;
-			view.light.lightPower = 2;
 		}
 		public function initNode():void {
 			teapot = new Node3D;
@@ -179,18 +189,18 @@ package
 		
 		public function initUI():void {
 			addChild(aui);
-			aui.bind(view.light, "specularPower", AttribSeter.TYPE_NUM, new Point(1, 100));
-			aui.bind(view.light, "lightPower", AttribSeter.TYPE_NUM, new Point(.5, 5));
+			aui.bind(material, "specularPower", AttribSeter.TYPE_NUM, new Point(1, 100));
+			aui.bind(material, "shininess", AttribSeter.TYPE_NUM, new Point(.5, 5));
 			aui.bind(view, "antiAlias", AttribSeter.TYPE_NUM, new Point(0, 16));
 			aui.bind(view.light, "color", AttribSeter.TYPE_VEC_COLOR);
-			aui.bind(view.light, "ambient", AttribSeter.TYPE_VEC_COLOR);
+			aui.bind(material, "ambient", AttribSeter.TYPE_VEC_COLOR);
 			aui.bind(material, "color", AttribSeter.TYPE_VEC_COLOR);
 			aui.bind(material, "alpha", AttribSeter.TYPE_NUM, new Point(.1, 1));
 			aui.bind(material, "wireframeAble", AttribSeter.TYPE_BOOL);
 			aui.bind(this, "useTexture", AttribSeter.TYPE_BOOL);
-			aui.bind(this, "post", AttribSeter.TYPE_LIST_STR, null, ["null", "blur", "water", "bend", "heart", "flower", "sinwater", "hdr", "shape"]);
+			aui.bind(this, "post", AttribSeter.TYPE_LIST_STR, null, ["null", "blur", "water", "bend", "heart", "flower", "sinwater", "hdr", "shape","asciiart"]);
 			
-			addChild(gamepad);
+			//addChild(gamepad);
 			gamepad.x = 200;
 			gamepad.y = 200;
 		}
@@ -207,6 +217,10 @@ package
 			var w:Number = stage.stageWidth;
 			var h:Number = stage.stageHeight;
 			view.camera.perspective.perspectiveFieldOfViewLH(Math.PI / 4, stage.stageWidth / stage.stageHeight, 1, 4000);
+			if (debug) {
+				debug.width = w;
+				debug.height = h;
+			}
 		}
 		
 		public function enterFrame(e:Event):void
@@ -221,7 +235,7 @@ package
 			view.render(getTimer());
 			
 			aui.update();
-			if (gamepad) {
+			if (gamepad&&fc) {
 				fc.inputSpeed = gamepad.speed;
 			}
 		}
@@ -275,7 +289,10 @@ package
 					view.posts.push(new PostEffect(new PostGLShader(null, new HdrShader)));
 					break;
 				case "shape":
-					view.posts.push(new PostEffect(new PostGLShader(null, new ShapeShader),0));
+					view.posts.push(new PostEffect(new PostGLShader(null, new ShapeShader), 0));
+					break;
+				case "asciiart":
+					view.posts.push(new PostEffect(new PostGLShader(null, new AsciiArtShader)));
 			}
 		}
 	}

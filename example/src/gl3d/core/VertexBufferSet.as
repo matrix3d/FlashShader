@@ -12,6 +12,7 @@ package gl3d.core {
 		private var buff:VertexBuffer3D;
 		private var invalid:Boolean = true;
 		private var context:Context3D;
+		private static var FORMATS:Array = [null,"float1","float2","float3","float4"];
 		public function VertexBufferSet(data:Vector.<Number>,data32PerVertex:int) 
 		{
 			this.data = data;
@@ -33,7 +34,7 @@ package gl3d.core {
 		}
 		
 		public function bind(context:Context3D, i:int):void {
-			context.setVertexBufferAt(i, buff,0,"float"+data32PerVertex);
+			context.setVertexBufferAt(i, buff,0,FORMATS[data32PerVertex]);
 		}
 	}
 

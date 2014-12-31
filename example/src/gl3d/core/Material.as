@@ -13,6 +13,12 @@ package gl3d.core {
 	public class Material 
 	{
 		public var lightAble:Boolean = true;
+		public var ambientAble:Boolean = true;
+		public var specularAble:Boolean = true;
+		public var ambient:Vector.<Number> = Vector.<Number>([.1, .1, .1, .1]);
+		public var specularPower:Number = 50;
+		public var shininess:Number = 1;
+		
 		public var view:View3D;
 		public var camera:Camera3D;
 		public var node:Node3D;
