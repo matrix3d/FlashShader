@@ -64,31 +64,41 @@ package gl3d.shaders
 			return diffColor;
 		}
 		
+		private function local2tangent(tangent:Var, biTangent:Var, normal:Var, value:Var):Var {
+			var t:Var = createTempVar();
+			dp3(tangent, value, t.x);
+			dp3(biTangent, value, t.y);
+			dp3(normal, value, t.z);
+			return t;
+		}
+		
 		public function getPhongColor():Var {
 			var lightColor:Var = C(1);
 			var lightPower:Var = lightColor.w;
 			var ambientColor:Var = C(2);
 			var specularPow:Var = C(3).x;
 			
+			var normal:Var = V(1);
 			if (material.normalMapAble) {
 				var tangent:Var = V(4);
-				var normal:Var = V(1);
 				var biTangent:Var = crs(normal, tangent);
-				var normalMap:Var = sub(mul(tex(V(3), FS(1)),2),1);
-				var temp:Var = createTempVar();
-				mov(dp3(tangent,normalMap),temp.x);
-				mov(dp3(biTangent,normalMap),temp.y);
-				mov(dp3(normal, normalMap), temp.z);
-				normal = temp;
-			}else {
-				normal = V(1);
+				var normalMap:Var = sub(mul(tex(V(3), FS(1),null,["linear"]),2),1);
 			}
-			var n:Var = normal;
+			
 			var l:Var = V();
+			if (material.normalMapAble) {
+				var n:Var = normalMap;
+				l = local2tangent(tangent,biTangent,normal,l);
+			}else {
+				n = normal;
+			}
 			var cosTheta:Var = sat(dp3(n,l));
 			
 			if(material.specularAble){
 				var e:Var = V(2);
+				if (material.normalMapAble) {
+					e = local2tangent(tangent,biTangent,normal,e);
+				}
 				var r:Var = nrm(sub(mul2([2, dp3(l, n), n]), l));
 				var cosAlpha:Var = sat(dp3(e, r));
 			}

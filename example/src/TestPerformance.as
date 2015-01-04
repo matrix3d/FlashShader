@@ -23,7 +23,9 @@ package
 			teapot.scaleX = teapot.scaleY = teapot.scaleZ = .1;
 			//teapot.drawable = Meshs.cube();
 			//teapot.material.lightAble = false;
-			materialInstance= new InstanceMaterial;
+			materialInstance = new InstanceMaterial;
+			materialInstance.normalMapAble = material.normalMapAble;
+			addNode(800);
 		}
 		
 		private function addNode(num:int):void {
@@ -45,7 +47,7 @@ package
 		{
 			if (stats.fps > 30) {
 				var base:int = stats.fps - 30;
-				addNode(base*3);
+				//addNode(base*3);
 			}
 			super.enterFrame(e);
 		}

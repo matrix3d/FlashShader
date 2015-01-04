@@ -22,9 +22,10 @@ package gl3d.shaders
 		
 		override public function build():void {
 			var model:Var = C();
+			var world2local:Var = C(12);
 			var view:Var = C(4);
 			var perspective:Var = C(8);
-			var lightPos:Var = mov(C(12));
+			var lightPos:Var = mov(C(16));
 			var pos:Var = VA();
 			var norm:Var = VA(1);
 			var uv:Var = VA(2);
@@ -36,14 +37,27 @@ package gl3d.shaders
 			
 			if (material.lightAble) {
 				if(material.specularAble){
-					var eyeDirection:Var = nrm(neg(viewPos, null));
+					if (material.normalMapAble) {
+						var eyeDirection:Var = nrm(m33(neg(viewPos),world2local));
+					}else {
+						eyeDirection = nrm(neg(viewPos));
+					}
 					mov(eyeDirection, V(2));
 				}
+				if (material.normalMapAble) {
+					var posLight:Var = nrm(m33(sub(lightPos, worldPos),world2local));
+				}else {
+					posLight = nrm(sub(lightPos, worldPos));
+				}
+				mov(posLight, V());
 				
-				var modelPosLight:Var = nrm(sub(lightPos, worldPos));
-				var modelNormal:Var = nrm(m33(norm, model));
-				mov(modelPosLight, V());
-				mov(modelNormal, V(1));
+				if (material.normalMapAble) {
+					mov(norm, V(1));
+				}else {
+					var modelNormal:Var = nrm(m33(norm, model));
+					mov(modelNormal, V(1));
+				}
+				
 				if (material.normalMapAble) {
 					mov(tangent,V(4))
 				}

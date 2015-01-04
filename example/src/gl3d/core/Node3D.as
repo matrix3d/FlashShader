@@ -12,8 +12,9 @@ package gl3d.core {
 	public class Node3D 
 	{
 		public var parent:Node3D;
-		public var world:Matrix3D = new Matrix3D;
-		protected var _matrix:Matrix3D = new Matrix3D;
+		public var _world:Matrix3D = new Matrix3D;
+		public var _world2local:Matrix3D = new Matrix3D;
+		public var _matrix:Matrix3D = new Matrix3D;
 		public var children:Vector.<Node3D> = new Vector.<Node3D>;
 		public var drawable:Drawable3D;
 		public var unpackedDrawable:Drawable3D;
@@ -32,11 +33,6 @@ package gl3d.core {
 		}
 		
 		public function update(view:View3D):void {
-			world.copyFrom(_matrix);
-			if (parent) {
-				world.append(parent.world);
-			}
-			
 			if (material) {
 				material.draw(this,view);
 			}
@@ -154,6 +150,22 @@ package gl3d.core {
 		{
 			trs[2].z = value;
 			recompose()
+		}
+		
+		public function get world():Matrix3D 
+		{
+			_world.copyFrom(_matrix);
+			if (parent) {
+				_world.append(parent._world);
+			}
+			return _world;
+		}
+		
+		public function get world2local():Matrix3D 
+		{
+			_world2local.copyFrom(world);
+			_world2local.invert();
+			return _world2local;
 		}
 		
 		public function rayMeshTest( rayOrigin:Vector3D, rayDirection:Vector3D,pixelPos:Vector3D=null ):Boolean

@@ -35,6 +35,7 @@ package
 	import gl3d.core.TextureSet;
 	import gl3d.core.View3D;
 	import gl3d.util.Stats;
+	import gl3d.util.Utils;
 	import ui.AttribSeter;
 	import ui.Color;
 	import ui.Gamepad;
@@ -45,7 +46,7 @@ package
 	[SWF(frameRate='60', backgroundColor='0x000000', width='800', height='600')]
 	public class BaseExample extends Sprite
 	{
-		public var speed:Number = .3;
+		public var speed:Number = .03;
 		public var movementFunc:Function;
 		public var view:View3D;
 		public var aui:AttribSeter = new AttribSeter;
@@ -80,7 +81,7 @@ package
 			
 			normalMapTexture = createNormalMap();
 			
-			//material.normalMapAble = true;
+			material.normalMapAble = true;
 			material.textureSets = Vector.<TextureSet>([texture]);
 			if (material.normalMapAble) {
 				material.textureSets.push( normalMapTexture);
@@ -111,59 +112,8 @@ package
 		
 		public function createNormalMap():TextureSet {
 			var bmd:BitmapData = new BitmapData(512, 512, false, 0);
-			bmd.perlinNoise(50, 50, 4, 1,true,true);
-			//[Embed(source = "mandelbrot.png")]var c:Class;
-			//bmd = (new c as Bitmap).bitmapData;
-			var bmd2:BitmapData = bmd.clone();
-			var valuePX:Color = new Color;
-			var valueNX:Color = new Color;
-			var valuePY:Color = new Color;
-			var valueNY:Color = new Color;
-			var neighbors:Color = new Color;
-			var slope:Color = new Color;
-			var scale:Number = 4.5;
-			var kUseTwoMaps:Boolean = true;
-			for (var x:int = 0; x < bmd.width;x++ ) {
-				for (var y:int = 0; y < bmd.height; y++ ) {
-					valuePX.fromHex(bmd.getPixel(x+1,y));
-					valueNX.fromHex(bmd.getPixel(x-1,y));
-					valuePY.fromHex(bmd.getPixel(x,y+1));
-					valueNY.fromHex(bmd.getPixel(x,y-1));
-					valuePX.scale(1 / 0xff);
-					valueNX.scale(1 / 0xff);
-					valuePY.scale(1 / 0xff);
-					valueNY.scale(1 / 0xff);
-					
-					if (kUseTwoMaps) {
-						var factor:Number = 1.0 / (2.0 * 255.0); // 255.0 * 2.0
-						// Reconstruct the high-precision values from the low precision values
-						valuePX.r += 255.0 * (valuePX.b - 0.5);
-						valueNX.r += 255.0 * (valueNX.b - 0.5);
-						valuePY.r += 255.0 * (valuePY.b - 0.5);
-						valueNY.r += 255.0 * (valueNY.b - 0.5);
-					}else {
-						factor = 1.0 / 2.0;
-					}
-					// Take into account the boundary conditions in the pool
-					
-					neighbors.r = valuePX.r * (valuePX.g) + (1.0 - valuePX.g) * valueNX.r; // Enforce the boundary conditions as mirror reflections
-					neighbors.g = valuePY.r * (valuePY.g) + (1.0 - valuePY.g) * valueNY.r; // Enforce the boundary conditions as mirror reflections
-					neighbors.b = valueNX.r * (valueNX.g) + (1.0 - valueNX.g) * valuePX.r; // Enforce the boundary conditions as mirror reflections
-					var w:Number = valueNY.r * (valueNY.g) + (1.0 - valueNY.g) * valuePY.r; // Enforce the boundary conditions as mirror reflections
-					 
-					slope.fromRGB(scale * (neighbors.b - neighbors.r) * factor, 
-										   scale * (w - neighbors.g) * factor, 1.0);
-					
-					slope.r *= 5.0;
-					slope.g *= 5.0;
-					slope.r += .5;
-					slope.g += .5;
-					slope.scale(0xff);
-					bmd2.setPixel(x,y,slope.toHex() );
-				}
-			}
-			//addChild(new Bitmap(bmd2));
-			return new TextureSet(bmd2);
+			bmd.perlinNoise(25, 25, 4, 1,true,true);
+			return new TextureSet(Utils.createNormalMap(bmd));
 		}
 		
 		public function initLight():void {
@@ -172,9 +122,10 @@ package
 		public function initNode():void {
 			teapot = new Node3D;
 			teapot.material = material;
-			teapot.drawable = Meshs.teapot(4);
+			teapot.drawable = Meshs.teapot();
+			//teapot.drawable = Meshs.cube(4, 4,4);
 			view.scene.addChild(teapot);
-			teapot.scaleX = teapot.scaleY = teapot.scaleZ = .5;
+			teapot.scaleX = teapot.scaleY = teapot.scaleZ = 1;
 			
 			//[Embed(source = "assets/monster.dae", mimeType = "application/octet-stream")]var c:Class;
 			/*[Embed(source = "assets/astroBoy_walk_Max.dae", mimeType = "application/octet-stream")]var c:Class;
@@ -188,7 +139,7 @@ package
 		}
 		
 		public function initUI():void {
-			addChild(aui);
+			//addChild(aui);
 			aui.bind(material, "specularPower", AttribSeter.TYPE_NUM, new Point(1, 100));
 			aui.bind(material, "shininess", AttribSeter.TYPE_NUM, new Point(.5, 5));
 			aui.bind(view, "antiAlias", AttribSeter.TYPE_NUM, new Point(0, 16));
@@ -228,8 +179,8 @@ package
 			if (view.context)
 				view.context.enableErrorChecking = true;
 			if(teapot){
-				//teapot.rotationX+=.01;
-				//teapot.rotationY += .01;
+				teapot.rotationX+=.01;
+				teapot.rotationY += .01;
 			}
 			view.updateCtrl();
 			view.render(getTimer());

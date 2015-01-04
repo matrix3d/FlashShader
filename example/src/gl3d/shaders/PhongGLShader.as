@@ -68,7 +68,10 @@ package gl3d.shaders
 					lightPosVec[0] = lightPos.x;
 					lightPosVec[1] = lightPos.y;
 					lightPosVec[2] = lightPos.z;
-					context.setProgramConstantsFromVector(Context3DProgramType.VERTEX, 12,lightPosVec);//light pos
+					if (material.normalMapAble) {
+						context.setProgramConstantsFromMatrix(Context3DProgramType.VERTEX, 12, node.world2local, true);
+					}
+					context.setProgramConstantsFromVector(Context3DProgramType.VERTEX, 16, lightPosVec);//light pos
 					view.light.color[3] = material.shininess;
 					context.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, 1,view.light.color);//light color
 					context.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, 2, material.ambient);//ambient color 环境光

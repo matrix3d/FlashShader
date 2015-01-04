@@ -379,7 +379,7 @@ package flShader {
 		public function sat(a:Object,  t:Var=null):Var {return f("sat", a, null, t);}
 		public function m33(a:Object, b:Object, t:Var=null,component:String=null):Var {return f("m33", a, b, t,null,3,component||"xyz");}
 		public function m44(a:Object, b:Object, t:Var=null):Var {return f("m44", a, b, t);}
-		public function m34(a:Object, b:Object, t:Var=null):Var {return f("m34", a, b, t);}
+		public function m34(a:Object, b:Object, t:Var=null,component:String=null):Var {return f("m34", a, b, t,null,3,component||"xyz");}
 		public function ddx(a:Object, t:Var=null):Var {return f("ddx", a, null, t);}
 		public function ddy(a:Object, t:Var=null):Var {return f("ddy", a, null, t);}
 		public function ife(a:Object, b:Object, t:Var=null):Var {return f("ife", a, b, t);}
