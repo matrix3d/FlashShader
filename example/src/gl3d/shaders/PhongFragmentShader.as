@@ -69,7 +69,7 @@ package gl3d.shaders
 			dp3(tangent, value, t.x);
 			dp3(biTangent, value, t.y);
 			dp3(normal, value, t.z);
-			return t;
+			return nrm(t);
 		}
 		
 		public function getPhongColor():Var {

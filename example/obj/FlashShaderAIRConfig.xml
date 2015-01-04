@@ -14,7 +14,7 @@
     </define>
     <define append="true">
       <name>CONFIG::timeStamp</name>
-      <value>'2014/12/18'</value>
+      <value>'2014/12/22'</value>
     </define>
     <define append="true">
       <name>CONFIG::air</name>
@@ -41,7 +41,7 @@
     </library-path>
   </compiler>
   <file-specs>
-    <path-element>C:\Users\Administrator\Documents\GitHub\FlashShader\example\src\TestMT.as</path-element>
+    <path-element>C:\Users\Administrator\Documents\GitHub\FlashShader\example\src\BaseExample.as</path-element>
   </file-specs>
   <default-background-color>#FFFFFF</default-background-color>
   <default-frame-rate>60</default-frame-rate>
