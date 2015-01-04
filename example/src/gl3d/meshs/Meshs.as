@@ -187,13 +187,19 @@ package gl3d.meshs
 		}
 		
 		public static function computeUV(drawable:Drawable3D):VertexBufferSet {
-			var normal:Vector.<Number> = drawable.norm.data;
+			var normal:Vector.<Number> = drawable.pos.data;
 			var uv:Vector.<Number> = new Vector.<Number>();
 			for (var i:int = 0,len:int=normal.length/3; i < len;i++ ) {
 				var x:Number = normal[3 * i];
 				var y:Number = normal[3 * i + 1];
 				var z:Number = normal[3 * i + 2];
-				var u:Number = Math.atan2(y, x) / Math.PI / 2+.5;
+				var msg:Number = Math.sqrt(x * x + y * y + z * z);
+				if(msg!=0){
+					x /= msg;
+					y /= msg;
+					z /= msg;
+				}
+				var u:Number = Math.atan2(z, x) / Math.PI / 2+.5;
 				var v:Number = Math.asin(y) / Math.PI + .5;
 				uv.push(u, v);
 			}

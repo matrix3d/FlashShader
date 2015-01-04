@@ -179,7 +179,7 @@ package
 			if (view.context)
 				view.context.enableErrorChecking = true;
 			if(teapot){
-				teapot.rotationX+=.01;
+				//teapot.rotationX+=.01;
 				teapot.rotationY += .01;
 			}
 			view.updateCtrl();
