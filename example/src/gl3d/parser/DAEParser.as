@@ -16,8 +16,14 @@ package gl3d.parser
 	import gl3d.core.IndexBufferSet;
 	import gl3d.core.Material;
 	import gl3d.core.Node3D;
+	import gl3d.core.skin.Skin;
+	import gl3d.core.skin.SkinAnimation;
+	import gl3d.core.skin.SkinFrame;
+	import gl3d.core.skin.Track;
+	import gl3d.core.skin.TrackFrame;
 	import gl3d.core.TextureSet;
 	import gl3d.core.VertexBufferSet;
+	import gl3d.ctrl.Ctrl;
 	import gl3d.meshs.Meshs;
 	import gl3d.shaders.PhongGLShader;
 	
@@ -50,6 +56,8 @@ package gl3d.parser
 		private var _fileSearchPaths :Array;
 		private var _bakeAnimations :Boolean;
 		private var _bakeFrameDuration :Number;
+		private var animations:Array = [];
+		private var animation:SkinAnimation = new SkinAnimation;
 		public var root:Node3D;
 		
 		/**
@@ -120,60 +128,67 @@ package gl3d.parser
 				return;
 			}
 			
-			var matrixStackTrack :Object/*MatrixStackTrack*/ = buildMatrixStackTrack(node);
-			var track/* : AbstractTrack*/ = matrixStackTrack;
+			var matrixStackTrack :Track = buildMatrixStackTrack(node);
+			matrixStackTrack.target = target;
+			//var track/* : AbstractTrack*/ = matrixStackTrack;
 			
 			if(matrixStackTrack) 
 			{
-				var controller ={}//:AnimationController = new AnimationController(target);
-				if(_bakeAnimations) 
-				{
+				animation.tracks.push(matrixStackTrack);
+				for each(var f:TrackFrame in matrixStackTrack.frames) {
+					if (f.time>animation.endTime) {
+						animation.endTime = f.time;
+					}
+				}
+				
+				//var controller ={}//:AnimationController = new AnimationController(target);
+				//if(_bakeAnimations) 
+				//{
 					// bake!
 					//track = matrixStackTrack.bake(_bakeFrameDuration) || matrixStackTrack;
-				} 
+				//} 
 				///controller.addTrack(track);
 				
 				//target.animation = controller;
+				
 			}
 		}
 		
 		/**
 		 * 
 		 */
-		private function buildMatrixStackTrack(node : DaeNode) : Object/*MatrixStackTrack*/ 
+		private function buildMatrixStackTrack(node : DaeNode) : Track/*MatrixStackTrack*/ 
 		{
 			var transform : DaeTransform;
-			var channel : DaeChannel;
-			var matrixStackTrack={}// : MatrixStackTrack = new MatrixStackTrack();
+			//var channel : DaeChannel;
+			var matrixStackTrack:Track = new Track();
 			var i : int;
-			
 			for(i = 0; i < node.transforms.length; i++) 
 			{
-				var track /*:AbstractTrack;*/
+				//var track /*:AbstractTrack;*/
 				
 				transform = node.transforms[i];	
-				channel = node.getTransformChannelBySID(transform.sid);
-				
+				//channel = node.getTransformChannelBySID(transform.sid);
 				switch(transform.nodeName)
 				{
 					case "matrix":
-						track = channel ? buildMatrixTrack(channel, transform) :null /*new MatrixTrack()*/;
+						matrixStackTrack = buildMatrixTrack(node, transform);
 						break;
-					case "rotate":
-						track = channel ? buildRotationTrack(channel, transform) : null/*new RotationTrack()*/;
-						break;
-					case "scale":
-						track = channel ? buildScaleTrack(channel, transform) :null/* new ScaleTrack()*/;
-						break;
-					case "translate":
-						track = channel ? buildTranslationTrack(channel, transform) :null /*new TranslationTrack()*/;
-						break;
+					//case "rotate":
+						//track = channel ? buildRotationTrack(channel, transform) : null/*new RotationTrack()*/;
+						//break;
+					//case "scale":
+						//track = channel ? buildScaleTrack(channel, transform) :null/* new ScaleTrack()*/;
+						//break;
+					//case "translate":
+						//track = channel ? buildTranslationTrack(channel, transform) :null /*new TranslationTrack()*/;
+						//break;
 					default:
 						trace("unhandled transform type : " + transform.nodeName);
 						continue;
 				}
 				
-				if(track) 
+				/*if(track) 
 				{	
 					if(!channel) 
 					{
@@ -185,52 +200,58 @@ package gl3d.parser
 					{
 						trace("CLIPS: " + channel.animation.id + " " + channel.animation.clips[0].id);	
 					}
-				}
+				}*/
 			}
 			
 			return matrixStackTrack;
 		}
 		
-		private function buildMatrixTrack(channel : DaeChannel, transform : DaeTransform) :Object /*MatrixTrack*/ 
+		private function buildMatrixTrack(node : DaeNode, transform : DaeTransform) :Track
 		{
-			if(!channel.sampler || !channel.sampler.input || !channel.sampler.output) 
-			{
-				trace("invalid animation channel! " + channel.source + " " + channel.target);
-				return null;
-			}
-			
-			var track //: MatrixTrack = new MatrixTrack();
-			var input : Array = channel.sampler.input.data;
-			var output : Array = channel.sampler.output.data;
-			var i : int;
-			
-			for(i = 0; i < input.length; i++) 
-			{
-				var time : Number = input[i];
-				var data : Array = output[i] is Array ? output[i] : null;
-				
-				if(channel.type == DaeChannel.ARRAY_ACCESS) 
-				{
-					data = transform.data;
-					if(channel.arrayIndex0 >= 0 && channel.arrayIndex1 >= 0) 
-					{
-						var idx : int = (channel.arrayIndex1 * 4) + channel.arrayIndex0;
-						data[idx] = output[i];
-					}
-				}
-				
-				if(!data) 
-				{
-					trace("DAEParser#buildBakedMatrixTrack : invalid data!");
+			var track:Track = new Track;
+			var frame2data:Dictionary = new Dictionary;
+			for each(var channel:DaeChannel in node.channels) {
+				if (transform.sid!=channel.targetSID) {
 					continue;
 				}
-				var matrix : Matrix3D = new Matrix3D(Vector.<Number>(data));
+				var input : Array = channel.sampler.input.data;
+				var output : Array = channel.sampler.output.data;
+				var i : int;
 				
-				matrix.transpose();
-
-				//track.addKeyframe(new NumberKeyframe3D(time, matrix.rawData));
+				if (track.frames.length<=input.length) {
+					track.frames.length = input.length;
+				}
+				for(i = 0; i < input.length; i++) 
+				{
+					if (track.frames[i]==null) {
+						track.frames[i] = new TrackFrame;
+						track.frames[i].matrix = new Matrix3D;
+						frame2data[track.frames[i]] = Vector.<Number>(transform.data);
+						track.frames[i].time = time;
+					}
+					var frame:TrackFrame = track.frames[i];
+					
+					var time : Number = input[i];
+					var data : Vector.<Number> = frame2data[frame];
+					if(channel.type == DaeChannel.ARRAY_ACCESS) 
+					{
+						if(channel.arrayIndex0 >= 0 && channel.arrayIndex1 >= 0) 
+						{
+							var idx : int = channel.arrayIndex1 *4 + channel.arrayIndex0;
+							data[idx] = output[i];
+						}
+					}
+					
+					if(!data) 
+					{
+						trace("DAEParser#buildBakedMatrixTrack : invalid data!");
+						continue;
+					}
+				}
 			}
-			
+			for each(frame in track.frames) {
+				frame.matrix.copyRawDataFrom(frame2data[frame], 0, true);
+			}
 			return track;
 		}
 		
@@ -242,7 +263,7 @@ package gl3d.parser
 				return null;
 			}
 			
-			var track// : RotationTrack = new RotationTrack();
+			var track:Track// : RotationTrack = new RotationTrack();
 			var input : Array = channel.sampler.input.data;
 			var output : Array = channel.sampler.output.data;
 			var i : int;
@@ -279,7 +300,7 @@ package gl3d.parser
 				return null;
 			}
 			
-			var track //: ScaleTrack = new ScaleTrack();
+			var track:Track //: ScaleTrack = new ScaleTrack();
 			var input : Array = channel.sampler.input.data;
 			var output : Array = channel.sampler.output.data;
 			var i : int;
@@ -324,7 +345,7 @@ package gl3d.parser
 				return null;
 			}
 			
-			var track //: TranslationTrack = new TranslationTrack();
+			var track:Track //: TranslationTrack = new TranslationTrack();
 			var input : Array = channel.sampler.input.data;
 			var output : Array = channel.sampler.output.data;
 			var i : int;
@@ -477,7 +498,6 @@ package gl3d.parser
 				if(image && image.bitmapData is BitmapData) 
 				{
 					material = new Material;
-					//material.lightAble = false;
 					//material.wireframeColor = Vector.<Number>([.5,.5,.5,0]);
 					material.textureSets = Vector.<TextureSet>([new TextureSet(image.bitmapData)]);
 					//material.wireframeAble = true;
@@ -544,19 +564,19 @@ package gl3d.parser
 		 */
 		private function buildNode(node:DaeNode, parent:Node3D) : void 
 		{
-			var object:Node3D=new Node3D(node.name)//: DisplayObject3D;
-			if (node.type == "JOINT") {
-				var size:Number = .2;
-				object.drawable = Meshs.cube(size,size,size);
-				object.material = new Material;
-			}
+			var object:Node3D = new Node3D(node.name)//: DisplayObject3D;
+			object.type = node.type;
 			var i : int;
 
 			if(node.geometryInstances.length || node.controllerInstances.length) 
 			{
 				buildGeometries(object, node);
 			}
-			
+			if (node.type=="JOINT") {
+				var size:Number = .4;
+				//object.drawable = Meshs.cube(size,size,size);
+				//object.material = new Material;
+			}
 			parent.addChild(object);
 
 			for(i = 0; i < node.nodes.length; i++) 
@@ -631,11 +651,9 @@ package gl3d.parser
 			var i : int;
 			
 			material = buildMaterial(daeInstMaterial);
-			
 			if(!material) 
 			{
-				var bmp : BitmapData = new BitmapData(512,512,false,0xFF0000);
-				bmp.perlinNoise(64, 64, 5, 1, false, false);			
+				var bmp : BitmapData = new BitmapData(512,512,false,0xaaaaaa);		
 				material = new Material;
 				material.textureSets = Vector.<TextureSet>([new TextureSet(bmp)]);
 				//material = new BitmapMaterial(bmp);
@@ -646,6 +664,7 @@ package gl3d.parser
 				parent.drawable.uv = new VertexBufferSet(new Vector.<Number>, 2);
 				parent.drawable.index = new IndexBufferSet(new Vector.<uint>);
 			}
+			
 			var mesh:Array = _nodeToMesh[parent];
 			if(daePrimitive.triangles) 
 			{
@@ -653,9 +672,12 @@ package gl3d.parser
 				for(i = 0; i < daePrimitive.triangles.length; i++) 
 				{
 					tri = daePrimitive.triangles[i];
-					var v0:Array = mesh[vertexStart + tri[0]];
-					var v1:Array = mesh[vertexStart + tri[1]];
-					var v2:Array = mesh[vertexStart + tri[2]];
+					var oldi0:int = vertexStart + tri[0];
+					var oldi1:int = vertexStart + tri[1];
+					var oldi2:int = vertexStart + tri[2];
+					var v0:Array = mesh[oldi0];
+					var v1:Array = mesh[oldi1];
+					var v2:Array = mesh[oldi2];
 				
 					var t0 : Array;
 					var t1 : Array;
@@ -674,12 +696,9 @@ package gl3d.parser
 						t1 = []//new UVCoord();
 						t2 = []//new UVCoord();
 					}
-					//parent.drawable.addVertex2(v0, t0, vertexStart + tri[0]);
-					//parent.drawable.addVertex2(v2, t2, vertexStart + tri[2]);
-					//parent.drawable.addVertex2(v1, t1, vertexStart + tri[1]);
-					parent.drawable.addVertex(v0,t0);
-					parent.drawable.addVertex(v2,t2);
-					parent.drawable.addVertex(v1,t1);
+					parent.drawable.addVertex(v0,t0,oldi0);
+					parent.drawable.addVertex(v2,t2,oldi1);
+					parent.drawable.addVertex(v1,t1,oldi2);
 					_numTriangles++;
 				}
 			}
@@ -712,7 +731,7 @@ package gl3d.parser
 		/**
 		 * 
 		 */
-		private function buildSkinController(target:Node3D/*TriangleMesh*/, controllerInstance:DaeInstanceController) :Object /*SkinController*/ 
+		private function buildSkinController(target:Node3D/*TriangleMesh*/, controllerInstance:DaeInstanceController) :void /*SkinController*/ 
 		{
 			var controller : DaeController = this.document.controllers[ controllerInstance.url ];
 			var geometry : DaeGeometry;
@@ -727,7 +746,7 @@ package gl3d.parser
 			else 
 			{
 				// TODO: handle skin controller xrefs
-				return null;
+				//return null;
 			}
 			
 			geometry = this.document.geometries[url];
@@ -749,7 +768,6 @@ package gl3d.parser
 				}	
 			}
 			
-			var skinController={}// :SkinController = new SkinController();
 			var i : int;
 			var bindMatrix : Matrix3D = new Matrix3D(Vector.<Number>(skin.bind_shape_matrix.data));
 			
@@ -762,15 +780,17 @@ package gl3d.parser
 			
 			bindMatrix.transpose();
 			
-			skinController.bindShapeMatrix = bindMatrix;
+			animation.bindShapeMatrix = bindMatrix;
 			
+			var gskin:Skin = new Skin;
+			gskin.skinFrame = new SkinFrame;
 			for(i = 0; i < skin.joints.length; i++)
 			{
 				var node : DaeNode = this.document.getNodeByName(skin.joints[i]) || this.document.getNodeBySID(skin.joints[i]);
 				
 				node = node || this.document.getNodeByID(skin.joints[i]);
 
-				var joint:Node3D = _nodeToObject[node] as Node3D;	
+				var joint:Node3D = _nodeToObject[node] as Node3D;
 				if(!joint) 
 				{
 					trace("could not find joint with name = " + skin.joints[i]);
@@ -784,16 +804,42 @@ package gl3d.parser
 				var inverseBindMatrix : Matrix3D = new Matrix3D(Vector.<Number>(rawData));
 				
 				inverseBindMatrix.transpose();
-
-				//skinController.addJoint(joint, inverseBindMatrix, blendWeights);			
+				gskin.skinFrame.matrixs.push(new Matrix3D);	
+				gskin.joints.push(joint);
+				gskin.invBindMatrixs.push(inverseBindMatrix);
 			}
 			
-			//skinController.geometry = target.renderer.geometry;
+			target.controllers = new Vector.<Ctrl>;
+			target.controllers.push(animation);
+			animation.target = target;
 			
-			//target.skin = true;
-			//target.controllers.push(skinController);
-		
-			return skinController;			
+			var material:Material = target.material;
+			material.gpuSkin = true;
+			//material.lightAble = false;
+			//material.wireframeAble = true;
+			target.skin = gskin;
+			target.skin.maxWeight = 3;
+			var drawable:Drawable3D = target.drawable;
+			gskin.maxWeight = 0;
+			for each(var weights:Array in skin.vertex_weights) {
+				if (weights.length>gskin.maxWeight) {
+					gskin.maxWeight = weights.length;
+				}
+			}
+			
+			drawable.weights = new VertexBufferSet(new Vector.<Number>(gskin.maxWeight*drawable.pos.data.length/3), gskin.maxWeight);
+			drawable.joints = new VertexBufferSet(new Vector.<Number>(gskin.maxWeight*drawable.pos.data.length/3), gskin.maxWeight);
+			for each(weights in skin.vertex_weights) {
+				for (i = 0; i < weights.length;i++ ) {
+					var weight:DaeBlendWeight = weights[i];
+					var jointId:int = skin.joints.indexOf(weight.joint);
+					for each(var newIndex:int in drawable.oldIndex2NewIndexs[weight.vertexIndex]) {
+						var index:int = gskin.maxWeight * newIndex+ i;
+						drawable.weights.data[index] = weight.weight;
+						drawable.joints.data[index] = jointId * 4;
+					}
+				}
+			}	
 		}
 		
 		/**
@@ -841,17 +887,7 @@ package gl3d.parser
 			var data : Array = mesh.vertices.source.data;
 			var meshd:Array  = _nodeToMesh[target] || [];
 			_nodeToMesh[target] = meshd.concat(data);
-			//var v //:Vertex;
-			//var 
-			//for(i = 0; i < data.length; i++) 
-			//{
-				
-				//v = new Vertex(data[i][0], data[i][1], data[i][2]);	
-				//target.drawable.pos.data.push(data[i][0], data[i][1], data[i][2]);// .triangleGeometry.addVertex(v);
-				//target.drawable.uv.data.push(0,1);// .triangleGeometry.addVertex(v);
-			//}
-			
-			_numVertices += _nodeToMesh[target].length;// target.triangleGeometry.vertices.length;
+			_numVertices += _nodeToMesh[target].length;
 		}
 		
 		/**

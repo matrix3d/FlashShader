@@ -19,7 +19,7 @@ package gl3d.ctrl
 		private var node:Node3D;
 		private var stage:Stage;
 		private var keydownMap:Object = {};
-		public var speed:Number = .3;
+		public var speed:Number = 2.3;
 		public var rotSpeed:Number = .2;
 		private var helpMatrix:Matrix3D=new Matrix3D;
 		private var helpV:Vector3D=new Vector3D;

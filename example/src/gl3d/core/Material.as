@@ -3,6 +3,7 @@ package gl3d.core {
 	import flash.display3D.Context3DProgramType;
 	import flash.geom.Vector3D;
 	import flShader.FlShader;
+	import gl3d.core.skin.Skin;
 	import gl3d.meshs.Meshs;
 	import gl3d.shaders.GLShader;
 	import gl3d.shaders.PhongGLShader;
@@ -12,6 +13,8 @@ package gl3d.core {
 	 */
 	public class Material 
 	{
+		public var gpuSkin:Boolean = false;
+		
 		public var lightAble:Boolean = true;
 		public var ambientAble:Boolean = true;
 		public var specularAble:Boolean = true;
@@ -31,8 +34,6 @@ package gl3d.core {
 		public var invalid:Boolean = true;
 		private var _normalMapAble:Boolean;
 		public var shader:GLShader;
-		
-		
 		public function Material() 
 		{
 			shader = new PhongGLShader();

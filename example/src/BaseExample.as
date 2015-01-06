@@ -112,7 +112,7 @@ package
 		
 		public function createNormalMap():TextureSet {
 			var bmd:BitmapData = new BitmapData(512, 512, false, 0);
-			bmd.perlinNoise(25, 25, 4, 1,true,true);
+			bmd.perlinNoise(50, 50, 4, 1,true,true);
 			return new TextureSet(Utils.createNormalMap(bmd));
 		}
 		
@@ -126,16 +126,6 @@ package
 			//teapot.drawable = Meshs.cube(4, 4,4);
 			view.scene.addChild(teapot);
 			teapot.scaleX = teapot.scaleY = teapot.scaleZ = 1;
-			
-			//[Embed(source = "assets/monster.dae", mimeType = "application/octet-stream")]var c:Class;
-			/*[Embed(source = "assets/astroBoy_walk_Max.dae", mimeType = "application/octet-stream")]var c:Class;
-			var b:ByteArray = new c as ByteArray;
-			var p:DAEParser = new DAEParser;
-			p.load(null, b);
-			view.scene.addChild(p.root);
-			p.target.scaleX = p.target.scaleY = p.target.scaleZ = .5// / 500;
-			p.target.rotationX = -Math.PI / 2;
-			p.target.rotationY = Math.PI;*/
 		}
 		
 		public function initUI():void {
@@ -167,7 +157,7 @@ package
 			view.invalid = true;
 			var w:Number = stage.stageWidth;
 			var h:Number = stage.stageHeight;
-			view.camera.perspective.perspectiveFieldOfViewLH(Math.PI / 4, stage.stageWidth / stage.stageHeight, 1, 4000);
+			view.camera.perspective.perspectiveFieldOfViewLH(Math.PI / 4, stage.stageWidth / stage.stageHeight, .1, 4000);
 			if (debug) {
 				debug.width = w;
 				debug.height = h;

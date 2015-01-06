@@ -44,6 +44,10 @@ package gl3d.shaders
 			buffSets[2] =textureSets.length?drawable.uv:null;
 			buffSets[3] = material.normalMapAble?drawable.tangent:null;
 			buffSets[4] = material.wireframeAble?drawable.targetPosition:null;
+			if (material.gpuSkin) {
+				buffSets[5] = drawable.weights;
+				buffSets[6] = drawable.joints;
+			}
 		}
 		
 		override public function update(material:Material):void 
@@ -58,6 +62,12 @@ package gl3d.shaders
 				context.setProgramConstantsFromMatrix(Context3DProgramType.VERTEX, 0, node.world, true);
 				context.setProgramConstantsFromMatrix(Context3DProgramType.VERTEX, 4, camera.view, true);
 				context.setProgramConstantsFromMatrix(Context3DProgramType.VERTEX, 8, camera.perspective, true);
+				
+				if (material.gpuSkin) {
+					for (var i:int = 0; i < node.skin.skinFrame.matrixs.length;i++ ) {
+						context.setProgramConstantsFromMatrix(Context3DProgramType.VERTEX, 17+i*4, node.skin.skinFrame.matrixs[i], true);
+					}
+				}
 				
 				var alpha:Number = material.alpha;
 				var color:Vector.<Number> = material.color;

@@ -23,8 +23,6 @@ package gl3d.util
 			var valueNY:Color = new Color;
 			var neighbors:Color = new Color;
 			var slope:Color = new Color;
-			var scale:Number = 4.5;
-			var kUseTwoMaps:Boolean = true;
 			for (var x:int = 0; x < bmd.width;x++ ) {
 				for (var y:int = 0; y < bmd.height; y++ ) {
 					valuePX.fromHex(bmd.getPixel(x+1,y));

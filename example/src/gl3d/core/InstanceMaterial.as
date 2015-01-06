@@ -21,7 +21,11 @@ package gl3d.core
 			if (normalMapAble) {
 				context.setProgramConstantsFromMatrix(Context3DProgramType.VERTEX, 12, node.world2local, true);
 			}
-			context.drawTriangles(node.drawable.index.buff);
+			if (wireframeAble) {
+				context.drawTriangles(node.unpackedDrawable.index.buff);
+			}else {
+				context.drawTriangles(node.drawable.index.buff);
+			}
 		}
 		
 	}

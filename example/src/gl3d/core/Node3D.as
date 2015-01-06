@@ -3,6 +3,8 @@ package gl3d.core {
 	import flash.geom.Matrix3D;
 	import flash.geom.Vector3D;
 	import flash.utils.getQualifiedClassName;
+	import gl3d.core.skin.Skin;
+	import gl3d.ctrl.Ctrl;
 	import gl3d.pick.AS3Picking;
 	import gl3d.pick.Picking;
 	/**
@@ -21,18 +23,35 @@ package gl3d.core {
 		public var material:Material;
 		public var name:String;
 		public var trs:Vector.<Vector3D> = Vector.<Vector3D>([new Vector3D(), new Vector3D(), new Vector3D(1, 1, 1)]);
-		public var picking:Picking=new AS3Picking;
+		public var picking:Picking = new AS3Picking;
+		public var controllers:Vector.<Ctrl>;
+		public var skin:Skin;
+		public var type:String;
 		public function Node3D(name:String=null) 
 		{
 			this.name = name;
 		}
 		
 		public function addChild(n:Node3D):void {
+			if (n.parent) {
+				n.parent.removeChild(n);
+			}
 			children.push(n);
 			n.parent = this;
 		}
 		
+		public function removeChild(n:Node3D):void {
+			var i:int = children.indexOf(n);
+			if (i != -1) children.splice(i, 1);
+			n.parent = null;
+		}
+		
 		public function update(view:View3D):void {
+			if (controllers) {
+				for each(var c:Ctrl in controllers) {
+					c.update();
+				}
+			}
 			if (material) {
 				material.draw(this,view);
 			}
@@ -45,7 +64,7 @@ package gl3d.core {
 		
 		public function set matrix(value:Matrix3D):void 
 		{
-			_matrix = value;
+			_matrix.copyFrom(value);
 			trs=value.decompose();
 		}
 		
@@ -156,7 +175,7 @@ package gl3d.core {
 		{
 			_world.copyFrom(_matrix);
 			if (parent) {
-				_world.append(parent._world);
+				_world.append(parent.world);
 			}
 			return _world;
 		}
@@ -185,6 +204,11 @@ package gl3d.core {
 			node.drawable = drawable;
 			node.material = material;
 			node.matrix = matrix.clone();
+			node.skin = skin;
+			for each(var child:Node3D in children) {
+				if(child.type!="JOINT")
+				node.addChild(child.clone());
+			}
 			return node;
 		}
 	}
