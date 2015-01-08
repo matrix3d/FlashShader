@@ -1,6 +1,10 @@
 package gl3d.core {
+	import flash.display.BlendMode;
 	import flash.display3D.Context3D;
+	import flash.display3D.Context3DBlendFactor;
+	import flash.display3D.Context3DCompareMode;
 	import flash.display3D.Context3DProgramType;
+	import flash.display3D.Context3DTriangleFace;
 	import flash.geom.Vector3D;
 	import flShader.FlShader;
 	import gl3d.core.skin.Skin;
@@ -34,6 +38,11 @@ package gl3d.core {
 		public var invalid:Boolean = true;
 		private var _normalMapAble:Boolean;
 		public var shader:GLShader;
+		
+		public var sourceFactor:String = Context3DBlendFactor.ONE; 
+		public var destinationFactor:String = Context3DBlendFactor.ZERO;
+		public var passCompareMode:String = Context3DCompareMode.LESS;
+		public var culling:String = Context3DTriangleFace.FRONT;
 		public function Material() 
 		{
 			shader = new PhongGLShader();
@@ -85,6 +94,31 @@ package gl3d.core {
 		{
 			_wireframeAble = value;
 			invalid = true;
+		}
+		
+		public function setBlendModel(value:String):void {
+			switch (value) {
+				case BlendMode.NORMAL:
+					sourceFactor = Context3DBlendFactor.ONE;
+					destinationFactor = Context3DBlendFactor.ZERO;
+					break;
+				case BlendMode.LAYER:
+					sourceFactor = Context3DBlendFactor.SOURCE_ALPHA;
+					destinationFactor = Context3DBlendFactor.ONE_MINUS_SOURCE_ALPHA;
+					break;
+				case BlendMode.MULTIPLY:
+					sourceFactor = Context3DBlendFactor.ZERO;
+					destinationFactor = Context3DBlendFactor.SOURCE_COLOR;
+					break;
+				case BlendMode.ADD:
+					sourceFactor = Context3DBlendFactor.SOURCE_ALPHA;
+					destinationFactor = Context3DBlendFactor.ONE;
+					break;
+				case BlendMode.ALPHA:
+					sourceFactor = Context3DBlendFactor.ZERO;
+					destinationFactor = Context3DBlendFactor.SOURCE_ALPHA;
+					break;
+			}
 		}
 	}
 }

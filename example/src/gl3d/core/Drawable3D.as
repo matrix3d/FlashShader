@@ -13,6 +13,7 @@ package gl3d.core {
 		private var _tangent:VertexBufferSet;
 		private var _uv:VertexBufferSet;
 		private var _random:VertexBufferSet;
+		private var _sphereRandom:VertexBufferSet;
 		private var _targetPosition:VertexBufferSet;
 		public var lightmapUV:VertexBufferSet;
 		
@@ -105,6 +106,19 @@ package gl3d.core {
 		public function set random(value:VertexBufferSet):void 
 		{
 			_random = value;
+		}
+		
+		public function get sphereRandom():VertexBufferSet 
+		{
+			if (_sphereRandom==null) {
+				_sphereRandom = Meshs.computeSphereRandom(this);
+			}
+			return _sphereRandom;
+		}
+		
+		public function set sphereRandom(value:VertexBufferSet):void 
+		{
+			_sphereRandom = value;
 		}
 		
 		public function get targetPosition():VertexBufferSet 

@@ -333,7 +333,7 @@ package gl3d.hlbsp
 			}
 			target.material.textureSets[0] = texture;
 			target.material.textureSets[1] = ltexture;
-			target.world = bspRenderNode.world;
+			target.matrix = bspRenderNode.world;
 			target.material.draw(target, view);
 			//gl.drawArrays(polygonMode ? gl.LINE_STRIP : gl.TRIANGLE_FAN, this.faceBufferRegions[faceIndex].start, this.faceBufferRegions[faceIndex].count);
 		}

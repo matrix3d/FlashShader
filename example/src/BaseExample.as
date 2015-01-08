@@ -141,7 +141,8 @@ package
 			aui.bind(this, "useTexture", AttribSeter.TYPE_BOOL);
 			aui.bind(this, "post", AttribSeter.TYPE_LIST_STR, null, ["null", "blur", "water", "bend", "heart", "flower", "sinwater", "hdr", "shape","asciiart"]);
 			
-			//addChild(gamepad);
+			if(Multitouch.supportsTouchEvents)
+			addChild(gamepad);
 			gamepad.x = 200;
 			gamepad.y = 200;
 		}
@@ -157,7 +158,7 @@ package
 			view.invalid = true;
 			var w:Number = stage.stageWidth;
 			var h:Number = stage.stageHeight;
-			view.camera.perspective.perspectiveFieldOfViewLH(Math.PI / 4, stage.stageWidth / stage.stageHeight, .1, 4000);
+			view.camera.perspective.perspectiveFieldOfViewLH(Math.PI / 4, stage.stageWidth / stage.stageHeight, 1, 4000);
 			if (debug) {
 				debug.width = w;
 				debug.height = h;

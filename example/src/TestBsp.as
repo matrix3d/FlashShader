@@ -93,6 +93,7 @@ package
 					return;
 				}
 			}
+			if(bsp.bsp.lightmapLookup[item.caption])
 			image.bitmapData = bsp.bsp.lightmapLookup[item.caption];
 		}
 		

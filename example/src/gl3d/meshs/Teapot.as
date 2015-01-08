@@ -169,7 +169,7 @@ package gl3d.meshs
 				
 				currentVertexId += (divs + 1) * (divs + 1);
 			}
-			var drawable:Drawable3D = Meshs.createDrawable(indexData, vertexData, vertexData, vertexData);
+			var drawable:Drawable3D = Meshs.createDrawable(indexData, vertexData, null,null);
 			Meshs.removeDuplicatedVertices(drawable);
 			drawable.norm = Meshs.computeNormal(drawable);
 			drawable.uv = Meshs.computeUV(drawable);

@@ -51,8 +51,8 @@ package gl3d.shaders
 				context.setProgramConstantsFromMatrix(Context3DProgramType.VERTEX, 0, node.world, true);
 				context.setProgramConstantsFromMatrix(Context3DProgramType.VERTEX, 4, camera.view, true);
 				context.setProgramConstantsFromMatrix(Context3DProgramType.VERTEX, 8, camera.perspective, true);
-				context.setProgramConstantsFromVector(Context3DProgramType.VERTEX, vs.constMemLen, Vector.<Number>(vs.constPool));
-				context.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, fs.constMemLen, Vector.<Number>(fs.constPool));
+				context.setProgramConstantsFromVector(Context3DProgramType.VERTEX, vs.constMemLen, vs.constPoolVec);
+				context.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, fs.constMemLen, fs.constPoolVec);
 				context.drawTriangles(drawable.index.buff);
 			}
 		}

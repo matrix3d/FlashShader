@@ -108,6 +108,9 @@ package gl3d.shaders
 			if (programSet) {
 				programSet.update(material.view.context);
 				material.view.context.setProgram(programSet.program);
+				material.view.context.setDepthTest(true, material.passCompareMode);
+				material.view.context.setBlendFactors(material.sourceFactor, material.destinationFactor);
+				material.view.context.setCulling(material.culling);
 			}
 		}
 	}

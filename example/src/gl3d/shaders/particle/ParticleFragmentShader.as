@@ -2,6 +2,7 @@ package gl3d.shaders.particle
 {
 	import flash.display3D.Context3DProgramType;
 	import flShader.FlShader;
+	import flShader.Var;
 	/**
 	 * ...
 	 * @author lizhi
@@ -14,8 +15,9 @@ package gl3d.shaders.particle
 			super(Context3DProgramType.FRAGMENT);
 		}
 		override public function build():void {
-			tex(V(), FS(), oc);
-			//mov(C(), oc);
+			var color:Var = V(1);
+			var tex0:Var = tex(V(), FS(), null,["linear","repeat"]);
+			mul(color,tex0, oc);
 		}
 		
 	}

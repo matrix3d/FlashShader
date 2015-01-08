@@ -10,16 +10,10 @@ package gl3d.core {
 	public class Camera3D extends Node3D
 	{
 		public var perspective:PerspectiveMatrix3D = new PerspectiveMatrix3D;
-		public var view:Matrix3D = new Matrix3D;
+		private var _view:Matrix3D = new Matrix3D;
 		public function Camera3D(name:String=null ) 
 		{
 			super(name);
-		}
-		
-		override public function update(v:View3D):void {
-			super.update(v);
-			view.copyFrom(world);
-			view.invert();
 		}
 		
 		public function computePickRayDirectionMouse( mouseX:Number, mouseY:Number,viewWidth:Number,viewHeight:Number ,rayOrigin:Vector3D, rayDirection:Vector3D, pixelPos:Vector3D=null ):void
@@ -35,9 +29,9 @@ package gl3d.core {
 			// screen -> camera -> world
 			
 			var prjPos:Vector3D=new Vector3D( x, y, 0 ); // clip space
-			var unprjMatrix:Matrix3D = view.clone();
-			unprjMatrix.append(perspective);
+			var unprjMatrix:Matrix3D = perspective.clone();;
 			unprjMatrix.invert();
+			unprjMatrix.append(world);
 			
 			// screen -> camera -> world
 			var pos:Vector3D = unprjMatrix.transformVector(prjPos);
@@ -53,6 +47,13 @@ package gl3d.core {
 				pos.y - this.y,
 				pos.z - this.z );
 			rayDirection.normalize();
+		}
+		
+		public function get view():Matrix3D 
+		{
+			_view.copyFrom(world);
+			_view.invert();
+			return _view;
 		}
 		
 	}

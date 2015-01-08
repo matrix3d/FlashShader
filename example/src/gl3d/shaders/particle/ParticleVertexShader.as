@@ -13,28 +13,36 @@ package gl3d.shaders.particle
 		{
 			
 		}
+		
 		override public function build():void {
 			var model:Var = C();
 			var view:Var = C(4);
 			var perspective:Var = C(8,4);
 			var time:Var = mov(C(12));
-			var pos:Var = VA();
+			var pos:Var = mov(VA());
 			var uv:Var = VA(1);
 			var random:Var = VA(2);
+			var sphereRandom:Var = VA(3);
+			
 			mov(uv, V());
 			
-			/*random 0 - 1
-			random * 2 0 - 2
-			(time % 1000) / 1000*/
-			var timeRandom:Boolean = true;
-			if (timeRandom) {
-				time=add(time,mul(20000,random))
-			}
+			var time1:Var = frc(add(mul(100,random.x),mul(time.x, 1 / 10000)));//0-1;
+			var negtime1:Var = sub(1, time1);
 			
-			pos = add(pos, mul2([random,2,sub(modfrc(time,10000),.5)]).xxx);
+			add(pos.xyz, mul2([3,time1.x,sphereRandom]).xyz,pos.xyz);
+			
 			var worldPos:Var = m44(pos, model);
 			var viewPos:Var = m44(worldPos, view);
-			m44(viewPos, perspective, op);
+			
+			//var size:Var =mul(negtime1, .2);
+			var size:Number = .2;
+			
+			add(viewPos.xy, mul(sub(uv, .5), size).xy, viewPos.xy);
+			op = m44(viewPos, perspective);
+			
+			//var color:Var = mov(random);
+			//mul(color,negtime1, V(1));
+			mov([1, 1, 1, 1], V(1));
 		}
 	}
 

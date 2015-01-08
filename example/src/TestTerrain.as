@@ -95,8 +95,8 @@ package
 			
 			var texture:TextureSet=new TextureSet(bmd);
 			//material.color = Vector.<Number>([.6, .6, .6, 1]);
-			material.lightPower = 1.5;
-			
+			material.shininess = 1.5;
+			material.normalMapAble = false;
 			material.textureSets = Vector.<TextureSet>([texture, getTerrainTexture(c0), getTerrainTexture(c1), getTerrainTexture(c2), getTerrainTexture(c3)]);
 			material.shader = new TerrainPhongGLShader();
 			

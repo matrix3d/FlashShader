@@ -40,6 +40,7 @@ package gl3d.shaders.particle {
 				material.node.drawable.random = Meshs.computeRandom(material.node.drawable);
 			}
 			buffSets[2] = material.node.drawable.random;
+			buffSets[3] = material.node.drawable.sphereRandom;
 		}
 		
 		override public function update(material:Material):void 
@@ -60,8 +61,8 @@ package gl3d.shaders.particle {
 				color[3] = alpha;
 				context.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, 0, color);//color
 				
-				context.setProgramConstantsFromVector(Context3DProgramType.VERTEX, vs.constMemLen, Vector.<Number>(vs.constPool));
-				context.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, fs.constMemLen, Vector.<Number>(fs.constPool));
+				context.setProgramConstantsFromVector(Context3DProgramType.VERTEX, vs.constMemLen, vs.constPoolVec);
+				context.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, fs.constMemLen, fs.constPoolVec);
 				context.drawTriangles(node.drawable.index.buff);
 			}
 		}

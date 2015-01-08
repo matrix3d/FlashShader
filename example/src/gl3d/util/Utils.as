@@ -1,6 +1,9 @@
 package gl3d.util 
 {
 	import flash.display.BitmapData;
+	import flash.display.Sprite;
+	import flash.filters.BlurFilter;
+	import flash.geom.Vector3D;
 	import flash.utils.ByteArray;
 	import ui.Color;
 	/**
@@ -13,6 +16,32 @@ package gl3d.util
 		public function Utils() 
 		{
 			
+		}
+		
+		public static function randomSphere(vector:Vector3D=null,rotation:Vector3D=null):Vector3D {
+			vector = vector || new Vector3D;
+			var rvals:Number = 2 * Math.random() - 1;
+			var elevation:Number = Math.asin(rvals);
+			var azimuth:Number = 2 * Math.PI * Math.random();
+			var radii:Number = Math.pow(3 * Math.random(), 1 / 3);
+			vector.w = radii;
+			if (rotation) {
+				rotation.x = elevation;
+				rotation.y = azimuth;
+			}
+			vector.setTo(Math.cos(azimuth) * Math.cos(elevation), Math.sin(elevation), Math.sin(azimuth) * Math.cos(elevation));
+			return vector;
+		}
+		
+		public static function createBlurSphere(size:Number=32,color:uint=0xffffff):BitmapData {
+			var shadow:BitmapData = new BitmapData(size, size, true, 0);
+			var pen:Sprite = new Sprite();
+			pen.graphics.beginFill(color);
+			pen.graphics.drawCircle(size/2, size/2, size/3);
+			pen.graphics.endFill();
+			pen.filters = [new BlurFilter(size/6,size/6,3)];
+			shadow.draw(pen);
+			return shadow;
 		}
 		
 		public static function createNormalMap(bmd:BitmapData,scale:Number=5,kUseTwoMaps:Boolean=true):BitmapData {

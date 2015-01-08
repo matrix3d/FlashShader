@@ -8,15 +8,15 @@
   <compiler>
     <define append="true">
       <name>CONFIG::debug</name>
-      <value>false</value>
-    </define>
-    <define append="true">
-      <name>CONFIG::release</name>
       <value>true</value>
     </define>
     <define append="true">
+      <name>CONFIG::release</name>
+      <value>false</value>
+    </define>
+    <define append="true">
       <name>CONFIG::timeStamp</name>
-      <value>'2015/1/4'</value>
+      <value>'2015/1/8'</value>
     </define>
     <define append="true">
       <name>CONFIG::air</name>
@@ -30,9 +30,7 @@
       <name>CONFIG::desktop</name>
       <value>false</value>
     </define>
-    <optimize>true</optimize>
-    <omit-trace-statements>true</omit-trace-statements>
-    <verbose-stacktraces>false</verbose-stacktraces>
+    <verbose-stacktraces>true</verbose-stacktraces>
     <source-path append="true">
       <path-element>C:\Users\Administrator\Documents\GitHub\FlashShader\example\src</path-element>
       <path-element>C:\Users\Administrator\Documents\GitHub\FlashShader\src</path-element>
@@ -43,7 +41,7 @@
     </library-path>
   </compiler>
   <file-specs>
-    <path-element>C:\Users\Administrator\Documents\GitHub\FlashShader\example\src\BaseExample.as</path-element>
+    <path-element>C:\Users\Administrator\Documents\GitHub\FlashShader\example\src\TestTerrain.as</path-element>
   </file-specs>
   <default-background-color>#FFFFFF</default-background-color>
   <default-frame-rate>60</default-frame-rate>

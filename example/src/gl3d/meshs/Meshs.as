@@ -6,6 +6,7 @@ package gl3d.meshs
 	import gl3d.core.Drawable3D;
 	import gl3d.core.IndexBufferSet;
 	import gl3d.core.VertexBufferSet;
+	import gl3d.util.Utils;
 	/**
 	 * ...
 	 * @author lizhi
@@ -16,6 +17,21 @@ package gl3d.meshs
 		public function Meshs() 
 		{
 			
+		}
+		public static function billboard():Drawable3D
+		{
+			var vs:Vector.<Number> = new Vector.<Number>(4 * 3);
+			var uv:Vector.<Number> = Vector.<Number>([0, 0, 1, 0, 0, 1, 1, 1]);
+			var ins:Vector.<uint>=Vector.<uint>([0, 1, 2, 1, 3, 2]);
+			return createDrawable(ins, vs, uv, null);
+		}
+		
+		public static function plane(r:Number=1):Drawable3D
+		{
+			var vs:Vector.<Number> = Vector.<Number>([-r, -r, 0, r, -r, 0, -r, r, 0, r, r, 0]);
+			var uv:Vector.<Number> = Vector.<Number>([0, 1, 1, 1, 0, 0, 1, 0]);
+			var ins:Vector.<uint>=Vector.<uint>([0, 1, 2, 1, 3, 2]);
+			return createDrawable(ins, vs, uv, null);
 		}
 		
 		public static function sphere(w:Number = 20, h:Number = 20):Drawable3D {
@@ -158,27 +174,31 @@ package gl3d.meshs
 		
 		public static function removeDuplicatedVertices(drawable:Drawable3D):void {
 			var posdata:Vector.<Number> = drawable.pos.data;
+			//var uvdata:Vector.<Number> = drawable.uv.data;
 			var hashToNewVertexId:Object = { };
 			var oldVertexIdToNewVertexId:Array = [];
 			var newVertexCount:int = 0;
 			var newVertexId:uint = 0;
-			for (var i:int = 0; i < posdata.length;i+=3 ) {
-				var hash:String = posdata[i] + "," + posdata[i + 1] + "," + posdata[i + 2];
+			for (var i:int = 0; i < posdata.length/3;i++ ) {
+				var hash:String = posdata[i*3] + "," + posdata[i*3 + 1] + "," + posdata[i*3 + 2]/*+"," + uvdata[i*2]+"," + uvdata[i*2+1]*/;
 				var index:Object = hashToNewVertexId[hash];
 				if (index==null) {
 					newVertexId = newVertexCount++;
 					hashToNewVertexId[hash] = newVertexId;
 					if (newVertexId!=i) {
-						posdata[newVertexId*3] = posdata[i];
-						posdata[newVertexId*3+1] = posdata[i+1];
-						posdata[newVertexId*3+2] = posdata[i+2];
+						posdata[newVertexId*3] = posdata[i*3];
+						posdata[newVertexId*3+1] = posdata[i*3+1];
+						posdata[newVertexId*3+2] = posdata[i*3+2];
+						//uvdata[newVertexId*2] = uvdata[i*2];
+						//uvdata[newVertexId*2+1] = uvdata[i*2+1];
 					}
 				}else {
 					newVertexId = uint(index);
 				}
-				oldVertexIdToNewVertexId[i/3] = newVertexId;
+				oldVertexIdToNewVertexId[i] = newVertexId;
 			}
 			posdata.length = newVertexCount * 3;
+			//uvdata.length = newVertexCount * 2;
 			
 			var idata:Vector.<uint> = drawable.index.data;
 			for (i = 0; i < idata.length;i++ ) {
@@ -324,14 +344,41 @@ package gl3d.meshs
 			return new VertexBufferSet(tangent,3);
 		}
 		
-		public static function computeRandom(drawable:Drawable3D) : VertexBufferSet
+		public static function computeRandom(drawable:Drawable3D,step:int=4) : VertexBufferSet
 		{
-			var random:Vector.<Number> = new Vector.<Number>(drawable.pos.data.length/3);
-			for (var i:int = 0; i < random.length; i++)
+			var random:Vector.<Number> = new Vector.<Number>(drawable.pos.data.length/3*4);
+			for (var i:int = 0; i < random.length/4; )
 			{
-				random[i] = Math.random();
+				var r1:Number = Math.random();
+				var r2:Number = Math.random();
+				var r3:Number = Math.random();
+				var r4:Number = Math.random();
+				for (var j:int = 0; j < step; j++,i++ ) {
+					random[i*4] = r1;
+					random[i*4+1] = r2;
+					random[i*4+2] = r3;
+					random[i*4+3] = r4;
+				}
+				
 			}
-			return new VertexBufferSet(random, 1);
+			return new VertexBufferSet(random, 4);
+		}
+		
+		public static function computeSphereRandom(drawable:Drawable3D,step:int=4) : VertexBufferSet
+		{
+			var randomVec:Vector3D = new Vector3D;
+			var random:Vector.<Number> = new Vector.<Number>(drawable.pos.data.length/3*4);
+			for (var i:int = 0; i < random.length/4; )
+			{
+				Utils.randomSphere(randomVec);
+				for (var j:int = 0; j < step; j++,i++ ) {
+					random[i*4] = randomVec.x;
+					random[i*4+1] = randomVec.y;
+					random[i*4+2] = randomVec.z;
+					random[i*4+3] = randomVec.w;
+				}
+			}
+			return new VertexBufferSet(random, 4);
 		}
 		
 		public static function computeTargetPosition(drawable:Drawable3D) : VertexBufferSet
@@ -365,6 +412,36 @@ package gl3d.meshs
 				index.push(i * 3, i * 3 + 1, i * 3 + 2);
 			}
 			return new IndexBufferSet(index);
+		}
+		
+		/**
+		 * 叠加一个drawable
+		 * @param	drawable
+		 * @param	value 叠加数
+		 * @return
+		 */
+		public static function mul(drawable:Drawable3D,value:int=1):Drawable3D {
+			var indexSource:Vector.<uint> = drawable.index.data;
+			var posSource:Vector.<Number> = drawable.pos.data;
+			var uvSource:Vector.<Number> = drawable.uv.data;
+			var index:Vector.<uint> = new Vector.<uint>;
+			var pos:Vector.<Number> = new Vector.<Number>;
+			var uv:Vector.<Number> = new Vector.<Number>
+			var ilen:int = indexSource.length;
+			var plen:int = posSource.length / 3;
+			for (var i:int = 0; i < value; i++ ) {
+				for (var j:int = 0; j < ilen;j++ ) {
+					index.push(indexSource[j] + i * plen);
+				}
+				var len:int;
+				for (j = 0,len=posSource.length; j <len;j++ ) {
+					pos.push(posSource[j]);
+				}
+				for (j = 0,len=uvSource.length; j <len;j++ ) {
+					uv.push(uvSource[j]);
+				}
+			}
+			return createDrawable(index, pos, uv, null);
 		}
 	}
 

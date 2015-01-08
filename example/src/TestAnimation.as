@@ -1,10 +1,12 @@
 package  
 {
 	import flash.events.Event;
+	import flash.geom.Vector3D;
 	import flash.utils.ByteArray;
 	import gl3d.core.InstanceMaterial;
 	import gl3d.core.Node3D;
 	import gl3d.parser.DAEParser;
+	import gl3d.util.Utils;
 	/**
 	 * ...
 	 * @author lizhi
@@ -29,7 +31,7 @@ package
 			view.scene.addChild(p.root);
 			p.root.scaleX = p.root.scaleY = p.root.scaleZ = .15;
 			p.root.rotationX = -Math.PI/2 ;
-			p.root.rotationY = Math.PI/2;
+			p.root.rotationY = Math.PI;
 			p.addEventListener(Event.COMPLETE, p_complete);
 			
 			materialInstance = new InstanceMaterial;
@@ -37,7 +39,15 @@ package
 		
 		private function p_complete(e:Event):void 
 		{
-			addNode(200);
+			addEventListener(Event.ENTER_FRAME, enterFrame2);
+		}
+		
+		private function enterFrame2(e:Event):void 
+		{
+			if (stats.fps > 30) {
+				var base:int = stats.fps - 30;
+				addNode(base);
+			}
 		}
 		
 		private function addNode(num:int):void {
@@ -47,9 +57,16 @@ package
 				clone.x = (Math.random() - .5) * d;
 				clone.y=(Math.random()-.5) * d;
 				clone.z = (Math.random() - .5) * d;
+				var rotation:Vector3D = new Vector3D;
+				var random:Vector3D = Utils.randomSphere(null,rotation);
+				clone.x = random.x * d;
+				clone.y = random.y * d;
+				clone.z = random.z * d;
+				
 				clone.rotationX = Math.random() * 2 * Math.PI;
 				clone.rotationY = Math.random() * 2 * Math.PI;
 				clone.rotationZ = Math.random() * 2 * Math.PI;
+				
 				changeMaterial(clone);
 				view.scene.addChild(clone);
 			}

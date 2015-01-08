@@ -27,7 +27,7 @@ package gl3d.shaders
 			var perspective:Var = C(8);
 			var lightPos:Var = mov(C(16));
 			var pos:Var = VA();
-			
+			var norm:Var = VA(1);
 			if (material.gpuSkin) {
 				var weight:Var = VA(5);
 				var matrixs:Var = C(0);
@@ -35,17 +35,27 @@ package gl3d.shaders
 				for (var i:int = 0; i < material.node.skin.maxWeight; i++ ) {
 					var c:String = xyzw.charAt(i % 4);
 					var joint:Var = VA(6).c(c);
-					var value:Var = mul(weight.c(c),m44(pos, matrixs.c(joint, 17)));
+					var value:Var = mul(weight.c(c), m44(pos, matrixs.c(joint, 17)));
 					if (i==0) {
 						var result:Var = value;
 					}else {
 						result = add(result, value);
 					}
+					if(material.lightAble){
+						var valueNorm:Var = mul(weight.c(c), m33(norm, matrixs.c(joint, 17)));
+						if (i==0) {
+							var resultNorm:Var = valueNorm;
+						}else {
+							resultNorm = add(resultNorm, valueNorm);
+						}
+					}
 				}
 				pos = result;
+				if (material.lightAble) {
+					norm = nrm(resultNorm);
+				}
 			}
 			
-			var norm:Var = VA(1);
 			var uv:Var = VA(2);
 			var tangent:Var = VA(3);
 			var targetPosition:Var = VA(4);
