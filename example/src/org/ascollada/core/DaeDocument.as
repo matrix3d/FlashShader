@@ -403,7 +403,7 @@ package org.ascollada.core {
 		 * 
 		 */
 		private function readNextImage(event : Event=null) : void {
-			if(_imageQueue.length) {
+			if(false&&_imageQueue.length) {
 				_loadingImage = _imageQueue.pop();
 				_searchPathIndex = -1;
 				readImage(_loadingImage);

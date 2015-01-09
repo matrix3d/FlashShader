@@ -8,15 +8,15 @@
   <compiler>
     <define append="true">
       <name>CONFIG::debug</name>
-      <value>true</value>
-    </define>
-    <define append="true">
-      <name>CONFIG::release</name>
       <value>false</value>
     </define>
     <define append="true">
+      <name>CONFIG::release</name>
+      <value>true</value>
+    </define>
+    <define append="true">
       <name>CONFIG::timeStamp</name>
-      <value>'2015/1/8'</value>
+      <value>'2015/1/9'</value>
     </define>
     <define append="true">
       <name>CONFIG::air</name>
@@ -30,11 +30,13 @@
       <name>CONFIG::desktop</name>
       <value>false</value>
     </define>
-    <verbose-stacktraces>true</verbose-stacktraces>
+    <optimize>true</optimize>
+    <omit-trace-statements>true</omit-trace-statements>
+    <verbose-stacktraces>false</verbose-stacktraces>
     <source-path append="true">
       <path-element>C:\Users\Administrator\Documents\GitHub\FlashShader\example\src</path-element>
       <path-element>C:\Users\Administrator\Documents\GitHub\FlashShader\src</path-element>
-      <path-element>D:\Program Files (x86)\FlashDevelop\Library\AS3\classes</path-element>
+      <path-element>d:\Program Files (x86)\FlashDevelop\Library\AS3\classes</path-element>
     </source-path>
     <library-path append="true">
       <path-element>C:\Users\Administrator\Documents\GitHub\FlashShader\example\lib\MinimalComps_0_9_10.swc</path-element>

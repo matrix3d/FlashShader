@@ -7,12 +7,14 @@ package
 	import flash.events.MouseEvent;
 	import flash.geom.Vector3D;
 	import flash.utils.ByteArray;
+	import gl3d.core.InstanceMaterial;
 	import gl3d.ctrl.Ctrl;
 	import gl3d.ctrl.FirstPersonCtrl;
 	import gl3d.ctrl.FollowCtrl;
 	import gl3d.core.Material;
 	import gl3d.meshs.Meshs;
 	import gl3d.core.Node3D;
+	import gl3d.parser.DAEParser;
 	import gl3d.pick.TerrainPicking;
 	import gl3d.shaders.TerrainPhongGLShader;
 	import gl3d.core.TextureSet;
@@ -23,12 +25,15 @@ package
 	public class TestTerrain extends BaseExample
 	{
 		private var terrain:Node3D;
-		private var cube:Node3D;
+		private var player:Node3D;
 		private var targetCube:Node3D;
 		private var gameModeBtn:PushButton;
 		private var pix:Vector3D = new Vector3D;
-		private var moving:Boolean = false;
+		private var moving:Boolean = true;
 		private var isClick:Boolean = false;
+		private var players:Array = [];
+		private var p:DAEParser;
+		private var materialInstance:InstanceMaterial = new InstanceMaterial;
 		public function TestTerrain() 
 		{
 		}
@@ -36,7 +41,7 @@ package
 		override public function initUI():void 
 		{
 			super.initUI();
-			gameModeBtn = new PushButton(this, 5, 5, "game mode", gameModeBtnClick);
+			gameModeBtn = new PushButton(this, 125, 5, "game mode", gameModeBtnClick);
 			gameModeBtn.toggle = true;
 			gameModeBtn.selected = true;
 		}
@@ -49,7 +54,7 @@ package
 		override public function initCtrl():void 
 		{
 			if (gameModeBtn.selected) {
-				view.ctrls=Vector.<Ctrl>([new FollowCtrl(cube,view.camera)]);
+				view.ctrls=Vector.<Ctrl>([new FollowCtrl(player,view.camera)]);
 			}else {
 				view.ctrls=Vector.<Ctrl>([new FirstPersonCtrl(view.camera,stage)]);
 			}
@@ -106,19 +111,36 @@ package
 			view.scene.addChild(terrain);
 			terrain.picking = new TerrainPicking(terrain);
 			
-			cube = new Node3D;
-			cube.material = new Material;
-			cube.drawable = Meshs.teapot(6);
-			cube.scaleX = cube.scaleY = cube.scaleZ = 0.3;
-			view.scene.addChild(cube);
-			
 			targetCube = new Node3D;
 			targetCube.material = new Material;
 			targetCube.material.color[1] = 0;
-			targetCube.drawable = cube.drawable;
-			targetCube.scaleX = targetCube.scaleY = targetCube.scaleZ = cube.scaleX;
+			targetCube.drawable = Meshs.teapot();
+			targetCube.scaleX = targetCube.scaleY = targetCube.scaleZ = .3;
 			view.scene.addChild(targetCube);
 			stage.addEventListener(MouseEvent.MOUSE_DOWN, stage_mouseDown);
+			
+			[Embed(source = "assets/astroBoy_walk_Max.dae", mimeType = "application/octet-stream")]var c:Class;
+			var ba:ByteArray = new c as ByteArray;
+			p = new DAEParser;
+			p.load(null, ba);
+			player = new Node3D;
+			player.addChild(p.root);
+			p.root.scaleX = p.root.scaleY = p.root.scaleZ = 1;
+			p.root.rotationX = -Math.PI/2 ;
+			p.root.rotationY = 0;// -Math.PI;
+			view.scene.addChild(player);
+			addNode(30);
+		}
+		
+		private function addNode(num:int):void {
+			while(num-->0){
+				var d:int = 3;
+				var clone:Node3D = player.clone();
+				players.push(clone);
+				
+				changeMaterial(clone);
+				view.scene.addChild(clone);
+			}
 		}
 		
 		private function stage_mouseDown(e:MouseEvent):void 
@@ -165,27 +187,46 @@ package
 				isClick = false;
 			}
 			if (moving) {
-				var distance:Number = Vector3D.distance(pix, cube.world.position);
+				var distance:Number = Vector3D.distance(pix, player.world.position);
 				var speed:Number = .1;
 				if (distance<speed) {
-					cube.x = pix.x;
-					cube.y = pix.y;
-					cube.z = pix.z;
+					player.x = pix.x;
+					player.z = pix.z;
 					moving = false;
 				}else {
-					var v:Vector3D = pix.subtract(cube.world.position);
+					var v:Vector3D = pix.subtract(player.world.position);
 					v.normalize();
 					v.scaleBy(speed);
-					cube.x += v.x;
-					cube.z += v.z;
-					cube.y = (terrain.picking as TerrainPicking).getHeight(cube.x, cube.z);
+					player.x += v.x;
+					player.z += v.z;
+				}
+				player.y = (terrain.picking as TerrainPicking).getHeight(player.x, player.z);
+				if (v) {
+					player.rotationY = Math.atan2( -v.z, v.x)+Math.PI/2;
+				}
+				var last:Node3D = player;
+				for each(var clone:Node3D in players) {
+					v = last.world.position.subtract(clone.world.position);
+					v.scaleBy(.03);
+					clone.x += v.x;
+					clone.z += v.z;
+					clone.y = (terrain.picking as TerrainPicking).getHeight(clone.x, clone.z);
+					clone.rotationY = Math.atan2( -v.z, v.x)+Math.PI/2;
+					last = clone;
 				}
 			}
 			
-			if (v) {
-				cube.rotationY = Math.atan2( -v.z, v.x)+Math.PI/2;
-			}
+			
 			super.enterFrame(e);
+		}
+		
+		private function changeMaterial(node:Node3D):void {
+			if (node.material) {
+				node.material = materialInstance;
+			}
+			for each(var child:Node3D in node.children) {
+				changeMaterial(child);
+			}
 		}
 	}
 

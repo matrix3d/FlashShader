@@ -96,7 +96,7 @@ package gl3d.core {
 			invalid = true;
 		}
 		
-		public function setBlendModel(value:String):void {
+		public function set blendModel(value:String):void {
 			switch (value) {
 				case BlendMode.NORMAL:
 					sourceFactor = Context3DBlendFactor.ONE;
