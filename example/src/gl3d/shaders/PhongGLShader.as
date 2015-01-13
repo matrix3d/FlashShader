@@ -59,39 +59,55 @@ package gl3d.shaders
 				var camera:Camera3D = material.camera;
 				var node:Node3D = material.node;
 				
-				context.setProgramConstantsFromMatrix(Context3DProgramType.VERTEX, 0, node.world, true);
-				context.setProgramConstantsFromMatrix(Context3DProgramType.VERTEX, 4, camera.view, true);
-				context.setProgramConstantsFromMatrix(Context3DProgramType.VERTEX, 8, camera.perspective, true);
-				
-				if (material.gpuSkin) {
-					for (var i:int = 0; i < node.skin.skinFrame.matrixs.length;i++ ) {
-						context.setProgramConstantsFromMatrix(Context3DProgramType.VERTEX, 17+i*4, node.skin.skinFrame.matrixs[i], true);
-					}
+				var pvs:PhongVertexShader = vs as PhongVertexShader;
+				var pfs:PhongFragmentShader = fs as PhongFragmentShader;
+				if (pvs.model.used) {
+					context.setProgramConstantsFromMatrix(Context3DProgramType.VERTEX, pvs.model.index, node.world, true);
 				}
-				
-				var alpha:Number = material.alpha;
-				var color:Vector.<Number> = material.color;
-				color[3] = alpha;
-				context.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, 0, color);//color
-				if(material.lightAble){
+				if (pvs.world2local.used) {
+					context.setProgramConstantsFromMatrix(Context3DProgramType.VERTEX, pvs.world2local.index, node.world2local, true);
+				}
+				if (pvs.view.used) {
+					context.setProgramConstantsFromMatrix(Context3DProgramType.VERTEX, pvs.view.index, camera.view, true);
+				}
+				if (pvs.perspective.used) {
+					context.setProgramConstantsFromMatrix(Context3DProgramType.VERTEX, pvs.perspective.index, camera.perspective, true);
+				}
+				if (pvs.lightPos.used) {
 					var lightPos:Vector3D = view.light.world.position;
 					lightPosVec[0] = lightPos.x;
 					lightPosVec[1] = lightPos.y;
 					lightPosVec[2] = lightPos.z;
-					if (material.normalMapAble) {
-						context.setProgramConstantsFromMatrix(Context3DProgramType.VERTEX, 12, node.world2local, true);
-					}
-					context.setProgramConstantsFromVector(Context3DProgramType.VERTEX, 16, lightPosVec);//light pos
-					view.light.color[3] = material.shininess;
-					context.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, 1,view.light.color);//light color
-					context.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, 2, material.ambient);//ambient color 环境光
-					if(material.specularAble){
-						specularPowerVec[0] = material.specularPower;
-						context.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, 3, specularPowerVec);//x:specular pow, y:2
+					context.setProgramConstantsFromVector(Context3DProgramType.VERTEX, pvs.lightPos.index, lightPosVec);//light pos
+				}
+				if (material.gpuSkin) {
+					var jointStart:int = pvs.joints.index;
+					for (var i:int = 0; i < node.skin.skinFrame.matrixs.length;i++ ) {
+						context.setProgramConstantsFromMatrix(Context3DProgramType.VERTEX, jointStart+i*4, node.skin.skinFrame.matrixs[i], true);
 					}
 				}
-				if(material.wireframeAble){
-					context.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, 5, material.wireframeColor);//x:specular pow, y:2
+				
+				if(pfs.diffColor.used){
+					var alpha:Number = material.alpha;
+					var color:Vector.<Number> = material.color;
+					color[3] = alpha;
+					context.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, pfs.diffColor.index, color);//color
+				}
+				if (material.lightAble) {
+					if(pfs.lightColor.used){
+						view.light.color[3] = material.shininess;
+						context.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, pfs.lightColor.index, view.light.color);//light color
+					}
+					if(pfs.ambientColor.used){
+						context.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, pfs.ambientColor.index, material.ambient);//ambient color 环境光
+					}
+					if(pfs.specular.used){
+						specularPowerVec[0] = material.specularPower;
+						context.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, pfs.specular.index, specularPowerVec);//x:specular pow, y:2
+					}
+				}
+				if(pfs.wireframeColor.used){
+					context.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, pfs.wireframeColor.index, material.wireframeColor);//x:specular pow, y:2
 				}
 				
 				context.setProgramConstantsFromVector(Context3DProgramType.VERTEX, vs.constMemLen, vs.constPoolVec);

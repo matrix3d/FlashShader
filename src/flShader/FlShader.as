@@ -2,6 +2,7 @@ package flShader {
 	import flash.display3D.Context3DProgramType;
 	import flash.geom.Matrix3D;
 	import flash.utils.ByteArray;
+	import flash.utils.Dictionary;
 	import flShader.Var;
 	/**
 	 * ...
@@ -13,9 +14,25 @@ package flShader {
 		public var logs:Object = { };
 		private var tempCounter:int = 0;
 		
-		public var programType:String;
+		private var uniformCounter:int = 0;
+		private var textureCounter:int = 0;
+		private var buffCounter:int = 0;
+		private var varyingCounter:int = 0;
+		public var uniforms:Array;
+		public var textures:Array;
+		public var buffs:Array;
+		public var varyings:Array;
+		private var uniformVars:Array;
+		private var textureVars:Array;
+		private var buffVars:Array;
+		private var varyingVars:Array;
 		
-		private var constPool:Array = [];
+		public var optimizeUniform:Boolean = false;
+		public var optimizeTexture:Boolean = false;
+		public var optimizeBuff:Boolean = false;
+		public var optimizeVarying:Boolean = false;
+		
+		public var programType:String;
 		public var constPoolVec:Vector.<Number>;
 		public var constMemLen:int = 0;
 		
@@ -30,7 +47,10 @@ package flShader {
 		public function clear():void {
 			lines = [];
 			tempCounter = 0;
-			constPool = [];
+			uniformCounter = 0;
+			textureCounter = 0;
+			buffCounter = 0;
+			varyingCounter = 0;
 			constMemLen = 0;
 		}
 		
@@ -43,6 +63,12 @@ package flShader {
 			var startEnds:Array = [];
 			var ttypePool:Array = [];
 			var tempConsts:Array = [];
+			var constPool:Array = [];
+			uniforms = [];
+			textures = [];
+			buffs = [];
+			varyings = [];
+			//find
 			for (var i:int = 0; i < lines.length;i++ ) {
 				var line:Array = lines[i];
 				for (var j:int = 1,len:int=line.length; j <len ;j++ ) {
@@ -56,16 +82,41 @@ package flShader {
 						vs.push(v);
 					}else if (v.type==Var.TYPE_C) {//遍历常量
 						if (v.index!=-1) {//找到非临时常量使用的最大内存
-							var theConstMemLen:int = v.index + v.constLenght;
-							if (theConstMemLen>constMemLen) {
-								constMemLen = theConstMemLen;
-							}
+							uniforms.push(v);
 						}else {//找到临时常量
 							tempConsts.push(v);
 						}
+					}else if (v.type==Var.TYPE_FS) {
+						textures.push(v);
+					}else if (v.type==Var.TYPE_VA) {
+						buffs.push(v);
+					}else if (v.type==Var.TYPE_V) {
+						varyings.push(v);
 					}
 				}
 			}
+			
+			
+			if (optimizeUniform) {
+				uniforms=optimizeVar(uniforms,uniformVars);
+			}
+			for each(v in uniforms) {
+				var theConstMemLen:int = v.index + v.constLenght;
+				if (theConstMemLen>constMemLen) {
+					constMemLen = theConstMemLen;
+				}
+			}
+			if (programType==Context3DProgramType.FRAGMENT&&optimizeTexture) {
+				textures=optimizeVar(textures,textureVars);
+			}
+			if (programType==Context3DProgramType.VERTEX&&optimizeBuff) {
+				buffs=optimizeVar(buffs,buffVars);
+			}
+			if (programType==Context3DProgramType.VERTEX&&optimizeVarying) {
+				varyings=optimizeVar(varyings,varyingVars);
+			}
+			
+			//optimize temp
 			for (i = 1,len=startEnds.length; i <len ;i++ ) {
 				startEnd = startEnds[i];
 				var start:int = startEnd[0];
@@ -144,6 +195,35 @@ package flShader {
 			//trace("pool",constPool);
 		}
 		
+		public function optimizeVar(vars:Array,sourceVars:Array):Array {
+			var map:Object = { };
+			var newVars:Array = [];
+			var index2newindex:Object = { };
+			var len:int = 0;
+			for each(var v:Var in vars) {
+				if (map[v.index]==null) {
+					map[v.index] = []
+					newVars.push(v);//可能有多个相同索引的，但只push入第一个
+					index2newindex[v.index] = len;
+					len += v.constLenght;
+				}
+				map[v.index].push(v);
+			}
+			for each(v in sourceVars) {
+				if (map[v.index]) {
+					map[v.index].push(v);
+				}
+			}
+			for (var key:String in map) {
+				var newIndex:int = index2newindex[key];
+				for each(v in map[key]) {
+					v.index = newIndex;
+					v.used = true;
+				}
+			}
+			return newVars;
+		}
+		
 		public function createTempVar():Var {
 			var v:Var = new Var(Var.TYPE_T, tempCounter);
 			tempCounter++;
@@ -161,7 +241,63 @@ package flShader {
 			return c;
 		}
 		
-		public function get code():String {
+		private function createUniform(len:int = 1):Var {
+			var c:Var = C(uniformCounter++, len);
+			uniformVars = uniformVars || [];
+			uniformVars.push(c);
+			optimizeUniform = true;
+			return c;
+		}
+		
+		public function uniform():Var {
+			return createUniform();
+		}
+		
+		public function matrix():Var {
+			return createUniform(4);
+		}
+		
+		public function matrix34():Var {
+			return createUniform(3);
+		}
+		
+		public function floatArray(len:int):Var {
+			return createUniform(len);
+		}
+		
+		public function matrixArray(len:int):Var {
+			return createUniform(len*4);
+		}
+		
+		public function matrix34Array(len:int):Var {
+			return createUniform(len*3);
+		}
+		
+		public function buff():Var {
+			var va:Var = VA(buffCounter++);
+			buffVars = buffVars || [];
+			buffVars.push(va);
+			optimizeBuff = true;
+			return va;
+		}
+		
+		public function texture():Var {
+			var fs:Var = FS(textureCounter++);
+			textureVars = textureVars || [];
+			textureVars.push(fs);
+			optimizeTexture = true;
+			return fs;
+		}
+		
+		public function varying():Var {
+			var v:Var = V(varyingCounter++);
+			varyingVars = varyingVars || [];
+			varyingVars.push(v);
+			optimizeVarying = true;
+			return v;
+		}
+		
+		public function get code():Object {
 			if (invalid) {
 				invalid = false;
 				build();
@@ -169,18 +305,7 @@ package flShader {
 				creator.creat(this);
 			}
 			if(creator.data==null)creator.creat(this);
-			return creator.data + "";
-		}
-		
-		public function get code2():ByteArray {
-			if (invalid) {
-				invalid = false;
-				build();
-				optimize();
-				creator.creat(this)
-			}
-			if(creator.data==null)creator.creat(this);
-			return creator.data as ByteArray;
+			return creator.data;
 		}
 		
 		public function get op():Var 

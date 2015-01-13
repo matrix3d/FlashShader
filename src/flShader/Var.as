@@ -14,22 +14,20 @@ package flShader {
 		public static const TYPE_OP:int = 7;
 		
 		public var index:int;
-		public var offset:int;
 		public var type:int;
 		public var component:Object;
 		
 		public var data:Object;
 		public var constLenght:int = 1;
+		public var used:Boolean = false;
 		public function Var(type:int,index:int=0) {
 			this.type = type;
 			this.index = index;
 		}
-		public function c(value:Object,offset:int=0):Var {
+		public function c(value:Object):Var {
 			var v:Var = new Var(type, index);
 			v.component = value;
-			if (value is Var) {
-				(value as Var).offset = offset;
-			}
+			v.constLenght = constLenght;
 			return v;
 		}
 		

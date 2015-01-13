@@ -32,13 +32,7 @@ package
 			p.root.scaleX = p.root.scaleY = p.root.scaleZ = .15;
 			p.root.rotationX = -Math.PI/2 ;
 			p.root.rotationY = Math.PI;
-			p.addEventListener(Event.COMPLETE, p_complete);
-			
 			materialInstance = new InstanceMaterial;
-		}
-		
-		private function p_complete(e:Event):void 
-		{
 			addEventListener(Event.ENTER_FRAME, enterFrame2);
 		}
 		
@@ -74,6 +68,7 @@ package
 		
 		private function changeMaterial(node:Node3D):void {
 			if (node.material) {
+				materialInstance.wireframeAble = node.material.wireframeAble;
 				node.material = materialInstance;
 			}
 			for each(var child:Node3D in node.children) {

@@ -14,6 +14,11 @@ package gl3d.shaders
 	public class PhongFragmentShader extends FlShader
 	{
 		private var material:Material;
+		public var wireframeColor:Var = uniform();
+		public var diffColor:Var = uniform();
+		public var lightColor:Var = uniform();
+		public var specular:Var = uniform();
+		public var ambientColor:Var = uniform();
 		
 		public function PhongFragmentShader(material:Material) 
 		{
@@ -25,7 +30,7 @@ package gl3d.shaders
 			if (material.wireframeAble) {
 				var tp:Var = mov(V(4));
 				var a3:Var = smoothstep(0, fwidth(tp), tp);
-				var wireframeColor:Var = mul(sub( 1 , min(min(a3.x, a3.y), a3.z).xxx ) , C(5));
+				var wireframeColor:Var = mul(sub( 1 , min(min(a3.x, a3.y), a3.z).xxx ) , this.wireframeColor);
 			}
 			var diffColor:Var = getDiffColor();
 			var light:Light = material.view.light;
@@ -48,11 +53,11 @@ package gl3d.shaders
 		
 		public function getDiffColor():Var {
 			if (material.textureSets.length==0) {
-				var diffColor:Var = C();
+				var diffColor:Var = this.diffColor;
 			}else {
 				if (!material.isDistanceField) {
 					diffColor = tex(V(3), FS(),null,["repeat","linear"]);
-					mul(C().w, diffColor.w, diffColor.w);
+					mul(this.diffColor.w, diffColor.w, diffColor.w);
 				}else {
 					//http://www.valvesoftware.com/publications/2007/SIGGRAPH2007_AlphaTestedMagnification.pdf
 					var distance:Var = tex(V(3),FS(),null,["repeat","linear"]).w;
@@ -73,10 +78,8 @@ package gl3d.shaders
 		}
 		
 		public function getPhongColor():Var {
-			var lightColor:Var = C(1);
 			var lightPower:Var = lightColor.w;
-			var ambientColor:Var = C(2);
-			var specularPow:Var = C(3).x;
+			var specularPow:Var = specular.x;
 			
 			var normal:Var = V(1);
 			if (material.normalMapAble) {

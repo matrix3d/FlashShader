@@ -32,6 +32,9 @@ package gl3d.core {
 		public var stage3dHeight:Number = 0;
 		public var time:Number = 0;
 		public var drawTriangleCounter:int = 0;
+		public var drawCounter:int = 0;
+		public var driverInfo:String;
+		public var background:uint = 0;
 		public function View3D(agalVersion:int=2) 
 		{
 			this.agalVersion = agalVersion;
@@ -58,6 +61,7 @@ package gl3d.core {
 		private function stage_context3dCreate(e:Event):void 
 		{
 			context = stage.stage3Ds[0].context3D;
+			driverInfo = context.driverInfo;
 		}
 		
 		public function updateCtrl():void {
@@ -90,9 +94,10 @@ package gl3d.core {
 					context.setRenderToBackBuffer();
 				}
 				invalid = false;
-				context.clear();
+				context.clear((background>>16&0xff)/0xff,(background>>8&0xff)/0xff,(background&0xff)/0xff);
 				collects.length = 0;
 				drawTriangleCounter = 0;
+				drawCounter = 0;
 				collect(scene);
 				for each(var node:Node3D in collects) {
 					node.update(this);
@@ -116,6 +121,7 @@ package gl3d.core {
 			collects.push(node);
 			if (node.drawable) {
 				drawTriangleCounter += node.drawable.index.data.length / 3;
+				drawCounter++;
 			}
 			for each(var c:Node3D in node.children) {
 				collect(c);

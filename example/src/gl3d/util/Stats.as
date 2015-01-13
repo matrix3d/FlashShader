@@ -63,8 +63,9 @@ package gl3d.util
 			var text:String = "";
 			if (view) {
 				text += "num : " + view.collects.length;
+				text += "\ndraw : " + view.drawCounter
 				text += "\ntri : " + view.drawTriangleCounter;
-				var info:String =view.context==null?"null": view.context.driverInfo;
+				var info:String =view.driverInfo;
 				var indexS:int = info.indexOf(" ");
 				if (indexS!=-1) {
 					info = info.substr(0, indexS);

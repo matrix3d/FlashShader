@@ -94,7 +94,7 @@ package flShader
 			if (v.component) {
 				if (v.component is Var) {
 					var cv:Var = v.component as Var;
-					vtxt += "["+var2String(cv)+"+"+cv.offset+"]";
+					vtxt += "["+var2String(cv)+"+"+v.index+"]";
 				}else {
 					vtxt += "." + v.component;
 				}

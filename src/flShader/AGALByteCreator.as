@@ -197,7 +197,7 @@ package flShader
 						relsel = (relv.component as String).charCodeAt(0) - "x".charCodeAt(0);
 						if ( relsel > 2 )
 							relsel = 3; 
-						reloffset = relv.offset; 						
+						reloffset = v.index;//relv.offset; 						
 						if ( reloffset < 0 || reloffset > 255 )
 						{
 							_error = "error: index offset "+reloffset+" out of bounds. [0..255]"; 

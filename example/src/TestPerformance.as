@@ -20,14 +20,14 @@ package
 		override public function initNode():void 
 		{
 			super.initNode();
-			teapot.scaleX = teapot.scaleY = teapot.scaleZ = .1;
+			teapot.scaleX = teapot.scaleY = teapot.scaleZ = .4;
 			//teapot.drawable = Meshs.cube();
 			/*teapot.material.lightAble = false;
-			teapot.material.textureSets.length = 1;
-			teapot.material.normalMapAble = false;*/
+			teapot.material.textureSets.length = 1;*/
 			materialInstance = new InstanceMaterial;
+			materialInstance.wireframeAble = teapot.material.wireframeAble;
+			
 			materialInstance.normalMapAble = material.normalMapAble;
-			//addNode(800);
 		}
 		
 		private function addNode(num:int):void {

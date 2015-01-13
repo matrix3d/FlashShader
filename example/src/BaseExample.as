@@ -126,6 +126,7 @@ package
 			//teapot.drawable = Meshs.cube(4, 4,4);
 			view.scene.addChild(teapot);
 			teapot.scaleX = teapot.scaleY = teapot.scaleZ = 1;
+			view.background = 0xffffff;
 		}
 		
 		public function initUI():void {

@@ -27,6 +27,7 @@ package gl3d.core {
 		public var controllers:Vector.<Ctrl>;
 		public var skin:Skin;
 		public var type:String;
+		public var copyfrom:Node3D;
 		public function Node3D(name:String=null) 
 		{
 			this.name = name;
@@ -201,6 +202,7 @@ package gl3d.core {
 		
 		public function clone():Node3D {
 			var node:Node3D = new Node3D;
+			node.copyfrom = this;
 			node.drawable = drawable;
 			node.material = material;
 			node.matrix = matrix.clone();

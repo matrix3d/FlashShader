@@ -215,13 +215,12 @@ package
 					last = clone;
 				}
 			}
-			
-			
 			super.enterFrame(e);
 		}
 		
 		private function changeMaterial(node:Node3D):void {
 			if (node.material) {
+				materialInstance.wireframeAble = node.material.wireframeAble;
 				node.material = materialInstance;
 			}
 			for each(var child:Node3D in node.children) {

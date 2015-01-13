@@ -40,7 +40,7 @@ package gl3d.particle
 			if (invalid) {
 				if(isBillboard){
 					var bb:Drawable3D = Meshs.billboard();
-					drawable = Meshs.mul(bb, 1000);
+					drawable = Meshs.mul(bb, 1600);
 				}
 				material = new Material;
 				material.textureSets[0] = new TextureSet(Utils.createBlurSphere());

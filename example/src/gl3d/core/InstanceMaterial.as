@@ -2,13 +2,13 @@ package gl3d.core
 {
 	import flash.display3D.Context3D;
 	import flash.display3D.Context3DProgramType;
+	import gl3d.shaders.PhongVertexShader;
 	/**
 	 * ...
 	 * @author lizhi
 	 */
 	public class InstanceMaterial extends Material
 	{
-		
 		public function InstanceMaterial() 
 		{
 			
@@ -17,14 +17,19 @@ package gl3d.core
 		override public function draw(node:Node3D, view:View3D):void 
 		{
 			var context:Context3D = view.context;
-			context.setProgramConstantsFromMatrix(Context3DProgramType.VERTEX, 0, node.world, true);
-			if (normalMapAble) {
-				context.setProgramConstantsFromMatrix(Context3DProgramType.VERTEX, 12, node.world2local, true);
-			}
-			if (wireframeAble) {
-				context.drawTriangles(node.unpackedDrawable.index.buff);
-			}else {
-				context.drawTriangles(node.drawable.index.buff);
+			var pvs:PhongVertexShader = node.copyfrom.material.shader.vs as PhongVertexShader
+			if(pvs){
+				context.setProgramConstantsFromMatrix(Context3DProgramType.VERTEX, pvs.model.index, node.world, true);
+				if (normalMapAble) {
+					context.setProgramConstantsFromMatrix(Context3DProgramType.VERTEX, pvs.world2local.index, node.world2local, true);
+				}
+				
+				node = node.copyfrom || node;
+				if (wireframeAble) {
+					context.drawTriangles(node.unpackedDrawable.index.buff);
+				}else {
+					context.drawTriangles(node.drawable.index.buff);
+				}
 			}
 		}
 		

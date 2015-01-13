@@ -31,12 +31,10 @@ package gl3d.shaders.particle
 			
 			add(pos.xyz, mul2([3,time1.x,sphereRandom]).xyz,pos.xyz);
 			
-			var worldPos:Var = m44(pos, model);
-			var viewPos:Var = m44(worldPos, view);
-			
 			//var size:Var =mul(negtime1, .2);
 			var size:Number = .2;
-			
+			var worldPos:Var = m44(pos, model);
+			var viewPos:Var = m44(worldPos, view);
 			add(viewPos.xy, mul(sub(uv, .5), size).xy, viewPos.xy);
 			op = m44(viewPos, perspective);
 			

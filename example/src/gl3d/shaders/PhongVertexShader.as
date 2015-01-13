@@ -13,7 +13,12 @@ package gl3d.shaders
 	public class PhongVertexShader extends FlShader
 	{
 		private var material:Material;
-		
+		public var model:Var = matrix();
+		public var world2local:Var = matrix();
+		public var view:Var = matrix();
+		public var perspective:Var = matrix();
+		public var lightPos:Var = uniform();
+		public var joints:Var;
 		public function PhongVertexShader(material:Material) 
 		{
 			super(Context3DProgramType.VERTEX);
@@ -21,28 +26,23 @@ package gl3d.shaders
 		}
 		
 		override public function build():void {
-			var model:Var = C();
-			var world2local:Var = C(12);
-			var view:Var = C(4);
-			var perspective:Var = C(8);
-			var lightPos:Var = mov(C(16));
 			var pos:Var = VA();
 			var norm:Var = VA(1);
 			if (material.gpuSkin) {
+				joints = matrixArray(material.node.skin.joints.length);
 				var weight:Var = VA(5);
-				var matrixs:Var = C(0);
 				var xyzw:String = "xyzw";
 				for (var i:int = 0; i < material.node.skin.maxWeight; i++ ) {
 					var c:String = xyzw.charAt(i % 4);
 					var joint:Var = VA(6).c(c);
-					var value:Var = mul(weight.c(c), m44(pos, matrixs.c(joint, 17)));
+					var value:Var = mul(weight.c(c), m44(pos, joints.c(joint)));
 					if (i==0) {
 						var result:Var = value;
 					}else {
 						result = add(result, value);
 					}
 					if(material.lightAble){
-						var valueNorm:Var = mul(weight.c(c), m33(norm, matrixs.c(joint, 17)));
+						var valueNorm:Var = mul(weight.c(c), m33(norm, joints.c(joint)));
 						if (i==0) {
 							var resultNorm:Var = valueNorm;
 						}else {
