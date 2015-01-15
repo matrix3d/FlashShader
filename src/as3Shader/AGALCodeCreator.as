@@ -1,4 +1,4 @@
-package flShader 
+package as3Shader 
 {
 	import flash.display3D.Context3DProgramType;
 	/**
@@ -12,7 +12,7 @@ package flShader
 		{
 			
 		}
-		override public function creat(shader:FlShader):void 
+		override public function creat(shader:AS3Shader):void 
 		{
 			var lines:Array = shader.lines;
 			var logs:Object = shader.logs;

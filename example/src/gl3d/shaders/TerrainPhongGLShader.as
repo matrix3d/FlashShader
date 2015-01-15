@@ -1,6 +1,6 @@
 package gl3d.shaders 
 {
-	import flShader.FlShader;
+	import as3Shader.AS3Shader;
 	import gl3d.core.Material;
 	/**
 	 * ...
@@ -14,7 +14,7 @@ package gl3d.shaders
 			
 		}
 		
-		override public function getFragmentShader(material:Material):FlShader {
+		override public function getFragmentShader(material:Material):AS3Shader {
 			return new TerrainPhongFragmentShader(material,vs as PhongVertexShader);
 		}
 		

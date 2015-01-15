@@ -1,12 +1,12 @@
 package gl3d.shaders.particle 
 {
-	import flShader.FlShader;
-	import flShader.Var;
+	import as3Shader.AS3Shader;
+	import as3Shader.Var;
 	/**
 	 * ...
 	 * @author lizhi
 	 */
-	public class ParticleVertexShader extends FlShader
+	public class ParticleVertexShader extends AS3Shader
 	{
 		
 		public function ParticleVertexShader() 

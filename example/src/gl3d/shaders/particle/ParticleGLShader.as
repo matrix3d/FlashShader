@@ -2,7 +2,7 @@ package gl3d.shaders.particle {
 	import flash.display3D.Context3D;
 	import flash.display3D.Context3DProgramType;
 	import flash.geom.Vector3D;
-	import flShader.FlShader;
+	import as3Shader.AS3Shader;
 	import gl3d.core.Camera3D;
 	import gl3d.core.Material;
 	import gl3d.meshs.Meshs;
@@ -22,11 +22,11 @@ package gl3d.shaders.particle {
 			
 		}
 		
-		override public function getVertexShader(material:Material):FlShader {
+		override public function getVertexShader(material:Material):AS3Shader {
 			return new ParticleVertexShader;
 		}
 		
-		override public function getFragmentShader(material:Material):FlShader {
+		override public function getFragmentShader(material:Material):AS3Shader {
 			return new ParticleFragmentShader;
 		}
 		

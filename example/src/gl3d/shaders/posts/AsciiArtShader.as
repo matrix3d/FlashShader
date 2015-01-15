@@ -1,13 +1,13 @@
 package gl3d.shaders.posts 
 {
 	import flash.display3D.Context3DProgramType;
-	import flShader.FlShader;
-	import flShader.Var;
+	import as3Shader.AS3Shader;
+	import as3Shader.Var;
 	/**
 	 * ...
 	 * @author lizhi
 	 */
-	public class AsciiArtShader extends FlShader
+	public class AsciiArtShader extends AS3Shader
 	{
 		public var HAS_GREENSCREEN:Boolean = false;
 		public function AsciiArtShader(blurSize:Number=1/1000,isVertical:Boolean=true) 

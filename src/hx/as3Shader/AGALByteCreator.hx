@@ -1,4 +1,4 @@
-package flShader;
+package as3Shader;
 
 import flash.display3D.Context3DProgramType;
 import flash.utils.ByteArray;
@@ -23,7 +23,7 @@ import flash.utils.Endian;
 		this.version = version;
 	}
 
-	override public function creat(shader : FlShader) : Void {
+	override public function creat(shader : AS3Shader) : Void {
 		if(!initialized)  {
 			init();
 			initregmap(1, false);

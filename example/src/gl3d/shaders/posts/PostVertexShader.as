@@ -1,11 +1,11 @@
 package gl3d.shaders.posts 
 {
-	import flShader.FlShader;
+	import as3Shader.AS3Shader;
 	/**
 	 * ...
 	 * @author lizhi
 	 */
-	public class PostVertexShader extends FlShader
+	public class PostVertexShader extends AS3Shader
 	{
 		
 		public function PostVertexShader() 

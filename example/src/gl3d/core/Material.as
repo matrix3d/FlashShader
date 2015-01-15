@@ -6,7 +6,7 @@ package gl3d.core {
 	import flash.display3D.Context3DProgramType;
 	import flash.display3D.Context3DTriangleFace;
 	import flash.geom.Vector3D;
-	import flShader.FlShader;
+	import as3Shader.AS3Shader;
 	import gl3d.core.skin.Skin;
 	import gl3d.meshs.Meshs;
 	import gl3d.shaders.GLShader;

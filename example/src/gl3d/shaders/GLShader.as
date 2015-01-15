@@ -5,9 +5,9 @@ package gl3d.shaders
 	import flash.display3D.Context3DProgramType;
 	import flash.geom.Vector3D;
 	import flash.utils.ByteArray;
-	import flShader.AGALByteCreator;
-	import flShader.FlShader;
-	import flShader.GLCodeCreator;
+	import as3Shader.AGALByteCreator;
+	import as3Shader.AS3Shader;
+	import as3Shader.GLCodeCreator;
 	import gl3d.core.Camera3D;
 	import gl3d.core.Material;
 	import gl3d.core.Node3D;
@@ -23,8 +23,8 @@ package gl3d.shaders
 	public class GLShader 
 	{
 		public var invalid:Boolean = true;
-		public var vs:FlShader;
-		public var fs:FlShader;
+		public var vs:AS3Shader;
+		public var fs:AS3Shader;
 		public var programSet:ProgramSet;
 		public var textureSets:Array=[];
 		public var buffSets:Array;
@@ -65,11 +65,11 @@ package gl3d.shaders
 			return programSet;
 		}
 		
-		public function getVertexShader(material:Material):FlShader {
+		public function getVertexShader(material:Material):AS3Shader {
 			return null;
 		}
 		
-		public function getFragmentShader(material:Material):FlShader {
+		public function getFragmentShader(material:Material):AS3Shader {
 			return null;
 		}
 		

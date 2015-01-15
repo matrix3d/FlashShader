@@ -1,4 +1,4 @@
-package flShader;
+package as3Shader;
 
 /**
 

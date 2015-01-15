@@ -1,13 +1,13 @@
 package gl3d.shaders.particle 
 {
 	import flash.display3D.Context3DProgramType;
-	import flShader.FlShader;
-	import flShader.Var;
+	import as3Shader.AS3Shader;
+	import as3Shader.Var;
 	/**
 	 * ...
 	 * @author lizhi
 	 */
-	public class ParticleFragmentShader extends FlShader
+	public class ParticleFragmentShader extends AS3Shader
 	{
 		
 		public function ParticleFragmentShader() 

@@ -1,4 +1,4 @@
-package flShader;
+package as3Shader;
 
 import flash.display3D.Context3DProgramType;
 
@@ -15,7 +15,7 @@ import flash.display3D.Context3DProgramType;
 		super();
 	}
 
-	override public function creat(shader : FlShader) : Void {
+	override public function creat(shader : AS3Shader) : Void {
 		var lines : Array<Dynamic> = shader.lines;
 		if(shader.programType == Context3DProgramType.VERTEX)  {
 			programTypeName = "v";

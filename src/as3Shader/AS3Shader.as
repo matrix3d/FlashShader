@@ -1,14 +1,14 @@
-package flShader {
+package as3Shader {
 	import flash.display3D.Context3DProgramType;
 	import flash.geom.Matrix3D;
 	import flash.utils.ByteArray;
 	import flash.utils.Dictionary;
-	import flShader.Var;
+	import as3Shader.Var;
 	/**
 	 * ...
 	 * @author lizhi
 	 */
-	public class FlShader 
+	public class AS3Shader 
 	{
 		public var lines:Array = [];
 		public var logs:Object = { };
@@ -33,7 +33,7 @@ package flShader {
 		
 		public var invalid:Boolean = true;
 		public var creator:Creator;
-		public function FlShader(programType:String=Context3DProgramType.VERTEX,creator:Creator=null) 
+		public function AS3Shader(programType:String=Context3DProgramType.VERTEX,creator:Creator=null) 
 		{
 			this.creator=creator||new AGALCodeCreator;
 			this.programType = programType;

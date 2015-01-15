@@ -1,6 +1,6 @@
 package gl3d.shaders 
 {
-	import flShader.Var;
+	import as3Shader.Var;
 	import gl3d.core.Material;
 	/**
 	 * ...

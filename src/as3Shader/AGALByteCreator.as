@@ -1,4 +1,4 @@
-package flShader 
+package as3Shader 
 {
 	import flash.display3D.Context3DProgramType;
 	import flash.utils.ByteArray;
@@ -20,7 +20,7 @@ package flShader
 			this.version = version;
 		}
 		
-		override public function creat(shader:FlShader):void 
+		override public function creat(shader:AS3Shader):void 
 		{
 			if (!initialized) {
 				init();

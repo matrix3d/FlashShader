@@ -2,8 +2,8 @@ package gl3d.shaders
 {
 	import flash.display3D.Context3DProgramType;
 	import flash.display3D.textures.Texture;
-	import flShader.FlShader;
-	import flShader.Var;
+	import as3Shader.AS3Shader;
+	import as3Shader.Var;
 	import gl3d.core.Light;
 	import gl3d.core.Material;
 	import gl3d.core.TextureSet;
@@ -11,7 +11,7 @@ package gl3d.shaders
 	 * ...
 	 * @author lizhi
 	 */
-	public class PhongFragmentShader extends FlShader
+	public class PhongFragmentShader extends AS3Shader
 	{
 		private var material:Material;
 		public var vs:PhongVertexShader;

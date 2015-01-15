@@ -1,4 +1,4 @@
-FlashShader
+AS3Shader
 ===========
 
 a shader tool create agal

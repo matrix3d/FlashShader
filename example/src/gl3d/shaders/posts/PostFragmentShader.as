@@ -1,12 +1,12 @@
 package gl3d.shaders.posts 
 {
 	import flash.display3D.Context3DProgramType;
-	import flShader.FlShader;
+	import as3Shader.AS3Shader;
 	/**
 	 * ...
 	 * @author lizhi
 	 */
-	public class PostFragmentShader extends FlShader
+	public class PostFragmentShader extends AS3Shader
 	{
 		
 		public function PostFragmentShader() 

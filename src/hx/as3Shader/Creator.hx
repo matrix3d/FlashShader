@@ -1,4 +1,4 @@
-package flShader;
+package as3Shader;
 
 /**
 
@@ -12,7 +12,7 @@ package flShader;
 	public function new() {
 	}
 
-	public function creat(shader : FlShader) : Void {
+	public function creat(shader : AS3Shader) : Void {
 	}
 
 }

@@ -1,9 +1,9 @@
-package flShader;
+package as3Shader;
 
 import flash.display3D.Context3DProgramType;
 import flash.geom.Matrix3D;
 import flash.utils.ByteArray;
-import flShader.Var;
+import as3Shader.Var;
 
 /**
 
@@ -11,7 +11,7 @@ import flShader.Var;
 
  * @author lizhi
 
- */class FlShader {
+ */class AS3Shader {
 	public var code(get_code, never) : String;
 	public var code2(get_code2, never) : ByteArray;
 

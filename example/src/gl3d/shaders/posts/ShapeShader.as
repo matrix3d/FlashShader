@@ -1,13 +1,13 @@
 package gl3d.shaders.posts 
 {
 	import flash.display3D.Context3DProgramType;
-	import flShader.FlShader;
-	import flShader.Var;
+	import as3Shader.AS3Shader;
+	import as3Shader.Var;
 	/**
 	 * ...
 	 * @author lizhi
 	 */
-	public class ShapeShader  extends FlShader
+	public class ShapeShader  extends AS3Shader
 	{
 		
 		public function ShapeShader() 
