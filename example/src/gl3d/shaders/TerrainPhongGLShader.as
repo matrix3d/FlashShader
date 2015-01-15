@@ -15,7 +15,7 @@ package gl3d.shaders
 		}
 		
 		override public function getFragmentShader(material:Material):FlShader {
-			return new TerrainPhongFragmentShader(material);
+			return new TerrainPhongFragmentShader(material,vs as PhongVertexShader);
 		}
 		
 		override public function preUpdate(material:Material):void {

@@ -331,8 +331,8 @@ package gl3d.hlbsp
 			if (ltexture==null) {
 				ltexture=bmd2texture[lbmd]=new TextureSet(lbmd);
 			}
-			target.material.textureSets[0] = texture;
-			target.material.textureSets[1] = ltexture;
+			target.material.diffTexture = texture;
+			target.material.lightmapTexture = ltexture;
 			target.matrix = bspRenderNode.world;
 			target.material.draw(target, view);
 			//gl.drawArrays(polygonMode ? gl.LINE_STRIP : gl.TRIANGLE_FAN, this.faceBufferRegions[faceIndex].start, this.faceBufferRegions[faceIndex].count);

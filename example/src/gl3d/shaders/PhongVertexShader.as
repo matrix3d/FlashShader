@@ -19,6 +19,22 @@ package gl3d.shaders
 		public var perspective:Var = matrix();
 		public var lightPos:Var = uniform();
 		public var joints:Var;
+		
+		
+		public var pos:Var = buff();
+		public var norm:Var = buff();
+		public var uv:Var = buff();
+		public var tangent:Var = buff();
+		public var targetPosition:Var = buff();
+		public var weight:Var = buff();
+		public var joint:Var = buff();
+		
+		public var eyeDirectionVarying:Var = varying();
+		public var posLightVarying:Var = varying();
+		public var normVarying:Var = varying();
+		public var tangentVarying:Var = varying();
+		public var uvVarying:Var = varying();
+		public var targetPositionVarying:Var = varying();
 		public function PhongVertexShader(material:Material) 
 		{
 			super(Context3DProgramType.VERTEX);
@@ -26,15 +42,14 @@ package gl3d.shaders
 		}
 		
 		override public function build():void {
-			var pos:Var = VA();
-			var norm:Var = VA(1);
+			var norm:Var = this.norm;
+			var pos:Var = this.pos;
 			if (material.gpuSkin) {
 				joints = matrixArray(material.node.skin.joints.length);
-				var weight:Var = VA(5);
 				var xyzw:String = "xyzw";
 				for (var i:int = 0; i < material.node.skin.maxWeight; i++ ) {
 					var c:String = xyzw.charAt(i % 4);
-					var joint:Var = VA(6).c(c);
+					var joint:Var = this.joint.c(c);
 					var value:Var = mul(weight.c(c), m44(pos, joints.c(joint)));
 					if (i==0) {
 						var result:Var = value;
@@ -56,9 +71,6 @@ package gl3d.shaders
 				}
 			}
 			
-			var uv:Var = VA(2);
-			var tangent:Var = VA(3);
-			var targetPosition:Var = VA(4);
 			var worldPos:Var = m44(pos, model);
 			var viewPos:Var = m44(worldPos, view);
 			m44(viewPos, perspective, op);
@@ -70,32 +82,32 @@ package gl3d.shaders
 					}else {
 						eyeDirection = nrm(neg(viewPos));
 					}
-					mov(eyeDirection, V(2));
+					mov(eyeDirection, eyeDirectionVarying);
 				}
 				if (material.normalMapAble) {
 					var posLight:Var = nrm(m33(sub(lightPos, worldPos),world2local));
 				}else {
 					posLight = nrm(sub(lightPos, worldPos));
 				}
-				mov(posLight, V());
+				mov(posLight, posLightVarying);
 				
 				if (material.normalMapAble) {
-					mov(norm, V(1));
+					mov(norm, normVarying);
 				}else {
 					var modelNormal:Var = nrm(m33(norm, model));
-					mov(modelNormal, V(1));
+					mov(modelNormal, normVarying);
 				}
 				
 				if (material.normalMapAble) {
-					mov(tangent,V(4))
+					mov(tangent,tangentVarying)
 				}
 			}
 			
-			if (material.textureSets.length>0) {
-				mov(uv, V(3));
+			if (material.diffTexture) {
+				mov(uv, uvVarying);
 			}
 			if (material.wireframeAble) {
-				mov(targetPosition,V(4));
+				mov(targetPosition,targetPositionVarying);
 			}
 		}
 	}

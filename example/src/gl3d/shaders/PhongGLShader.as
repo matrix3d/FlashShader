@@ -29,7 +29,7 @@ package gl3d.shaders
 		}
 		
 		override public function getFragmentShader(material:Material):FlShader {
-			return new PhongFragmentShader(material);
+			return new PhongFragmentShader(material,vs as PhongVertexShader);
 		}
 		
 		override public function preUpdate(material:Material):void {
@@ -37,16 +37,36 @@ package gl3d.shaders
 			
 			drawable = material.wireframeAble?material.node.unpackedDrawable:material.node.drawable;
 			
-			textureSets= material.textureSets;
+			textureSets.length = 0;
+			var fvs:PhongFragmentShader = fs as PhongFragmentShader;
+			if (fvs.diffSampler.used) {
+				textureSets[fvs.diffSampler.index] = material.diffTexture;
+			}
+			if (fvs.normalmapSampler.used) {
+				textureSets[fvs.normalmapSampler.index] = material.normalmapTexture;
+			}
 			buffSets.length = 0;
-			buffSets[0] = drawable.pos;
-			buffSets[1] = material.lightAble?drawable.norm:null;
-			buffSets[2] =textureSets.length?drawable.uv:null;
-			buffSets[3] = material.normalMapAble?drawable.tangent:null;
-			buffSets[4] = material.wireframeAble?drawable.targetPosition:null;
-			if (material.gpuSkin) {
-				buffSets[5] = drawable.weights;
-				buffSets[6] = drawable.joints;
+			var pvs:PhongVertexShader = vs as PhongVertexShader;
+			if (pvs.pos.used) {
+				buffSets[pvs.pos.index] = drawable.pos;
+			}
+			if (pvs.norm.used) {
+				buffSets[pvs.norm.index] = drawable.norm;
+			}
+			if (pvs.uv.used) {
+				buffSets[pvs.uv.index] = drawable.uv;
+			}
+			if (pvs.tangent.used) {
+				buffSets[pvs.tangent.index] = drawable.tangent;
+			}
+			if (pvs.targetPosition.used) {
+				buffSets[pvs.targetPosition.index] = drawable.targetPosition;
+			}
+			if (pvs.joint.used) {
+				buffSets[pvs.joint.index] = drawable.joints;
+			}
+			if (pvs.weight.used) {
+				buffSets[pvs.weight.index] = drawable.weights;
 			}
 		}
 		

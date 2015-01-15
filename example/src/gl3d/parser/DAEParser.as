@@ -499,7 +499,7 @@ package gl3d.parser
 				{
 					material = new Material;
 					//material.wireframeColor = Vector.<Number>([.5,.5,.5,0]);
-					material.textureSets = Vector.<TextureSet>([new TextureSet(image.bitmapData)]);
+					material.diffTexture = new TextureSet(image.bitmapData);
 					//material.wireframeAble = true;
 					//material = new BitmapMaterial(image.bitmapData.clone());
 				}
@@ -653,9 +653,9 @@ package gl3d.parser
 			material = buildMaterial(daeInstMaterial);
 			if(!material) 
 			{
-				var bmp : BitmapData = new BitmapData(512,512,false,0xaaaaaa);		
+				var bmp : BitmapData = new BitmapData(1,1,false,0xaaaaaa);		
 				material = new Material;
-				material.textureSets = Vector.<TextureSet>([new TextureSet(bmp)]);
+				material.diffTexture = new TextureSet(bmp);
 				//material = new BitmapMaterial(bmp);
 			}
 			if(parent.drawable==null){

@@ -23,7 +23,7 @@ package
 			[Embed(source = "assets/comic_source.png")]
 			var c:Class;
 			var bmd:BitmapData = (new c as Bitmap).bitmapData;
-			material.textureSets[0] = new TextureSet(bmd);
+			material.diffTexture = new TextureSet(bmd);
 			material.isDistanceField = true;
 			node.material = material;
 			node.drawable = Meshs.cube(30,30,0)

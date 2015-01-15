@@ -54,8 +54,8 @@ package gl3d.post
 		
 		public function update(view3D:View3D,isEnd:Boolean):void 
 		{
-			if (numTexture == 1) material.textureSets = Vector.<TextureSet>([view3D.postRTTs[0]]);
-			else if (numTexture == 0) material.textureSets = Vector.<TextureSet>([]);
+			if (numTexture == 1) material.diffTexture = view3D.postRTTs[0];
+			else if (numTexture == 0) material.diffTexture = null;
 			else throw "post texture num error";
 			node.material = material;
 			if (isEnd) {

@@ -43,7 +43,7 @@ package gl3d.particle
 					drawable = Meshs.mul(bb, 1600);
 				}
 				material = new Material;
-				material.textureSets[0] = new TextureSet(Utils.createBlurSphere());
+				material.diffTexture = new TextureSet(Utils.createBlurSphere());
 				material.blendModel = BlendMode.ADD;
 				material.passCompareMode = Context3DCompareMode.ALWAYS;
 				material.shader = new ParticleGLShader;

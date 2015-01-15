@@ -82,9 +82,9 @@ package
 			normalMapTexture = createNormalMap();
 			
 			material.normalMapAble = true;
-			material.textureSets = Vector.<TextureSet>([texture]);
+			material.diffTexture = texture;
 			if (material.normalMapAble) {
-				material.textureSets.push( normalMapTexture);
+				material.normalmapTexture= normalMapTexture;
 			}
 			material.specularAble = true;
 			material.lightAble = true;
@@ -194,7 +194,7 @@ package
 			{
 				_useTexture = value;
 				material.invalid = true;
-				material.textureSets = value ? Vector.<TextureSet>([texture/*,normalMapTexture*/]) : new Vector.<TextureSet>;
+				material.diffTexture=  value ? texture:null;
 			}
 		}
 		

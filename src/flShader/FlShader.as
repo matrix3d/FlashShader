@@ -15,22 +15,17 @@ package flShader {
 		private var tempCounter:int = 0;
 		
 		private var uniformCounter:int = 0;
-		private var textureCounter:int = 0;
+		private var samplerCounter:int = 0;
 		private var buffCounter:int = 0;
 		private var varyingCounter:int = 0;
 		public var uniforms:Array;
-		public var textures:Array;
+		public var samplers:Array;
 		public var buffs:Array;
 		public var varyings:Array;
 		private var uniformVars:Array;
-		private var textureVars:Array;
+		private var samplerVars:Array;
 		private var buffVars:Array;
 		private var varyingVars:Array;
-		
-		public var optimizeUniform:Boolean = false;
-		public var optimizeTexture:Boolean = false;
-		public var optimizeBuff:Boolean = false;
-		public var optimizeVarying:Boolean = false;
 		
 		public var programType:String;
 		public var constPoolVec:Vector.<Number>;
@@ -48,7 +43,7 @@ package flShader {
 			lines = [];
 			tempCounter = 0;
 			uniformCounter = 0;
-			textureCounter = 0;
+			samplerCounter = 0;
 			buffCounter = 0;
 			varyingCounter = 0;
 			constMemLen = 0;
@@ -65,7 +60,7 @@ package flShader {
 			var tempConsts:Array = [];
 			var constPool:Array = [];
 			uniforms = [];
-			textures = [];
+			samplers = [];
 			buffs = [];
 			varyings = [];
 			//find
@@ -73,31 +68,14 @@ package flShader {
 				var line:Array = lines[i];
 				for (var j:int = 1,len:int=line.length; j <len ;j++ ) {
 					var v:Var = line[j];
-					if (v.type==Var.TYPE_T) {//找到所有临时变量，并找到它开始被使用和最后被使用的索引
-						var startEnd:Array = startEnds[v.index];
-						if (startEnd == null) startEnd = startEnds[v.index] = [i, i];
-						startEnd[1] = i;
-						var vs:Array = ttypePool[v.index];//把相同索引的临时变量放入数组
-						if (vs == null) vs = ttypePool[v.index] = [];
-						vs.push(v);
-					}else if (v.type==Var.TYPE_C) {//遍历常量
-						if (v.index!=-1) {//找到非临时常量使用的最大内存
-							uniforms.push(v);
-						}else {//找到临时常量
-							tempConsts.push(v);
-						}
-					}else if (v.type==Var.TYPE_FS) {
-						textures.push(v);
-					}else if (v.type==Var.TYPE_VA) {
-						buffs.push(v);
-					}else if (v.type==Var.TYPE_V) {
-						varyings.push(v);
+					addVar(v, i, startEnds, ttypePool, tempConsts);
+					if (v.component is Var) {
+						addVar(v.component as Var, i, startEnds, ttypePool, tempConsts);
 					}
 				}
 			}
 			
-			
-			if (optimizeUniform) {
+			if (uniformCounter) {
 				uniforms=optimizeVar(uniforms,uniformVars);
 			}
 			for each(v in uniforms) {
@@ -106,19 +84,19 @@ package flShader {
 					constMemLen = theConstMemLen;
 				}
 			}
-			if (programType==Context3DProgramType.FRAGMENT&&optimizeTexture) {
-				textures=optimizeVar(textures,textureVars);
+			if (programType==Context3DProgramType.FRAGMENT&&samplerCounter) {
+				samplers=optimizeVar(samplers,samplerVars);
 			}
-			if (programType==Context3DProgramType.VERTEX&&optimizeBuff) {
+			if (programType==Context3DProgramType.VERTEX&&buffCounter) {
 				buffs=optimizeVar(buffs,buffVars);
 			}
-			if (programType==Context3DProgramType.VERTEX&&optimizeVarying) {
+			if (programType==Context3DProgramType.VERTEX&&varyingCounter) {
 				varyings=optimizeVar(varyings,varyingVars);
 			}
 			
 			//optimize temp
 			for (i = 1,len=startEnds.length; i <len ;i++ ) {
-				startEnd = startEnds[i];
+				var startEnd:Array = startEnds[i];
 				var start:int = startEnd[0];
 				for (j = 0; j < i;j++ ) {
 					var startEnd2:Array = startEnds[j];
@@ -195,6 +173,29 @@ package flShader {
 			//trace("pool",constPool);
 		}
 		
+		private function addVar(v:Var,i:int,startEnds:Array,ttypePool:Array,tempConsts:Array):void {
+			if (v.type==Var.TYPE_T) {//找到所有临时变量，并找到它开始被使用和最后被使用的索引
+				var startEnd:Array = startEnds[v.index];
+				if (startEnd == null) startEnd = startEnds[v.index] = [i, i];
+				startEnd[1] = i;
+				var vs:Array = ttypePool[v.index];//把相同索引的临时变量放入数组
+				if (vs == null) vs = ttypePool[v.index] = [];
+				vs.push(v);
+			}else if (v.type==Var.TYPE_C) {//遍历常量
+				if (v.index!=-1) {//找到非临时常量使用的最大内存
+					uniforms.push(v);
+				}else {//找到临时常量
+					tempConsts.push(v);
+				}
+			}else if (v.type==Var.TYPE_FS) {
+				samplers.push(v);
+			}else if (v.type==Var.TYPE_VA) {
+				buffs.push(v);
+			}else if (v.type==Var.TYPE_V) {
+				varyings.push(v);
+			}
+		}
+		
 		public function optimizeVar(vars:Array,sourceVars:Array):Array {
 			var map:Object = { };
 			var newVars:Array = [];
@@ -245,7 +246,6 @@ package flShader {
 			var c:Var = C(uniformCounter++, len);
 			uniformVars = uniformVars || [];
 			uniformVars.push(c);
-			optimizeUniform = true;
 			return c;
 		}
 		
@@ -277,15 +277,13 @@ package flShader {
 			var va:Var = VA(buffCounter++);
 			buffVars = buffVars || [];
 			buffVars.push(va);
-			optimizeBuff = true;
 			return va;
 		}
 		
-		public function texture():Var {
-			var fs:Var = FS(textureCounter++);
-			textureVars = textureVars || [];
-			textureVars.push(fs);
-			optimizeTexture = true;
+		public function sampler():Var {
+			var fs:Var = FS(samplerCounter++);
+			samplerVars = samplerVars || [];
+			samplerVars.push(fs);
 			return fs;
 		}
 		
@@ -293,7 +291,6 @@ package flShader {
 			var v:Var = V(varyingCounter++);
 			varyingVars = varyingVars || [];
 			varyingVars.push(v);
-			optimizeVarying = true;
 			return v;
 		}
 		

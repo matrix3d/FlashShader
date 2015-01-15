@@ -1,6 +1,7 @@
 package gl3d.util 
 {
 	import flash.display.Sprite;
+	import flash.events.ContextMenuEvent;
 	import flash.events.Event;
 	import flash.events.MouseEvent;
 	import flash.geom.Rectangle;
@@ -8,6 +9,8 @@ package gl3d.util
 	import flash.text.TextField;
 	import flash.text.TextFieldAutoSize;
 	import flash.text.TextFormat;
+	import flash.ui.ContextMenu;
+	import flash.ui.ContextMenuItem;
 	import flash.utils.getTimer;
 	import gl3d.core.View3D;
 	/**
@@ -33,6 +36,27 @@ package gl3d.util
 			addChild(tf);
 			tf.autoSize = TextFieldAutoSize.LEFT;
 			addEventListener(MouseEvent.MOUSE_DOWN, mouseDown);
+			
+			var menu:ContextMenu = new ContextMenu;
+			var v:int = 0;
+			while (v<=16) {
+				var antiAliasItem:ContextMenuItem = new ContextMenuItem("antiAlias" + v);
+				antiAliasItem.addEventListener(ContextMenuEvent.MENU_ITEM_SELECT, antiAliasItem_select);
+				menu.customItems.push(antiAliasItem);
+				if (v==0) {
+					v = 1;
+				}else {
+					v *= 2;
+				}
+			}
+			contextMenu = menu;
+		}
+		
+		private function antiAliasItem_select(e:Event):void 
+		{
+			var antiAliasItem:ContextMenuItem = e.currentTarget as ContextMenuItem;
+			var v:int = int(antiAliasItem.caption.replace("antiAlias", ""));
+			view.antiAlias = v;
 		}
 
 		private function mouseDown(e:MouseEvent):void 
@@ -65,6 +89,7 @@ package gl3d.util
 				text += "num : " + view.collects.length;
 				text += "\ndraw : " + view.drawCounter
 				text += "\ntri : " + view.drawTriangleCounter;
+				text += "\nantiAlias : " + view.antiAlias;
 				var info:String =view.driverInfo;
 				var indexS:int = info.indexOf(" ");
 				if (indexS!=-1) {

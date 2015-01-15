@@ -8,14 +8,14 @@ package gl3d.shaders
 	 */
 	public class TerrainPhongFragmentShader extends PhongFragmentShader
 	{
-		public function TerrainPhongFragmentShader(material:Material) 
+		public function TerrainPhongFragmentShader(material:Material,vs:PhongVertexShader) 
 		{
-			super(material);
+			super(material,vs);
 		}
 
 		override public function getDiffColor():Var {
-			var uv:Var = V(3);
-			var scaledUV:Var = mul(V(3), 50);
+			var uv:Var = vs.uvVarying;
+			var scaledUV:Var = mul(uv, 50);
 			//repeat,miplinear
 			var flags:Array = ["repeat","linear"/*,"miplinear"*/];
 			var map:Var = tex(uv, FS(), null, flags);

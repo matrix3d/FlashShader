@@ -26,13 +26,13 @@ package gl3d.shaders
 		public var vs:FlShader;
 		public var fs:FlShader;
 		public var programSet:ProgramSet;
-		public var textureSets:Vector.<TextureSet>;
-		public var buffSets:Vector.<VertexBufferSet>;
+		public var textureSets:Array=[];
+		public var buffSets:Array;
 		public var debug:Boolean = true;
 		public function GLShader() 
 		{
-			textureSets = new Vector.<TextureSet>;
-			buffSets = new Vector.<VertexBufferSet>;
+			textureSets = [];
+			buffSets = [];
 		}
 		
 		public function getProgram(material:Material):ProgramSet {
@@ -74,6 +74,10 @@ package gl3d.shaders
 		}
 		
 		public function preUpdate(material:Material):void {
+			if (invalid) {
+				programSet = getProgram(material);
+				invalid = false;
+			}
 			var context:Context3D = material.view.context;
 			for (var i:int = 0; i < 8;i++ ) {
 				context.setTextureAt(i, null);
@@ -83,11 +87,6 @@ package gl3d.shaders
 		
 		public function update(material:Material):void 
 		{
-			if (invalid) {
-				programSet = getProgram(material);
-				invalid = false;
-			}
-			
 			if(textureSets)
 			for (var i:int = 0; i < textureSets.length;i++ ) {
 				var textureSet:TextureSet = textureSets[i];

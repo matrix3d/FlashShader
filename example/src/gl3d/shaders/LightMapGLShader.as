@@ -32,7 +32,8 @@ package gl3d.shaders
 			
 			drawable = material.node.drawable;
 			
-			textureSets= material.textureSets;
+			textureSets[0] = material.diffTexture;
+			textureSets[1] = material.lightmapTexture;
 			buffSets.length = 0;
 			buffSets[0] = drawable.pos;
 			buffSets[1] = drawable.uv;

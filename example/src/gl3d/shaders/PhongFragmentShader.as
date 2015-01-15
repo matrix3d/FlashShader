@@ -14,21 +14,25 @@ package gl3d.shaders
 	public class PhongFragmentShader extends FlShader
 	{
 		private var material:Material;
+		public var vs:PhongVertexShader;
 		public var wireframeColor:Var = uniform();
 		public var diffColor:Var = uniform();
 		public var lightColor:Var = uniform();
 		public var specular:Var = uniform();
 		public var ambientColor:Var = uniform();
 		
-		public function PhongFragmentShader(material:Material) 
+		public var diffSampler:Var = sampler();
+		public var normalmapSampler:Var = sampler();
+		public function PhongFragmentShader(material:Material,vs:PhongVertexShader) 
 		{
 			super(Context3DProgramType.FRAGMENT);
+			this.vs = vs;
 			this.material = material;
 		}
 		
 		override public function build():void {
 			if (material.wireframeAble) {
-				var tp:Var = mov(V(4));
+				var tp:Var = mov(vs.targetPositionVarying);
 				var a3:Var = smoothstep(0, fwidth(tp), tp);
 				var wireframeColor:Var = mul(sub( 1 , min(min(a3.x, a3.y), a3.z).xxx ) , this.wireframeColor);
 			}
@@ -52,15 +56,15 @@ package gl3d.shaders
 		}
 		
 		public function getDiffColor():Var {
-			if (material.textureSets.length==0) {
+			if (material.diffTexture==null) {
 				var diffColor:Var = this.diffColor;
 			}else {
 				if (!material.isDistanceField) {
-					diffColor = tex(V(3), FS(),null,["repeat","linear"]);
+					diffColor = tex(vs.uvVarying, diffSampler,null,["repeat","linear"]);
 					mul(this.diffColor.w, diffColor.w, diffColor.w);
 				}else {
 					//http://www.valvesoftware.com/publications/2007/SIGGRAPH2007_AlphaTestedMagnification.pdf
-					var distance:Var = tex(V(3),FS(),null,["repeat","linear"]).w;
+					var distance:Var = tex(vs.uvVarying,diffSampler,null,["repeat","linear"]).w;
 					var smoothing:Var = fwidth(distance);
 					var alpha:Var = sat(smoothstep(sub(0.5 , smoothing),add( 0.5 , smoothing), distance));
 					diffColor = sub(1, alpha);
@@ -81,14 +85,14 @@ package gl3d.shaders
 			var lightPower:Var = lightColor.w;
 			var specularPow:Var = specular.x;
 			
-			var normal:Var = V(1);
+			var normal:Var = vs.normVarying;
 			if (material.normalMapAble) {
-				var tangent:Var = V(4);
+				var tangent:Var = vs.tangentVarying;
 				var biTangent:Var = crs(normal, tangent);
-				var normalMap:Var = sub(mul(tex(V(3), FS(1),null,["linear"]),2),1);
+				var normalMap:Var = sub(mul(tex(vs.uvVarying, normalmapSampler,null,["linear"]),2),1);
 			}
 			
-			var l:Var = V();
+			var l:Var = vs.posLightVarying;
 			if (material.normalMapAble) {
 				var n:Var = normalMap;
 				l = local2tangent(tangent,biTangent,normal,l);
@@ -98,7 +102,7 @@ package gl3d.shaders
 			var cosTheta:Var = sat(dp3(n,l));
 			
 			if(material.specularAble){
-				var e:Var = V(2);
+				var e:Var = vs.eyeDirectionVarying;
 				if (material.normalMapAble) {
 					e = local2tangent(tangent,biTangent,normal,e);
 				}

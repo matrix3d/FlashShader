@@ -40,7 +40,7 @@ package gl3d.shaders.posts
 		
 		override public function preUpdate(material:Material):void {
 			super.preUpdate(material);
-			textureSets= material.textureSets;
+			textureSets[0] = material.diffTexture;
 			buffSets.length = 0;
 			buffSets[0] = material.node.drawable.pos;
 			buffSets[1] = material.node.drawable.uv;

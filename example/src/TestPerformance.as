@@ -26,7 +26,6 @@ package
 			teapot.material.textureSets.length = 1;*/
 			materialInstance = new InstanceMaterial;
 			materialInstance.wireframeAble = teapot.material.wireframeAble;
-			
 			materialInstance.normalMapAble = material.normalMapAble;
 		}
 		

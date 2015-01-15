@@ -29,7 +29,10 @@ package gl3d.core {
 		public var view:View3D;
 		public var camera:Camera3D;
 		public var node:Node3D;
-		public var textureSets:Vector.<TextureSet>=new Vector.<TextureSet>;
+		public var textureSets:Array = [];
+		public var diffTexture:TextureSet;
+		public var normalmapTexture:TextureSet;
+		public var lightmapTexture:TextureSet;
 		public var color:Vector.<Number> = Vector.<Number>([1, 1, 1, 1]);
 		public var alpha:Number = 1;
 		private var _wireframeAble:Boolean = false;
