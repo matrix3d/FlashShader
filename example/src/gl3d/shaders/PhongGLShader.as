@@ -68,6 +68,12 @@ package gl3d.shaders
 			if (pvs.weight.used) {
 				buffSets[pvs.weight.index] = drawable.weights;
 			}
+			if(drawable.joints&&drawable.joints.subBuffs){
+				drawable.joints.subBuffs[0][0] = pvs.joint.index;
+				drawable.joints.subBuffs[1][0] = pvs.joint2.index;
+				drawable.weights.subBuffs[0][0] = pvs.weight.index;
+				drawable.weights.subBuffs[1][0] = pvs.weight2.index;
+			}
 		}
 		
 		override public function update(material:Material):void 
@@ -94,7 +100,7 @@ package gl3d.shaders
 					context.setProgramConstantsFromMatrix(Context3DProgramType.VERTEX, pvs.perspective.index, camera.perspective, true);
 				}
 				if (pvs.lightPos.used) {
-					var lightPos:Vector3D = view.light.world.position;
+					var lightPos:Vector3D = view.lights[0].world.position;
 					lightPosVec[0] = lightPos.x;
 					lightPosVec[1] = lightPos.y;
 					lightPosVec[2] = lightPos.z;
@@ -115,8 +121,8 @@ package gl3d.shaders
 				}
 				if (material.lightAble) {
 					if(pfs.lightColor.used){
-						view.light.color[3] = material.shininess;
-						context.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, pfs.lightColor.index, view.light.color);//light color
+						view.lights[0].color[3] = material.shininess;
+						context.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, pfs.lightColor.index, view.lights[0].color);//light color
 					}
 					if(pfs.ambientColor.used){
 						context.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, pfs.ambientColor.index, material.ambient);//ambient color 环境光

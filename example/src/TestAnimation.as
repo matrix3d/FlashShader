@@ -29,7 +29,7 @@ package
 			p = new DAEParser;
 			p.load(null, b);
 			view.scene.addChild(p.root);
-			p.root.scaleX = p.root.scaleY = p.root.scaleZ = .15;
+			p.root.scaleX = p.root.scaleY = p.root.scaleZ = 0.15;
 			p.root.rotationX = -Math.PI/2 ;
 			p.root.rotationY = Math.PI;
 			materialInstance = new InstanceMaterial;

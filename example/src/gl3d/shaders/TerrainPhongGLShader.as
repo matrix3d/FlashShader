@@ -20,6 +20,7 @@ package gl3d.shaders
 		
 		override public function preUpdate(material:Material):void {
 			super.preUpdate(material);
+			textureSets[0] = material.textureSets[0];
 			textureSets[1] = material.textureSets[1];
 			textureSets[2] = material.textureSets[2];
 			textureSets[3] = material.textureSets[3];

@@ -462,6 +462,8 @@ package as3Shader {
 		public function F(data:Object, len:int = 1):Var { 
 			if (data is int||data is Number||data is uint) {
 				return createTempConst([data], len) 
+			}else if (data is Vector.<Number>&&data.length>=4) {// TODO :
+				return createTempConst([data[0],data[1],data[2],data[3]], len) 
 			}
 			return createTempConst(data, len) 
 		};

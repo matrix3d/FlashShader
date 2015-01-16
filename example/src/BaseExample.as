@@ -117,7 +117,7 @@ package
 		}
 		
 		public function initLight():void {
-			view.light.z = -450;
+			view.lights[0].z = -450;
 		}
 		public function initNode():void {
 			teapot = new Node3D;
@@ -134,7 +134,7 @@ package
 			aui.bind(material, "specularPower", AttribSeter.TYPE_NUM, new Point(1, 100));
 			aui.bind(material, "shininess", AttribSeter.TYPE_NUM, new Point(.5, 5));
 			aui.bind(view, "antiAlias", AttribSeter.TYPE_NUM, new Point(0, 16));
-			aui.bind(view.light, "color", AttribSeter.TYPE_VEC_COLOR);
+			//aui.bind(view.light, "color", AttribSeter.TYPE_VEC_COLOR);
 			aui.bind(material, "ambient", AttribSeter.TYPE_VEC_COLOR);
 			aui.bind(material, "color", AttribSeter.TYPE_VEC_COLOR);
 			aui.bind(material, "alpha", AttribSeter.TYPE_NUM, new Point(.1, 1));

@@ -3,21 +3,31 @@ package gl3d.shaders.particle
 	import flash.display3D.Context3DProgramType;
 	import as3Shader.AS3Shader;
 	import as3Shader.Var;
+	import gl3d.core.Material;
 	/**
 	 * ...
 	 * @author lizhi
 	 */
 	public class ParticleFragmentShader extends AS3Shader
 	{
-		
-		public function ParticleFragmentShader() 
+		private var material:Material;
+		private var vs:ParticleVertexShader;
+		public var diffSampler:Var = sampler();
+		public function ParticleFragmentShader(material:Material,vs:ParticleVertexShader) 
 		{
 			super(Context3DProgramType.FRAGMENT);
+			this.vs = vs;
+			this.material = material;
+			
 		}
 		override public function build():void {
-			var color:Var = V(1);
-			var tex0:Var = tex(V(), FS(), null,["linear","repeat"]);
-			mul(color,tex0, oc);
+			var color:Var = vs.colorVarying;
+			if (material.diffTexture) {
+				var tex0:Var = tex(vs.uvVarying, diffSampler, null, ["linear", "repeat"]);
+				oc = mul(color, tex0);
+			}else {
+				oc = color;
+			}
 		}
 		
 	}

@@ -68,7 +68,7 @@ package ui
 				var labelStr:String = (target + "").replace("object ","") + "." + name;
 				targets.push([target,name,type,nui]);
 				ui2target[nui] = targets[targets.length - 1];
-				new Label(hbox, 0, 0, labelStr);
+				new com.bit101.components.Label(hbox, 0, 0, labelStr);
 			}
 			
 			panel.setSize(vbox.width+20, vbox.height+50);

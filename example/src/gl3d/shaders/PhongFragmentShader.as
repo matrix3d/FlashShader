@@ -37,9 +37,14 @@ package gl3d.shaders
 				var wireframeColor:Var = mul(sub( 1 , min(min(a3.x, a3.y), a3.z).xxx ) , this.wireframeColor);
 			}
 			var diffColor:Var = getDiffColor();
-			var light:Light = material.view.light;
 			if (material.lightAble) {
-				var phongColor:Var = getPhongColor();
+				for each(var light:Light in material.view.lights) {
+					if (phongColor == null) {
+						var phongColor:Var = getPhongColor();
+					}else {
+						phongColor = add(phongColor, getPhongColor());
+					}
+				}
 				mov(diffColor.w, phongColor.w);
 				if (wireframeColor) {
 					add(wireframeColor,mul(phongColor, diffColor),oc);

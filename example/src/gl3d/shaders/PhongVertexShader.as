@@ -28,6 +28,8 @@ package gl3d.shaders
 		public var targetPosition:Var = buff();
 		public var weight:Var = buff();
 		public var joint:Var = buff();
+		public var weight2:Var = buff();
+		public var joint2:Var = buff();
 		
 		public var eyeDirectionVarying:Var = varying();
 		public var posLightVarying:Var = varying();
@@ -49,8 +51,8 @@ package gl3d.shaders
 				var xyzw:String = "xyzw";
 				for (var i:int = 0; i < material.node.skin.maxWeight; i++ ) {
 					var c:String = xyzw.charAt(i % 4);
-					var joint:Var = this.joint.c(c);
-					var value:Var = mul(weight.c(c), m44(pos, joints.c(joint)));
+					var joint:Var = i<4?this.joint.c(c):this.joint2.c(c);
+					var value:Var = mul(i<4?weight.c(c):weight2.c(c), m44(pos, joints.c(joint)));
 					if (i==0) {
 						var result:Var = value;
 					}else {

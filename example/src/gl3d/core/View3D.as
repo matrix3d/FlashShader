@@ -20,7 +20,7 @@ package gl3d.core {
 		public var context:Context3D;
 		public var scene:Node3D = new Node3D("scene");
 		public var camera:Camera3D = new Camera3D;
-		public var light:Light = new Light;
+		public var lights:Vector.<Light> = new <Light>[new Light];
 		public var fog:Fog;
 		public var invalid:Boolean = true;
 		public var collects:Vector.<Node3D> = new Vector.<Node3D>;
@@ -39,7 +39,9 @@ package gl3d.core {
 		{
 			this.agalVersion = agalVersion;
 			scene.addChild(camera);
-			scene.addChild(light);
+			for each(var light:Light in lights) {
+				scene.addChild(light);
+			}
 			if (stage) init();
 			else addEventListener(Event.ADDED_TO_STAGE, init);
 		}

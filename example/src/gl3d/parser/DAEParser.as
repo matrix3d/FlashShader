@@ -818,7 +818,6 @@ package gl3d.parser
 			//material.lightAble = false;
 			//material.wireframeAble = true;
 			target.skin = gskin;
-			target.skin.maxWeight = 3;
 			var drawable:Drawable3D = target.drawable;
 			gskin.maxWeight = 0;
 			for each(var weights:Array in skin.vertex_weights) {
@@ -839,7 +838,11 @@ package gl3d.parser
 						drawable.joints.data[index] = jointId * 4;
 					}
 				}
-			}	
+			}
+			if (gskin.maxWeight > 4) {
+				drawable.weights.subBuffs = [[0,0, VertexBufferSet.FORMATS[4]],[0,4, VertexBufferSet.FORMATS[gskin.maxWeight-4]]]
+				drawable.joints.subBuffs = [[0,0, VertexBufferSet.FORMATS[4]],[0,4, VertexBufferSet.FORMATS[gskin.maxWeight-4]]]
+			}
 		}
 		
 		/**

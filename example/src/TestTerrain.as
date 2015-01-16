@@ -65,9 +65,9 @@ package
 			view.camera.z = -40;
 			view.camera.y = 10;
 			view.camera.rotationX = 20 * Math.PI / 180;
-			view.light.y = 2000;
-			view.light.x = 0;
-			view.light.z = -1000;
+			view.lights[0].y = 2000;
+			view.lights[0].x = 0;
+			view.lights[0].z = -1000;
 			//view.light.lightPower = 2;
 			
 			[Embed(source = "assets/unityterraintexture/Cliff (Layered Rock).jpg")]var c0:Class;

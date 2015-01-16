@@ -2,45 +2,64 @@ package gl3d.shaders.particle
 {
 	import as3Shader.AS3Shader;
 	import as3Shader.Var;
+	import gl3d.core.Material;
+	import gl3d.particle.Particle;
 	/**
 	 * ...
 	 * @author lizhi
 	 */
 	public class ParticleVertexShader extends AS3Shader
 	{
+		private var material:Material;
+		public var model:Var = matrix();
+		public var view:Var = matrix();
+		public var perspective:Var = matrix();
+		public var time:Var = uniform();
 		
-		public function ParticleVertexShader() 
+		public var pos:Var = buff();
+		public var norm:Var = buff();
+		public var uv:Var = buff();
+		public var random:Var = buff();
+		public var sphereRandom:Var = buff();
+		
+		public var uvVarying:Var = varying();
+		public var colorVarying:Var = varying();
+		public function ParticleVertexShader(material:Material) 
 		{
+			this.material = material;
 			
 		}
 		
 		override public function build():void {
-			var model:Var = C();
-			var view:Var = C(4);
-			var perspective:Var = C(8,4);
-			var time:Var = mov(C(12));
-			var pos:Var = mov(VA());
-			var uv:Var = VA(1);
-			var random:Var = VA(2);
-			var sphereRandom:Var = VA(3);
+			var time:Var = mov(this.time);
+			var pos:Var = mov(this.pos);
+			if(material.diffTexture){
+				mov(uv, uvVarying);
+			}
+			var particle:Particle = material.node as Particle;
+			var timeLife:Object = getValue(particle.timeLifeMin, particle.timeLifeMax, random.x);
+			if (particle.randomTimeLife) {
+				time = frc(add(random.y,div(time,timeLife))).x;
+			}else {
+				time = frc(div(time,timeLife)).x;
+			}
 			
-			mov(uv, V());
-			
-			var time1:Var = frc(add(mul(100,random.x),mul(time.x, 1 / 10000)));//0-1;
-			var negtime1:Var = sub(1, time1);
-			
-			add(pos.xyz, mul2([3,time1.x,sphereRandom]).xyz,pos.xyz);
-			
-			//var size:Var =mul(negtime1, .2);
-			var size:Number = .2;
+			add(pos.xyz, mul2([getValue(particle.posScaleMin,particle.posScaleMax,time),time,sphereRandom]).xyz,pos.xyz);
+			var size:Object = getValue(particle.scaleMin,particle.scaleMax,time);
 			var worldPos:Var = m44(pos, model);
 			var viewPos:Var = m44(worldPos, view);
 			add(viewPos.xy, mul(sub(uv, .5), size).xy, viewPos.xy);
 			op = m44(viewPos, perspective);
 			
-			//var color:Var = mov(random);
-			//mul(color,negtime1, V(1));
-			mov([1, 1, 1, 1], V(1));
+			var color:Object = getValue(particle.colorMin,particle.colorMax,time);
+			mov(color, colorVarying);
+		}
+		
+		public function getValue(min:Object, max:Object, v:Var):Object {
+			if ((min+"") != (max+"")) {
+				return mix(mov(min), max, v);
+			}
+			return min;
 		}
 	}
 
