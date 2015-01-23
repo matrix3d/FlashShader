@@ -18,8 +18,9 @@ package gl3d.particle
 	public class Particle extends Node3D
 	{
 		public var invalid:Boolean = true;
-		public var isBillboard:Boolean = true;
-		public var shapeID:int = 0;
+		public var isBillboard:Boolean = false;
+		public var count:int = 16;
+		public var shapeID:int = 3;
 		public var randomTimeLife:Boolean = true;
 		public var timeLifeMin:Number = 10000;
 		public var timeLifeMax:Number = 10000;
@@ -28,9 +29,9 @@ package gl3d.particle
 		public var posScaleMin:Number = 3;
 		public var posScaleMax:Number = 3;
 		public var rotation:Number = 0;
-		public var uv:Vector3D;
+		public var uv:Vector3D = new Vector3D(10, 10,10,10);
 		public var colorMin:Vector.<Number>=new <Number>[1,1,1,1];
-		public var colorMax:Vector.<Number>=new <Number>[1,1,1,0];
+		public var colorMax:Vector.<Number>=new <Number>[1,1,0,0];
 		public function Particle() 
 		{
 			
@@ -41,7 +42,19 @@ package gl3d.particle
 			if (invalid) {
 				if(isBillboard){
 					var bb:Drawable3D = Meshs.billboard();
-					drawable = Meshs.mul(bb, 160);
+					drawable = Meshs.mul(bb, count);
+				}else {
+					if (shapeID==0) {
+						var shape:Drawable3D = Meshs.cube();
+					}else if (shapeID==1) {
+						shape = Meshs.teapot(2);
+					}else if (shapeID==2) {
+						shape = Meshs.plane();
+					}else {
+						shape = Meshs.sphere(10, 10);
+					}
+					drawable = Meshs.mul(shape, count);
+					drawable.randomStep = shape.pos.data.length / 3;
 				}
 				material = new Material;
 				material.color = new <Number>[1,0,0,0];

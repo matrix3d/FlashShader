@@ -23,7 +23,7 @@ package gl3d.shaders.particle
 		override public function build():void {
 			var color:Var = vs.colorVarying;
 			if (material.diffTexture) {
-				var tex0:Var = tex(vs.uvVarying, diffSampler, null, ["linear", "repeat"]);
+				var tex0:Var = tex(vs.uvVarying, diffSampler, null, ["miplinear","anisotropic16x", "repeat"]);
 				oc = mul(color, tex0);
 			}else {
 				oc = color;

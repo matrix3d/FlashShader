@@ -25,6 +25,8 @@ package gl3d.core {
 		public var ambient:Vector.<Number> = Vector.<Number>([.1, .1, .1, .1]);
 		public var specularPower:Number = 50;
 		public var shininess:Number = 1;
+		private var _toonAble:Boolean = false;
+		public var toonStep:Number = 14;
 		
 		public var view:View3D;
 		public var camera:Camera3D;
@@ -122,6 +124,17 @@ package gl3d.core {
 					destinationFactor = Context3DBlendFactor.SOURCE_ALPHA;
 					break;
 			}
+		}
+		
+		public function get toonAble():Boolean 
+		{
+			return _toonAble;
+		}
+		
+		public function set toonAble(value:Boolean):void 
+		{
+			_toonAble = value;
+			invalid = true;
 		}
 	}
 }

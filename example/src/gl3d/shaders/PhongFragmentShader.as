@@ -65,11 +65,11 @@ package gl3d.shaders
 				var diffColor:Var = this.diffColor;
 			}else {
 				if (!material.isDistanceField) {
-					diffColor = tex(vs.uvVarying, diffSampler,null,["repeat","linear"]);
+					diffColor = tex(vs.uvVarying, diffSampler,null,["repeat","anisotropic16x","miplinear"]);
 					mul(this.diffColor.w, diffColor.w, diffColor.w);
 				}else {
 					//http://www.valvesoftware.com/publications/2007/SIGGRAPH2007_AlphaTestedMagnification.pdf
-					var distance:Var = tex(vs.uvVarying,diffSampler,null,["repeat","linear"]).w;
+					var distance:Var = tex(vs.uvVarying,diffSampler,null,["repeat","anisotropic16x","miplinear"]).w;
 					var smoothing:Var = fwidth(distance);
 					var alpha:Var = sat(smoothstep(sub(0.5 , smoothing),add( 0.5 , smoothing), distance));
 					diffColor = sub(1, alpha);
@@ -94,7 +94,7 @@ package gl3d.shaders
 			if (material.normalMapAble) {
 				var tangent:Var = vs.tangentVarying;
 				var biTangent:Var = crs(normal, tangent);
-				var normalMap:Var = sub(mul(tex(vs.uvVarying, normalmapSampler,null,["linear"]),2),1);
+				var normalMap:Var = sub(mul(tex(vs.uvVarying, normalmapSampler,null,["miplinear","anisotropic16x","repeat"]),2),1);
 			}
 			
 			var l:Var = vs.posLightVarying;
@@ -105,8 +105,11 @@ package gl3d.shaders
 				n = normal;
 			}
 			var cosTheta:Var = sat(dp3(n,l));
+			if (material.toonAble) {
+				cosTheta = div(floor(add(.5,mul(material.toonStep, cosTheta))),material.toonStep);
+			}
 			
-			if(material.specularAble){
+			if(material.toonAble||material.specularAble){
 				var e:Var = vs.eyeDirectionVarying;
 				if (material.normalMapAble) {
 					e = local2tangent(tangent,biTangent,normal,e);
@@ -114,7 +117,10 @@ package gl3d.shaders
 				var r:Var = nrm(sub(mul2([2, dp3(l, n), n]), l));
 				var cosAlpha:Var = sat(dp3(e, r));
 			}
-			if (material.shininess!=1) {
+			if (material.toonAble) {
+				//lightPower = mul(sge(dp3(e, n), .5),lightPower);
+			}
+			if (material.shininess!=1||material.toonAble) {
 				if (material.specularAble) {
 					return add(ambientColor, mul2([lightColor, add(cosTheta, pow(cosAlpha, specularPow)), lightPower]));
 				}else {

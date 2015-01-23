@@ -43,7 +43,13 @@ package gl3d.util
 			shadow.draw(pen);
 			return shadow;
 		}
-		
+		public static function createXorMap(b:BitmapData):void {
+			for (var i:int = 0; i < b.height; i++){
+				for (var k:int = 0; k < b.width; k++){
+					b.setPixel(k,i, (i^k)<<16 | (i ^ k) << 8 | (i^k));
+				}
+			}
+		}
 		public static function createNormalMap(bmd:BitmapData,scale:Number=5,kUseTwoMaps:Boolean=true):BitmapData {
 			var bmd2:BitmapData = bmd.clone();
 			var valuePX:Color = new Color;

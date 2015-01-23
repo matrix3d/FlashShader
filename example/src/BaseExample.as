@@ -12,6 +12,7 @@ package
 	import flash.ui.MultitouchInputMode;
 	import flash.utils.ByteArray;
 	import flash.utils.getTimer;
+	import gl3d.ctrl.ArcBallCtrl;
 	import gl3d.ctrl.FirstPersonCtrl;
 	import gl3d.core.Material;
 	import gl3d.hlbsp.Bsp;
@@ -81,7 +82,7 @@ package
 			
 			normalMapTexture = createNormalMap();
 			
-			material.normalMapAble = true;
+			//material.normalMapAble = true;
 			material.diffTexture = texture;
 			if (material.normalMapAble) {
 				material.normalmapTexture= normalMapTexture;
@@ -133,6 +134,7 @@ package
 			//addChild(aui);
 			aui.bind(material, "specularPower", AttribSeter.TYPE_NUM, new Point(1, 100));
 			aui.bind(material, "shininess", AttribSeter.TYPE_NUM, new Point(.5, 5));
+			aui.bind(material, "toonAble", AttribSeter.TYPE_BOOL);
 			aui.bind(view, "antiAlias", AttribSeter.TYPE_NUM, new Point(0, 16));
 			//aui.bind(view.light, "color", AttribSeter.TYPE_VEC_COLOR);
 			aui.bind(material, "ambient", AttribSeter.TYPE_VEC_COLOR);
@@ -151,7 +153,9 @@ package
 			fc = new FirstPersonCtrl(view.camera, stage);
 			fc.speed = speed;
 			fc.movementFunc = movementFunc;
-			view.ctrls.push(fc);
+			
+			var ac:ArcBallCtrl = new ArcBallCtrl(view.camera, stage);
+			view.ctrls.push(ac);
 		}
 		
 		private function stage_resize(e:Event = null):void

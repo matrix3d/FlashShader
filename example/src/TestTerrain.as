@@ -6,6 +6,7 @@ package
 	import flash.events.Event;
 	import flash.events.MouseEvent;
 	import flash.geom.Vector3D;
+	import flash.system.System;
 	import flash.utils.ByteArray;
 	import gl3d.core.InstanceMaterial;
 	import gl3d.ctrl.Ctrl;
@@ -15,6 +16,7 @@ package
 	import gl3d.meshs.Meshs;
 	import gl3d.core.Node3D;
 	import gl3d.parser.DAEParser;
+	import gl3d.parser.OBJEncoder;
 	import gl3d.pick.TerrainPicking;
 	import gl3d.shaders.TerrainPhongGLShader;
 	import gl3d.core.TextureSet;
@@ -118,6 +120,8 @@ package
 			targetCube.scaleX = targetCube.scaleY = targetCube.scaleZ = .3;
 			view.scene.addChild(targetCube);
 			stage.addEventListener(MouseEvent.MOUSE_DOWN, stage_mouseDown);
+			
+			//System.setClipboard(OBJEncoder.encode(terrain.drawable));
 			
 			[Embed(source = "assets/astroBoy_walk_Max.dae", mimeType = "application/octet-stream")]var c:Class;
 			var ba:ByteArray = new c as ByteArray;
