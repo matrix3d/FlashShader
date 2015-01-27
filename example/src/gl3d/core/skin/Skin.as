@@ -12,6 +12,8 @@ package gl3d.core.skin
 		public var maxWeight:int;
 		public var joints:Vector.<Node3D> = new Vector.<Node3D>;
 		public var invBindMatrixs:Vector.<Matrix3D> = new Vector.<Matrix3D>;
+		public var useQuat:Boolean = false;
+		public var useCpu:Boolean = false;
 		public function Skin() 
 		{
 			

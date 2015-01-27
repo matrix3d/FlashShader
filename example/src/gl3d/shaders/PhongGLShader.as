@@ -48,7 +48,7 @@ package gl3d.shaders
 			buffSets.length = 0;
 			var pvs:PhongVertexShader = vs as PhongVertexShader;
 			if (pvs.pos.used) {
-				buffSets[pvs.pos.index] = drawable.pos;
+				buffSets[pvs.pos.index] = (material.node.skin&&material.node.skin.useCpu)?drawable.cpuSkinPos:drawable.pos;
 			}
 			if (pvs.norm.used) {
 				buffSets[pvs.norm.index] = drawable.norm;
@@ -63,7 +63,7 @@ package gl3d.shaders
 				buffSets[pvs.targetPosition.index] = drawable.targetPosition;
 			}
 			if (pvs.joint.used) {
-				buffSets[pvs.joint.index] = drawable.joints;
+				buffSets[pvs.joint.index] = material.node.skin.useQuat?drawable.quatJoints:drawable.joints;
 			}
 			if (pvs.weight.used) {
 				buffSets[pvs.weight.index] = drawable.weights;
@@ -71,6 +71,8 @@ package gl3d.shaders
 			if(drawable.joints&&drawable.joints.subBuffs){
 				drawable.joints.subBuffs[0][0] = pvs.joint.index;
 				drawable.joints.subBuffs[1][0] = pvs.joint2.index;
+				drawable.quatJoints.subBuffs[0][0] = pvs.joint.index;
+				drawable.quatJoints.subBuffs[1][0] = pvs.joint2.index;
 				drawable.weights.subBuffs[0][0] = pvs.weight.index;
 				drawable.weights.subBuffs[1][0] = pvs.weight2.index;
 			}
@@ -108,9 +110,14 @@ package gl3d.shaders
 				}
 				if (material.gpuSkin) {
 					var jointStart:int = pvs.joints.index;
-					for (var i:int = 0; i < node.skin.skinFrame.matrixs.length;i++ ) {
-						context.setProgramConstantsFromMatrix(Context3DProgramType.VERTEX, jointStart+i*4, node.skin.skinFrame.matrixs[i], true);
+					if(node.skin.useQuat){
+						context.setProgramConstantsFromVector(Context3DProgramType.VERTEX, jointStart, node.skin.skinFrame.quaternions);
+					}else {
+						for (var i:int = 0; i < node.skin.skinFrame.matrixs.length;i++ ) {
+							context.setProgramConstantsFromMatrix(Context3DProgramType.VERTEX, jointStart+i*4, node.skin.skinFrame.matrixs[i], true);
+						}
 					}
+					
 				}
 				
 				if(pfs.diffColor.used){

@@ -44,11 +44,11 @@ package gl3d.shaders
 				trace(this);
 				var code:String = vs.code as String;
 				trace("vcode "+vs+" numline",vs.lines.length);
-				trace(code);
+				//trace(code);
 				agalMiniAssembler.assemble(vs.programType, code);
 				code = fs.code as String;
 				trace("fcode "+fs+" numline",fs.lines.length);
-				trace(code);
+				//trace(code);
 				agalMiniAssembler.assemble(fs.programType, code);
 				trace();
 				

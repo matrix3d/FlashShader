@@ -35,7 +35,7 @@ package gl3d.core {
 			
 			// screen -> camera -> world
 			var pos:Vector3D = unprjMatrix.transformVector(prjPos);
-			
+			pos.project();// .scaleBy(1 / pos.w);
 			
 			if ( pixelPos!=null )
 				pixelPos.setTo( pos.x, pos.y, pos.z );

@@ -47,12 +47,22 @@ package gl3d.shaders
 			var norm:Var = this.norm;
 			var pos:Var = this.pos;
 			if (material.gpuSkin) {
-				joints = matrixArray(material.node.skin.joints.length);
+				if (material.node.skin.useQuat) {
+					joints = floatArray(material.node.skin.joints.length*2);
+				}else {
+					joints = matrixArray(material.node.skin.joints.length);
+				}
 				var xyzw:String = "xyzw";
 				for (var i:int = 0; i < material.node.skin.maxWeight; i++ ) {
 					var c:String = xyzw.charAt(i % 4);
-					var joint:Var = i<4?this.joint.c(c):this.joint2.c(c);
-					var value:Var = mul(i<4?weight.c(c):weight2.c(c), m44(pos, joints.c(joint)));
+					if (material.node.skin.useQuat) {
+						var joint:Var = i<4?this.joint.c(c):this.joint2.c(c);
+						var value:Var = mul(i<4?weight.c(c):weight2.c(c), q44(pos, joints.c(joint),joints.c(joint,1)));
+					}else {
+						joint = i<4?this.joint.c(c):this.joint2.c(c);
+						value = mul(i<4?weight.c(c):weight2.c(c), m44(pos, joints.c(joint)));
+					}
+					
 					if (i==0) {
 						var result:Var = value;
 					}else {
@@ -111,6 +121,18 @@ package gl3d.shaders
 			if (material.wireframeAble) {
 				mov(targetPosition,targetPositionVarying);
 			}
+		}
+		
+		//http://molecularmusings.wordpress.com/2013/05/24/a-faster-quaternion-vector-multiplication/
+		//t = 2 * cross(q.xyz, v)
+		//v' = v + q.w * t + cross(q.xyz, t)
+		public function q44(pos:Var, quas:Var, tran:Var):Var {
+			return add(q33(pos, quas), tran);
+		}
+		
+		public function q33(pos:Var, quas:Var):Var {
+			var t:Var = mul(2 , crs(quas, pos));
+			return add2([pos , mul(quas.w , t) , crs(quas, t)]);
 		}
 	}
 

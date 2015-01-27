@@ -16,6 +16,7 @@ package as3Shader {
 		public var index:int;
 		public var type:int;
 		public var component:Object;
+		public var componentOffset:int;
 		
 		public var data:Object;
 		public var constLenght:int = 1;
@@ -24,9 +25,10 @@ package as3Shader {
 			this.type = type;
 			this.index = index;
 		}
-		public function c(value:Object):Var {
+		public function c(value:Object,offset:int=0):Var {
 			var v:Var = new Var(type, index);
 			v.component = value;
+			v.componentOffset = offset;
 			v.constLenght = constLenght;
 			return v;
 		}

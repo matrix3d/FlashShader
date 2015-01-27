@@ -19,7 +19,9 @@ package gl3d.core {
 		public var lightmapUV:VertexBufferSet;
 		
 		public var joints:VertexBufferSet;
+		public var quatJoints:VertexBufferSet;
 		public var weights:VertexBufferSet;
+		public var cpuSkinPos:VertexBufferSet;
 		
 		private var _index:IndexBufferSet;
 		public var id2index:Object = { };
@@ -148,8 +150,8 @@ package gl3d.core {
 			_index = value;
 		}
 		
-		public function addVertex(posV:Array, uvV:Array,oldIndex:int=-1):int {
-			var id:String = posV + ":" + uvV;
+		public function addVertex(posV:Array, uvV:Array,oldIndex:int=-1,hashAdder:String=""):int {
+			var id:String = posV + ":" + uvV+hashAdder;
 			if (id2index[id]==null) {
 				var indexV:int = pos.data.length / 3;
 				pos.data.push(posV[0], posV[1], posV[2]);

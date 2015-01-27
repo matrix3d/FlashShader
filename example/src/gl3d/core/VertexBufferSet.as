@@ -10,7 +10,7 @@ package gl3d.core {
 		public var data32PerVertex:int;
 		public var data:Vector.<Number>;
 		private var buff:VertexBuffer3D;
-		private var invalid:Boolean = true;
+		public var invalid:Boolean = true;
 		private var context:Context3D;
 		public static var FORMATS:Array = [null, "float1", "float2", "float3", "float4"];
 		public var subBuffs:Array;

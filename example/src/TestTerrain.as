@@ -9,6 +9,7 @@ package
 	import flash.system.System;
 	import flash.utils.ByteArray;
 	import gl3d.core.InstanceMaterial;
+	import gl3d.ctrl.ArcBallCtrl;
 	import gl3d.ctrl.Ctrl;
 	import gl3d.ctrl.FirstPersonCtrl;
 	import gl3d.ctrl.FollowCtrl;
@@ -124,12 +125,13 @@ package
 			//System.setClipboard(OBJEncoder.encode(terrain.drawable));
 			
 			[Embed(source = "assets/astroBoy_walk_Max.dae", mimeType = "application/octet-stream")]var c:Class;
+			//[Embed(source = "assets/monster.dae", mimeType = "application/octet-stream")]var c:Class;
 			var ba:ByteArray = new c as ByteArray;
 			p = new DAEParser;
 			p.load(null, ba);
 			player = new Node3D;
 			player.addChild(p.root);
-			p.root.scaleX = p.root.scaleY = p.root.scaleZ = 1;
+			p.root.scaleX = p.root.scaleY = p.root.scaleZ = 1;// .005;
 			p.root.rotationX = -Math.PI/2 ;
 			p.root.rotationY = 0;// -Math.PI;
 			view.scene.addChild(player);

@@ -163,7 +163,7 @@ package
 			view.invalid = true;
 			var w:Number = stage.stageWidth;
 			var h:Number = stage.stageHeight;
-			view.camera.perspective.perspectiveFieldOfViewLH(Math.PI / 4, stage.stageWidth / stage.stageHeight, 1, 4000);
+			view.camera.perspective.perspectiveFieldOfViewLH(Math.PI / 4, stage.stageWidth / stage.stageHeight, .1, 4000);
 			if (debug) {
 				debug.width = w;
 				debug.height = h;

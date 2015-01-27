@@ -94,7 +94,7 @@ package as3Shader
 			if (v.component) {
 				if (v.component is Var) {
 					var cv:Var = v.component as Var;
-					vtxt += "["+var2String(cv)+"+"+v.index+"]";
+					vtxt += "["+var2String(cv)+"+"+(v.index+v.componentOffset)+"]";
 				}else {
 					vtxt += "." + v.component;
 				}
