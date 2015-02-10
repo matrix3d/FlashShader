@@ -23,6 +23,8 @@ package
 	import gl3d.hlbsp.BspRenderNode;
 	import gl3d.hlbsp.Movement;
 	import gl3d.hlbsp.Wad;
+	import gl3d.q3bsp.Q3BSP;
+	import gl3d.q3bsp.render.PreRender;
 	/**
 	 * ...
 	 * @author lizhi
@@ -45,7 +47,7 @@ package
 			//[Embed(source = "assets/webgl.bsp", mimeType = "application/octet-stream")]var c:Class;
 			[Embed(source = "assets/fy_iceworld.bsp", mimeType = "application/octet-stream")]var c:Class;
 			//[Embed(source = "assets/de_dust2.bsp", mimeType = "application/octet-stream")]var c:Class;
-			dobsp(new c as ByteArray);
+			//dobsp(new c as ByteArray);
 			
 			//[Embed(source = "assets/webgl.wad", mimeType = "application/octet-stream")]var tc:Class;
 			/*[Embed(source = "assets/de_vegas.wad", mimeType = "application/octet-stream")]var tc:Class;
@@ -57,7 +59,18 @@ package
 			//addChild(new Bitmap(wad.loadTexture("{webgl")));
 			
 			speed = .3;
-			movementFunc = playerMove;
+			//movementFunc = playerMove;
+			
+			[Embed(source = "assets/cityrush.bsp", mimeType = "application/octet-stream")]var q3c:Class;
+			doq3bsp(new q3c as ByteArray);
+		}
+		
+		override public function initCtrl():void 
+		{
+			fc = new FirstPersonCtrl(view.camera, stage);
+			fc.speed = speed;
+			fc.movementFunc = movementFunc;
+			view.ctrls.push(fc);
 		}
 		
 		public function playerMove(start:Vector3D, end:Vector3D):Vector3D
@@ -154,6 +167,16 @@ package
 			
 			view.camera.z = view.camera.x = view.camera.y = 0;
 			resetTexMenu();
+		}
+		
+		private function doq3bsp(b:ByteArray):void {
+			var pre:PreRender = new PreRender(new Q3BSP(b));
+			view.scene.addChild(pre.target);
+			view.camera.z = view.camera.x = view.camera.y = 0;
+			
+			pre.target.scaleX = pre.target.scaleY = pre.target.scaleZ = .1;
+			pre.target.scaleX *= -1;
+			pre.target.rotationX = -Math.PI / 2;
 		}
 		
 		private function dowad(b:ByteArray):void {

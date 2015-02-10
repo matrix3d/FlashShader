@@ -4,10 +4,15 @@ package
 	import flash.display.StageAlign;
 	import flash.display.StageScaleMode;
 	import flash.events.MouseEvent;
+	import ui.Alert;
 	import ui.Button;
+	import ui.ColorSelector;
 	import ui.Layout;
 	import ui.NumericStepper;
 	import ui.Panel;
+	import ui.tree.ObjectTreeModel;
+	import ui.tree.TreeUI;
+	import ui.tree.VSMenuTreeStyle;
 	/**
 	 * ...
 	 * @author lizhi
@@ -31,14 +36,22 @@ package
 			panel.addChild(new Button("混合模式"));
 			panel.addChild(new Button("shape"));
 			panel.addChild(new Button("time 最大 最小"));
-			panel.addChild(new Button("位置"));
-			panel.addChild(new Button("速度 半径"));
-			panel.addChild(new Button("缩放"));
-			panel.addChild(new Button("旋转"));
-			panel.addChild(new Button("uv"));
-			panel.addChild(new Button("颜色"));
+			panel.addChild(new NumericStepper("颜色"));
+			panel.addChild(new ColorSelector());
+			var tree:TreeUI = new TreeUI(new VSMenuTreeStyle);
+			tree.treeModel = new ObjectTreeModel;
+			tree.data = {a:1,b:{c:1,d:[1,2]}};
+			panel.addChild(tree);
 			
 			Layout.doVLayout(panel.children, 10, 10);
+			
+			addEventListener(MouseEvent.CLICK, click);
+		}
+		
+		private function click(e:MouseEvent):void 
+		{
+			
+			Alert.alert("123");
 		}
 		
 	}
