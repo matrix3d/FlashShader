@@ -30,8 +30,6 @@ package
 			p.load(null, b);
 			view.scene.addChild(p.root);
 			p.root.scaleX = p.root.scaleY = p.root.scaleZ = 0.15;
-			p.root.rotationX = -Math.PI/2 ;
-			p.root.rotationY = Math.PI;
 			materialInstance = new InstanceMaterial;
 			addEventListener(Event.ENTER_FRAME, enterFrame2);
 		}
@@ -57,9 +55,6 @@ package
 				clone.y = random.y * d;
 				clone.z = random.z * d;
 				
-				clone.rotationX = Math.random() * 2 * Math.PI;
-				clone.rotationY = Math.random() * 2 * Math.PI;
-				clone.rotationZ = Math.random() * 2 * Math.PI;
 				
 				changeMaterial(clone);
 				view.scene.addChild(clone);

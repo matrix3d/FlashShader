@@ -67,7 +67,7 @@ package
 		override public function initNode():void {
 			view.camera.z = -40;
 			view.camera.y = 10;
-			view.camera.rotationX = 20 * Math.PI / 180;
+			view.camera.setRotation(  20 ,0,0);
 			view.lights[0].y = 2000;
 			view.lights[0].x = 0;
 			view.lights[0].z = -1000;
@@ -132,8 +132,8 @@ package
 			player = new Node3D;
 			player.addChild(p.root);
 			p.root.scaleX = p.root.scaleY = p.root.scaleZ = 1;// .005;
-			p.root.rotationX = -Math.PI/2 ;
-			p.root.rotationY = 0;// -Math.PI;
+			p.root.setRotation( -90, 0, 0);// -Math.PI / 2 ;
+			//p.root.rotationY = 0;// -Math.PI;
 			view.scene.addChild(player);
 			addNode(30);
 		}
@@ -208,7 +208,7 @@ package
 				}
 				player.y = (terrain.picking as TerrainPicking).getHeight(player.x, player.z);
 				if (v) {
-					player.rotationY = Math.atan2( -v.z, v.x)+Math.PI/2;
+					player.setRotation(0,  Math.atan2( -v.z, v.x)*180/Math.PI+90,0);
 				}
 				var last:Node3D = player;
 				for each(var clone:Node3D in players) {
@@ -217,7 +217,7 @@ package
 					clone.x += v.x;
 					clone.z += v.z;
 					clone.y = (terrain.picking as TerrainPicking).getHeight(clone.x, clone.z);
-					clone.rotationY = Math.atan2( -v.z, v.x)+Math.PI/2;
+					clone.setRotation(0,  Math.atan2( -v.z, v.x)*180/Math.PI+90,0);
 					last = clone;
 				}
 			}

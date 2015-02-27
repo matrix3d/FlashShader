@@ -37,7 +37,7 @@ package gl3d.ctrl
 		public function FirstPersonCtrl(node:Node3D, stage:Stage)
 		{
 			position.copyFrom(node.matrix.position);
-			rotation.setTo(node.rotationX*180/Math.PI, node.rotationY*180/Math.PI, node.rotationZ*180/Math.PI);
+			rotation.copyFrom(node.getRotation());//.setTo(node.rotationX*180/Math.PI, node.rotationY*180/Math.PI, node.rotationZ*180/Math.PI);
 			this.stage = stage;
 			this.node = node;
 			stage.addEventListener(GLTouchEvent.TOUCH_BEGIN, stage_mouseDown);

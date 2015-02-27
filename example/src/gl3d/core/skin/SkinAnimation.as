@@ -40,9 +40,9 @@ package gl3d.core.skin
 					track.target.matrix = last.matrix;
 				}
 			}
-			
 			var world2local:Matrix3D = target.world2local;
 			target.skin.skinFrame.quaternions.length = 0;
+			target.skin.joints[0].updateTransforms(true);
 			for (var i:int = 0; i < target.skin.joints.length;i++ ) {
 				var joint:Node3D = target.skin.joints[i];
 				var invBindMatrix:Matrix3D = target.skin.invBindMatrixs[i];

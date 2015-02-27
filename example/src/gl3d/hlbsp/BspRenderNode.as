@@ -27,7 +27,7 @@ package gl3d.hlbsp
 		
 		override public function update(view:View3D):void 
 		{
-			world.copyFrom(_matrix);
+			world.copyFrom(matrix);
 			if (parent) {
 				world.append(parent.world);
 			}

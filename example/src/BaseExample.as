@@ -7,6 +7,7 @@ package
 	import flash.display.StageScaleMode;
 	import flash.events.Event;
 	import flash.geom.Point;
+	import flash.geom.Vector3D;
 	import flash.text.TextField;
 	import flash.ui.Multitouch;
 	import flash.ui.MultitouchInputMode;
@@ -172,11 +173,10 @@ package
 		
 		public function enterFrame(e:Event):void
 		{
-			if (view.context)
-				view.context.enableErrorChecking = true;
 			if(teapot){
 				//teapot.rotationX+=.01;
-				teapot.rotationY += .01;
+				var r:Vector3D = teapot.getRotation();
+				teapot.setRotation(r.x, r.y+1, r.z);// += .01;
 			}
 			view.updateCtrl();
 			view.render(getTimer());

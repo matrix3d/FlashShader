@@ -158,7 +158,7 @@ package
 			view.scene.addChild(bsp);
 			bsp.scaleX = bsp.scaleY = bsp.scaleZ = .1;
 			bsp.scaleX *= -1;
-			bsp.rotationX = -Math.PI / 2;
+			bsp.setRotation(90,  0,0);
 			if (ts) {
 				bsp.bsp.loadedWads = bsp.bsp.loadedWads.concat(ts);
 			}
@@ -176,7 +176,7 @@ package
 			
 			pre.target.scaleX = pre.target.scaleY = pre.target.scaleZ = .1;
 			pre.target.scaleX *= -1;
-			pre.target.rotationX = -Math.PI / 2;
+			pre.target.setRotation(  90,0,0);
 		}
 		
 		private function dowad(b:ByteArray):void {

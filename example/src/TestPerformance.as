@@ -36,9 +36,6 @@ package
 				clone.x = (Math.random() - .5) * d;
 				clone.y=(Math.random()-.5) * d;
 				clone.z = (Math.random() - .5) * d;
-				clone.rotationX = Math.random() * 2 * Math.PI;
-				clone.rotationY = Math.random() * 2 * Math.PI;
-				clone.rotationZ = Math.random() * 2 * Math.PI;
 				clone.material = materialInstance;
 				view.scene.addChild(clone);
 			}
