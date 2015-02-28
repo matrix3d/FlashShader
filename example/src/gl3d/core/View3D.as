@@ -17,7 +17,7 @@ package gl3d.core {
 	public class View3D extends Sprite
 	{
 		public var agalVersion:int;
-		public var context:Context3D;
+		public var gl3d:GL3D;
 		public var scene:Node3D = new Node3D("scene");
 		public var camera:Camera3D = new Camera3D;
 		public var lights:Vector.<Light> = new <Light>[new Light];
@@ -62,8 +62,8 @@ package gl3d.core {
 		
 		private function stage_context3dCreate(e:Event):void 
 		{
-			context = stage.stage3Ds[0].context3D;
-			driverInfo = context.driverInfo;
+			gl3d=new GL3D(stage.stage3Ds[0].context3D);
+			driverInfo = gl3d.driverInfo;
 		}
 		
 		public function updateCtrl():void {
@@ -74,8 +74,8 @@ package gl3d.core {
 		
 		public function render(time:Number=0):void {
 			this.time = time;
-			if (context) {
-				if(context.driverInfo == "Disposed"){
+			if (gl3d) {
+				if(gl3d.driverInfo == "Disposed"){
 					invalid = true;
 					//stage.stage3Ds[0].requestContext3D(Context3DRenderMode.AUTO);
 					return;
@@ -83,7 +83,7 @@ package gl3d.core {
 				if (invalid) {
 					stage3dWidth = stage.stageWidth;
 					stage3dHeight = stage.stageHeight;
-					context.configureBackBuffer(stage3dWidth, stage3dHeight, antiAlias);
+					gl3d.configureBackBuffer(stage3dWidth, stage3dHeight, antiAlias);
 				}
 				if (posts.length) {
 					var len:int = posts.length>1?2:1;
@@ -91,12 +91,12 @@ package gl3d.core {
 						if(invalid)postRTTs[i].invalid = invalid;
 						postRTTs[i].update(this);
 					}
-					context.setRenderToTexture(postRTTs[0].texture, true, antiAlias);
+					gl3d.setRenderToTexture(postRTTs[0].texture, true, antiAlias);
 				}else {
-					context.setRenderToBackBuffer();
+					gl3d.setRenderToBackBuffer();
 				}
 				invalid = false;
-				context.clear((background>>16&0xff)/0xff,(background>>8&0xff)/0xff,(background&0xff)/0xff);
+				gl3d.clear((background>>16&0xff)/0xff,(background>>8&0xff)/0xff,(background&0xff)/0xff);
 				collects.length = 0;
 				drawTriangleCounter = 0;
 				drawCounter = 0;
@@ -115,7 +115,7 @@ package gl3d.core {
 						}
 					}
 				}
-				context.present();
+				gl3d.present();
 			}
 		}
 		

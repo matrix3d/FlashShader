@@ -24,7 +24,7 @@ package
 			var cubed:Drawable3D = Meshs.cube();
 			var c:int = 4000;
 			view.antiAlias = 0;
-			material.lightAble = false;
+			//material.lightAble = false;
 			var cube:Node3D = new Node3D;
 			cube.scaleX = cube.scaleY = cube.scaleZ = .1;
 			cube.material = material;
@@ -48,9 +48,9 @@ package
 				//cube.setRotation(r.x, r.y + 1, r.z);
 				/*cube.x = cube.x;
 				cube.x = cube.x;
-				cube.x = cube.x;
-				cube.x = cube.x;
 				cube.x = cube.x;*/
+				cube.x = cube.x;
+				cube.x = cube.x;
 			}
 			super.enterFrame(e);
 		}

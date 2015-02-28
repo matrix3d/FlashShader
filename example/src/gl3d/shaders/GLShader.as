@@ -9,6 +9,7 @@ package gl3d.shaders
 	import as3Shader.AS3Shader;
 	import as3Shader.GLCodeCreator;
 	import gl3d.core.Camera3D;
+	import gl3d.core.GL3D;
 	import gl3d.core.Material;
 	import gl3d.core.Node3D;
 	import gl3d.core.ProgramSet;
@@ -78,11 +79,6 @@ package gl3d.shaders
 				programSet = getProgram(material);
 				invalid = false;
 			}
-			var context:Context3D = material.view.context;
-			for (var i:int = 0; i < 8;i++ ) {
-				context.setTextureAt(i, null);
-				context.setVertexBufferAt(i, null);
-			}
 		}
 		
 		public function update(material:Material):void 
@@ -92,24 +88,24 @@ package gl3d.shaders
 				var textureSet:TextureSet = textureSets[i];
 				if (textureSet) {
 					textureSet.update(material.view);
-					textureSet.bind(material.view.context, i);
+					textureSet.bind(material.view.gl3d, i);
 				}
 			}
 			if(buffSets)
 			for (i = 0; i < buffSets.length;i++ ) {
 				var buffSet:VertexBufferSet = buffSets[i];
 				if (buffSet) {
-					buffSet.update(material.view.context);
-					buffSet.bind(material.view.context, i);
+					buffSet.update(material.view.gl3d);
+					buffSet.bind(material.view.gl3d, i);
 				}
 			}
 			
 			if (programSet) {
-				programSet.update(material.view.context);
-				material.view.context.setProgram(programSet.program);
-				material.view.context.setDepthTest(true, material.passCompareMode);
-				material.view.context.setBlendFactors(material.sourceFactor, material.destinationFactor);
-				material.view.context.setCulling(material.culling);
+				programSet.update(material.view.gl3d);
+				material.view.gl3d.setProgram(programSet.program);
+				material.view.gl3d.setDepthTest(true, material.passCompareMode);
+				material.view.gl3d.setBlendFactors(material.sourceFactor, material.destinationFactor);
+				material.view.gl3d.setCulling(material.culling);
 			}
 		}
 	}

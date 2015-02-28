@@ -6,6 +6,7 @@ package gl3d.shaders.posts
 	import flash.geom.Vector3D;
 	import as3Shader.AS3Shader;
 	import gl3d.core.Camera3D;
+	import gl3d.core.GL3D;
 	import gl3d.core.Material;
 	import gl3d.core.Node3D;
 	import gl3d.shaders.GLShader;
@@ -49,7 +50,7 @@ package gl3d.shaders.posts
 		override public function update(material:Material):void 
 		{
 			super.update(material);
-			var context:Context3D = material.view.context;
+			var context:GL3D = material.view.gl3d;
 			if (programSet) {
 				var node:Node3D = material.node;
 				context.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, 0, Vector.<Number>([material.view.time,material.view.stage3dWidth,material.view.stage3dHeight,0]));

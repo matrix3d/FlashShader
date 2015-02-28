@@ -14,7 +14,7 @@ package gl3d.core {
 		public var invalid:Boolean = true;
 		private var data:BitmapData;
 		public var texture:TextureBase;
-		private var context:Context3D;
+		private var context:GL3D;
 		public function TextureSet(data:BitmapData=null) 
 		{
 			this.data = data;
@@ -22,7 +22,7 @@ package gl3d.core {
 		}
 		
 		public function update(view:View3D):void {
-			var context:Context3D = view.context;
+			var context:GL3D = view.gl3d;
 			if (invalid||this.context!=context) {
 				if (texture != null) texture.dispose();
 				if(data){
@@ -79,7 +79,7 @@ package gl3d.core {
 			}
 		}
 		
-		public function bind(context:Context3D, i:int):void {
+		public function bind(context:GL3D, i:int):void {
 			context.setTextureAt(i, texture);
 		}
 		

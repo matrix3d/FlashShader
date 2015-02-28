@@ -59,11 +59,11 @@ package gl3d.post
 			else throw "post texture num error";
 			node.material = material;
 			if (isEnd) {
-				view3D.context.setRenderToBackBuffer();
+				view3D.gl3d.setRenderToBackBuffer();
 			}else {
-				view3D.context.setRenderToTexture(view3D.postRTTs[1].texture,true);
+				view3D.gl3d.setRenderToTexture(view3D.postRTTs[1].texture,true);
 			}
-			view3D.context.clear();
+			view3D.gl3d.clear();
 			node.update(view3D);
 		}
 		

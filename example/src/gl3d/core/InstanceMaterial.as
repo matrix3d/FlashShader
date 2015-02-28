@@ -16,7 +16,7 @@ package gl3d.core
 		
 		override public function draw(node:Node3D, view:View3D):void 
 		{
-			var context:Context3D = view.context;
+			var context:GL3D = view.gl3d;
 			var pvs:PhongVertexShader = node.copyfrom.material.shader.vs as PhongVertexShader
 			if(pvs){
 				context.setProgramConstantsFromMatrix(Context3DProgramType.VERTEX, pvs.model.index, node.world, true);
@@ -26,9 +26,9 @@ package gl3d.core
 				
 				node = node.copyfrom || node;
 				if (wireframeAble) {
-					context.drawTriangles(node.unpackedDrawable.index.buff);
+					context.drawTrianglesInstance(node.unpackedDrawable.index.buff);
 				}else {
-					context.drawTriangles(node.drawable.index.buff);
+					context.drawTrianglesInstance(node.drawable.index.buff);
 				}
 			}
 		}
