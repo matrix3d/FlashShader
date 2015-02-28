@@ -5,6 +5,7 @@ package gl3d.shaders.particle {
 	import as3Shader.AS3Shader;
 	import gl3d.core.Camera3D;
 	import gl3d.core.Drawable3D;
+	import gl3d.core.GL3D;
 	import gl3d.core.Material;
 	import gl3d.meshs.Meshs;
 	import gl3d.core.Node3D;
@@ -58,7 +59,7 @@ package gl3d.shaders.particle {
 		override public function update(material:Material):void 
 		{
 			super.update(material);
-			var context:Context3D = material.view.context;
+			var context:GL3D = material.view.gl3d;
 			if (programSet) {
 				var view:View3D = material.view;
 				var camera:Camera3D = material.camera;
