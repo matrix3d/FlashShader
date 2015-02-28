@@ -18,7 +18,7 @@ package gl3d.ctrl
 	{
 		private var helpMatrix:Matrix3D = new Matrix3D;
 		private var keydownMap:Object = {};
-		public var rotSpeed:Number = .2;
+		public var rotSpeed:Number = .1;
 		public var speed:Number = 1;
 		public var inputSpeed:Vector3D;
 		public var rotation:Vector3D=new Vector3D;
@@ -81,12 +81,12 @@ package gl3d.ctrl
 		
 		private function stage_touchMove(e:Event):void 
 		{
-			if (GLTouchEvent.isSameTouch(nowMouseDownEvent, e)) {
+			/*if (GLTouchEvent.isSameTouch(nowMouseDownEvent, e)) {
 				stagePos = GLTouchEvent.getMousePos(e);
 				distancePos = stagePos.subtract(lastPos);
 				lastPos.setTo(stagePos.x, stagePos.y);
 				lastDistancePos.setTo(distancePos.x, distancePos.y);
-			}
+			}*/
 		}
 		
 		private function stage_mouseUp(e:Event):void
@@ -102,6 +102,13 @@ package gl3d.ctrl
 		
 		override public function update():void
 		{
+			if (isMouseDown) {
+				stagePos = new Point(stage.mouseX, stage.mouseY);
+				distancePos = stagePos.subtract(lastPos);
+				lastPos.setTo(stagePos.x, stagePos.y);
+				lastDistancePos.setTo(distancePos.x, distancePos.y);
+			}
+			
 			rotation.y = rotation.y + distancePos.x*rotSpeed;
 			rotation.x = rotation.x + distancePos.y * rotSpeed;
 			rotation.x = Math.min(Math.max( -90, rotation.x), 90);
