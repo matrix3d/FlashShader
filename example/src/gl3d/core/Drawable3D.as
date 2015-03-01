@@ -31,7 +31,7 @@ package gl3d.core {
 			
 		}
 		
-		public function update(context:GL3D):void 
+		public function update(context:GL):void 
 		{
 			/*if (pos) {
 				pos.update(context);

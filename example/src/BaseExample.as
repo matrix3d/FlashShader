@@ -175,8 +175,9 @@ package
 		{
 			if(teapot){
 				//teapot.rotationX+=.01;
-				var r:Vector3D = teapot.getRotation();
-				teapot.setRotation(r.x, r.y+1, r.z);// += .01;
+				//var r:Vector3D = teapot.getRotation();
+				teapot.matrix.appendRotation(1, Vector3D.Y_AXIS);// .setRotation(r.x, r.y + 1, r.z);// += .01;
+				teapot.updateTransforms(true);
 			}
 			view.updateCtrl();
 			view.render(getTimer());

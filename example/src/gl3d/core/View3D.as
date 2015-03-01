@@ -17,7 +17,7 @@ package gl3d.core {
 	public class View3D extends Sprite
 	{
 		public var agalVersion:int;
-		public var gl3d:GL3D;
+		public var gl3d:GL;
 		public var scene:Node3D = new Node3D("scene");
 		public var camera:Camera3D = new Camera3D;
 		public var lights:Vector.<Light> = new <Light>[new Light];
@@ -62,7 +62,7 @@ package gl3d.core {
 		
 		private function stage_context3dCreate(e:Event):void 
 		{
-			gl3d=new GL3D(stage.stage3Ds[0].context3D);
+			gl3d=new GL(stage.stage3Ds[0].context3D);
 			driverInfo = gl3d.driverInfo;
 		}
 		

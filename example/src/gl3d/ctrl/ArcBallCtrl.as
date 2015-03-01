@@ -102,7 +102,7 @@ package gl3d.ctrl
 		
 		override public function update():void
 		{
-			if (isMouseDown) {
+			if (isMouseDown&&lastPos) {
 				stagePos = new Point(stage.mouseX, stage.mouseY);
 				distancePos = stagePos.subtract(lastPos);
 				lastPos.setTo(stagePos.x, stagePos.y);

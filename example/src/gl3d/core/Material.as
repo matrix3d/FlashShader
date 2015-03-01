@@ -58,7 +58,7 @@ package gl3d.core {
 			this.camera = view.camera;
 			this.node = node;
 			if (node.drawable&&shader) {
-				var context:GL3D = view.gl3d;
+				var context:GL = view.gl3d;
 				if (wireframeAble) {
 					if (node.unpackedDrawable==null) {
 						node.unpackedDrawable = Meshs.unpack(node.drawable);

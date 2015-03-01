@@ -10,7 +10,7 @@ package gl3d.shaders.posts
 		
 		public function PostVertexShader() 
 		{
-			mov(VA(), op);
+			m44(VA(),matrix(), op);
 			mov(VA(1), V());
 		}
 		

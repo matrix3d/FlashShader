@@ -9,7 +9,7 @@ package gl3d.shaders
 	import as3Shader.AS3Shader;
 	import as3Shader.GLCodeCreator;
 	import gl3d.core.Camera3D;
-	import gl3d.core.GL3D;
+	import gl3d.core.GL;
 	import gl3d.core.Material;
 	import gl3d.core.Node3D;
 	import gl3d.core.ProgramSet;

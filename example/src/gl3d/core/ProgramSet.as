@@ -12,7 +12,7 @@ package gl3d.core {
 		private var vcode:ByteArray;
 		private var fcode:ByteArray;
 		private var invalid:Boolean = true;
-		private var context:GL3D;
+		private var context:GL;
 		public var program:Program3D;
 		public function ProgramSet(vcode:ByteArray,fcode:ByteArray) 
 		{
@@ -20,7 +20,7 @@ package gl3d.core {
 			this.vcode = vcode;
 		}
 		
-		public function update(context:GL3D):void 
+		public function update(context:GL):void 
 		{
 			if (invalid||this.context!=context) {
 				program = context.createProgram();

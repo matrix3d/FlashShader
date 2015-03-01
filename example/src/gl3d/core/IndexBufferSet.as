@@ -9,7 +9,7 @@ package gl3d.core {
 	{
 		public var data:Vector.<uint>;
 		private var invalid:Boolean = true;
-		private var context:GL3D;
+		private var context:GL;
 		public var buff:IndexBuffer3D;
 		public function IndexBufferSet(data:Vector.<uint>) 
 		{
@@ -17,7 +17,7 @@ package gl3d.core {
 			
 		}
 		
-		public function update(context:GL3D):void 
+		public function update(context:GL):void 
 		{
 			if (invalid||this.context!=context) {
 				var num:int = data.length;

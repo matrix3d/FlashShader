@@ -14,7 +14,11 @@ package gl3d.core {
 		public var invalid:Boolean = true;
 		private var data:BitmapData;
 		public var texture:TextureBase;
-		private var context:GL3D;
+		private var context:GL;
+		
+		public var needWidth:int;
+		public var needHeight:int;
+		public var needFormat:String=Context3DTextureFormat.BGRA;
 		public function TextureSet(data:BitmapData=null) 
 		{
 			this.data = data;
@@ -22,7 +26,7 @@ package gl3d.core {
 		}
 		
 		public function update(view:View3D):void {
-			var context:GL3D = view.gl3d;
+			var context:GL = view.gl3d;
 			if (invalid||this.context!=context) {
 				if (texture != null) texture.dispose();
 				if(data){
@@ -72,14 +76,14 @@ package gl3d.core {
 					tmp.dispose();
 				}else {
 					//texture = context.createTexture(1024, 1024, Context3DTextureFormat.BGRA, true);// .createTexture(1024, 1024, Context3DTextureFormat.BGRA, true);
-					texture = context.createRectangleTexture(view.stage3dWidth,view.stage3dHeight , Context3DTextureFormat.BGRA, true);
+					texture = context.createRectangleTexture(needWidth==0?view.stage3dWidth:needWidth,needHeight==0?view.stage3dHeight:needHeight , Context3DTextureFormat.BGRA, true);
 				}
 				invalid = false;
 				this.context = context;
 			}
 		}
 		
-		public function bind(context:GL3D, i:int):void {
+		public function bind(context:GL, i:int):void {
 			context.setTextureAt(i, texture);
 		}
 		

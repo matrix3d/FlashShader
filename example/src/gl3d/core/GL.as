@@ -17,7 +17,7 @@ package gl3d.core
 	 * ...
 	 * @author lizhi
 	 */
-	public class GL3D 
+	public class GL 
 	{
 		private var context:Context3D;
 		
@@ -25,7 +25,7 @@ package gl3d.core
 		public var nowBuffMaxIndex:int = 0;
 		public var lastTexMaxIndex:int = 0;
 		public var nowTexMaxIndex:int = 0;
-		public function GL3D(context:Context3D) 
+		public function GL(context:Context3D) 
 		{
 			this.context = context;
 		}
