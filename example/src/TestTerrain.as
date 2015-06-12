@@ -125,13 +125,13 @@ package
 			//System.setClipboard(OBJEncoder.encode(terrain.drawable));
 			
 			[Embed(source = "assets/astroBoy_walk_Max.dae", mimeType = "application/octet-stream")]var c:Class;
-			//[Embed(source = "assets/monster.dae", mimeType = "application/octet-stream")]var c:Class;
+			//[Embed(source = "assets/test.FBX.dae", mimeType = "application/octet-stream")]var c:Class;
 			var ba:ByteArray = new c as ByteArray;
 			p = new DAEParser;
 			p.load(null, ba);
 			player = new Node3D;
 			player.addChild(p.root);
-			p.root.scaleX = p.root.scaleY = p.root.scaleZ = 1;// .005;
+			//p.root.scaleX = p.root.scaleY = p.root.scaleZ = .05;
 			p.root.setRotation( -90, 0, 0);// -Math.PI / 2 ;
 			//p.root.rotationY = 0;// -Math.PI;
 			view.scene.addChild(player);

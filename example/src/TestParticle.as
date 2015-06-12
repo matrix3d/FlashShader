@@ -26,7 +26,7 @@ package
 		override public function initNode():void 
 		{
 			var particle:Particle = new Particle;
-			//particle.scaleX = particle.scaleY = particle.scaleZ = .5;
+			particle.scaleX = particle.scaleY = particle.scaleZ =0.5;
 			view.scene.addChild(particle);
 		}
 		

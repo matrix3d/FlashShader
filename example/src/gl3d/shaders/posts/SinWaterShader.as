@@ -17,12 +17,12 @@ package gl3d.shaders.posts
 			var offset:Array = [.2,0];
 			tex(add(offset,uv),FS(),oc,["wrap"]/*,["2d","wrap"]*/
 			
-			var time:Var = div(C().x,mov(1000));
+			var time:Var = div(C().x,mov(100));
 			var uv:Var = V();
 			var tex0:Var = FS();
-			var scale:Number = .01;
+			var scale:Number = .003;
 			
-			var offset:Var = mul(sin(add(mul(uv.yx, Math.PI * 10), time)), scale);
+			var offset:Var = mul(sin(add(mul(uv.yx, Math.PI * 50), time)), scale);
 			tex(add(offset, uv), tex0, oc);
 		}
 		

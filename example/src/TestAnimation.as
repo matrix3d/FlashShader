@@ -25,6 +25,7 @@ package
 		{
 			//[Embed(source = "assets/monster.dae", mimeType = "application/octet-stream")]var c:Class;
 			[Embed(source = "assets/astroBoy_walk_Max.dae", mimeType = "application/octet-stream")]var c:Class;
+			//[Embed(source = "assets/test.dae", mimeType = "application/octet-stream")]var c:Class;
 			var b:ByteArray = new c as ByteArray;
 			p = new DAEParser;
 			p.load(null, b);

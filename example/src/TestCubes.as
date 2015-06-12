@@ -21,12 +21,13 @@ package
 		
 		override public function initNode():void 
 		{
-			var cubed:Drawable3D = Meshs.cube();
-			var c:int = 4000;
+			var cubed:Drawable3D = Meshs.teapot();
+			var c:int = 2000;
 			view.antiAlias = 0;
 			//material.lightAble = false;
+			//material.wireframeAble = true;
 			var cube:Node3D = new Node3D;
-			cube.scaleX = cube.scaleY = cube.scaleZ = .1;
+			//cube.scaleX = cube.scaleY = cube.scaleZ = .001;
 			cube.material = material;
 			view.scene.addChild(cube);
 			cube.drawable = cubed;
@@ -49,8 +50,8 @@ package
 				/*cube.x = cube.x;
 				cube.x = cube.x;
 				cube.x = cube.x;*/
-				cube.x = cube.x;
-				cube.x = cube.x;
+				//cube.x = cube.x;
+				//cube.x = cube.x;
 			}
 			super.enterFrame(e);
 		}

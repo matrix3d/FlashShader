@@ -17,6 +17,7 @@ package gl3d.shaders
 		public var world2local:Var = matrix();
 		public var view:Var = matrix();
 		public var perspective:Var = matrix();
+		public var test:Var = matrix();
 		public var lightPos:Var = uniform();
 		public var joints:Var;
 		
@@ -85,7 +86,7 @@ package gl3d.shaders
 			
 			var worldPos:Var = m44(pos, model);
 			var viewPos:Var = m44(worldPos, view);
-			m44(viewPos, perspective, op);
+			m44(viewPos, perspective,op);
 			
 			if (material.lightAble) {
 				if(material.specularAble){
@@ -127,7 +128,7 @@ package gl3d.shaders
 		//t = 2 * cross(q.xyz, v)
 		//v' = v + q.w * t + cross(q.xyz, t)
 		public function q44(pos:Var, quas:Var, tran:Var):Var {
-			return add(q33(pos, quas), tran);
+			return add(q33(pos, mov(quas)), tran);
 		}
 		
 		public function q33(pos:Var, quas:Var):Var {

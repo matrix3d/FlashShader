@@ -37,19 +37,6 @@ package gl3d.util
 			tf.autoSize = TextFieldAutoSize.LEFT;
 			addEventListener(MouseEvent.MOUSE_DOWN, mouseDown);
 			
-			var menu:ContextMenu = new ContextMenu;
-			var v:int = 0;
-			while (v<=16) {
-				var antiAliasItem:ContextMenuItem = new ContextMenuItem("antiAlias" + v);
-				antiAliasItem.addEventListener(ContextMenuEvent.MENU_ITEM_SELECT, antiAliasItem_select);
-				menu.customItems.push(antiAliasItem);
-				if (v==0) {
-					v = 1;
-				}else {
-					v *= 2;
-				}
-			}
-			contextMenu = menu;
 		}
 		
 		private function antiAliasItem_select(e:Event):void 

@@ -1,7 +1,7 @@
 :user_configuration
 
 :: Path to Flex SDK
-set FLEX_SDK=D:\sdks\air16_sdk_win
+set FLEX_SDK=E:\sdk\air18_sdk_win
 set AUTO_INSTALL_IOS=yes
 
 :: Path to Android SDK

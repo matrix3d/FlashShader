@@ -1,1 +1,3 @@
 *.swf
+/example/obj
+/example/dist

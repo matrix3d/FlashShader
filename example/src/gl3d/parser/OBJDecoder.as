@@ -59,7 +59,8 @@ package gl3d.parser
 							currentGroup = createGroup();
 						}
 						var idata:Array = [];
-						for (var i:int = 1,len:int=data.length; i < len;i++ ) {
+						for (var i:int = 1, len:int = data.length; i < len; i++ ) {
+							if (data[i] == "") continue;
 							var inss:Array = data[i].split("/");
 							var idatap:Array = [];
 							idata.push(idatap);

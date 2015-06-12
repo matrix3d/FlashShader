@@ -83,13 +83,14 @@ package
 			
 			normalMapTexture = createNormalMap();
 			
-			//material.normalMapAble = true;
+			material.normalMapAble = true;
 			material.diffTexture = texture;
 			if (material.normalMapAble) {
 				material.normalmapTexture= normalMapTexture;
 			}
 			material.specularAble = true;
 			material.lightAble = true;
+			material.wireframeAble = true;
 			
 			initLight();
 			initNode();
@@ -108,6 +109,7 @@ package
 			//post="hdr"
 			//post="shape"
 			//post="asciiart"
+			//post = "sinwater";
 			stats = new Stats(view);
 			addChild(stats);
 		}
@@ -159,7 +161,7 @@ package
 			view.ctrls.push(ac);
 		}
 		
-		private function stage_resize(e:Event = null):void
+		protected function stage_resize(e:Event = null):void
 		{
 			view.invalid = true;
 			var w:Number = stage.stageWidth;
@@ -176,7 +178,7 @@ package
 			if(teapot){
 				//teapot.rotationX+=.01;
 				//var r:Vector3D = teapot.getRotation();
-				teapot.matrix.appendRotation(1, Vector3D.Y_AXIS);// .setRotation(r.x, r.y + 1, r.z);// += .01;
+				//teapot.matrix.appendRotation(1, Vector3D.Y_AXIS);// .setRotation(r.x, r.y + 1, r.z);// += .01;
 				teapot.updateTransforms(true);
 			}
 			view.updateCtrl();

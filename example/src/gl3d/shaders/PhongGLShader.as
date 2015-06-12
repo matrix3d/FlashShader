@@ -2,6 +2,7 @@ package gl3d.shaders
 {
 	import flash.display3D.Context3D;
 	import flash.display3D.Context3DProgramType;
+	import flash.geom.Matrix3D;
 	import flash.geom.Vector3D;
 	import as3Shader.AS3Shader;
 	import gl3d.core.Camera3D;

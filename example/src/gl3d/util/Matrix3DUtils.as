@@ -38,7 +38,7 @@ package gl3d.util
       {
          if(!out)
          {
-            var out:Vector3D = new Vector3D();
+            out = new Vector3D();
          }
          m.copyColumnTo(0,out);
          return out;
@@ -48,7 +48,7 @@ package gl3d.util
       {
          if(!out)
          {
-            var out:Vector3D = new Vector3D();
+            out = new Vector3D();
          }
          m.copyColumnTo(1,out);
          return out;
@@ -58,7 +58,7 @@ package gl3d.util
       {
          if(!out)
          {
-            var out:Vector3D = new Vector3D();
+            out = new Vector3D();
          }
          m.copyColumnTo(2,out);
          return out;
@@ -68,7 +68,7 @@ package gl3d.util
       {
          if(!out)
          {
-            var out:Vector3D = new Vector3D();
+            out = new Vector3D();
          }
          m.copyColumnTo(0,out);
          out.negate();
@@ -79,7 +79,7 @@ package gl3d.util
       {
          if(!out)
          {
-            var out:Vector3D = new Vector3D();
+            out = new Vector3D();
          }
          m.copyColumnTo(1,out);
          out.negate();
@@ -90,7 +90,7 @@ package gl3d.util
       {
          if(!out)
          {
-            var out:Vector3D = new Vector3D();
+            out = new Vector3D();
          }
          m.copyColumnTo(2,out);
          out.negate();
@@ -101,7 +101,7 @@ package gl3d.util
       {
          if(!out)
          {
-            var out:Vector3D = new Vector3D();
+            out = new Vector3D();
          }
          m.copyColumnTo(3,out);
          return out;
@@ -111,7 +111,7 @@ package gl3d.util
       {
          if(!out)
          {
-            var out:Vector3D = new Vector3D();
+            out = new Vector3D();
          }
          m.copyColumnTo(0,_right);
          m.copyColumnTo(1,_up);
@@ -147,7 +147,7 @@ package gl3d.util
          {
             if((dir.x == 0) && (Math.abs(dir.y) == 1) && (dir.z == 0))
             {
-               var up:Vector3D = Vector3D.Z_AXIS;
+               up = Vector3D.Z_AXIS;
             }
             else
             {
@@ -160,7 +160,7 @@ package gl3d.util
             _dir.x = _dir.x + (dir.x - _dir.x) * smooth;
             _dir.y = _dir.y + (dir.y - _dir.y) * smooth;
             _dir.z = _dir.z + (dir.z - _dir.z) * smooth;
-            var dir:Vector3D = _dir;
+            dir = _dir;
             getUp(m,_up);
             _up.x = _up.x + (up.x - _up.x) * smooth;
             _up.y = _up.y + (up.y - _up.y) * smooth;
@@ -191,7 +191,7 @@ package gl3d.util
             _up.x = _up.x + (normal.x - _up.x) * smooth;
             _up.y = _up.y + (normal.y - _up.y) * smooth;
             _up.z = _up.z + (normal.z - _up.z) * smooth;
-            var normal:Vector3D = _up;
+            normal = _up;
          }
          normal.normalize();
          var dir:Vector3D = Math.abs(_dir.dotProduct(normal)) == 1?getRight(m,_right):_dir;
@@ -342,7 +342,7 @@ package gl3d.util
       
       public static function getRotation(m:Matrix3D, out:Vector3D = null) : Vector3D
       {
-         var out:Vector3D = out || new Vector3D();
+         out = out || new Vector3D();
          _vector = m.decompose(Orientation3D.EULER_ANGLES)[1];
          out.x = _vector.x * _toAng;
          out.y = _vector.y * _toAng;
@@ -388,7 +388,7 @@ package gl3d.util
       {
          if(!out)
          {
-            var out:Vector3D = new Vector3D();
+            out = new Vector3D();
          }
          var x:Number = vector.x;
          var y:Number = vector.y;
@@ -404,7 +404,7 @@ package gl3d.util
       {
          if(!out)
          {
-            var out:Vector3D = new Vector3D();
+            out = new Vector3D();
          }
          var x:Number = vector.x;
          var y:Number = vector.y;
@@ -420,7 +420,7 @@ package gl3d.util
       {
          if(!out)
          {
-            var out:Matrix3D = new Matrix3D();
+            out = new Matrix3D();
          }
          out.copyFrom(m);
          out.invert();
@@ -537,7 +537,7 @@ package gl3d.util
          var offsZ:* = NaN;
          if(out == null)
          {
-            var out:Matrix3D = new Matrix3D();
+            out = new Matrix3D();
          }
          scaleX = 2 / (right - left);
          scaleY = 2 / (top - bottom);

@@ -27,6 +27,9 @@ package as3Shader {
 		}
 		public function c(value:Object,offset:int=0):Var {
 			var v:Var = new Var(type, index);
+			if (component) {
+				throw "error";
+			}
 			v.component = value;
 			v.componentOffset = offset;
 			v.constLenght = constLenght;

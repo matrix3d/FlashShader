@@ -21,7 +21,7 @@ package as3Shader
 			}else {
 				programTypeName = "f";
 			}
-			var txt:String = "void main(void){\n";
+			var txt:String = "void main(){\n";
 			for (var i:int = 0; i < lines.length;i++ ) {
 				var log:Array = logs[i];
 				if (log) {
@@ -38,7 +38,7 @@ package as3Shader
 				if (line.flag) {
 					txt += ",<" + line.flag+">";
 				}
-				txt += ")";
+				txt += ");";
 				txt += "\n"
 			}
 			log = logs[i];
@@ -95,7 +95,7 @@ package as3Shader
 			if (v.component) {
 				if (v.component is Var) {
 					var cv:Var = v.component as Var;
-					vtxt += "["+var2String(cv)+"+"+cv.offset+"]";
+					vtxt += "["+var2String(cv)+"+"+cv.componentOffset+"]";
 				}else {
 					vtxt += "." + v.component;
 				}

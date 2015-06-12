@@ -78,6 +78,7 @@ package as3Shader
 		}
 		
 		private function var2String(v:Var):String {
+			
 			var vtxt:String = var2StringNoIndex(v);
 			if (v.component && v.component is Var) {
 				

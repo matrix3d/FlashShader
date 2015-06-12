@@ -151,7 +151,7 @@ package gl3d.core {
       {
          if(out == null)
          {
-            var out:Vector3D = new Vector3D();
+            out = new Vector3D();
          }
          out = Matrix3DUtils.getRotation(local?this._matrix:this.world,out);
          return out;
