@@ -98,17 +98,17 @@ package gl3d.shaders
 					mov(eyeDirection, eyeDirectionVarying);
 				}
 				if (material.normalMapAble) {
-					var posLight:Var = nrm(m33(sub(lightPos, worldPos),world2local));
+					var posLight:Var = nrm(m33(sub(m44(mov(lightPos),view), viewPos),world2local));
 				}else {
-					posLight = nrm(sub(lightPos, worldPos));
+					posLight = nrm(sub(m44(mov(lightPos),view), viewPos));
 				}
 				mov(posLight, posLightVarying);
 				
 				if (material.normalMapAble) {
-					mov(norm, normVarying);
+					mov(nrm(m33(m33(m33(norm, model),view),world2local)),normVarying);
 				}else {
-					var modelNormal:Var = nrm(m33(norm, model));
-					mov(modelNormal, normVarying);
+					var viewNormal:Var = nrm(m33(m33(norm, model),view));
+					mov(viewNormal, normVarying);
 				}
 				
 				if (material.normalMapAble) {

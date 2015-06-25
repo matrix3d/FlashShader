@@ -118,7 +118,7 @@ package gl3d.shaders
 				var cosAlpha:Var = sat(dp3(e, r));
 			}
 			if (material.toonAble) {
-				//lightPower = mul(sge(dp3(e, n), .5),lightPower);
+				lightPower = mul(sge(dp3(e, n), .5),lightPower);
 			}
 			if (material.shininess!=1||material.toonAble) {
 				if (material.specularAble) {

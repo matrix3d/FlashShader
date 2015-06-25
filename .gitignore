@@ -1,3 +1,6 @@
 *.swf
 /example/obj
 /example/dist
+example/obj/FlashShaderConfig.xml
+example/obj/FlashShaderConfig.old
+example/obj/FlashShaderConfig.xml

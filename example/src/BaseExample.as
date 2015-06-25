@@ -6,6 +6,7 @@ package
 	import flash.display.StageAlign;
 	import flash.display.StageScaleMode;
 	import flash.events.Event;
+	import flash.events.MouseEvent;
 	import flash.geom.Point;
 	import flash.geom.Vector3D;
 	import flash.text.TextField;
@@ -23,6 +24,7 @@ package
 	import gl3d.meshs.Meshs;
 	import gl3d.core.Node3D;
 	import gl3d.parser.DAEParser;
+	import gl3d.pick.AS3Picking;
 	import gl3d.post.PostEffect;
 	import gl3d.shaders.posts.AsciiArtShader;
 	import gl3d.shaders.posts.FlowerShader;
@@ -83,14 +85,16 @@ package
 			
 			normalMapTexture = createNormalMap();
 			
-			material.normalMapAble = true;
+			material.normalMapAble = false;
+			material.specularPower = 100;
+			material.specularAble = true;
+			material.lightAble = true;
+			//material.wireframeAble = true;
+			material.toonAble = false;
 			material.diffTexture = texture;
 			if (material.normalMapAble) {
 				material.normalmapTexture= normalMapTexture;
 			}
-			material.specularAble = true;
-			material.lightAble = true;
-			material.wireframeAble = true;
 			
 			initLight();
 			initNode();
@@ -131,6 +135,19 @@ package
 			view.scene.addChild(teapot);
 			teapot.scaleX = teapot.scaleY = teapot.scaleZ = 1;
 			view.background = 0xffffff;
+			teapot.picking = new AS3Picking();
+			stage.addEventListener(MouseEvent.MOUSE_DOWN, stage_mouseDown);
+		}
+		
+		private function stage_mouseDown(e:MouseEvent):void 
+		{
+			var rayOrigin:Vector3D = new Vector3D;
+			var rayDirection:Vector3D = new Vector3D;
+			var pix:Vector3D = new Vector3D;
+			view.camera.computePickRayDirectionMouse(mouseX, mouseY, stage.stageWidth, stage.stageHeight, rayOrigin, rayDirection);
+			if (teapot.rayMeshTest(rayOrigin, rayDirection,pix)) {
+				trace("test");
+			}
 		}
 		
 		public function initUI():void {
@@ -178,7 +195,7 @@ package
 			if(teapot){
 				//teapot.rotationX+=.01;
 				//var r:Vector3D = teapot.getRotation();
-				//teapot.matrix.appendRotation(1, Vector3D.Y_AXIS);// .setRotation(r.x, r.y + 1, r.z);// += .01;
+				teapot.matrix.appendRotation(1, Vector3D.Y_AXIS);// .setRotation(r.x, r.y + 1, r.z);// += .01;
 				teapot.updateTransforms(true);
 			}
 			view.updateCtrl();
