@@ -14,6 +14,8 @@ package gl3d.shaders
 	public class PhongFragmentShader extends AS3Shader
 	{
 		private var material:Material;
+		private var e:Var;
+		private var n:Var;
 		public var vs:PhongVertexShader;
 		public var wireframeColor:Var = uniform();
 		public var diffColor:Var = uniform();
@@ -23,6 +25,7 @@ package gl3d.shaders
 		
 		public var diffSampler:Var = sampler();
 		public var normalmapSampler:Var = sampler();
+		public var reflectSampler:Var = sampler();
 		public function PhongFragmentShader(material:Material,vs:PhongVertexShader) 
 		{
 			super(Context3DProgramType.FRAGMENT);
@@ -45,19 +48,25 @@ package gl3d.shaders
 						phongColor = add(phongColor, getPhongColor());
 					}
 				}
+				if (material.toonAble) {
+					phongColor = div(floor(add(.5,mul(material.toonStep, phongColor))),material.toonStep);
+				}
 				mov(diffColor.w, phongColor.w);
 				if (wireframeColor) {
-					add(wireframeColor,mul(phongColor, diffColor),oc);
+					add(wireframeColor,mul(phongColor, diffColor),diffColor);
 				}else {
-					mul(phongColor, diffColor, oc);
+					mul(phongColor, diffColor, diffColor);
 				}
 			}else {
 				if (wireframeColor) {
-					add(diffColor, wireframeColor, oc);
-				}else {
-					mov(diffColor,oc);
+					add(diffColor, wireframeColor, diffColor);
 				}
 			}
+			if (material.reflectTexture) {
+				var refc:Var = mul(.3,tex(sub(mul2([2, dp3(e, n), n]), e), reflectSampler, null, ["anisotropic16x", "miplinear", "cube"]));
+				add(diffColor.xyz,refc.xyz,diffColor.xyz);
+			}
+			mov(diffColor, oc);
 		}
 		
 		public function getDiffColor():Var {
@@ -99,28 +108,21 @@ package gl3d.shaders
 			
 			var l:Var = vs.posLightVarying;
 			if (material.normalMapAble) {
-				var n:Var = normalMap;
+				n = normalMap;
 				l = local2tangent(tangent,biTangent,normal,l);
 			}else {
 				n = normal;
 			}
 			var cosTheta:Var = sat(dp3(n,l));
-			if (material.toonAble) {
-				cosTheta = div(floor(add(.5,mul(material.toonStep, cosTheta))),material.toonStep);
-			}
-			
-			if(material.toonAble||material.specularAble){
-				var e:Var = vs.eyeDirectionVarying;
+			if(material.specularAble||material.reflectTexture){
+				e = vs.eyeDirectionVarying;
 				if (material.normalMapAble) {
 					e = local2tangent(tangent,biTangent,normal,e);
 				}
 				var r:Var = nrm(sub(mul2([2, dp3(l, n), n]), l));
 				var cosAlpha:Var = sat(dp3(e, r));
 			}
-			if (material.toonAble) {
-				lightPower = mul(sge(dp3(e, n), .5),lightPower);
-			}
-			if (material.shininess!=1||material.toonAble) {
+			if (material.shininess!=1) {
 				if (material.specularAble) {
 					return add(ambientColor, mul2([lightColor, add(cosTheta, pow(cosAlpha, specularPow)), lightPower]));
 				}else {

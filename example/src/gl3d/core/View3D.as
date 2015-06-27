@@ -4,6 +4,7 @@ package gl3d.core {
 	import flash.display3D.Context3DBlendFactor;
 	import flash.display3D.Context3DProfile;
 	import flash.display3D.Context3DRenderMode;
+	import flash.display3D.Context3DTextureFormat;
 	import flash.display3D.Context3DTriangleFace;
 	import flash.events.ErrorEvent;
 	import flash.events.Event;
@@ -26,7 +27,7 @@ package gl3d.core {
 		public var collects:Vector.<Node3D> = new Vector.<Node3D>;
 		public var ctrls:Vector.<Ctrl> = new Vector.<Ctrl>;
 		public var posts:Vector.<PostEffect> = new Vector.<PostEffect>;
-		public var postRTTs:Vector.<TextureSet> = Vector.<TextureSet>([new TextureSet, new TextureSet]);
+		public var postRTTs:Vector.<TextureSet> = Vector.<TextureSet>([new TextureSet(null,true), new TextureSet(null,true)]);
 		private var _antiAlias:int = 2;
 		public var stage3dWidth:Number = 0;
 		public var stage3dHeight:Number = 0;
@@ -88,8 +89,11 @@ package gl3d.core {
 				if (posts.length) {
 					var len:int = posts.length>1?2:1;
 					for (var i:int = 0; i < len; i++ ) {
-						if(invalid)postRTTs[i].invalid = invalid;
-						postRTTs[i].update(this);
+						if (invalid) {
+							postRTTs[i].update(this);
+							postRTTs[i].texture = gl3d.createRectangleTexture(stage3dWidth, stage3dHeight,Context3DTextureFormat.BGRA, true);
+							postRTTs[i].invalid = false;
+						}
 					}
 					gl3d.setRenderToTexture(postRTTs[0].texture, true, antiAlias);
 				}else {

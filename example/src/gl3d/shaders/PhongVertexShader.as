@@ -89,7 +89,7 @@ package gl3d.shaders
 			m44(viewPos, perspective,op);
 			
 			if (material.lightAble) {
-				if(material.specularAble){
+				if(material.specularAble||material.reflectTexture){
 					if (material.normalMapAble) {
 						var eyeDirection:Var = nrm(m33(neg(viewPos),world2local));
 					}else {

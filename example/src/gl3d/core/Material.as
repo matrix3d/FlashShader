@@ -26,7 +26,7 @@ package gl3d.core {
 		public var specularPower:Number = 50;
 		public var shininess:Number = 1;
 		private var _toonAble:Boolean = false;
-		public var toonStep:Number = 14;
+		public var toonStep:Number = 2;
 		
 		public var view:View3D;
 		public var camera:Camera3D;
@@ -35,6 +35,7 @@ package gl3d.core {
 		public var diffTexture:TextureSet;
 		public var normalmapTexture:TextureSet;
 		public var lightmapTexture:TextureSet;
+		public var reflectTexture:TextureSet;
 		public var color:Vector.<Number> = Vector.<Number>([1, 1, 1, 1]);
 		public var alpha:Number = 1;
 		private var _wireframeAble:Boolean = false;
@@ -48,9 +49,9 @@ package gl3d.core {
 		public var destinationFactor:String = Context3DBlendFactor.ZERO;
 		public var passCompareMode:String = Context3DCompareMode.LESS;
 		public var culling:String = Context3DTriangleFace.FRONT;
-		public function Material() 
+		public function Material(shader:GLShader=null) 
 		{
-			shader = new PhongGLShader();
+			this.shader = shader||new PhongGLShader();
 		}
 		
 		public function draw(node:Node3D,view:View3D):void {
@@ -66,11 +67,11 @@ package gl3d.core {
 					node.unpackedDrawable.update(context);
 				}
 				node.drawable.update(context);
-				if (textureSets) {
+				/*if (textureSets) {
 					for each(var textureSet:TextureSet in textureSets) {
 						textureSet.update(view);
 					}
-				}
+				}*/
 				if (invalid) {
 					shader.invalid = true;
 					invalid = false;

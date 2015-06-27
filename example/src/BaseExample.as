@@ -5,6 +5,8 @@ package
 	import flash.display.Sprite;
 	import flash.display.StageAlign;
 	import flash.display.StageScaleMode;
+	import flash.display3D.Context3DCompareMode;
+	import flash.display3D.Context3DTriangleFace;
 	import flash.events.Event;
 	import flash.events.MouseEvent;
 	import flash.geom.Point;
@@ -38,6 +40,7 @@ package
 	import gl3d.shaders.posts.TileableWaterCausticShader;
 	import gl3d.core.TextureSet;
 	import gl3d.core.View3D;
+	import gl3d.shaders.SkyBoxGLShader;
 	import gl3d.util.Stats;
 	import gl3d.util.Utils;
 	import ui.AttribSeter;
@@ -57,7 +60,9 @@ package
 		private var _useTexture:Boolean = true;
 		private var texture:TextureSet;
 		private var normalMapTexture:TextureSet;
+		private var skyBoxTexture:TextureSet;
 		private var debug:TextField;
+		private var bmd:BitmapData;
 		public var stats:Stats;
 		public var teapot:Node3D;
 		public var material:Material = new Material;
@@ -79,22 +84,40 @@ package
 			addChild(view);
 			view.camera.z = -10;
 			
-			var bmd:BitmapData = new BitmapData(128, 128, false, 0xff0000);
+			[Embed(source = "assets/skybox/px.jpg")]var pxc:Class;
+			[Embed(source = "assets/skybox/nx.jpg")]var nxc:Class;
+			[Embed(source = "assets/skybox/py.jpg")]var pyc:Class;
+			[Embed(source = "assets/skybox/ny.jpg")]var nyc:Class;
+			[Embed(source = "assets/skybox/pz.jpg")]var pzc:Class;
+			[Embed(source = "assets/skybox/nz.jpg")]var nzc:Class;
+			var bmds:Vector.<BitmapData> = new <BitmapData>[
+			(new pxc as Bitmap).bitmapData,
+			(new nxc as Bitmap).bitmapData,
+			(new pyc as Bitmap).bitmapData,
+			(new nyc as Bitmap).bitmapData,
+			(new pzc as Bitmap).bitmapData,
+			(new nzc as Bitmap).bitmapData
+			];
+			skyBoxTexture = new TextureSet(bmd, false, true);
+			skyBoxTexture.datas = bmds;
+			
+			bmd = new BitmapData(128, 128, false, 0xff0000);
 			bmd.perlinNoise(30, 30, 2, 1, true, true);
 			texture = new TextureSet(bmd);
 			
 			normalMapTexture = createNormalMap();
-			
+			material.culling =  Context3DTriangleFace.NONE;
 			material.normalMapAble = false;
-			material.specularPower = 100;
+			material.specularPower = 10;
 			material.specularAble = true;
 			material.lightAble = true;
-			//material.wireframeAble = true;
+			material.wireframeAble = false;
 			material.toonAble = false;
 			material.diffTexture = texture;
 			if (material.normalMapAble) {
 				material.normalmapTexture= normalMapTexture;
 			}
+			material.reflectTexture = skyBoxTexture;
 			
 			initLight();
 			initNode();
@@ -120,7 +143,7 @@ package
 		
 		public function createNormalMap():TextureSet {
 			var bmd:BitmapData = new BitmapData(512, 512, false, 0);
-			bmd.perlinNoise(50, 50, 4, 1,true,true);
+			bmd.perlinNoise(150, 150, 4, 1,true,true);
 			return new TextureSet(Utils.createNormalMap(bmd));
 		}
 		
@@ -128,9 +151,20 @@ package
 			view.lights[0].z = -450;
 		}
 		public function initNode():void {
+			//skybox
+			var skybox:Node3D = new Node3D;
+			skybox.material = new Material(new SkyBoxGLShader);
+			skybox.material.diffTexture = skyBoxTexture
+			skybox.material.specularPower = 10;
+			skybox.material.color = new <Number>[.5,.5,.5,.5];
+			skybox.material.culling = Context3DTriangleFace.BACK;
+			skybox.drawable = Meshs.cube(200,200,200);
+			view.scene.addChild(skybox);
+			
+			
 			teapot = new Node3D;
 			teapot.material = material;
-			teapot.drawable = Meshs.teapot();
+			teapot.drawable = Meshs.teapot(10);
 			//teapot.drawable = Meshs.cube(4, 4,4);
 			view.scene.addChild(teapot);
 			teapot.scaleX = teapot.scaleY = teapot.scaleZ = 1;
@@ -195,8 +229,8 @@ package
 			if(teapot){
 				//teapot.rotationX+=.01;
 				//var r:Vector3D = teapot.getRotation();
-				teapot.matrix.appendRotation(1, Vector3D.Y_AXIS);// .setRotation(r.x, r.y + 1, r.z);// += .01;
-				teapot.updateTransforms(true);
+				//teapot.matrix.appendRotation(1, Vector3D.Y_AXIS);// .setRotation(r.x, r.y + 1, r.z);// += .01;
+				//teapot.updateTransforms(true);
 			}
 			view.updateCtrl();
 			view.render(getTimer());

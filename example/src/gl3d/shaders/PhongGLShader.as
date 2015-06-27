@@ -47,6 +47,9 @@ package gl3d.shaders
 			if (fvs.normalmapSampler.used) {
 				textureSets[fvs.normalmapSampler.index] = material.normalmapTexture;
 			}
+			if (fvs.reflectSampler.used) {
+				textureSets[fvs.reflectSampler.index] = material.reflectTexture;
+			}
 			buffSets.length = 0;
 			var pvs:PhongVertexShader = vs as PhongVertexShader;
 			if (pvs.pos.used) {
