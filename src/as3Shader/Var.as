@@ -28,7 +28,17 @@ package as3Shader {
 		public function c(value:Object,offset:int=0):Var {
 			var v:Var = new Var(type, index);
 			if (component) {
-				throw "error";
+				if (component is String&&value is String) {
+					var v0:String = value as String;
+					var v1:String = component as String;
+					var value2:String = "";
+					for (var i:int = 0; i < v0.length;i++ ) {
+						value2 += v1.charAt((v0.charCodeAt(i)-"x".charCodeAt(0))%v1.length);
+					}
+					value = value2;
+				}else {
+					throw "error";
+				}
 			}
 			v.component = value;
 			v.componentOffset = offset;

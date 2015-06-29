@@ -71,7 +71,7 @@ package gl3d.shaders
 		
 		public function getDiffColor():Var {
 			if (material.diffTexture==null) {
-				var diffColor:Var = this.diffColor;
+				var diffColor:Var = mov(this.diffColor);
 			}else {
 				if (!material.isDistanceField) {
 					diffColor = tex(vs.uvVarying, diffSampler,null,["repeat","anisotropic16x","miplinear"]);

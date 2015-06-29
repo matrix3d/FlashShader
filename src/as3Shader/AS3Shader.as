@@ -13,6 +13,7 @@ package as3Shader {
 		public var lines:Array = [];
 		public var logs:Object = { };
 		private var tempCounter:int = 0;
+		private var np:NativeOp;
 		
 		private var uniformCounter:int = 0;
 		private var samplerCounter:int = 0;
@@ -37,6 +38,7 @@ package as3Shader {
 		{
 			this.creator=creator||new AGALCodeCreator;
 			this.programType = programType;
+			np = new NativeOp(this);
 		}
 		
 		public function clear():void {
@@ -346,8 +348,9 @@ package as3Shader {
 				var bv:Var=object2Var(b)
 				line.push(bv);
 			}
-			if (av&&bv&&av.type==Var.TYPE_C&&bv.type==Var.TYPE_C) {
-				throw "can not all the a,b type const"
+			if (av && bv && av.type == Var.TYPE_C && bv.type == Var.TYPE_C) {
+				return np.doop(op,av,bv);
+				//throw "can not all the a,b type const"
 			}
 			/*if (c==null) {
 				throw "no target"

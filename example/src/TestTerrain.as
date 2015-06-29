@@ -107,6 +107,7 @@ package
 			material.normalMapAble = false;
 			material.textureSets = [texture, getTerrainTexture(c0), getTerrainTexture(c1), getTerrainTexture(c2), getTerrainTexture(c3)];
 			material.shader = new TerrainPhongGLShader();
+			material.reflectTexture = null;
 			
 			terrain = new Node3D;
 			terrain.material = material;
