@@ -5,8 +5,10 @@ package gl3d.shaders
 	import gl3d.core.Camera3D;
 	import gl3d.core.Drawable3D;
 	import gl3d.core.GL;
+	import gl3d.core.shaders.GLAS3Shader;
 	import gl3d.core.Material;
 	import gl3d.core.Node3D;
+	import gl3d.core.shaders.GLShader;
 	import gl3d.core.TextureSet;
 	import gl3d.core.View3D;
 	/**
@@ -50,11 +52,11 @@ package gl3d.shaders
 			}
 		}
 		
-		override public function getVertexShader(material:Material):AS3Shader {
+		override public function getVertexShader(material:Material):GLAS3Shader {
 			return new DeferredVertexShader(material);
 		}
 		
-		override public function getFragmentShader(material:Material):AS3Shader {
+		override public function getFragmentShader(material:Material):GLAS3Shader {
 			return new DeferredFragmentShader(material);
 		}
 		
@@ -65,8 +67,9 @@ import as3Shader.AS3Shader;
 import as3Shader.Var;
 import flash.display3D.Context3DProgramType;
 import gl3d.core.Material;
+import gl3d.core.shaders.GLAS3Shader;
 
-class DeferredVertexShader extends AS3Shader {
+class DeferredVertexShader extends GLAS3Shader {
 	private var m:Material;
 	public function DeferredVertexShader(m:Material) 
 	{
@@ -92,7 +95,7 @@ class DeferredVertexShader extends AS3Shader {
 		mov(uv, V());
 	}
 }
-class DeferredFragmentShader extends AS3Shader {
+class DeferredFragmentShader extends GLAS3Shader {
 	private var m:Material;
 	public function DeferredFragmentShader(m:Material) 
 	{

@@ -2,11 +2,12 @@ package gl3d.shaders
 {
 	import as3Shader.AS3Shader;
 	import as3Shader.Var;
+	import gl3d.core.shaders.GLAS3Shader;
 	/**
 	 * ...
 	 * @author lizhi
 	 */
-	public class SkyBoxVertexShader extends AS3Shader
+	public class SkyBoxVertexShader extends GLAS3Shader
 	{
 		public var dir:Var;
 		public var pos:Var;
@@ -16,7 +17,7 @@ package gl3d.shaders
 		public var camPos:Var;
 		public function SkyBoxVertexShader() 
 		{
-			pos = buff();
+			pos = buffPos();
 			m = matrix();
 			v = matrix();
 			p = matrix();

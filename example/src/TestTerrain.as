@@ -105,7 +105,8 @@ package
 			//material.color = Vector.<Number>([.6, .6, .6, 1]);
 			material.shininess = 1.5;
 			material.normalMapAble = false;
-			material.textureSets = [texture, getTerrainTexture(c0), getTerrainTexture(c1), getTerrainTexture(c2), getTerrainTexture(c3)];
+			material.diffTexture = texture;
+			material.terrainTextureSets = [getTerrainTexture(c0), getTerrainTexture(c1), getTerrainTexture(c2), getTerrainTexture(c3)];
 			material.shader = new TerrainPhongGLShader();
 			material.reflectTexture = null;
 			

@@ -9,7 +9,7 @@ package gl3d.core {
 	import as3Shader.AS3Shader;
 	import gl3d.core.skin.Skin;
 	import gl3d.meshs.Meshs;
-	import gl3d.shaders.GLShader;
+	import gl3d.core.shaders.GLShader;
 	import gl3d.shaders.PhongGLShader;
 	/**
 	 * ...
@@ -31,11 +31,12 @@ package gl3d.core {
 		public var view:View3D;
 		public var camera:Camera3D;
 		public var node:Node3D;
-		public var textureSets:Array = [];
+		//
 		public var diffTexture:TextureSet;
 		public var normalmapTexture:TextureSet;
 		public var lightmapTexture:TextureSet;
 		public var reflectTexture:TextureSet;
+		public var terrainTextureSets:Array = [];
 		public var color:Vector.<Number> = Vector.<Number>([1, 1, 1, 1]);
 		public var alpha:Number = 1;
 		private var _wireframeAble:Boolean = false;

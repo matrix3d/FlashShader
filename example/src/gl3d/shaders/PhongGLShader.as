@@ -8,6 +8,8 @@ package gl3d.shaders
 	import gl3d.core.Camera3D;
 	import gl3d.core.Drawable3D;
 	import gl3d.core.GL;
+	import gl3d.core.shaders.GLAS3Shader;
+	import gl3d.core.shaders.GLShader;
 	import gl3d.core.Material;
 	import gl3d.core.Node3D;
 	import gl3d.core.TextureSet;
@@ -26,11 +28,11 @@ package gl3d.shaders
 		{
 		}
 		
-		override public function getVertexShader(material:Material):AS3Shader {
+		override public function getVertexShader(material:Material):GLAS3Shader {
 			return new PhongVertexShader(material);
 		}
 		
-		override public function getFragmentShader(material:Material):AS3Shader {
+		override public function getFragmentShader(material:Material):GLAS3Shader {
 			return new PhongFragmentShader(material,vs as PhongVertexShader);
 		}
 		

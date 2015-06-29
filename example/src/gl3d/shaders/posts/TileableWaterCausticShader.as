@@ -3,11 +3,12 @@ package gl3d.shaders.posts
 	import flash.display3D.Context3DProgramType;
 	import as3Shader.AS3Shader;
 	import as3Shader.Var;
+	import gl3d.core.shaders.GLAS3Shader;
 	/**
 	 * ...
 	 * @author lizhi
 	 */
-	public class TileableWaterCausticShader extends AS3Shader
+	public class TileableWaterCausticShader extends GLAS3Shader
 	{
 		
 		public function TileableWaterCausticShader() 

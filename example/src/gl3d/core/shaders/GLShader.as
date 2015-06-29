@@ -1,4 +1,4 @@
-package gl3d.shaders 
+package gl3d.core.shaders 
 {
 	import com.adobe.utils.AGALMiniAssembler;
 	import flash.display3D.Context3D;
@@ -10,6 +10,7 @@ package gl3d.shaders
 	import as3Shader.GLCodeCreator;
 	import gl3d.core.Camera3D;
 	import gl3d.core.GL;
+	import gl3d.core.shaders.GLAS3Shader;
 	import gl3d.core.Material;
 	import gl3d.core.Node3D;
 	import gl3d.core.ProgramSet;
@@ -24,8 +25,8 @@ package gl3d.shaders
 	public class GLShader 
 	{
 		public var invalid:Boolean = true;
-		public var vs:AS3Shader;
-		public var fs:AS3Shader;
+		public var vs:GLAS3Shader;
+		public var fs:GLAS3Shader;
 		public var programSet:ProgramSet;
 		public var textureSets:Array=[];
 		public var buffSets:Array;
@@ -66,11 +67,11 @@ package gl3d.shaders
 			return programSet;
 		}
 		
-		public function getVertexShader(material:Material):AS3Shader {
+		public function getVertexShader(material:Material):GLAS3Shader {
 			return null;
 		}
 		
-		public function getFragmentShader(material:Material):AS3Shader {
+		public function getFragmentShader(material:Material):GLAS3Shader {
 			return null;
 		}
 		
@@ -79,6 +80,8 @@ package gl3d.shaders
 				programSet = getProgram(material);
 				invalid = false;
 			}
+			vs.bind(this,material);
+			fs.bind(this,material);
 		}
 		
 		public function update(material:Material):void 

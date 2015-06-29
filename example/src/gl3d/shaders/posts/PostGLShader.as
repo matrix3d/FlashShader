@@ -9,7 +9,8 @@ package gl3d.shaders.posts
 	import gl3d.core.GL;
 	import gl3d.core.Material;
 	import gl3d.core.Node3D;
-	import gl3d.shaders.GLShader;
+	import gl3d.core.shaders.GLAS3Shader;
+	import gl3d.core.shaders.GLShader;
 	import gl3d.shaders.PhongFragmentShader;
 	import gl3d.shaders.PhongVertexShader;
 	import gl3d.core.View3D;
@@ -19,22 +20,22 @@ package gl3d.shaders.posts
 	 */
 	public class PostGLShader extends GLShader
 	{
-		private var vshader:AS3Shader;
-		private var fshader:AS3Shader;
+		private var vshader:GLAS3Shader;
+		private var fshader:GLAS3Shader;
 		
-		public function PostGLShader(vshader:AS3Shader=null,fshader:AS3Shader=null) 
+		public function PostGLShader(vshader:GLAS3Shader=null,fshader:GLAS3Shader=null) 
 		{
 			this.fshader = fshader;
 			this.vshader = vshader;
 			
 		}
 		
-		override public function getVertexShader(material:Material):AS3Shader {
+		override public function getVertexShader(material:Material):GLAS3Shader {
 			vshader=vshader||new PostVertexShader();
 			return vshader;
 		}
 		
-		override public function getFragmentShader(material:Material):AS3Shader {
+		override public function getFragmentShader(material:Material):GLAS3Shader {
 			fshader=fshader||new PostFragmentShader();
 			return fshader;
 		}

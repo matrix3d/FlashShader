@@ -9,7 +9,8 @@ package gl3d.shaders.particle {
 	import gl3d.core.Material;
 	import gl3d.meshs.Meshs;
 	import gl3d.core.Node3D;
-	import gl3d.shaders.GLShader;
+	import gl3d.core.shaders.GLAS3Shader;
+	import gl3d.core.shaders.GLShader;
 	import gl3d.shaders.PhongFragmentShader;
 	import gl3d.core.View3D;
 	/**
@@ -24,11 +25,11 @@ package gl3d.shaders.particle {
 			
 		}
 		
-		override public function getVertexShader(material:Material):AS3Shader {
+		override public function getVertexShader(material:Material):GLAS3Shader {
 			return new ParticleVertexShader(material);
 		}
 		
-		override public function getFragmentShader(material:Material):AS3Shader {
+		override public function getFragmentShader(material:Material):GLAS3Shader {
 			return new ParticleFragmentShader(material,vs as ParticleVertexShader);
 		}
 		

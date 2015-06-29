@@ -4,11 +4,12 @@ package gl3d.shaders.particle
 	import as3Shader.Var;
 	import gl3d.core.Material;
 	import gl3d.particle.Particle;
+	import gl3d.core.shaders.GLAS3Shader;
 	/**
 	 * ...
 	 * @author lizhi
 	 */
-	public class ParticleVertexShader extends AS3Shader
+	public class ParticleVertexShader extends GLAS3Shader
 	{
 		private var material:Material;
 		public var model:Var = matrix();
