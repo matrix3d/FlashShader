@@ -18,10 +18,10 @@ package gl3d.shaders
 		public function SkyBoxVertexShader() 
 		{
 			pos = buffPos();
-			m = matrix();
-			v = matrix();
-			p = matrix();
-			camPos = uniform();
+			m = uniformModel()//matrix();
+			v = uniformView()//matrix();
+			p = uniformPerspective()//matrix();
+			camPos =uniformCameraPos();
 			var wpos:Var = m44(pos, m);
 			op = m44(m44(wpos,v),p);
 			

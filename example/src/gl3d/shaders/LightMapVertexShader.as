@@ -14,12 +14,12 @@ package gl3d.shaders
 		public function LightMapVertexShader() 
 		{
 			super(Context3DProgramType.VERTEX);
-			var model:Var = C();
-			var view:Var = C(4);
-			var perspective:Var = C(8);
-			var pos:Var = VA();
-			var uv:Var = VA(1);
-			var lightMapUV:Var = VA(2);
+			var model:Var = uniformModel();
+			var view:Var = uniformView();
+			var perspective:Var = uniformPerspective();
+			var pos:Var = buffPos()//VA();
+			var uv:Var = buffUV()//VA(1);
+			var lightMapUV:Var = buffUV2()//VA(2);
 			var worldPos:Var = m44(pos, model);
 			var viewPos:Var = m44(worldPos, view);
 			m44(viewPos, perspective, op);

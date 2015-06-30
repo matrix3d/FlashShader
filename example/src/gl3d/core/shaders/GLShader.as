@@ -80,8 +80,13 @@ package gl3d.core.shaders
 				programSet = getProgram(material);
 				invalid = false;
 			}
-			vs.bind(this,material);
-			fs.bind(this,material);
+			if(programSet){
+				vs.bind(this,material);
+				fs.bind(this, material);
+				
+				material.view.gl3d.setProgramConstantsFromVector(Context3DProgramType.VERTEX, vs.constMemLen, vs.constPoolVec);
+				material.view.gl3d.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, fs.constMemLen, fs.constPoolVec);
+			}
 		}
 		
 		public function update(material:Material):void 
@@ -109,6 +114,7 @@ package gl3d.core.shaders
 				material.view.gl3d.setDepthTest(true, material.passCompareMode);
 				material.view.gl3d.setBlendFactors(material.sourceFactor, material.destinationFactor);
 				material.view.gl3d.setCulling(material.culling);
+				material.view.gl3d.drawTriangles(material.node.drawable.index.buff);
 			}
 		}
 	}

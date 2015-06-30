@@ -13,12 +13,13 @@ package gl3d.shaders.particle
 	{
 		private var material:Material;
 		private var vs:ParticleVertexShader;
-		public var diffSampler:Var = sampler();
+		public var diffSampler:Var //= sampler();
 		public function ParticleFragmentShader(material:Material,vs:ParticleVertexShader) 
 		{
 			super(Context3DProgramType.FRAGMENT);
 			this.vs = vs;
 			this.material = material;
+			diffSampler = samplerDiff();
 			
 		}
 		override public function build():void {

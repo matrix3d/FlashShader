@@ -18,20 +18,28 @@ package gl3d.shaders
 		private var e:Var;
 		private var n:Var;
 		public var vs:PhongVertexShader;
-		public var wireframeColor:Var = uniform();
-		public var diffColor:Var = uniform();
-		public var lightColor:Var = uniform();
-		public var specular:Var = uniform();
-		public var ambientColor:Var = uniform();
+		public var wireframeColor:Var //uniform();
+		public var diffColor:Var //= uniform();
+		public var lightColor:Var //= //uniform();
+		public var specular:Var //= //uniform();
+		public var ambientColor:Var //= //uniform();
 		
-		public var diffSampler:Var = sampler();
-		public var normalmapSampler:Var = sampler();
-		public var reflectSampler:Var = sampler();
+		public var diffSampler:Var// = sampler();
+		public var normalmapSampler:Var// = sampler();
+		public var reflectSampler:Var// = sampler();
 		public function PhongFragmentShader(material:Material,vs:PhongVertexShader) 
 		{
 			super(Context3DProgramType.FRAGMENT);
 			this.vs = vs;
 			this.material = material;
+			diffSampler = samplerDiff();
+			normalmapSampler = samplerNormalmap();
+			reflectSampler = samplerReflect();
+			wireframeColor = uniformWireframeColor();
+			diffColor = uniformMaterialColor();
+			lightColor = uniformLightColor(0);
+			specular = uniformSpecular();
+			ambientColor = uniformAmbient();
 		}
 		
 		override public function build():void {

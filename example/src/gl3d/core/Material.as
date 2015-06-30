@@ -24,7 +24,6 @@ package gl3d.core {
 		public var specularAble:Boolean = true;
 		public var ambient:Vector.<Number> = Vector.<Number>([.1, .1, .1, .1]);
 		public var specularPower:Number = 50;
-		public var shininess:Number = 1;
 		private var _toonAble:Boolean = false;
 		public var toonStep:Number = 2;
 		
@@ -38,7 +37,6 @@ package gl3d.core {
 		public var reflectTexture:TextureSet;
 		public var terrainTextureSets:Array = [];
 		public var color:Vector.<Number> = Vector.<Number>([1, 1, 1, 1]);
-		public var alpha:Number = 1;
 		private var _wireframeAble:Boolean = false;
 		public var isDistanceField:Boolean = false;
 		public var wireframeColor:Vector.<Number> = Vector.<Number>([.5, 0, .5, 0]);
@@ -137,6 +135,26 @@ package gl3d.core {
 		{
 			_toonAble = value;
 			invalid = true;
+		}
+		
+		public function get alpha():Number 
+		{
+			return color[3];
+		}
+		
+		public function set alpha(value:Number):void 
+		{
+			color[3]=value;
+		}
+		
+		public function get shininess():Number 
+		{
+			return color[3];
+		}
+		
+		public function set shininess(value:Number):void 
+		{
+			color[3] = value;
 		}
 	}
 }

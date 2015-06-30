@@ -20,10 +20,10 @@ package gl3d.shaders
 			var flags:Array = ["repeat"/*,"linear"*/,"miplinear","anisotropic16x"];
 			var map:Var = tex(uv, FS(), null, flags);
 			mov(sub2([1,map.x,map.y,map.z]),map.w);
-			var diffColor0:Var = tex(scaledUV, FS(1),null,flags);
-			var diffColor1:Var = tex(scaledUV, FS(2),null,flags);
-			var diffColor2:Var = tex(scaledUV, FS(3),null,flags);
-			var diffColor3:Var = tex(scaledUV, FS(4), null, flags);
+			var diffColor0:Var = tex(scaledUV, samplerTerrains(0),null,flags);
+			var diffColor1:Var = tex(scaledUV, samplerTerrains(1),null,flags);
+			var diffColor2:Var = tex(scaledUV, samplerTerrains(2),null,flags);
+			var diffColor3:Var = tex(scaledUV, samplerTerrains(3), null, flags);
 			var diffColor:Var=
 						add2([
 							mul(diffColor0,map.x),

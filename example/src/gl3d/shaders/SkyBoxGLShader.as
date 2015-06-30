@@ -30,26 +30,6 @@ package gl3d.shaders
 			return new SkyBoxFragmentShader(vs as SkyBoxVertexShader);
 		}
 		
-		override public function update(material:Material):void 
-		{
-			super.update(material);
-			if (programSet) {
-				var context:GL = material.view.gl3d;
-				var view:View3D = material.view;
-				var camera:Camera3D = material.camera;
-				var node:Node3D = material.node;
-				var svs:SkyBoxVertexShader = vs as SkyBoxVertexShader;
-				var sfs:SkyBoxFragmentShader = fs as SkyBoxFragmentShader;
-				context.setProgramConstantsFromMatrix(Context3DProgramType.VERTEX, svs.m.index, node.world, true);
-				context.setProgramConstantsFromMatrix(Context3DProgramType.VERTEX, svs.v.index, camera.view, true);
-				context.setProgramConstantsFromMatrix(Context3DProgramType.VERTEX, svs.p.index, camera.perspective, true);
-				context.setProgramConstantsFromVector(Context3DProgramType.VERTEX, svs.camPos.index, new <Number>[camera.x,camera.y,camera.z,1]);
-				context.setProgramConstantsFromVector(Context3DProgramType.VERTEX, vs.constMemLen, vs.constPoolVec);
-				context.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, fs.constMemLen, fs.constPoolVec);
-				context.drawTriangles(node.drawable.index.buff);
-			}
-		}
-		
 	}
 
 }

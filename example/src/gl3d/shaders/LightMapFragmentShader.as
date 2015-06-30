@@ -14,8 +14,8 @@ package gl3d.shaders
 		public function LightMapFragmentShader() 
 		{
 			super(Context3DProgramType.FRAGMENT);
-			var t:Var = tex(V(), FS(0), null, ["repeat", "anisotropic16x","miplinear"]);
-			var l:Var = tex(V(1), FS(1), null, ["repeat", "anisotropic16x","miplinear"]);
+			var t:Var = tex(V(), samplerDiff(), null, ["repeat", "anisotropic16x","miplinear"]);
+			var l:Var = tex(V(1), samplerLightmap(), null, ["repeat", "anisotropic16x","miplinear"]);
 			mul(t.xyz, l.xyz, t.xyz);
 			oc = t;
 		}

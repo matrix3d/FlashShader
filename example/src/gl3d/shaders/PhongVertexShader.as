@@ -14,24 +14,23 @@ package gl3d.shaders
 	public class PhongVertexShader extends GLAS3Shader
 	{
 		private var material:Material;
-		public var model:Var = matrix();
-		public var world2local:Var = matrix();
-		public var view:Var = matrix();
-		public var perspective:Var = matrix();
-		public var test:Var = matrix();
-		public var lightPos:Var = uniform();
+		public var model:Var //= matrix();
+		public var world2local:Var //= matrix();
+		public var view:Var //= matrix();
+		public var perspective:Var //= matrix();
+		public var lightPos:Var //= uniform();
 		public var joints:Var;
 		
 		
-		public var pos:Var = buff();
-		public var norm:Var = buff();
-		public var uv:Var = buff();
-		public var tangent:Var = buff();
-		public var targetPosition:Var = buff();
-		public var weight:Var = buff();
-		public var joint:Var = buff();
-		public var weight2:Var = buff();
-		public var joint2:Var = buff();
+		public var pos:Var //= buff();
+		public var norm:Var //= buff();
+		public var uv:Var //= buff();
+		public var tangent:Var //= buff();
+		public var targetPosition:Var //= buff();
+		public var weight:Var //= buff();
+		public var joint:Var //= buff();
+		public var weight2:Var //= buff();
+		public var joint2:Var //= buff();
 		
 		public var eyeDirectionVarying:Var = varying();
 		public var posLightVarying:Var = varying();
@@ -43,6 +42,20 @@ package gl3d.shaders
 		{
 			super(Context3DProgramType.VERTEX);
 			this.material = material;
+			
+			pos = buffPos();
+			norm = buffNorm();
+			uv = buffUV();
+			tangent = buffTangent();
+			targetPosition = buffTargetPosition();
+			weight = buffWeights();
+			joint = buffJoints();
+			
+			model = uniformModel();
+			world2local = uniformWorld2Local();
+			view = uniformView();
+			perspective = uniformPerspective();
+			lightPos = uniformLightPos(0);
 		}
 		
 		override public function build():void {
@@ -50,9 +63,9 @@ package gl3d.shaders
 			var pos:Var = this.pos;
 			if (material.gpuSkin) {
 				if (material.node.skin.useQuat) {
-					joints = floatArray(material.node.skin.joints.length*2);
+					joints = uniformJointsQuat(material.node.skin.joints.length);//= this.uniformAmbient//floatArray(material.node.skin.joints.length*2);
 				}else {
-					joints = matrixArray(material.node.skin.joints.length);
+					joints = uniformJointsMatrix(material.node.skin.joints.length);//matrixArray(material.node.skin.joints.length);
 				}
 				var xyzw:String = "xyzw";
 				for (var i:int = 0; i < material.node.skin.maxWeight; i++ ) {

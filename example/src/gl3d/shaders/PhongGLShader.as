@@ -22,8 +22,8 @@ package gl3d.shaders
 	public class PhongGLShader extends GLShader
 	{
 		private var drawable:Drawable3D;
-		private var lightPosVec:Vector.<Number> = Vector.<Number>([0,0,0,1]);
-		private var specularPowerVec:Vector.<Number> = Vector.<Number>([0,0,0,0]);
+		//private var lightPosVec:Vector.<Number> = Vector.<Number>([0,0,0,1]);
+		//private var specularPowerVec:Vector.<Number> = Vector.<Number>([0,0,0,0]);
 		public function PhongGLShader() 
 		{
 		}
@@ -36,7 +36,7 @@ package gl3d.shaders
 			return new PhongFragmentShader(material,vs as PhongVertexShader);
 		}
 		
-		override public function preUpdate(material:Material):void {
+		/*override public function preUpdate(material:Material):void {
 			super.preUpdate(material);
 			
 			drawable = material.wireframeAble?material.node.unpackedDrawable:material.node.drawable;
@@ -83,9 +83,9 @@ package gl3d.shaders
 				drawable.weights.subBuffs[0][0] = pvs.weight.index;
 				drawable.weights.subBuffs[1][0] = pvs.weight2.index;
 			}
-		}
+		}*/
 		
-		override public function update(material:Material):void 
+		/*override public function update(material:Material):void 
 		{
 			super.update(material);
 			var context:GL = material.view.gl3d;
@@ -93,6 +93,7 @@ package gl3d.shaders
 				var view:View3D = material.view;
 				var camera:Camera3D = material.camera;
 				var node:Node3D = material.node;
+				drawable = node.drawable;
 				
 				var pvs:PhongVertexShader = vs as PhongVertexShader;
 				var pfs:PhongFragmentShader = fs as PhongFragmentShader;
@@ -130,12 +131,10 @@ package gl3d.shaders
 				if(pfs.diffColor.used){
 					var alpha:Number = material.alpha;
 					var color:Vector.<Number> = material.color;
-					color[3] = alpha;
 					context.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, pfs.diffColor.index, color);//color
 				}
 				if (material.lightAble) {
 					if(pfs.lightColor.used){
-						view.lights[0].color[3] = material.shininess;
 						context.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, pfs.lightColor.index, view.lights[0].color);//light color
 					}
 					if(pfs.ambientColor.used){
@@ -154,7 +153,7 @@ package gl3d.shaders
 				context.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, fs.constMemLen, fs.constPoolVec);
 				context.drawTriangles(drawable.index.buff);
 			}
-		}
+		}*/
 		
 	}
 

@@ -33,31 +33,7 @@ package gl3d.shaders.particle {
 			return new ParticleFragmentShader(material,vs as ParticleVertexShader);
 		}
 		
-		override public function preUpdate(material:Material):void {
-			super.preUpdate(material);
-			textureSets[0] = material.diffTexture;
-			buffSets.length = 0;
-			buffSets.length = 0;
-			var drawable:Drawable3D = material.node.drawable;
-			var pvs:ParticleVertexShader = vs as ParticleVertexShader;
-			if (pvs.pos.used) {
-				buffSets[pvs.pos.index] = drawable.pos;
-			}
-			if (pvs.norm.used) {
-				buffSets[pvs.norm.index] = drawable.norm;
-			}
-			if (pvs.uv.used) {
-				buffSets[pvs.uv.index] = drawable.uv;
-			}
-			if (pvs.random.used) {
-				buffSets[pvs.random.index] = drawable.random;
-			}
-			if (pvs.sphereRandom.used) {
-				buffSets[pvs.sphereRandom.index] = drawable.sphereRandom;
-			}
-		}
-		
-		override public function update(material:Material):void 
+		/*override public function update(material:Material):void 
 		{
 			super.update(material);
 			var context:GL = material.view.gl3d;
@@ -87,7 +63,7 @@ package gl3d.shaders.particle {
 				context.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, fs.constMemLen, fs.constPoolVec);
 				context.drawTriangles(node.drawable.index.buff);
 			}
-		}
+		}*/
 	}
 
 }

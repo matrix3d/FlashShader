@@ -1,6 +1,9 @@
 package gl3d.core.shaders 
 {
 	import as3Shader.Var;
+	import flash.display3D.Context3DProgramType;
+	import flash.geom.Matrix3D;
+	import flash.geom.Vector3D;
 	import gl3d.core.Material;
 	/**
 	 * ...
@@ -9,10 +12,88 @@ package gl3d.core.shaders
 	public class GLBinder 
 	{
 		private var v:Var;
-		
-		public function GLBinder(v:Var) 
+		private var index:int;
+		private var as3shader:GLAS3Shader;
+		private var tempvec4:Vector.<Number> = new Vector.<Number>(4);
+		public function GLBinder(as3shader:GLAS3Shader,v:Var,index:int=0) 
 		{
+			this.as3shader = as3shader;
+			this.index = index;
 			this.v = v;
+		}
+		//uniform
+		public function bindModelUniform(shader:GLShader, material:Material):void {
+			if (v.used) material.view.gl3d.setProgramConstantsFromMatrix(as3shader.programType, v.index,material.node.world,true);
+		}
+		public function bindViewUniform(shader:GLShader, material:Material):void {
+			if (v.used) material.view.gl3d.setProgramConstantsFromMatrix(as3shader.programType, v.index,material.camera.view,true);
+		}
+		public function bindPerspectiveUniform(shader:GLShader, material:Material):void {
+			if (v.used) material.view.gl3d.setProgramConstantsFromMatrix(as3shader.programType, v.index,material.camera.perspective,true);
+		}
+		public function bindWorld2localUniform(shader:GLShader, material:Material):void {
+			if (v.used) material.view.gl3d.setProgramConstantsFromMatrix(as3shader.programType, v.index,material.node.world2local,true);
+		}
+		
+		public function bindLightPosUniform(shader:GLShader, material:Material):void {
+			if (v.used) {
+				var pos:Vector3D = material.view.lights[index].world.position;
+				tempvec4[0] = pos.x;
+				tempvec4[1] = pos.y;
+				tempvec4[2] = pos.z;
+				tempvec4[3] = 1;
+				material.view.gl3d.setProgramConstantsFromVector(as3shader.programType, v.index,tempvec4);
+			}
+		}
+		public function bindCameraPosUniform(shader:GLShader, material:Material):void {
+			if (v.used) {
+				var pos:Vector3D = material.camera.world.position;
+				tempvec4[0] = pos.x;
+				tempvec4[1] = pos.y;
+				tempvec4[2] = pos.z;
+				tempvec4[3] = 1;
+				material.view.gl3d.setProgramConstantsFromVector(as3shader.programType, v.index,tempvec4);
+			}
+		}
+		
+		public function bindTimeUniform(shader:GLShader, material:Material):void {
+			if (v.used) {
+				tempvec4[0] = material.view.time;
+				tempvec4[1] = 0;
+				tempvec4[2] = 0;
+				tempvec4[3] = 0;
+				material.view.gl3d.setProgramConstantsFromVector(as3shader.programType, v.index,tempvec4);
+			}
+		}
+		public function bindJointsQuatUniform(shader:GLShader, material:Material):void {
+			if (v.used) material.view.gl3d.setProgramConstantsFromVector(as3shader.programType, v.index,material.node.skin.skinFrame.quaternions);
+		}
+		public function bindJointsMatrixUniform(shader:GLShader, material:Material):void {
+			if (v.used) {
+				var mats:Vector.<Matrix3D> = material.node.skin.skinFrame.matrixs;
+				var start:int = v.index;
+				for (var i:int = 0; i < mats.length;i++ ) {
+					material.view.gl3d.setProgramConstantsFromMatrix(Context3DProgramType.VERTEX, start+i*4, mats[i], true);
+				}
+			}
+		}
+		public function bindMaterialColorUniform(shader:GLShader, material:Material):void {
+			if (v.used) material.view.gl3d.setProgramConstantsFromVector(as3shader.programType, v.index,material.color);
+		}
+		public function bindLightColorUniform(shader:GLShader, material:Material):void {
+			if (v.used) material.view.gl3d.setProgramConstantsFromVector(as3shader.programType, v.index,material.view.lights[index].color);
+		}
+		public function bindAmbientUniform(shader:GLShader, material:Material):void {
+			if (v.used) material.view.gl3d.setProgramConstantsFromVector(as3shader.programType, v.index,material.ambient);
+		}
+		public function bindSpecularUniform(shader:GLShader, material:Material):void {
+			if (v.used) {
+				tempvec4[0] = material.specularPower;
+				material.view.gl3d.setProgramConstantsFromVector(as3shader.programType, v.index,tempvec4);
+			}
+		}
+		public function bindWireframeColorUniform(shader:GLShader, material:Material):void {
+			if (v.used) material.view.gl3d.setProgramConstantsFromVector(as3shader.programType, v.index,material.wireframeColor);
 		}
 		
 		//textures
@@ -29,8 +110,7 @@ package gl3d.core.shaders
 			if (v.used) shader.textureSets[v.index] = material.reflectTexture;
 		}
 		public function bindTerrainsSampler(shader:GLShader, material:Material):void {
-			throw "no impl"
-			//if (v.used) shader.textureSets[v.index] = material.diffTexture;
+			if (v.used) shader.textureSets[v.index] = material.terrainTextureSets[index];
 		}
 		
 		//buffs

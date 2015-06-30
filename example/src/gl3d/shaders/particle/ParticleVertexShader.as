@@ -12,23 +12,32 @@ package gl3d.shaders.particle
 	public class ParticleVertexShader extends GLAS3Shader
 	{
 		private var material:Material;
-		public var model:Var = matrix();
-		public var view:Var = matrix();
-		public var perspective:Var = matrix();
-		public var time:Var = uniform();
+		public var model:Var// = matrix();
+		public var view:Var //= matrix();
+		public var perspective:Var// = matrix();
+		public var time:Var// = uniform();
 		
-		public var pos:Var = buff();
-		public var norm:Var = buff();
-		public var uv:Var = buff();
-		public var random:Var = buff();
-		public var sphereRandom:Var = buff();
+		public var pos:Var //= buff();
+		public var norm:Var //= buff();
+		public var uv:Var //= buff();
+		public var random:Var //= buff();
+		public var sphereRandom:Var //= buff();
 		
 		public var uvVarying:Var = varying();
 		public var colorVarying:Var = varying();
 		public function ParticleVertexShader(material:Material) 
 		{
 			this.material = material;
+			pos = buffPos();
+			norm = buffNorm();
+			uv = buffUV();
+			random = buffRandom();
+			sphereRandom = buffSphereRandom();
 			
+			model = uniformModel();
+			view = uniformView();
+			perspective = uniformPerspective();
+			time = uniformTime();
 		}
 		
 		override public function build():void {
