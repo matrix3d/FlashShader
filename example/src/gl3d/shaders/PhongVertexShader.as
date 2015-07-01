@@ -38,6 +38,7 @@ package gl3d.shaders
 		public var tangentVarying:Var = varying();
 		public var uvVarying:Var = varying();
 		public var targetPositionVarying:Var = varying();
+		public var reflected:Var = varying();
 		public function PhongVertexShader(material:Material) 
 		{
 			super(Context3DProgramType.VERTEX);
@@ -103,6 +104,7 @@ package gl3d.shaders
 			m44(viewPos, perspective,op);
 			
 			if (material.lightAble) {
+				var worldNorm:Var = nrm(m33(norm, model));
 				if(material.specularAble||material.reflectTexture){
 					if (material.normalMapAble) {
 						var eyeDirection:Var = nrm(m33(neg(viewPos),world2local));
@@ -119,14 +121,18 @@ package gl3d.shaders
 				mov(posLight, posLightVarying);
 				
 				if (material.normalMapAble) {
-					mov(nrm(m33(m33(m33(norm, model),view),world2local)),normVarying);
+					mov(nrm(m33(m33(worldNorm,view),world2local)),normVarying);
 				}else {
-					var viewNormal:Var = nrm(m33(m33(norm, model),view));
+					var viewNormal:Var = nrm(m33(worldNorm,view));
 					mov(viewNormal, normVarying);
 				}
 				
 				if (material.normalMapAble) {
 					mov(tangent,tangentVarying)
+				}
+				if (material.reflectTexture) {
+					var w2c:Var = sub(worldPos, uniformCameraPos());
+					mov(nrm(sub(mul2([2, dp3(w2c, worldNorm), w2c]), worldNorm)),reflected);
 				}
 			}
 			
@@ -142,12 +148,14 @@ package gl3d.shaders
 		//t = 2 * cross(q.xyz, v)
 		//v' = v + q.w * t + cross(q.xyz, t)
 		public function q44(pos:Var, quas:Var, tran:Var):Var {
-			return add(q33(pos, mov(quas)), tran);
+			var temp:Var = add(q33(pos, mov(quas)), tran);
+			mov(1, temp.w);
+			return temp;
 		}
 		
 		public function q33(pos:Var, quas:Var):Var {
-			var t:Var = mul(2 , crs(quas, pos));
-			return add2([pos , mul(quas.w , t) , crs(quas, t)]);
+			var t:Var = mul(2 , crs(quas.xyz, pos.xyz));
+			return add2([pos.xyz , mul(quas.w , t.xyz) , crs(quas.xyz, t.xyz)]);
 		}
 	}
 

@@ -97,6 +97,12 @@ package
 			(new nyc as Bitmap).bitmapData,
 			(new pzc as Bitmap).bitmapData,
 			(new nzc as Bitmap).bitmapData
+			/*new BitmapData(1,1,false,0xff0000),
+			new BitmapData(1,1,false,0xff00),
+			new BitmapData(1,1,false,0xff),
+			new BitmapData(1,1,false,0xffff00),
+			new BitmapData(1,1,false,0xff00ff),
+			new BitmapData(1,1,false,0xffff)*/
 			];
 			skyBoxTexture = new TextureSet(bmd, false, true);
 			skyBoxTexture.datas = bmds;
@@ -107,7 +113,7 @@ package
 			
 			normalMapTexture = createNormalMap();
 			material.culling =  Context3DTriangleFace.NONE;
-			material.normalMapAble = false;
+			material.normalMapAble = true;
 			material.specularPower = 10;
 			material.specularAble = true;
 			material.lightAble = true;
@@ -117,7 +123,7 @@ package
 			if (material.normalMapAble) {
 				material.normalmapTexture= normalMapTexture;
 			}
-			material.reflectTexture = skyBoxTexture;
+			//material.reflectTexture = skyBoxTexture;
 			
 			initLight();
 			initNode();
