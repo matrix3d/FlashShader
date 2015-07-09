@@ -101,7 +101,7 @@ package gl3d.meshs
 			var vin:Vector.<Number> = new Vector.<Number>;
 			var uv:Vector.<Number> = new Vector.<Number>;
             var bmd:BitmapData = new BitmapData(w, w);
-            bmd.perlinNoise(15, 15, 3, 0, true, true);
+            bmd.perlinNoise(35, 35, 3, 0, true, true);
             for (var y:int = 0; y < w;y++ ) {
                 for (var x:int = 0; x < w; x++ ) {
 					var px:Number = (x / (w-1) - .5);

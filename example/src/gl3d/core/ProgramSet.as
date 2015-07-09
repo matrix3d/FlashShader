@@ -24,7 +24,10 @@ package gl3d.core {
 		{
 			if (invalid||this.context!=context) {
 				program = context.createProgram();
-				program.upload(vcode,fcode);
+				try{
+				program.upload(vcode, fcode);
+				}catch(err:Error){
+				}
 				invalid = false;
 				this.context = context;
 			}

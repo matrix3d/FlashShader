@@ -83,6 +83,7 @@ package gl3d.util
 					info = info.substr(0, indexS);
 				}
 				text += "\ndriver : " + info;
+				text += "\nprofile : " + view.profile;
 			}
 			text += "\nfps : " + fps + " / " ;
 			if (stage!=null) {

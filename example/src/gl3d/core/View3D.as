@@ -35,10 +35,10 @@ package gl3d.core {
 		public var drawTriangleCounter:int = 0;
 		public var drawCounter:int = 0;
 		public var driverInfo:String;
+		public var profile:String;
 		public var background:uint = 0;
-		public function View3D(agalVersion:int=2) 
+		public function View3D() 
 		{
-			this.agalVersion = agalVersion;
 			scene.addChild(camera);
 			for each(var light:Light in lights) {
 				scene.addChild(light);
@@ -52,19 +52,25 @@ package gl3d.core {
 			removeEventListener(Event.ADDED_TO_STAGE, init);
 			stage.stage3Ds[0].addEventListener(Event.CONTEXT3D_CREATE, stage_context3dCreate);
 			stage.stage3Ds[0].addEventListener(ErrorEvent.ERROR, stage3Ds_error);
-			stage.stage3Ds[0].requestContext3D(Context3DRenderMode.AUTO,Context3DProfile.STANDARD);
+			//stage.stage3Ds[0].requestContext3D(Context3DRenderMode.AUTO, Context3DProfile.STANDARD);
+			stage.stage3Ds[0].requestContext3DMatchingProfiles(new <String>[ Context3DProfile.STANDARD,Context3DProfile.BASELINE]);
 		}
 		
 		private function stage3Ds_error(e:ErrorEvent):void 
 		{
-			agalVersion = 1;
 			stage.stage3Ds[0].requestContext3D(Context3DRenderMode.AUTO);
 		}
 		
 		private function stage_context3dCreate(e:Event):void 
 		{
-			gl3d=new GL(stage.stage3Ds[0].context3D);
+			gl3d = new GL(stage.stage3Ds[0].context3D);
+			profile=stage.stage3Ds[0].context3D.profile;
 			driverInfo = gl3d.driverInfo;
+			if (profile==Context3DProfile.STANDARD) {
+				agalVersion = 2;
+			}else {
+				agalVersion = 1;
+			}
 		}
 		
 		public function updateCtrl():void {
