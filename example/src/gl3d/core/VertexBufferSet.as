@@ -43,6 +43,12 @@ package gl3d.core {
 				context.setVertexBufferAt(i, buff,offset,format||FORMATS[data32PerVertex]);
 			}
 		}
+		
+		public function dispose():void {
+			if (buff) {
+				buff.dispose();
+			}
+		}
 	}
 
 }

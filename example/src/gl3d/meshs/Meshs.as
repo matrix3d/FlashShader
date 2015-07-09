@@ -2,6 +2,7 @@ package gl3d.meshs
 {
 	import flash.display.BitmapData;
 	import flash.display3D.VertexBuffer3D;
+	import flash.geom.Matrix;
 	import flash.geom.Vector3D;
 	import gl3d.core.Drawable3D;
 	import gl3d.core.IndexBufferSet;
@@ -96,12 +97,44 @@ package gl3d.meshs
 			);
 		}
 		
-		public static function terrain(w:int=64,scale:Vector3D=null):Drawable3D {
+		public static function terrainData(w:int = 64, scale:Vector3D = null, sbmd:BitmapData=null, tempbmd:BitmapData=null):Vector.<Number> {
+			var vin:Vector.<Number> = new Vector.<Number>;
+            var bmd:BitmapData =tempbmd|| new BitmapData(w, w,true,0);
+			if(sbmd==null){
+				bmd.perlinNoise(35, 35, 3, 0, true, true);
+			}else {
+				bmd.draw(sbmd, new Matrix(w/sbmd.width,0,0,w/sbmd.height),null,null,null,true);
+			}
+			bmd.lock();
+            for (var y:int = 0; y < w;y++ ) {
+                for (var x:int = 0; x < w; x++ ) {
+					var px:Number = (x / (w-1) - .5);
+					var py:Number = ((0xff & bmd.getPixel(x, y)) / 0xff - .5)*.1;
+					var pz:Number=(y / (w-1) - .5)
+                    if (scale) {
+						px *= scale.x;
+						py *= scale.y;
+						pz *= scale.z;
+					}
+					vin.push(px,py ,pz );
+                }
+            }
+			bmd.unlock();
+			if(tempbmd==null)
+			bmd.dispose();
+			return vin;
+		}
+		
+		public static function terrain(w:int=64,scale:Vector3D=null,sbmd:BitmapData=null,tempbmd:BitmapData=null):Drawable3D {
 			var ins:Vector.<uint> = new Vector.<uint>;
 			var vin:Vector.<Number> = new Vector.<Number>;
 			var uv:Vector.<Number> = new Vector.<Number>;
-            var bmd:BitmapData = new BitmapData(w, w);
-            bmd.perlinNoise(35, 35, 3, 0, true, true);
+            var bmd:BitmapData =tempbmd|| new BitmapData(w, w,true,0);
+			if(sbmd==null){
+				bmd.perlinNoise(35, 35, 3, 0, true, true);
+			}else {
+				bmd.draw(sbmd, new Matrix(w/sbmd.width,0,0,w/sbmd.height),null,null,null,true);
+			}
             for (var y:int = 0; y < w;y++ ) {
                 for (var x:int = 0; x < w; x++ ) {
 					var px:Number = (x / (w-1) - .5);
@@ -121,8 +154,8 @@ package gl3d.meshs
                 }
             }
 			var drawable:Drawable3D = createDrawable(ins, vin, uv,null);
-			drawable.norm = computeNormal(drawable);
-			drawable.tangent = computeTangent(drawable);
+			if(tempbmd==null)
+			bmd.dispose();
 			return drawable;
 		}
 		

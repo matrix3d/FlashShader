@@ -1,6 +1,7 @@
 package  
 {
 	import com.bit101.components.PushButton;
+	import editor.TerrainEditor;
 	import flash.display.Bitmap;
 	import flash.display.BitmapData;
 	import flash.events.Event;
@@ -21,6 +22,7 @@ package
 	import gl3d.pick.TerrainPicking;
 	import gl3d.shaders.TerrainPhongGLShader;
 	import gl3d.core.TextureSet;
+	import ui.Log;
 	/**
 	 * ...
 	 * @author lizhi
@@ -37,8 +39,27 @@ package
 		private var players:Array = [];
 		private var p:DAEParser;
 		private var materialInstance:InstanceMaterial = new InstanceMaterial;
+		private var te:TerrainEditor = new TerrainEditor;
+		private var tempbmd:BitmapData ;
 		public function TestTerrain() 
 		{
+			addChild(te);
+			te.addEventListener(Event.CHANGE, te_change);
+			te.y = 30;
+		}
+		
+		private function te_change(e:Event):void 
+		{
+			if (tempbmd==null) {
+				tempbmd= new BitmapData(128, 128, true, 0);
+			}
+			terrain.drawable.pos.data = 
+			Meshs.terrainData(128, new Vector3D(350, 350, 350), te.bg, tempbmd);
+			terrain.drawable.pos.invalid = true;
+			terrain.drawable.norm.dispose();
+			terrain.drawable.norm = null;// .dispose();
+			//Meshs.computeNormal(terrain.drawable);
+			terrain.picking = new TerrainPicking(terrain);
 		}
 		
 		override public function initUI():void 
@@ -46,7 +67,11 @@ package
 			super.initUI();
 			gameModeBtn = new PushButton(this, 125, 5, "game mode", gameModeBtnClick);
 			gameModeBtn.toggle = true;
-			gameModeBtn.selected = true;
+			gameModeBtn.selected = false;
+			
+			
+			//new Log;
+			//addChild(Log.instance);
 		}
 		
 		private function gameModeBtnClick(e:Event):void 
@@ -65,9 +90,9 @@ package
 		}
 		
 		override public function initNode():void {
-			view.camera.z = -40;
-			view.camera.y = 10;
-			view.camera.setRotation(  20 ,0,0);
+			view.camera.z = -200;
+			view.camera.y = 100;
+			view.camera.setRotation(  30 ,0,0);
 			view.lights[0].y = 2000;
 			view.lights[0].x = 0;
 			view.lights[0].z = -1000;
@@ -112,7 +137,8 @@ package
 			
 			terrain = new Node3D;
 			terrain.material = material;
-			terrain.drawable = Meshs.terrain(64,new Vector3D(350,350,350));
+			
+			terrain.drawable = Meshs.terrain(128,new Vector3D(350,350,350),te.bg);
 			view.scene.addChild(terrain);
 			terrain.picking = new TerrainPicking(terrain);
 			

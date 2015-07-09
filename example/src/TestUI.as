@@ -3,6 +3,7 @@ package
 	import flash.display.Sprite;
 	import flash.display.StageAlign;
 	import flash.display.StageScaleMode;
+	import flash.display3D.Context3DProfile;
 	import flash.events.MouseEvent;
 	import ui.Alert;
 	import ui.Button;
@@ -32,7 +33,7 @@ package
 			addChild(panel);
 			panel.x = panel.y = 50;
 			
-			panel.addChild(new Button("贴图"));
+			panel.addChild(new Button("贴图"+Context3DProfile.STANDARD));
 			panel.addChild(new Button("混合模式"));
 			panel.addChild(new Button("shape"));
 			panel.addChild(new Button("time 最大 最小"));

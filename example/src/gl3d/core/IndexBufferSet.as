@@ -27,6 +27,11 @@ package gl3d.core {
 				this.context = context;
 			}
 		}
+		public function dispose():void {
+			if (buff) {
+				buff.dispose();
+			}
+		}
 		
 	}
 
