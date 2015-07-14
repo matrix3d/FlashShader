@@ -2,16 +2,21 @@ package as3Shader
 {
 	import flash.display3D.Context3DProgramType;
 	/**
-	 * ...
+	 * http://zach.in.tu-clausthal.de/teaching/cg_literatur/glsl_tutorial/
+	 * http://blog.csdn.net/hgl868/article/details/7876257
 	 * @author lizhi
 	 */
 	public class GLCodeCreator extends Creator
 	{
 		private var programTypeName:String;
+		private var simpleOps1:Object = {mul:"*",m44:"*",m33:"*",m34:"*",add:"+",sub:"-",div:"/" };
+		private var simpleOps2:Object = { mov:true };
+		private var initedvar:Object = { };
 		public function GLCodeCreator() 
 		{
 			
 		}
+		
 		override public function creat(shader:AS3Shader):void 
 		{
 			var lines:Array = shader.lines;
@@ -26,19 +31,38 @@ package as3Shader
 				var log:Array = logs[i];
 				if (log) {
 					for each(var lb:Object in log) {
-						txt +="\n//"+ lb + "\n";
+						txt +="\t//"+ lb + "\n";
 					}
 				}
 				var line:Array = lines[i];
-				txt +="\t"+ var2String(line[1])+" = "+ line[0]+"(";
+				var op:String = line[0];
+				var v1var:Var = line[1] as Var;
+				var v1:String = var2String(v1var);
+				if (initedvar[v1]==null&&v1var.type==Var.TYPE_T) {
+					initedvar[v1] = true;
+					v1 = "vec4 " + v1;
+				}
+				var ps:Array = [];
 				for (var j:int = 2; j < line.length;j++ ) {
 					var v:Var = line[j];
-					txt += (j==2?"":",") + var2String(v);
+					ps.push(var2String(v));
 				}
-				if (line.flag) {
-					txt += ",<" + line.flag+">";
+				if (op2simple1(op)) {
+					txt += "\t" + v1 + " = " + ps.join(" "+op2simple1(op)+" ");
+					if (line.flag) {
+						txt += ",<" + line.flag+">";
+					}
+					txt += ";";
+				}else if (op2simple2(op)) {
+					txt += "\t" + v1 + " = " + ps;
+				}else {
+					txt += "\t" + v1 + " = " + op + "(" +ps;
+					if (line.flag) {
+						txt += ",<" + line.flag+">";
+					}
+					txt += ");";
 				}
-				txt += ");";
+				
 				txt += "\n"
 			}
 			log = logs[i];
@@ -95,7 +119,7 @@ package as3Shader
 			if (v.component) {
 				if (v.component is Var) {
 					var cv:Var = v.component as Var;
-					vtxt += "["+var2String(cv)+"+"+cv.componentOffset+"]";
+					vtxt += "["+var2String(cv)+"+"+(v.index+v.componentOffset)+"]";
 				}else {
 					vtxt += "." + v.component;
 				}
@@ -103,7 +127,12 @@ package as3Shader
 			return vtxt;
 		}
 		
-		
+		private function op2simple1(op:String):String {
+			return simpleOps1[op];
+		}
+		private function op2simple2(op:String):String {
+			return simpleOps2[op];
+		}
 	}
 
 }

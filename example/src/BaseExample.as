@@ -63,6 +63,7 @@ package
 		private var skyBoxTexture:TextureSet;
 		private var debug:TextField;
 		private var bmd:BitmapData;
+		public var skybox:Node3D;
 		public var stats:Stats;
 		public var teapot:Node3D;
 		public var material:Material = new Material;
@@ -113,7 +114,7 @@ package
 			
 			normalMapTexture = createNormalMap();
 			material.culling =  Context3DTriangleFace.NONE;
-			material.normalMapAble = true;
+			material.normalMapAble = false;
 			material.specularPower = 10;
 			material.specularAble = true;
 			material.lightAble = true;
@@ -158,7 +159,7 @@ package
 		}
 		public function initNode():void {
 			//skybox
-			var skybox:Node3D = new Node3D;
+			skybox = new Node3D;
 			skybox.material = new Material(new SkyBoxGLShader);
 			skybox.material.diffTexture = skyBoxTexture
 			skybox.material.specularPower = 10;
@@ -170,8 +171,8 @@ package
 			
 			teapot = new Node3D;
 			teapot.material = material;
-			teapot.drawable = Meshs.teapot(10);
-			//teapot.drawable = Meshs.cube(4, 4,4);
+			//teapot.drawable = Meshs.teapot(10);
+			teapot.drawable = Meshs.cube();
 			view.scene.addChild(teapot);
 			teapot.scaleX = teapot.scaleY = teapot.scaleZ = 1;
 			view.background = 0xffffff;

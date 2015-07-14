@@ -21,6 +21,7 @@ package as3Shader {
 		public var data:Object;
 		public var constLenght:int = 1;
 		public var used:Boolean = false;
+		public var name:String;
 		public function Var(type:int,index:int=0) {
 			this.type = type;
 			this.index = index;
@@ -32,8 +33,13 @@ package as3Shader {
 					var v0:String = value as String;
 					var v1:String = component as String;
 					var value2:String = "";
-					for (var i:int = 0; i < v0.length;i++ ) {
-						value2 += v1.charAt((v0.charCodeAt(i)-"x".charCodeAt(0))%v1.length);
+					for (var i:int = 0; i < v0.length; i++ ) {
+						var d:int = charCodeAt(v0,i) - charCodeAt("x",0);
+						if (d<v1.length) {
+							value2 += v1.charAt(d);
+						}else {
+							value2 += v0.charAt(i);
+						}
 					}
 					value = value2;
 				}else {
@@ -44,6 +50,13 @@ package as3Shader {
 			v.componentOffset = offset;
 			v.constLenght = constLenght;
 			return v;
+		}
+		
+		public function charCodeAt(txt:String, i:int):int {
+			if (txt.charAt(i)=="w") {
+				return 123;
+			}
+			return txt.charCodeAt(i);
 		}
 		
 		public function toString():String {

@@ -41,29 +41,25 @@ package gl3d.core.shaders
 			vs = getVertexShader(material);
 			fs = getFragmentShader(material);
 			
-			if (debug) {
-				var agalMiniAssembler:AGALMiniAssembler = new AGALMiniAssembler;
+			if (debug&&vs&&fs) {
 				trace(this);
 				var code:String = vs.code as String;
 				trace("vcode "+vs+" numline",vs.lines.length);
 				trace(code);
-				agalMiniAssembler.assemble(vs.programType, code);
+				vs.creator = new GLCodeCreator();
+				trace(vs.code);
 				code = fs.code as String;
 				trace("fcode "+fs+" numline",fs.lines.length);
 				trace(code);
-				agalMiniAssembler.assemble(fs.programType, code);
-				trace();
-				
-				vs.creator = new GLCodeCreator();
 				fs.creator = new GLCodeCreator();
-				trace("glvcode "+vs);
-				trace(vs.code);
-				//trace("glfcode "+fs);
-				//trace(fs.code);
+				trace(fs.code);
+				trace();
 			}
-			vs.creator = new AGALByteCreator(material.view.agalVersion);
-			fs.creator = new AGALByteCreator(material.view.agalVersion);
-			programSet = new ProgramSet(vs.code as ByteArray, fs.code as ByteArray);
+			if(vs&&fs){
+				vs.creator = new AGALByteCreator(material.view.agalVersion);
+				fs.creator = new AGALByteCreator(material.view.agalVersion);
+				programSet = new ProgramSet(vs.code as ByteArray, fs.code as ByteArray);
+			}
 			return programSet;
 		}
 		

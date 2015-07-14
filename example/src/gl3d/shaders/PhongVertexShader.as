@@ -150,12 +150,12 @@ package gl3d.shaders
 		public function q44(pos:Var, quas:Var, tran:Var):Var {
 			var temp:Var = add(q33(pos, mov(quas)), tran);
 			mov(1, temp.w);
-			return temp;
+			return temp.xyzw;
 		}
 		
 		public function q33(pos:Var, quas:Var):Var {
-			var t:Var = mul(2 , crs(quas.xyz, pos.xyz));
-			return add2([pos.xyz , mul(quas.w , t.xyz) , crs(quas.xyz, t.xyz)]);
+			var t:Var = mul(2 , crs(quas, pos));
+			return add2([pos , mul(quas.w , t) , crs(quas, t)]);
 		}
 	}
 

@@ -27,7 +27,7 @@ package editor
 		public var bg:BitmapData;
 		private var brushSize:int;
 		private var brushSizeSD:HUISlider;
-		private var ct:ColorTransform = new ColorTransform(.05, .05, .05, 1);
+		private var ct:ColorTransform = new ColorTransform(.02, .02, .02, 1);
 		private var ctSD:HUISlider;
 		private var isADDCB:CheckBox;
 		public function TerrainEditor() 
@@ -37,7 +37,7 @@ package editor
 			
 			bg = new BitmapData(512, 512, false, 0x7f7f7f);
 			bgLayer = new Sprite;
-			addChild(bgLayer);
+			//addChild(bgLayer);
 			bgLayer.addChild(new Bitmap(bg));
 			bgLayer.addEventListener(MouseEvent.MOUSE_MOVE, bgLayer_mouseMove);
 			
@@ -61,6 +61,14 @@ package editor
 			onBrushSizeChange(null);
 		}
 		
+		public function draw(x:Number,y:Number):void {
+			var matr:Matrix = new Matrix;
+			matr.translate( -brushSize / 2, -brushSize / 2);
+			matr.translate(x*bg.width, y*bg.height);
+			bg.draw(brush, matr, ct, isADDCB.selected?BlendMode.ADD:BlendMode.SUBTRACT, null, true);
+			dispatchEvent(new Event(Event.CHANGE));
+		}
+		
 		private function onCTChange(e:Event):void 
 		{
 			ct.redMultiplier = ct.greenMultiplier = ct.blueMultiplier = ctSD.value;
@@ -79,11 +87,7 @@ package editor
 		private function bgLayer_mouseMove(e:MouseEvent):void 
 		{
 			if (e.buttonDown) {
-				var matr:Matrix = new Matrix;
-				matr.translate( -brushSize / 2, -brushSize / 2);
-				matr.translate(mouseX, mouseY);
-				bg.draw(brush, matr, ct, isADDCB.selected?BlendMode.ADD:BlendMode.SUBTRACT, null, true);
-				dispatchEvent(new Event(Event.CHANGE));
+				draw(mouseX / bg.width, mouseY / bg.height);
 			}
 		}
 		

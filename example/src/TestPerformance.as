@@ -27,6 +27,7 @@ package
 			materialInstance = new InstanceMaterial;
 			materialInstance.wireframeAble = teapot.material.wireframeAble;
 			materialInstance.normalMapAble = material.normalMapAble;
+			view.antiAlias = 0;
 		}
 		
 		private function addNode(num:int):void {

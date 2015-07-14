@@ -4,6 +4,7 @@ package
 	import editor.TerrainEditor;
 	import flash.display.Bitmap;
 	import flash.display.BitmapData;
+	import flash.display.Stage;
 	import flash.events.Event;
 	import flash.events.MouseEvent;
 	import flash.geom.Vector3D;
@@ -181,12 +182,28 @@ package
 		{
 			stage.addEventListener(Event.ENTER_FRAME, stage_mouseMove);
 			stage.addEventListener(MouseEvent.MOUSE_UP, stage_mouseUp);
+			stage.addEventListener(MouseEvent.MOUSE_MOVE, stage_mouseMove2);
+		}
+		
+		private function stage_mouseMove2(e:MouseEvent):void 
+		{
+			if (e.target is Stage) {
+				var rayOrigin:Vector3D = new Vector3D;
+				var rayDirection:Vector3D = new Vector3D;
+				var pix:Vector3D = new Vector3D;
+				view.camera.computePickRayDirectionMouse(mouseX, mouseY, stage.stageWidth, stage.stageHeight, rayOrigin, rayDirection);
+				
+				if (terrain.rayMeshTest(rayOrigin, rayDirection, pix)) {
+					te.draw(pix.x/350+.5, pix.z/350+.5);
+				}
+			}
 		}
 		
 		private function stage_mouseUp(e:MouseEvent):void 
 		{
 			stage.removeEventListener(Event.ENTER_FRAME, stage_mouseMove);
 			stage.removeEventListener(MouseEvent.MOUSE_UP, stage_mouseUp);
+			stage.removeEventListener(MouseEvent.MOUSE_MOVE, stage_mouseMove2);
 		}
 		
 		private function stage_mouseMove(e:Event):void 

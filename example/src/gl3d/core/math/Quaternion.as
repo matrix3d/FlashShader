@@ -58,6 +58,12 @@ package gl3d.core.math{
 			tran.copyFrom(temp[0]);
 		}
 		
+		public function fromAxisAngle(axis:Vector3D, angle:Number):void {
+			var sin:Number = Math.sin(angle / 2);
+			setTo(axis.x * sin, axis.y * sin, axis.z * sin);
+			w = Math.cos(angle / 2);
+		}
+		
 		public function toMatrix(matr:Matrix3D=null):Matrix3D {
 			if (matr == null) matr = new Matrix3D();
 			HELP_VEC[1] = this;

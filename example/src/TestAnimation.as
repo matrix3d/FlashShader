@@ -30,7 +30,8 @@ package
 			p = new DAEParser;
 			p.load(null, b);
 			view.scene.addChild(p.root);
-			p.root.scaleX = p.root.scaleY = p.root.scaleZ = 0.15;
+			p.root.setRotation(-90,180,0);
+			p.root.scaleX = p.root.scaleY = p.root.scaleZ = 0.3;
 			materialInstance = new InstanceMaterial;
 			addEventListener(Event.ENTER_FRAME, enterFrame2);
 		}
@@ -55,8 +56,6 @@ package
 				clone.x = random.x * d;
 				clone.y = random.y * d;
 				clone.z = random.z * d;
-				
-				
 				changeMaterial(clone);
 				view.scene.addChild(clone);
 			}
