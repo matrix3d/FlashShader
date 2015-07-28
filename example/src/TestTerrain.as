@@ -45,7 +45,7 @@ package
 		public function TestTerrain() 
 		{
 			addChild(te);
-			te.addEventListener(Event.CHANGE, te_change);
+			te.addEventListener(TerrainEditor.CHANGE, te_change);
 			te.y = 30;
 		}
 		
@@ -55,7 +55,7 @@ package
 				tempbmd= new BitmapData(128, 128, true, 0);
 			}
 			terrain.drawable.pos.data = 
-			Meshs.terrainData(128, new Vector3D(350, 350, 350), te.bg, tempbmd);
+			Meshs.terrainData(128, new Vector3D(350, 350, 350), te.heightBitmapData, tempbmd);
 			terrain.drawable.pos.invalid = true;
 			terrain.drawable.norm.dispose();
 			terrain.drawable.norm = null;// .dispose();
@@ -133,13 +133,14 @@ package
 			material.normalMapAble = false;
 			material.diffTexture = texture;
 			material.terrainTextureSets = [getTerrainTexture(c0), getTerrainTexture(c1), getTerrainTexture(c2), getTerrainTexture(c3)];
+			te.setTextures(material.terrainTextureSets);
 			material.shader = new TerrainPhongGLShader();
 			material.reflectTexture = null;
 			
 			terrain = new Node3D;
 			terrain.material = material;
 			
-			terrain.drawable = Meshs.terrain(128,new Vector3D(350,350,350),te.bg);
+			terrain.drawable = Meshs.terrain(128,new Vector3D(350,350,350),te.heightBitmapData);
 			view.scene.addChild(terrain);
 			terrain.picking = new TerrainPicking(terrain);
 			

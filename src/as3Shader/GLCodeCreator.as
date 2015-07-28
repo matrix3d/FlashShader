@@ -4,6 +4,7 @@ package as3Shader
 	/**
 	 * http://zach.in.tu-clausthal.de/teaching/cg_literatur/glsl_tutorial/
 	 * http://blog.csdn.net/hgl868/article/details/7876257
+	 * http://kurst.co.uk/samples/aglsl/
 	 * @author lizhi
 	 */
 	public class GLCodeCreator extends Creator
@@ -26,6 +27,9 @@ package as3Shader
 			}else {
 				programTypeName = "f";
 			}
+			var uniformTxt:String = "";
+			var varyingTxt:String = "";
+			var attributeTxt:String = "";
 			var txt:String = "void main(){\n";
 			for (var i:int = 0; i < lines.length;i++ ) {
 				var log:Array = logs[i];
@@ -38,14 +42,29 @@ package as3Shader
 				var op:String = line[0];
 				var v1var:Var = line[1] as Var;
 				var v1:String = var2String(v1var);
-				if (initedvar[v1]==null&&v1var.type==Var.TYPE_T) {
+				if (initedvar[v1]==null) {
 					initedvar[v1] = true;
-					v1 = "vec4 " + v1;
+					if (v1var.type == Var.TYPE_T) {
+						v1 = "vec4 " + v1;
+					}else if (v1var.type==Var.TYPE_V) {
+						varyingTxt += "varying vec4 " + v1 + "\n";
+					}
 				}
 				var ps:Array = [];
 				for (var j:int = 2; j < line.length;j++ ) {
 					var v:Var = line[j];
-					ps.push(var2String(v));
+					var vtxt:String = var2String(v);
+					ps.push(vtxt);
+					if (initedvar[vtxt] == null) {
+						initedvar[vtxt] = true;
+						if((v.type==Var.TYPE_FS)||(v.type==Var.TYPE_C)){
+							uniformTxt += "uniform vec4 " + vtxt + "\n";
+						}else if (v.type==Var.TYPE_V) {
+							varyingTxt += "varying vec4 " + vtxt + "\n";
+						}else if (v.type==Var.TYPE_VA) {
+							attributeTxt += "attribute vec4 " + vtxt + "\n";
+						}
+					}
 				}
 				if (op2simple1(op)) {
 					txt += "\t" + v1 + " = " + ps.join(" "+op2simple1(op)+" ");
@@ -71,6 +90,7 @@ package as3Shader
 					txt +="//"+ lb + "\n";
 				}
 			}
+			txt = uniformTxt+varyingTxt+attributeTxt + txt;
 			data = txt+"}";
 		}
 		

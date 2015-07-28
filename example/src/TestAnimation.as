@@ -40,7 +40,7 @@ package
 		{
 			if (stats.fps > 30) {
 				var base:int = stats.fps - 30;
-				//addNode(base);
+				addNode(base);
 			}
 		}
 		

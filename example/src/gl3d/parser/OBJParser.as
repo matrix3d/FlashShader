@@ -16,8 +16,10 @@ package gl3d.parser
 		private var decoder:OBJDecoder;
 		public var target:Node3D = new Node3D;
 		private var hash:int = 0;
-		public function OBJParser(txt:String) 
+		private var alwaysSmoothing:Boolean;
+		public function OBJParser(txt:String,alwaysSmoothing:Boolean=false) 
 		{
+			this.alwaysSmoothing = alwaysSmoothing;
 			var t:int = getTimer();
 			decoder = new OBJDecoder(txt);
 			trace("obj decode time: " + (getTimer() - t) + " ms");
@@ -47,7 +49,7 @@ package gl3d.parser
 			var v:int = f[0];
 			var vt:int = f[1];
 			var vn:int = f[2];
-			drawable.addVertex([decoder.vs[v * 3], decoder.vs[v * 3 + 1], decoder.vs[v * 3 + 2]], [0, 0], -1,smooting?"":hash + "");
+			drawable.addVertex([decoder.vs[v * 3], decoder.vs[v * 3 + 1], decoder.vs[v * 3 + 2]], [0, 0], -1,(alwaysSmoothing||smooting)?"":hash + "");
 			hash++;
 		}
 	}

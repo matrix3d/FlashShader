@@ -50,7 +50,6 @@ package gl3d.shaders
 			tangent = buffTangent();
 			targetPosition = buffTargetPosition();
 			weight = buffWeights();
-			joint = buffJoints();
 			
 			model = uniformModel();
 			world2local = uniformWorld2Local();
@@ -64,8 +63,10 @@ package gl3d.shaders
 			var pos:Var = this.pos;
 			if (material.gpuSkin) {
 				if (material.node.skin.useQuat) {
+					joint = buffQuatJoints();
 					joints = uniformJointsQuat(material.node.skin.joints.length);//= this.uniformAmbient//floatArray(material.node.skin.joints.length*2);
 				}else {
+					joint = buffJoints();
 					joints = uniformJointsMatrix(material.node.skin.joints.length);//matrixArray(material.node.skin.joints.length);
 				}
 				var xyzw:String = "xyzw";
@@ -85,7 +86,7 @@ package gl3d.shaders
 						result = add(result, value);
 					}
 					if(material.lightAble){
-						var valueNorm:Var = mul(weight.c(c), m33(norm, joints.c(joint)));
+						var valueNorm:Var = mul(weight.c(c), material.node.skin.useQuat?q33(norm,mov(joints.c(joint))):m33(norm, joints.c(joint)));
 						if (i==0) {
 							var resultNorm:Var = valueNorm;
 						}else {

@@ -12,7 +12,7 @@ package gl3d.core.math{
 		private static var HELP_VEC:Vector.<Vector3D> = new <Vector3D>[new Vector3D(), new Vector3D(), new Vector3D(1, 1, 1)];
 		private static var HELP_MATRIX:Matrix3D = new Matrix3D();
 		public var tran:Vector3D = new Vector3D;
-		public function Quaternion(x:Number=0,y:Number=0,z:Number=0,w:Number=0) 
+		public function Quaternion(x:Number=0,y:Number=0,z:Number=0,w:Number=1) 
 		{
 			super(x, y, z, w);
 		}

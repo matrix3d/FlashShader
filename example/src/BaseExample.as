@@ -114,7 +114,7 @@ package
 			
 			normalMapTexture = createNormalMap();
 			material.culling =  Context3DTriangleFace.NONE;
-			material.normalMapAble = false;
+			material.normalMapAble = true;
 			material.specularPower = 10;
 			material.specularAble = true;
 			material.lightAble = true;
@@ -171,8 +171,8 @@ package
 			
 			teapot = new Node3D;
 			teapot.material = material;
-			//teapot.drawable = Meshs.teapot(10);
-			teapot.drawable = Meshs.cube();
+			teapot.drawable = Meshs.teapot(10);
+			//teapot.drawable = Meshs.cube();
 			view.scene.addChild(teapot);
 			teapot.scaleX = teapot.scaleY = teapot.scaleZ = 1;
 			view.background = 0xffffff;
