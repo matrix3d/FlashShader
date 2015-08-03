@@ -156,6 +156,31 @@ package gl3d.core {
          out = Matrix3DUtils.getRotation(local?this._matrix:this.world,out);
          return out;
       }
+	  
+	  public function get rotationX():Number {
+		  return getRotation(true,_temp0).x;
+	  }
+	  
+	  public function set rotationX(val:Number):void {
+		  getRotation(true, _temp0);
+		  setRotation(val, _temp0.y, _temp0.z);
+	  }  
+	  public function get rotationY():Number {
+		  return getRotation(true,_temp0).y;
+	  }
+	  
+	  public function set rotationY(val:Number):void {
+		  getRotation(true, _temp0);
+		  setRotation(_temp0.x, val, _temp0.z);
+	  } 
+	   public function get rotationZ():Number {
+		  return getRotation(true,_temp0).z;
+	  }
+	  
+	  public function set rotationZ(val:Number):void {
+		  getRotation(true, _temp0);
+		  setRotation(_temp0.x, _temp0.y, val);
+	  } 
 		
 		public function get world():Matrix3D 
 		{

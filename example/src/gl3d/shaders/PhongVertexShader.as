@@ -104,7 +104,7 @@ package gl3d.shaders
 			var viewPos:Var = m44(worldPos, view);
 			m44(viewPos, perspective,op);
 			
-			if (material.lightAble) {
+			if (material.lightAble||material.reflectTexture) {
 				var worldNorm:Var = nrm(m33(norm, model));
 				if(material.specularAble||material.reflectTexture){
 					if (material.normalMapAble) {
@@ -132,8 +132,11 @@ package gl3d.shaders
 					mov(tangent,tangentVarying)
 				}
 				if (material.reflectTexture) {
-					var w2c:Var = sub(worldPos, uniformCameraPos());
-					mov(nrm(sub(mul2([2, dp3(w2c, worldNorm), w2c]), worldNorm)),reflected);
+					var w2c:Var = nrm(sub(worldPos, uniformCameraPos()));
+					//r=2n(n.l)-l
+					mov(sub(w2c,mul2([2, worldNorm,dp3(worldNorm,w2c)])),reflected);
+					
+					//mov(norm, reflected);
 				}
 			}
 			

@@ -60,7 +60,7 @@ package
 		private var _useTexture:Boolean = true;
 		private var texture:TextureSet;
 		private var normalMapTexture:TextureSet;
-		private var skyBoxTexture:TextureSet;
+		public var skyBoxTexture:TextureSet;
 		private var debug:TextField;
 		private var bmd:BitmapData;
 		public var skybox:Node3D;
@@ -98,13 +98,16 @@ package
 			(new nyc as Bitmap).bitmapData,
 			(new pzc as Bitmap).bitmapData,
 			(new nzc as Bitmap).bitmapData
-			/*new BitmapData(1,1,false,0xff0000),
-			new BitmapData(1,1,false,0xff00),
-			new BitmapData(1,1,false,0xff),
-			new BitmapData(1,1,false,0xffff00),
-			new BitmapData(1,1,false,0xff00ff),
-			new BitmapData(1,1,false,0xffff)*/
+			/*new BitmapData(256,256,false,0xff0000),
+			new BitmapData(256,256,false,0xff00),
+			new BitmapData(256,256,false,0xff),
+			new BitmapData(256,256,false,0xffff00),
+			new BitmapData(256,256,false,0xff00ff),
+			new BitmapData(256,256,false,0xffff)*/
 			];
+			/*for each(var bmd2:BitmapData in bmds) {
+				Utils.createXorMap(bmd2);
+			}*/
 			skyBoxTexture = new TextureSet(bmd, false, true);
 			skyBoxTexture.datas = bmds;
 			
@@ -114,17 +117,17 @@ package
 			
 			normalMapTexture = createNormalMap();
 			material.culling =  Context3DTriangleFace.NONE;
-			material.normalMapAble = true;
+			material.normalMapAble = false;
 			material.specularPower = 10;
 			material.specularAble = true;
 			material.lightAble = true;
 			material.wireframeAble = false;
 			material.toonAble = false;
-			material.diffTexture = texture;
+			//material.diffTexture = texture;
 			if (material.normalMapAble) {
 				material.normalmapTexture= normalMapTexture;
 			}
-			//material.reflectTexture = skyBoxTexture;
+			material.reflectTexture = skyBoxTexture;
 			
 			initLight();
 			initNode();

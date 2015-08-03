@@ -21,6 +21,7 @@ package gl3d.core {
 		public var gl3d:GL;
 		public var scene:Node3D = new Node3D("scene");
 		public var camera:Camera3D = new Camera3D;
+		public var renderer:Render=new Render;
 		public var lights:Vector.<Light> = new <Light>[new Light];
 		public var fog:Fog;
 		public var invalid:Boolean = true;
@@ -84,7 +85,6 @@ package gl3d.core {
 			if (gl3d) {
 				if(gl3d.driverInfo == "Disposed"){
 					invalid = true;
-					//stage.stage3Ds[0].requestContext3D(Context3DRenderMode.AUTO);
 					return;
 				}
 				if (invalid) {

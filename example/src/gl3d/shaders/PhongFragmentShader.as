@@ -72,7 +72,7 @@ package gl3d.shaders
 				}
 			}
 			if (material.reflectTexture) {
-				var refc:Var = mul(1,tex(vs.reflected, reflectSampler, null, ["anisotropic16x", "miplinear", "cube"]));
+				var refc:Var = mul(1,tex(vs.reflected, reflectSampler, null, ["cube"/*,"miplinear"*/,"anisotropic16x"]));
 				mul(diffColor.xyz,refc.xyz,diffColor.xyz);
 			}
 			mov(diffColor, oc);
