@@ -18,7 +18,7 @@ package gl3d.shaders
 		public var world2local:Var //= matrix();
 		public var view:Var //= matrix();
 		public var perspective:Var //= matrix();
-		public var lightPos:Var //= uniform();
+		//public var lightPos:Var //= uniform();
 		public var joints:Var;
 		
 		
@@ -33,7 +33,7 @@ package gl3d.shaders
 		public var joint2:Var //= buff();
 		
 		public var eyeDirectionVarying:Var = varying();
-		public var posLightVarying:Var = varying();
+		public var posLightVaryings:Vector.<Var>=new Vector.<Var>;
 		public var normVarying:Var = varying();
 		public var tangentVarying:Var = varying();
 		public var uvVarying:Var = varying();
@@ -55,7 +55,7 @@ package gl3d.shaders
 			world2local = uniformWorld2Local();
 			view = uniformView();
 			perspective = uniformPerspective();
-			lightPos = uniformLightPos(0);
+			//lightPos = uniformLightPos(0);
 		}
 		
 		override public function build():void {
@@ -114,12 +114,17 @@ package gl3d.shaders
 					}
 					mov(eyeDirection, eyeDirectionVarying);
 				}
-				if (material.normalMapAble) {
-					var posLight:Var = nrm(m33(sub(m44(mov(lightPos),view), viewPos),world2local));
-				}else {
-					posLight = nrm(sub(m44(mov(lightPos),view), viewPos));
+				for (i = 0; i < material.view.lights.length; i++ ) {
+					var lightPos:Var = uniformLightPos(i);
+					if (material.normalMapAble) {
+						var posLight:Var = nrm(m33(sub(m44(mov(lightPos),view), viewPos),world2local));
+					}else {
+						posLight = nrm(sub(m44(mov(lightPos),view), viewPos));
+					}
+					var posLightVarying:Var = varying();
+					posLightVaryings.push(posLightVarying);
+					mov(posLight, posLightVarying);
 				}
-				mov(posLight, posLightVarying);
 				
 				if (material.normalMapAble) {
 					mov(nrm(m33(m33(worldNorm,view),world2local)),normVarying);

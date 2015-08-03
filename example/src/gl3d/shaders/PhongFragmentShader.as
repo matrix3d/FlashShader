@@ -20,7 +20,7 @@ package gl3d.shaders
 		public var vs:PhongVertexShader;
 		public var wireframeColor:Var //uniform();
 		public var diffColor:Var //= uniform();
-		public var lightColor:Var //= //uniform();
+		//public var lightColor:Var //= //uniform();
 		public var specular:Var //= //uniform();
 		public var ambientColor:Var //= //uniform();
 		
@@ -37,7 +37,7 @@ package gl3d.shaders
 			reflectSampler = samplerReflect();
 			wireframeColor = uniformWireframeColor();
 			diffColor = uniformMaterialColor();
-			lightColor = uniformLightColor(0);
+			//lightColor = uniformLightColor(0);
 			specular = uniformSpecular();
 			ambientColor = uniformAmbient();
 		}
@@ -50,11 +50,11 @@ package gl3d.shaders
 			}
 			var diffColor:Var = getDiffColor();
 			if (material.lightAble) {
-				for each(var light:Light in material.view.lights) {
+				for (var i:int = 0; i < material.view.lights.length;i++ ) {
 					if (phongColor == null) {
-						var phongColor:Var = getPhongColor();
+						var phongColor:Var = getPhongColor(i);
 					}else {
-						phongColor = add(phongColor, getPhongColor());
+						phongColor = add(phongColor, getPhongColor(i));
 					}
 				}
 				if (material.toonAble) {
@@ -104,8 +104,9 @@ package gl3d.shaders
 			return nrm(t);
 		}
 		
-		public function getPhongColor():Var {
-			var lightPower:Var = lightColor.w;
+		public function getPhongColor(i:int):Var {
+			var lightColor:Var=uniformLightColor(i)
+			var lightPower:Var =lightColor.w;
 			var specularPow:Var = specular.x;
 			
 			var normal:Var = vs.normVarying;
@@ -115,7 +116,7 @@ package gl3d.shaders
 				var normalMap:Var = sub(mul(tex(vs.uvVarying, normalmapSampler,null,["miplinear","anisotropic16x","repeat"]),2),1);
 			}
 			
-			var l:Var = vs.posLightVarying;
+			var l:Var = vs.posLightVaryings[i];
 			if (material.normalMapAble) {
 				n = normalMap;
 				l = local2tangent(tangent,biTangent,normal,l);

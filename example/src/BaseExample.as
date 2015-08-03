@@ -16,6 +16,7 @@ package
 	import flash.ui.MultitouchInputMode;
 	import flash.utils.ByteArray;
 	import flash.utils.getTimer;
+	import gl3d.core.Light;
 	import gl3d.ctrl.ArcBallCtrl;
 	import gl3d.ctrl.FirstPersonCtrl;
 	import gl3d.core.Material;
@@ -123,7 +124,7 @@ package
 			material.lightAble = true;
 			material.wireframeAble = false;
 			material.toonAble = false;
-			//material.diffTexture = texture;
+			material.diffTexture = texture;
 			if (material.normalMapAble) {
 				material.normalmapTexture= normalMapTexture;
 			}
@@ -159,6 +160,11 @@ package
 		
 		public function initLight():void {
 			view.lights[0].z = -450;
+			view.lights[1] = new Light;
+			view.lights[1].z = 450;
+			view.lights[1].color = new <Number>[1,0,0,1];
+			view.lights[0].color = new <Number>[0,1,0,1];
+			//view.scene.addChild(view.lights[1]);
 		}
 		public function initNode():void {
 			//skybox
