@@ -3,6 +3,7 @@ package gl3d.core {
 	import flash.display3D.Context3DProgramType;
 	import flash.display3D.Program3D;
 	import flash.utils.ByteArray;
+	import gl3d.core.renders.GL;
 	/**
 	 * ...
 	 * @author lizhi

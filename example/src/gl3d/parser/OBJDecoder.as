@@ -25,9 +25,9 @@ package gl3d.parser
 						mtllibs.push(data[1]);
 						break;
 					case "usemtl":
-						if (currentGroup==null) {
+						///*if (currentGroup==null) {
 							currentGroup = createGroup();
-						}
+						//}*/
 						currentGroup.mtl = data[1];
 						break;
 					case "o":

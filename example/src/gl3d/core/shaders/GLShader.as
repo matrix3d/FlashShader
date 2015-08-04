@@ -9,7 +9,7 @@ package gl3d.core.shaders
 	import as3Shader.AS3Shader;
 	import as3Shader.GLCodeCreator;
 	import gl3d.core.Camera3D;
-	import gl3d.core.GL;
+	import gl3d.core.renders.GL;
 	import gl3d.core.shaders.GLAS3Shader;
 	import gl3d.core.Material;
 	import gl3d.core.Node3D;
@@ -30,7 +30,7 @@ package gl3d.core.shaders
 		public var programSet:ProgramSet;
 		public var textureSets:Array=[];
 		public var buffSets:Array;
-		public var debug:Boolean = true;
+		public var debug:Boolean = false;
 		public function GLShader() 
 		{
 			textureSets = [];
@@ -56,8 +56,8 @@ package gl3d.core.shaders
 				trace();
 			}
 			if(vs&&fs){
-				vs.creator = new AGALByteCreator(material.view.agalVersion);
-				fs.creator = new AGALByteCreator(material.view.agalVersion);
+				vs.creator = new AGALByteCreator(material.view.renderer.agalVersion);
+				fs.creator = new AGALByteCreator(material.view.renderer.agalVersion);
 				programSet = new ProgramSet(vs.code as ByteArray, fs.code as ByteArray);
 			}
 			return programSet;
@@ -80,8 +80,8 @@ package gl3d.core.shaders
 				vs.bind(this,material);
 				fs.bind(this, material);
 				
-				material.view.gl3d.setProgramConstantsFromVector(Context3DProgramType.VERTEX, vs.constMemLen, vs.constPoolVec);
-				material.view.gl3d.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, fs.constMemLen, fs.constPoolVec);
+				material.view.renderer.gl3d.setProgramConstantsFromVector(Context3DProgramType.VERTEX, vs.constMemLen, vs.constPoolVec);
+				material.view.renderer.gl3d.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, fs.constMemLen, fs.constPoolVec);
 			}
 		}
 		
@@ -92,25 +92,25 @@ package gl3d.core.shaders
 				var textureSet:TextureSet = textureSets[i];
 				if (textureSet) {
 					textureSet.update(material.view);
-					textureSet.bind(material.view.gl3d, i);
+					textureSet.bind(material.view.renderer.gl3d, i);
 				}
 			}
 			if(buffSets)
 			for (i = 0; i < buffSets.length;i++ ) {
 				var buffSet:VertexBufferSet = buffSets[i];
 				if (buffSet) {
-					buffSet.update(material.view.gl3d);
-					buffSet.bind(material.view.gl3d, i);
+					buffSet.update(material.view.renderer.gl3d);
+					buffSet.bind(material.view.renderer.gl3d, i);
 				}
 			}
 			
 			if (programSet) {
-				programSet.update(material.view.gl3d);
-				material.view.gl3d.setProgram(programSet.program);
-				material.view.gl3d.setDepthTest(true, material.passCompareMode);
-				material.view.gl3d.setBlendFactors(material.sourceFactor, material.destinationFactor);
-				material.view.gl3d.setCulling(material.culling);
-				material.view.gl3d.drawTriangles(material.node.drawable.index.buff);
+				programSet.update(material.view.renderer.gl3d);
+				material.view.renderer.gl3d.setProgram(programSet.program);
+				material.view.renderer.gl3d.setDepthTest(true, material.passCompareMode);
+				material.view.renderer.gl3d.setBlendFactors(material.sourceFactor, material.destinationFactor);
+				material.view.renderer.gl3d.setCulling(material.culling);
+				material.view.renderer.gl3d.drawTriangles(material.node.drawable.index.buff);
 			}
 		}
 	}

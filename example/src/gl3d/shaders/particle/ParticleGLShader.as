@@ -5,7 +5,7 @@ package gl3d.shaders.particle {
 	import as3Shader.AS3Shader;
 	import gl3d.core.Camera3D;
 	import gl3d.core.Drawable3D;
-	import gl3d.core.GL;
+	import gl3d.core.renders.GL;
 	import gl3d.core.Material;
 	import gl3d.meshs.Meshs;
 	import gl3d.core.Node3D;

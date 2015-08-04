@@ -23,7 +23,6 @@ package gl3d.core {
 		public var unpackedDrawable:Drawable3D;
 		public var material:Material;
 		public var name:String;
-		public var trs:Vector.<Vector3D> = Vector.<Vector3D>([new Vector3D(), new Vector3D(), new Vector3D(1, 1, 1)]);
 		public var picking:Picking = new AS3Picking;
 		public var controllers:Vector.<Ctrl>;
 		public var skin:Skin;
@@ -56,14 +55,14 @@ package gl3d.core {
 			n.parent = null;
 		}
 		
-		public function update(view:View3D):void {
+		public function update(view:View3D,material:Material=null):void {
 			if (controllers) {
 				for each(var c:Ctrl in controllers) {
 					c.update();
 				}
 			}
-			if (material) {
-				material.draw(this,view);
+			if (this.material) {
+				(material||this.material).draw(this,view);
 			}
 		}
 		

@@ -73,7 +73,7 @@ package gl3d.util
 			
 			var text:String = "";
 			if (view) {
-				text += "num : " + view.collects.length;
+				text += "num : " + view.renderer.collects.length;
 				text += "\ndraw : " + view.drawCounter
 				text += "\ntri : " + view.drawTriangleCounter;
 				text += "\nantiAlias : " + view.antiAlias;

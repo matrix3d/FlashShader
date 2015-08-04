@@ -1,6 +1,7 @@
 package gl3d.core {
 	import flash.display3D.Context3D;
 	import flash.geom.Vector3D;
+	import gl3d.core.renders.GL;
 	import gl3d.meshs.Meshs;
 	/**
 	 * ...

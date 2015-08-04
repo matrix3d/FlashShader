@@ -162,11 +162,12 @@ package
 			view.lights[0].z = -450;
 			view.lights[1] = new Light;
 			view.lights[1].z = 450;
-			view.lights[1].color = new <Number>[1,0,0,1];
-			view.lights[0].color = new <Number>[0,1,0,1];
-			//view.scene.addChild(view.lights[1]);
+			//view.lights[1].color = new <Number>[1,0,0,1];
+			//view.lights[0].color = new <Number>[0,1,0,1];
+			view.scene.addChild(view.lights[1]);
 		}
-		public function initNode():void {
+		
+		public function addSky():void {
 			//skybox
 			skybox = new Node3D;
 			skybox.material = new Material(new SkyBoxGLShader);
@@ -176,7 +177,10 @@ package
 			skybox.material.culling = Context3DTriangleFace.BACK;
 			skybox.drawable = Meshs.cube(200,200,200);
 			view.scene.addChild(skybox);
-			
+		}
+		
+		public function initNode():void {
+			addSky();
 			
 			teapot = new Node3D;
 			teapot.material = material;

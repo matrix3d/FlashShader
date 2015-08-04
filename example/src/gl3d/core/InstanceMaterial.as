@@ -2,6 +2,7 @@ package gl3d.core
 {
 	import flash.display3D.Context3D;
 	import flash.display3D.Context3DProgramType;
+	import gl3d.core.renders.GL;
 	import gl3d.shaders.PhongVertexShader;
 	/**
 	 * ...

@@ -1,4 +1,4 @@
-package gl3d.core 
+package gl3d.core.renders 
 {
 	import flash.display.BitmapData;
 	import flash.display3D.Context3D;

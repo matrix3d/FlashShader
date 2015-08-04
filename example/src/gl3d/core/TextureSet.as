@@ -7,6 +7,7 @@ package gl3d.core {
 	import flash.display3D.textures.Texture;
 	import flash.display3D.textures.TextureBase;
 	import flash.geom.Matrix;
+	import gl3d.core.renders.GL;
 	/**
 	 * ...
 	 * @author lizhi
@@ -47,7 +48,7 @@ package gl3d.core {
 		}
 		
 		public function update(view:View3D):void {
-			var context:GL = view.gl3d;
+			var context:GL = view.renderer.gl3d;
 			if (invalid||this.context!=context) {
 				if (texture != null) texture.dispose();
 				if (isRect) {
