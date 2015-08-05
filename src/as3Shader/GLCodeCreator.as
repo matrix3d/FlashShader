@@ -10,8 +10,38 @@ package as3Shader
 	public class GLCodeCreator extends Creator
 	{
 		private var programTypeName:String;
-		private var simpleOps1:Object = {mul:"*",m44:"*",m33:"*",m34:"*",add:"+",sub:"-",div:"/" };
-		private var simpleOps2:Object = { mov:true };
+		private static var simpleOps1:Object = {mul:"*",m44:"*",m33:"*",m34:"*",add:"+",sub:"-",div:"/" };
+		private static var simpleOps2:Object = { mov:["",""],neg:["-",""] ,rcp:["1/",""],sat:["clamp(",",0,1)"]};
+		private static var simpleOps3:Object = {  
+			//rcp
+			//min
+			//max
+			frc:"fract",
+			sqt:"sqrt",
+			rsq:"inversesqrt",
+			//pow
+			//log
+			//exp
+			nrm:"normalize",
+			//sin
+			//cos
+			crs:"cross",
+			dp3:"dot",
+			dp4:"dot",
+			//abs
+			//neg
+			//sat:"clamp(v,0,1)",
+			//ddx
+			//ddy
+			//ted
+			//kil*/
+			tex:"texture2D",
+			sge:"greaterThanEqual",
+			slt:"lessThan",
+			sgn:"greaterThan",
+			seq:"equal",
+			sne:"notEqual"
+		};
 		private var initedvar:Object = { };
 		public function GLCodeCreator() 
 		{
@@ -45,24 +75,25 @@ package as3Shader
 				if (initedvar[v1]==null) {
 					initedvar[v1] = true;
 					if (v1var.type == Var.TYPE_T) {
-						v1 = "vec4 " + v1;
+						v1 = var2type(v1var)+" " + v1;
 					}else if (v1var.type==Var.TYPE_V) {
-						varyingTxt += "varying vec4 " + v1 + "\n";
+						varyingTxt += "varying "+var2type(v1var)+" " + v1 + ";\n";
 					}
 				}
 				var ps:Array = [];
 				for (var j:int = 2; j < line.length;j++ ) {
 					var v:Var = line[j];
-					var vtxt:String = var2String(v);
+					var vtxt:String = var2String(v.root,false);
+					var vtype:String = var2type(v);
 					ps.push(vtxt);
 					if (initedvar[vtxt] == null) {
 						initedvar[vtxt] = true;
 						if((v.type==Var.TYPE_FS)||(v.type==Var.TYPE_C)){
-							uniformTxt += "uniform vec4 " + vtxt + "\n";
+							uniformTxt += "uniform "+vtype+" " + vtxt + ";\n";
 						}else if (v.type==Var.TYPE_V) {
-							varyingTxt += "varying vec4 " + vtxt + "\n";
+							varyingTxt += "varying "+vtype+" " + vtxt + ";\n";
 						}else if (v.type==Var.TYPE_VA) {
-							attributeTxt += "attribute vec4 " + vtxt + "\n";
+							attributeTxt += "attribute "+vtype+" " + vtxt + ";\n";
 						}
 					}
 				}
@@ -73,9 +104,9 @@ package as3Shader
 					}
 					txt += ";";
 				}else if (op2simple2(op)) {
-					txt += "\t" + v1 + " = " + ps;
+					txt += "\t" + v1 + " = " +op2simple2(op)[0]+ ps+op2simple2(op)[1]+";";
 				}else {
-					txt += "\t" + v1 + " = " + op + "(" +ps;
+					txt += "\t" + v1 + " = " + op2simple3(op) + "(" +ps;
 					if (line.flag) {
 						txt += ",<" + line.flag+">";
 					}
@@ -92,6 +123,12 @@ package as3Shader
 			}
 			txt = uniformTxt+varyingTxt+attributeTxt + txt;
 			data = txt+"}";
+		}
+		
+		private function var2type(v:Var):String {
+			if (v.type == Var.TYPE_FS) return "sampler2D";
+			if (v.constLenght == 1) return "vec4";
+			return "mat" + v.constLenght;
 		}
 		
 		private function var2StringNoIndex(v:Var):String {
@@ -122,7 +159,7 @@ package as3Shader
 			return vtxt;
 		}
 		
-		private function var2String(v:Var):String {
+		private function var2String(v:Var,hasComponent:Boolean=true):String {
 			var vtxt:String = var2StringNoIndex(v);
 			if (v.component && v.component is Var) {
 				
@@ -136,7 +173,7 @@ package as3Shader
 						vtxt += v.index;
 				}
 			}
-			if (v.component) {
+			if (hasComponent&&v.component) {
 				if (v.component is Var) {
 					var cv:Var = v.component as Var;
 					vtxt += "["+var2String(cv)+"+"+(v.index+v.componentOffset)+"]";
@@ -150,9 +187,11 @@ package as3Shader
 		private function op2simple1(op:String):String {
 			return simpleOps1[op];
 		}
-		private function op2simple2(op:String):String {
+		private function op2simple2(op:String):Array {
 			return simpleOps2[op];
 		}
+		private function op2simple3(op:String):String {
+			return simpleOps3[op]||op;
+		}
 	}
-
 }

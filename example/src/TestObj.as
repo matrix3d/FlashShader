@@ -1,6 +1,7 @@
 package 
 {
 	import flash.events.Event;
+	import gl3d.core.Node3D;
 	import gl3d.core.renders.GraphicsRender;
 	import gl3d.parser.OBJParser;
 	/**

@@ -34,10 +34,9 @@ package gl3d.particle
 		public var colorMax:Vector.<Number>=new <Number>[1,1,0,0];
 		public function Particle() 
 		{
-			
 		}
 		
-		override public function update(view:View3D):void 
+		override public function update(view:View3D,material:Material=null):void 
 		{
 			if (invalid) {
 				if(isBillboard){
@@ -56,14 +55,13 @@ package gl3d.particle
 					drawable = Meshs.mul(shape, count);
 					drawable.randomStep = shape.pos.data.length / 3;
 				}
-				material = new Material;
-				material.color = new <Number>[1,0,0,0];
-				material.diffTexture = new TextureSet(Utils.createBlurSphere());
-				material.blendModel = BlendMode.ADD;
-				material.passCompareMode = Context3DCompareMode.ALWAYS;
-				material.shader = new ParticleGLShader;
+				this.material = new Material;
+				this.material.color = new <Number>[1,0,0,1];
+				this.material.diffTexture = new TextureSet(Utils.createBlurSphere());
+				this.material.blendModel = BlendMode.ADD;
+				this.material.passCompareMode = Context3DCompareMode.ALWAYS;
+				this.material.shader = new ParticleGLShader;
 				
-				invalid = false;
 			}
 			super.update(view);
 		}

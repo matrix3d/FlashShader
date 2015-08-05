@@ -10,8 +10,8 @@ package gl3d.core {
 	 */
 	public class ProgramSet 
 	{
-		private var vcode:ByteArray;
-		private var fcode:ByteArray;
+		public var vcode:ByteArray;
+		public var fcode:ByteArray;
 		private var invalid:Boolean = true;
 		private var context:GL;
 		public var program:Program3D;

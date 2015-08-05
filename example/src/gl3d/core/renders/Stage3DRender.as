@@ -22,6 +22,7 @@ package gl3d.core.renders
 	 */
 	public class Stage3DRender extends Render
 	{
+		public var renderTarget:TextureSet;
 		public function Stage3DRender(view:View3D) 
 		{
 			super(view);
@@ -66,7 +67,7 @@ package gl3d.core.renders
 					view.stage3dHeight = view.stage.stageHeight;
 					gl3d.configureBackBuffer(view.stage3dWidth, view.stage3dHeight, view.antiAlias);
 				}
-				if (view.posts.length) {
+				/*if (view.posts.length) {
 					var len:int = view.posts.length>1?2:1;
 					for (var i:int = 0; i < len; i++ ) {
 						if (view.invalid) {
@@ -76,6 +77,11 @@ package gl3d.core.renders
 						}
 					}
 					gl3d.setRenderToTexture(view.postRTTs[0].texture, true, view.antiAlias);
+				}else {
+					gl3d.setRenderToBackBuffer();
+				}*/
+				if (renderTarget) {
+					gl3d.setRenderToTexture(renderTarget.texture, true, view.antiAlias);
 				}else {
 					gl3d.setRenderToBackBuffer();
 				}
@@ -88,7 +94,7 @@ package gl3d.core.renders
 				for each(var node:Node3D in collects) {
 					node.update(view);
 				}
-				if (view.posts.length) {
+				/*if (view.posts.length) {
 					for (i = 0; i < view.posts.length; i++ ) {
 						var post:PostEffect = view.posts[i];
 						post.update(view,i==view.posts.length-1);
@@ -98,7 +104,7 @@ package gl3d.core.renders
 							view.postRTTs[1] = temp;
 						}
 					}
-				}
+				}*/
 				gl3d.present();
 			}
 		}

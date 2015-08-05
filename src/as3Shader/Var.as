@@ -22,12 +22,20 @@ package as3Shader {
 		public var constLenght:int = 1;
 		public var used:Boolean = false;
 		public var name:String;
+		public var parent:Var;
 		public function Var(type:int,index:int=0) {
 			this.type = type;
 			this.index = index;
 		}
+		
+		public function get root():Var {
+			if (parent == null) return this;
+			return parent.root;
+		}
+		
 		public function c(value:Object,offset:int=0):Var {
 			var v:Var = new Var(type, index);
+			v.parent = this;
 			if (component) {
 				if (component is String&&value is String) {
 					var v0:String = value as String;
