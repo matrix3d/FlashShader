@@ -7,18 +7,19 @@ package gl3d.core
 	public class Fog 
 	{
 		public static const FOG_NONE:int = 0;
-		/**exp(d*density)*/
+		/**1/exp(d*density)*/
 		public static const FOG_EXP:int = 1;
-		/**exp((d*density)^2)*/
-		public static const EXP2:int = 2;
-		/**(end-d*density)/(end-start)*/
-		public static const LINEAR:int = 3;
+		/**1/exp((d*density)^2)*/
+		//public static const FOG_EXP2:int = 2;
+		/**(end-d)/(end-start)*/
+		//public static const FOG_LINEAR:int = 3;
 		
-		public var mode:int;
+		public var mode:int = FOG_NONE;
 		/**密度*/
-		public var density:Number = 1;
+		public var density:Number = 0.03;
 		public var start:Number = 0;
 		public var end:Number = 1;
+		public var fogColor:Array = [1,1,1];
 		public function Fog() 
 		{
 			

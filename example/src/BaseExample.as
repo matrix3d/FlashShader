@@ -16,6 +16,7 @@ package
 	import flash.ui.MultitouchInputMode;
 	import flash.utils.ByteArray;
 	import flash.utils.getTimer;
+	import gl3d.core.Fog;
 	import gl3d.core.Light;
 	import gl3d.ctrl.ArcBallCtrl;
 	import gl3d.ctrl.FirstPersonCtrl;
@@ -175,7 +176,7 @@ package
 			skybox.material.specularPower = 10;
 			skybox.material.color = new <Number>[.5,.5,.5,.5];
 			skybox.material.culling = Context3DTriangleFace.BACK;
-			skybox.drawable = Meshs.cube(200,200,200);
+			skybox.drawable = Meshs.cube(2000,2000,2000);
 			view.scene.addChild(skybox);
 		}
 		

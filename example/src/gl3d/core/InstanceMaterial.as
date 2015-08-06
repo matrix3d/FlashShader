@@ -17,7 +17,7 @@ package gl3d.core
 		
 		override public function draw(node:Node3D, view:View3D):void 
 		{
-			var context:GL = view.gl3d;
+			var context:GL = view.renderer.gl3d;
 			var pvs:PhongVertexShader = node.copyfrom.material.shader.vs as PhongVertexShader
 			if(pvs){
 				context.setProgramConstantsFromMatrix(Context3DProgramType.VERTEX, pvs.model.index, node.world, true);

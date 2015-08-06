@@ -30,28 +30,30 @@ package gl3d.parser
 			t = getTimer();
 			for each(var o:Object in decoder.objs) {
 				for each(var g:Object in o.g) {
-					var node:Node3D = new Node3D;
-					target.addChild(node);
-					var drawable:Drawable3D = new Drawable3D;
-					drawable.index = new IndexBufferSet(new <uint>[]);
-					drawable.pos = new VertexBufferSet(new <Number>[],3);
-					drawable.uv = new VertexBufferSet(new <Number>[],2);
-					node.drawable = drawable;
-					node.material = new Material;
-					if (mtldecode) {
-						var mtl:Array = mtldecode.getmtl(g.mtl);
-						if (mtl[3]) {
-							node.material.color[0] = mtl[3][0];
-							node.material.color[1] = mtl[3][1];
-							node.material.color[2] = mtl[3][2];
+					if(g.f.length){
+						var node:Node3D = new Node3D;
+						target.addChild(node);
+						var drawable:Drawable3D = new Drawable3D;
+						drawable.index = new IndexBufferSet(new <uint>[]);
+						drawable.pos = new VertexBufferSet(new <Number>[],3);
+						drawable.uv = new VertexBufferSet(new <Number>[],2);
+						node.drawable = drawable;
+						node.material = new Material;
+						if (mtldecode&&g.mtl) {
+							var mtl:Array = mtldecode.getmtl(g.mtl);
+							if (mtl&&mtl[3]) {
+								node.material.color[0] = mtl[3][0];
+								node.material.color[1] = mtl[3][1];
+								node.material.color[2] = mtl[3][2];
+							}
 						}
-					}
-					
-					for each(var f:Array in g.f) {
-						for (var i:int = 2, len:int = f.length; i < len ; i++ ) {
-							addVertex(drawable,f[0],g.s);
-							addVertex(drawable,f[i-1],g.s);
-							addVertex(drawable,f[i],g.s);
+						
+						for each(var f:Array in g.f) {
+							for (var i:int = 2, len:int = f.length; i < len ; i++ ) {
+								addVertex(drawable,f[0],g.s);
+								addVertex(drawable,f[i-1],g.s);
+								addVertex(drawable,f[i],g.s);
+							}
 						}
 					}
 				}

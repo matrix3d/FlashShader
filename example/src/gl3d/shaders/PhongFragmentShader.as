@@ -4,6 +4,7 @@ package gl3d.shaders
 	import flash.display3D.textures.Texture;
 	import as3Shader.AS3Shader;
 	import as3Shader.Var;
+	import gl3d.core.Fog;
 	import gl3d.core.shaders.GLAS3Shader;
 	import gl3d.core.Light;
 	import gl3d.core.Material;
@@ -74,6 +75,11 @@ package gl3d.shaders
 			if (material.reflectTexture) {
 				var refc:Var = mul(1,tex(vs.reflected, reflectSampler, null, ["cube"/*,"miplinear"*/,"anisotropic16x"]));
 				mul(diffColor.xyz,refc.xyz,diffColor.xyz);
+			}
+			if (material.view.fog.mode == Fog.FOG_EXP) {
+				var d:Var = distance(uniformCameraPos(), vs.fogModelPos, 3);
+				var f:Var = rcp(exp(mul(d, material.view.fog.density)));
+				mix(material.view.fog.fogColor,diffColor.xyz,f,diffColor.xyz);
 			}
 			mov(diffColor, oc);
 		}
