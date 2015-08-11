@@ -112,7 +112,8 @@ package gl3d.core.shaders
 			return null;
 		}
 		
-		public function preUpdate(material:Material):void {
+		public function update(material:Material):void 
+		{
 			if (invalid) {
 				programSet = getProgram(material);
 				invalid = false;
@@ -124,10 +125,6 @@ package gl3d.core.shaders
 				material.view.renderer.gl3d.setProgramConstantsFromVector(Context3DProgramType.VERTEX, vs.constMemLen, vs.constPoolVec);
 				material.view.renderer.gl3d.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, fs.constMemLen, fs.constPoolVec);
 			}
-		}
-		
-		public function update(material:Material):void 
-		{
 			if(textureSets)
 			for (var i:int = 0; i < textureSets.length;i++ ) {
 				var textureSet:TextureSet = textureSets[i];

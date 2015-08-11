@@ -40,13 +40,13 @@ package gl3d.shaders.posts
 			return fshader;
 		}
 		
-		override public function preUpdate(material:Material):void {
+		/*override public function preUpdate(material:Material):void {
 			super.preUpdate(material);
 			textureSets[0] = material.diffTexture;
 			buffSets.length = 0;
 			buffSets[0] = material.node.drawable.pos;
 			buffSets[1] = material.node.drawable.uv;
-		}
+		}*/
 		
 		override public function update(material:Material):void 
 		{

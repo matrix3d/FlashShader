@@ -30,8 +30,8 @@ package gl3d.shaders
 		public var targetPosition:Var //= buff();
 		public var weight:Var //= buff();
 		public var joint:Var //= buff();
-		public var weight2:Var //= buff();
-		public var joint2:Var //= buff();
+		//public var weight2:Var //= buff();
+		//public var joint2:Var //= buff();
 		
 		public var eyeDirectionVarying:Var = varying();
 		public var posLightVaryings:Vector.<Var>=new Vector.<Var>;
@@ -65,21 +65,21 @@ package gl3d.shaders
 			var pos:Var = this.pos;
 			if (material.gpuSkin) {
 				if (material.node.skin.useQuat) {
-					joint = buffQuatJoints();
+					joint = mul(2,buffJoints());
 					joints = uniformJointsQuat(material.node.skin.joints.length);//= this.uniformAmbient//floatArray(material.node.skin.joints.length*2);
 				}else {
-					joint = buffJoints();
+					joint = mul(4,buffJoints());
 					joints = uniformJointsMatrix(material.node.skin.joints.length);//matrixArray(material.node.skin.joints.length);
 				}
 				var xyzw:String = "xyzw";
 				for (var i:int = 0; i < material.node.skin.maxWeight; i++ ) {
 					var c:String = xyzw.charAt(i % 4);
 					if (material.node.skin.useQuat) {
-						var joint:Var = i<4?this.joint.c(c):this.joint2.c(c);
-						var value:Var = mul(i<4?weight.c(c):weight2.c(c), q44(pos, joints.c(joint),joints.c(joint,1)));
+						var joint:Var = this.joint.c(c)/*:this.joint2.c(c)*/;
+						var value:Var = mul(weight.c(c)/*:weight2.c(c)*/, q44(pos, joints.c(joint),joints.c(joint,1)));
 					}else {
-						joint = i<4?this.joint.c(c):this.joint2.c(c);
-						value = mul(i<4?weight.c(c):weight2.c(c), m44(pos, joints.c(joint)));
+						joint = this.joint.c(c)/*:this.joint2.c(c)*/;
+						value = mul(/*i<4?*/weight.c(c)/*:weight2.c(c)*/, m44(pos, joints.c(joint)));
 					}
 					
 					if (i==0) {
@@ -153,7 +153,7 @@ package gl3d.shaders
 			if (material.wireframeAble) {
 				mov(targetPosition,targetPositionVarying);
 			}
-			if (material.view.fog.mode==Fog.FOG_EXP) {
+			if (material.view.fog.mode!=Fog.FOG_NONE) {
 				mov(worldPos, fogModelPos);
 			}
 		}

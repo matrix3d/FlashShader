@@ -76,9 +76,17 @@ package gl3d.shaders
 				var refc:Var = mul(1,tex(vs.reflected, reflectSampler, null, ["cube"/*,"miplinear"*/,"anisotropic16x"]));
 				mul(diffColor.xyz,refc.xyz,diffColor.xyz);
 			}
-			if (material.view.fog.mode == Fog.FOG_EXP) {
+			var fog:Fog = material.view.fog;
+			if (fog.mode != Fog.FOG_NONE) {
 				var d:Var = distance(uniformCameraPos(), vs.fogModelPos, 3);
-				var f:Var = rcp(exp(mul(d, material.view.fog.density)));
+				if (fog.mode == Fog.FOG_EXP) {
+					var f:Var = rcp(exp(mul(d, fog.density)));
+				}else if (fog.mode==Fog.FOG_EXP2) {
+					f = rcp(exp(pow(mul(d, fog.density),2)));
+				}else if (fog.mode==Fog.FOG_LINEAR) {
+					f = sat(div(sub(fog.end , d) , sub(fog.end , fog.start)));
+				}
+				
 				mix(material.view.fog.fogColor,diffColor.xyz,f,diffColor.xyz);
 			}
 			mov(diffColor, oc);

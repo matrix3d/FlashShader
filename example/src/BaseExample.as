@@ -161,11 +161,11 @@ package
 		
 		public function initLight():void {
 			view.lights[0].z = -450;
-			view.lights[1] = new Light;
-			view.lights[1].z = 450;
+			//view.lights[1] = new Light;
+			//view.lights[1].z = 450;
 			//view.lights[1].color = new <Number>[1,0,0,1];
 			//view.lights[0].color = new <Number>[0,1,0,1];
-			view.scene.addChild(view.lights[1]);
+			//view.scene.addChild(view.lights[1]);
 		}
 		
 		public function addSky():void {

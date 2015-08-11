@@ -143,9 +143,9 @@ package gl3d.core.shaders
 		public function bindJointsBuff(shader:GLShader,material:Material):void {
 			if(v.used)shader.buffSets[v.index] = material.node.drawable.joints;
 		}
-		public function bindQuatJointsBuff(shader:GLShader,material:Material):void {
+		/*public function bindQuatJointsBuff(shader:GLShader,material:Material):void {
 			if(v.used)shader.buffSets[v.index] = material.node.drawable.quatJoints;
-		}
+		}*/
 		public function bindWeightsBuff(shader:GLShader,material:Material):void {
 			if(v.used)shader.buffSets[v.index] = material.node.drawable.weights;
 		}

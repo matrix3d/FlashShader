@@ -20,13 +20,15 @@ package gl3d.core {
 		public var lightmapUV:VertexBufferSet;
 		
 		public var joints:VertexBufferSet;
-		public var quatJoints:VertexBufferSet;
+		//public var quatJoints:VertexBufferSet;
 		public var weights:VertexBufferSet;
 		public var cpuSkinPos:VertexBufferSet;
 		
 		private var _index:IndexBufferSet;
 		public var id2index:Object = { };
 		public var oldIndex2NewIndexs:Array = [];
+		
+		public var unpackedDrawable:Drawable3D;
 		public function Drawable3D() 
 		{
 			

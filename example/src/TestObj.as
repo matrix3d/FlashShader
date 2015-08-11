@@ -27,8 +27,10 @@ package
 		
 		override public function initNode():void 
 		{
-			view.fog.mode = Fog.FOG_EXP;
-			addSky();
+			view.fog.mode = Fog.FOG_LINEAR;
+			view.fog.fogColor = [0x84 / 0xff, 0x98 / 0xff, 0xbe / 0xff];
+			view.background = 0x8498be;
+			//addSky();
 			var p:Node3D = new Node3D();
 			p.drawable = Meshs.plane(5000);
 			p.y = -2;
@@ -42,8 +44,6 @@ package
 			
 			[Embed(source = "assets/RB_Bumblebee_TEXTSET_Color_NormX.jpg")]var bc:Class;
 			loader.target.children[0].material.reflectTexture = skyBoxTexture;
-			
-			loader.target.children[0].material.diffTexture = new TextureSet(new BitmapData(1,1,false,0xBBBB00));
 			view.scene.addChild(loader.target);
 			loader.target.y = -2;
 			//loader.target.scaleX = loader.target.scaleY = loader.target.scaleZ = .01;

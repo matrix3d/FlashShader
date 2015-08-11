@@ -20,7 +20,6 @@ package gl3d.core {
 		private var _matrix:Matrix3D = new Matrix3D;
 		public var children:Vector.<Node3D> = new Vector.<Node3D>;
 		public var drawable:Drawable3D;
-		public var unpackedDrawable:Drawable3D;
 		public var material:Material;
 		public var name:String;
 		public var picking:Picking = new AS3Picking;
@@ -28,8 +27,8 @@ package gl3d.core {
 		public var skin:Skin;
 		public var type:String;
 		public var copyfrom:Node3D;
-		public var dirty:Boolean = true;
-		protected var dirtyInv:Boolean = true;
+		private var dirty:Boolean = true;
+		private var dirtyInv:Boolean = true;
 		
 		private static var _temp0:Vector3D = new Vector3D();
       

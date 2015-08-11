@@ -7,9 +7,9 @@ package gl3d.parser
 	public class ColladaParser 
 	{
 		
-		public function ColladaParser() 
+		public function ColladaParser(txt:String) 
 		{
-			
+			var decoder:ColladaDecoder = new ColladaDecoder(txt);
 		}
 		
 	}

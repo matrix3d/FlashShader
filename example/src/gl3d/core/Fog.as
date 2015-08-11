@@ -10,15 +10,15 @@ package gl3d.core
 		/**1/exp(d*density)*/
 		public static const FOG_EXP:int = 1;
 		/**1/exp((d*density)^2)*/
-		//public static const FOG_EXP2:int = 2;
+		public static const FOG_EXP2:int = 2;
 		/**(end-d)/(end-start)*/
-		//public static const FOG_LINEAR:int = 3;
+		public static const FOG_LINEAR:int = 3;
 		
 		public var mode:int = FOG_NONE;
 		/**密度*/
 		public var density:Number = 0.03;
-		public var start:Number = 0;
-		public var end:Number = 1;
+		public var start:Number = 10;
+		public var end:Number = 100;
 		public var fogColor:Array = [1,1,1];
 		public function Fog() 
 		{

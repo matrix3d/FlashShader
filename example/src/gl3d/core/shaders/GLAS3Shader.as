@@ -280,7 +280,7 @@ package gl3d.core.shaders
 			binds.push(binder.bindJointsBuff);
 			return buff;
 		}
-		public function buffQuatJoints():Var {
+		/*public function buffQuatJoints():Var {
 			var name:String = "bqjoints";
 			if (getNamedVar(name)) return getNamedVar(name);
 			var buff:Var = buff();
@@ -288,7 +288,7 @@ package gl3d.core.shaders
 			var binder:GLBinder = new GLBinder(this,buff);
 			binds.push(binder.bindQuatJointsBuff);
 			return buff;
-		}
+		}*/
 		public function buffWeights():Var {
 			var name:String = "bweights";
 			if (getNamedVar(name)) return getNamedVar(name);

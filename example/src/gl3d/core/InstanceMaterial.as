@@ -27,7 +27,7 @@ package gl3d.core
 				
 				node = node.copyfrom || node;
 				if (wireframeAble) {
-					context.drawTrianglesInstance(node.unpackedDrawable.index.buff);
+					//context.drawTrianglesInstance(node.unpackedDrawable.index.buff);
 				}else {
 					context.drawTrianglesInstance(node.drawable.index.buff);
 				}

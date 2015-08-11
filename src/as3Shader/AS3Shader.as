@@ -99,17 +99,19 @@ package as3Shader {
 			//optimize temp
 			for (i = 1,len=startEnds.length; i <len ;i++ ) {
 				var startEnd:Array = startEnds[i];
-				var start:int = startEnd[0];
-				for (j = 0; j < i;j++ ) {
-					var startEnd2:Array = startEnds[j];
-					if (start > startEnd2[1]) {//找到没被使用的变量
-						for each(v in ttypePool[i]) {
-							v.index = j;
+				if(startEnd){
+					var start:int = startEnd[0];
+					for (j = 0; j < i;j++ ) {
+						var startEnd2:Array = startEnds[j];
+						if (start > startEnd2[1]) {//找到没被使用的变量
+							for each(v in ttypePool[i]) {
+								v.index = j;
+							}
+							startEnd2[1] = startEnd[1];
+							startEnd[0] = 0;
+							startEnd[1] = 0;
+							break;
 						}
-						startEnd2[1] = startEnd[1];
-						startEnd[0] = 0;
-						startEnd[1] = 0;
-						break;
 					}
 				}
 			}

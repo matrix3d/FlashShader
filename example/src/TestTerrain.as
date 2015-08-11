@@ -10,6 +10,7 @@ package
 	import flash.geom.Vector3D;
 	import flash.system.System;
 	import flash.utils.ByteArray;
+	import gl3d.core.Fog;
 	import gl3d.core.InstanceMaterial;
 	import gl3d.ctrl.ArcBallCtrl;
 	import gl3d.ctrl.Ctrl;

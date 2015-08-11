@@ -61,22 +61,17 @@ package gl3d.core {
 			if (node.drawable&&shader) {
 				var context:GL = view.renderer.gl3d;
 				if (wireframeAble) {
-					if (node.unpackedDrawable==null) {
-						node.unpackedDrawable = Meshs.unpack(node.drawable);
+					if (node.drawable.unpackedDrawable==null) {
+						node.drawable.unpackedDrawable = Meshs.unpack(node.drawable);
 					}
-					node.unpackedDrawable.update(context);
+					node.drawable.unpackedDrawable.update(context);
 				}
 				node.drawable.update(context);
-				/*if (textureSets) {
-					for each(var textureSet:TextureSet in textureSets) {
-						textureSet.update(view);
-					}
-				}*/
 				if (invalid) {
 					shader.invalid = true;
 					invalid = false;
 				}
-				shader.preUpdate(this);
+				//shader.preUpdate(this);
 				shader.update(this);
 			}
 		}

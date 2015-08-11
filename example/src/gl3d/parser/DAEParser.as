@@ -828,7 +828,7 @@ package gl3d.parser
 			
 			drawable.weights = new VertexBufferSet(new Vector.<Number>(gskin.maxWeight*drawable.pos.data.length/3), gskin.maxWeight);
 			drawable.joints = new VertexBufferSet(new Vector.<Number>(gskin.maxWeight*drawable.pos.data.length/3), gskin.maxWeight);
-			drawable.quatJoints = new VertexBufferSet(new Vector.<Number>(gskin.maxWeight*drawable.pos.data.length/3), gskin.maxWeight);
+			//drawable.quatJoints = new VertexBufferSet(new Vector.<Number>(gskin.maxWeight*drawable.pos.data.length/3), gskin.maxWeight);
 			for each(weights in skin.vertex_weights) {
 				for (i = 0; i < weights.length;i++ ) {
 					var weight:DaeBlendWeight = weights[i];
@@ -836,16 +836,16 @@ package gl3d.parser
 					for each(var newIndex:int in drawable.oldIndex2NewIndexs[weight.vertexIndex]) {
 						var index:int = gskin.maxWeight * newIndex+ i;
 						drawable.weights.data[index] = weight.weight;
-						drawable.joints.data[index] = jointId * 4;
-						drawable.quatJoints.data[index] = jointId * 2;
+						drawable.joints.data[index] = jointId ;
+						//drawable.quatJoints.data[index] = jointId * 2;
 					}
 				}
 			}
-			if (gskin.maxWeight > 4) {
+			/*if (gskin.maxWeight > 4) {
 				drawable.weights.subBuffs = [[0,0, VertexBufferSet.FORMATS[4]],[0,4, VertexBufferSet.FORMATS[gskin.maxWeight-4]]]
 				drawable.joints.subBuffs = [[0,0, VertexBufferSet.FORMATS[4]],[0,4, VertexBufferSet.FORMATS[gskin.maxWeight-4]]]
-				drawable.quatJoints.subBuffs = [[0, 0, VertexBufferSet.FORMATS[4]], [0, 4, VertexBufferSet.FORMATS[gskin.maxWeight - 4]]]
-			}
+				//drawable.quatJoints.subBuffs = [[0, 0, VertexBufferSet.FORMATS[4]], [0, 4, VertexBufferSet.FORMATS[gskin.maxWeight - 4]]]
+			}*/
 		}
 		
 		/**
