@@ -16,7 +16,6 @@ package
 		
 		override public function initNode():void 
 		{
-			
 			[Embed(source = "assets/astroBoy_walk_Max.dae", mimeType = "application/octet-stream")]var c:Class;
 			var decoder:ColladaDecoder = new ColladaDecoder(new c + "");
 			decoder.scenes[0].scaleX=

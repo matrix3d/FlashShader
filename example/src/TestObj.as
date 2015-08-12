@@ -42,8 +42,8 @@ package
 			[Embed(source = "assets/miku.mtl", mimeType = "application/octet-stream")]var c2:Class;
 			loader = new OBJParser(new c +"", true, new c2 +"");
 			
-			[Embed(source = "assets/RB_Bumblebee_TEXTSET_Color_NormX.jpg")]var bc:Class;
-			loader.target.children[0].material.reflectTexture = skyBoxTexture;
+			/*[Embed(source = "assets/RB_Bumblebee_TEXTSET_Color_NormX.jpg")]var bc:Class;
+			loader.target.children[0].material.reflectTexture = skyBoxTexture;*/
 			view.scene.addChild(loader.target);
 			loader.target.y = -2;
 			//loader.target.scaleX = loader.target.scaleY = loader.target.scaleZ = .01;

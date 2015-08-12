@@ -5,8 +5,12 @@ package gl3d.parser
 	import gl3d.core.Material;
 	import gl3d.core.Node3D;
 	import gl3d.core.skin.Skin;
+	import gl3d.core.skin.SkinAnimation;
 	import gl3d.core.skin.SkinFrame;
+	import gl3d.core.skin.Track;
+	import gl3d.core.skin.TrackFrame;
 	import gl3d.core.VertexBufferSet;
+	import gl3d.ctrl.Ctrl;
 	import gl3d.meshs.Meshs;
 	/**
 	 * ...
@@ -24,7 +28,10 @@ package gl3d.parser
 		private var geometries:Object;
 		private var controllers:Object;
 		private var visualScenes:Object;
-		private var jointmap:Object = { };
+		private var sid2node:Object = { };
+		private var id2node:Object = { };
+		private var skinNodes:Vector.<Node3D> = new Vector.<Node3D>;
+		private var anim:SkinAnimation;
 		public function ColladaDecoder(txt:String) 
 		{
 			txt = txt.replace(/xmlns=[^"]*"[^"]*"/g,"");
@@ -60,14 +67,15 @@ package gl3d.parser
 		}
 		
 		private function getJointBySID(id:String):Node3D {
-			if (jointmap[id]==null) {
-				jointmap[id] = new Node3D;
+			if (sid2node[id]==null) {
+				sid2node[id] = new Node3D;
 			}
-			return jointmap[id];
+			return sid2node[id];
 		}
 		
 		private function buildNode(nodeXML:XML, node:Node3D):void {
 			node.name = nodeXML.@name;
+			id2node[nodeXML.@id] = node;
 			node.type = nodeXML.@type;
 			if (nodeXML.matrix.length()) {
 				node.matrix = str2Matrixs(nodeXML.matrix[0])[0];
@@ -103,6 +111,7 @@ package gl3d.parser
 			var controllerXML:XML = controllers[(nodeXML.@url).substr(1)];
 			for each(var childXML:XML in controllerXML.skin) {
 				var skinNode:Node3D = new Node3D;
+				skinNodes.push(skinNode);
 				node.addChild(skinNode);
 				buildGeometry(geometries[(childXML.@source).substr(1)], skinNode);
 				
@@ -110,9 +119,9 @@ package gl3d.parser
 				var weightsXML:XML = childXML.vertex_weights[0];
 				var vcount:Array = str2Floats(weightsXML.vcount.text());
 				var v:Array = str2Floats(weightsXML.v.text());
-				var weights:Array = str2Floats(childXML.source.(@id=[(weightsXML.input.(@semantic = "WEIGHT").@source).toString().substr(1)]).float_array.text());
-				var invBindMatrixs:Array = str2Matrixs(childXML.source.(@id = [(childXML.joints.input.(@semantic = "INV_BIND_MATRIX").@source).toString().substr(1)]).float_array.text());
-				var jointNames:Array = str2Strs(childXML.source.(@id = [(weightsXML.input.(@semantic = "JOINT").@source).toString().substr(1)]).Name_array.text());
+				var weights:Array = str2Floats(childXML.source.(@id==((weightsXML.input.(@semantic == "WEIGHT").@source).toString().substr(1))).float_array.text());
+				var invBindMatrixs:Array = str2Matrixs(childXML.source.(@id == ((childXML.joints.input.(@semantic == "INV_BIND_MATRIX").@source).toString().substr(1))).float_array.text());
+				var jointNames:Array = str2Strs(childXML.source.(@id == ((weightsXML.input.(@semantic == "JOINT").@source).toString().substr(1))).Name_array.text());
 				var joints:Vector.<Node3D> = new Vector.<Node3D>;
 				for each(var jointName:String in jointNames) {
 					joints.push(getJointBySID(jointName));
@@ -139,13 +148,16 @@ package gl3d.parser
 				for each(var childNode:Node3D in skinNode.children) {
 					var skin:Skin = new Skin;
 					childNode.skin = skin;
-					//childNode.material.gpuSkin = true;
+					childNode.material.gpuSkin = true;
 					skin.invBindMatrixs =Vector.<Matrix3D>(invBindMatrixs);
 					skin.maxWeight = maxWeight;
 					skin.joints = joints;
 			
 					skin.skinFrame = new SkinFrame;
 					skin.skinFrame.quaternions = new Vector.<Number>(jointNames.length*4*2);
+					for each(var joint:Node3D in skin.joints) {
+						skin.skinFrame.matrixs.push(new Matrix3D);
+					}
 					
 					var drawable:Drawable3D = childNode.drawable;
 					drawable.joints=new  VertexBufferSet(Vector.<Number>(js),maxWeight);
@@ -210,91 +222,59 @@ package gl3d.parser
 		}
 		
 		private function buildAnimation():void {
+			anim = new SkinAnimation;
+			var temp:Vector.<Number> = new Vector.<Number>(16);
 			for (var animname:String in animations) {
 				var animXML:XML = animations[animname];
+				var track:Track = new Track;
+				anim.tracks.push(track);
 				for each(var channelXML:XML in animXML.channel) {
-					var samplerXML:XML = animXML.sampler.(@id = [channelXML.@source.substr(1)])[0];
-				}
-			}
-			trace(1);
-			/*var areg = /(.+)\/(.+)\((\d+)\)\((\d+)\)/;
-			var areg2 = /(.+)\/(.+)/;
-			var item = new AnimationItem();
-			var parts = new Vector();
-			var maxTime = .0;
-			for (child in dae.elements()) {
-				if (child.nodeName == "library_animations") {
-					for (xa in child.elements()) {
-						if (xa.nodeName=="animation") {
-							var anm = new AnimationPart();
-							parts.push(anm);
-							for (channel in xa.elements()) {
-								if (channel.nodeName == "channel") {
-									var sourceId = channel.get("source").substr(1);
-									var sampler = XPath.xpathNode(xa, "sampler@id="+sourceId);
-									var inputId =XPath.xpathNode(sampler,"input@semantic=INPUT").get("source").substr(1);
-									var outputId = XPath.xpathNode(sampler, "input@semantic=OUTPUT").get("source").substr(1);
-									var input = str2Floats(XPath.xpathNodeValue(xa, "source@id=" + inputId + "/float_array"));
-									var output = str2Floats(XPath.xpathNodeValue(xa, "source@id=" + outputId + "/float_array"));
-									for (tt in input) {
-										if (maxTime < tt) maxTime = tt;
-									}
-									var target = channel.get("target");
-									var can = new Channel();
-									if (areg.match(target)) {
-										var targetId = areg.matched(1);
-										anm.target = id2node.get(targetId);
-										var targetKey = areg.matched(2);
-										if(targetKey=="transform"){
-											var x = Std.parseInt(areg.matched(3));
-											var y = Std.parseInt(areg.matched(4));
-											can.input = input;
-											can.output = output;
-											can.index = y + x * 4;
-											if (can.index != 15) {
-												anm.channels.push(can);
-											}
-										}
-										
-									}else {
-										if (areg2.match(target)) {
-											var targetId = areg2.matched(1);
-											anm.target = id2node.get(targetId);
-											var targetKey = areg2.matched(2);
-											if(targetKey=="transform"){
-												can.input = input;
-												can.outputMatrix3Ds = floats2Matrixs(output);
-												can.index = -1;
-												anm.channels.push(can);
-											}
-										}else {
-											throw "error";
-										}
-									}
-								}
+					var samplerXML:XML = animXML.sampler.(@id == (channelXML.@source.substr(1)))[0];
+					var input:Array= str2Floats(animXML.source.(@id==((samplerXML.input.(@semantic == "INPUT").@source).toString().substr(1))).float_array.text());
+					var output:Array = str2Floats(animXML.source.(@id == ((samplerXML.input.(@semantic == "OUTPUT").@source).toString().substr(1))).float_array.text());
+					var targetLine:String = channelXML.@target;
+					var result:Object;
+					if ((result = /(.+)\/(.+)\((\d+)\)\((\d+)\)/.exec(targetLine))) {
+						if (result[2]=="transform") {
+							var index:int = parseInt(result[4]) + result[3] * 4;
+							if (index == 15) {
+								result = null;
 							}
+						}
+					}else if ((result = /(.+)\/(.+)/.exec(targetLine))) {
+						if (result[2] == "transform") {
+							var ms:Array = floats2Matrixs(output);
+							index = -1;
+						}
+					}
+					if (result) {
+						track.target = id2node[result[1]];
+						for (var i:int = 0; i < input.length;i++ ) {
+							if (i >= track.frames.length) {
+								track.frames.push(new TrackFrame);
+								var frame:TrackFrame = track.frames[i];
+								frame.matrix = new Matrix3D;
+								frame.time = input[i];
+								if (frame.time > anim.endTime) anim.endTime = frame.time;
+							}
+							frame = track.frames[i];
+							if (index == -1) {
+								frame.matrix = ms[i];
+							}else {
+								frame.matrix.copyRawDataTo(temp);
+								temp[index] = output[i];
+								frame.matrix.copyRawDataFrom(temp);
+							}
+							
 						}
 					}
 				}
 			}
-			
-			var time = .0;
-			while(time<=maxTime){//缓存动画矩阵
-				for (anm in parts) {//cpu做动画
-					anm.doAnimation(time,maxTime);
-				}
-				for (skin in skins) {//缓存所有动画矩阵
-					var matrixs = [];
-					item.frames.push(matrixs);
-					for (i in 0...skin.joints.length) {
-						var joint = skin.joints[i];
-						matrixs.push(joint.matrix.clone());
-					}
-				}
-				time += 1 / 60;
+			for each(var skinnode:Node3D in skinNodes) {
+				skinnode.controllers = new Vector.<Ctrl>;
+				skinnode.controllers.push(anim);
+				anim.target = skinnode.children[0];
 			}
-			AnimationUtils.startCache(skins[0],wireframe);
-			AnimationUtils.startCacheAnim(skins[0], item);*/
 		}
 		
 		private function str2Strs(str:String):Array {
