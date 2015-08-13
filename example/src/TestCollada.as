@@ -22,6 +22,8 @@ package
 			decoder.scenes[0].scaleY=
 			decoder.scenes[0].scaleZ = 1 / 3;
 			view.scene.addChild(decoder.scenes[0]);
+			decoder.scenes[0].rotationX = -90;
+			decoder.scenes[0].rotationY = 180;
 		}
 	}
 

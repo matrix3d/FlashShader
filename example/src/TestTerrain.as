@@ -19,7 +19,7 @@ package
 	import gl3d.core.Material;
 	import gl3d.meshs.Meshs;
 	import gl3d.core.Node3D;
-	import gl3d.parser.DAEParser;
+	import gl3d.parser.ColladaDecoder;
 	import gl3d.parser.OBJEncoder;
 	import gl3d.pick.TerrainPicking;
 	import gl3d.shaders.TerrainPhongGLShader;
@@ -39,7 +39,7 @@ package
 		private var moving:Boolean = true;
 		private var isClick:Boolean = false;
 		private var players:Array = [];
-		private var p:DAEParser;
+		private var p:ColladaDecoder;
 		private var materialInstance:InstanceMaterial = new InstanceMaterial;
 		private var te:TerrainEditor = new TerrainEditor;
 		private var tempbmd:BitmapData ;
@@ -158,12 +158,11 @@ package
 			[Embed(source = "assets/astroBoy_walk_Max.dae", mimeType = "application/octet-stream")]var c:Class;
 			//[Embed(source = "assets/test.FBX.dae", mimeType = "application/octet-stream")]var c:Class;
 			var ba:ByteArray = new c as ByteArray;
-			p = new DAEParser;
-			p.load(null, ba);
+			p = new ColladaDecoder(ba + "");
 			player = new Node3D;
-			player.addChild(p.root);
+			player.addChild(p.scenes[0]);
 			//p.root.scaleX = p.root.scaleY = p.root.scaleZ = .05;
-			p.root.setRotation( -90, 0, 0);// -Math.PI / 2 ;
+			p.scenes[0].setRotation( -90, 0, 0);// -Math.PI / 2 ;
 			//p.root.rotationY = 0;// -Math.PI;
 			view.scene.addChild(player);
 			addNode(30);

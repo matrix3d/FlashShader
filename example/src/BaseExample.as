@@ -27,7 +27,6 @@ package
 	import gl3d.hlbsp.Wad;
 	import gl3d.meshs.Meshs;
 	import gl3d.core.Node3D;
-	import gl3d.parser.DAEParser;
 	import gl3d.pick.AS3Picking;
 	import gl3d.post.PostEffect;
 	import gl3d.shaders.posts.AsciiArtShader;

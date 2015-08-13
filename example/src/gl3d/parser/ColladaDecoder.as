@@ -20,6 +20,7 @@ package gl3d.parser
 	{
 		private var xml:XML;
 		public var scenes:Vector.<Node3D> = new Vector.<Node3D>;
+		private var animationIDs:Array = [];
 		private var animations:Object;
 		private var lights:Object;
 		private var images:Object;
@@ -40,7 +41,7 @@ package gl3d.parser
 			var instanceScenesXML:XMLList = xml.scene.instance_visual_scene;
 			
 			
-			animations = parserLibrary("library_animations","animation");
+			animations = parserLibrary("library_animations","animation",animationIDs);
 			lights = parserLibrary("library_lights","light");
 			images = parserLibrary("library_images","image");
 			materials =parserLibrary("library_materials","material");
@@ -57,11 +58,12 @@ package gl3d.parser
 			buildAnimation();
 		}
 		
-		private function parserLibrary(libname:String, name:String):Object {
+		private function parserLibrary(libname:String, name:String,ids:Array=null):Object {
 			var obj:Object = { };
 			var list:XMLList = xml[libname][name];
 			for each(var c:XML in list) {
 				obj[c.@id] = c;
+				if(ids)ids.push(c.@id + "");
 			}
 			return  obj;
 		}
@@ -74,6 +76,8 @@ package gl3d.parser
 		}
 		
 		private function buildNode(nodeXML:XML, node:Node3D):void {
+			//node.drawable = Meshs.cube(.4,.4,.4);
+			//node.material = new Material;
 			node.name = nodeXML.@name;
 			id2node[nodeXML.@id] = node;
 			node.type = nodeXML.@type;
@@ -136,9 +140,8 @@ package gl3d.parser
 				var k:int = 0;
 				for each(count in vcount ) {
 					for (var i:int = 0; i < count; i++ ) {
-						js.push(v[k]);
-						ws.push(weights[k]);
-						k++;
+						js.push(v[k++]);
+						ws.push(weights[v[k++]]);
 					}
 					for (; i < maxWeight;i++ ) {
 						js.push(0);
@@ -149,15 +152,9 @@ package gl3d.parser
 					var skin:Skin = new Skin;
 					childNode.skin = skin;
 					childNode.material.gpuSkin = true;
-					skin.invBindMatrixs =Vector.<Matrix3D>(invBindMatrixs);
+					skin.invBindMatrixs = Vector.<Matrix3D>(invBindMatrixs);
 					skin.maxWeight = maxWeight;
 					skin.joints = joints;
-			
-					skin.skinFrame = new SkinFrame;
-					skin.skinFrame.quaternions = new Vector.<Number>(jointNames.length*4*2);
-					for each(var joint:Node3D in skin.joints) {
-						skin.skinFrame.matrixs.push(new Matrix3D);
-					}
 					
 					var drawable:Drawable3D = childNode.drawable;
 					drawable.joints=new  VertexBufferSet(Vector.<Number>(js),maxWeight);
@@ -169,19 +166,19 @@ package gl3d.parser
 		private function buildGeometry(nodeXML:XML, node:Node3D):void 
 		{
 			var vs:Array = str2Floats(getVerticesById((nodeXML.mesh.vertices.@id), nodeXML.mesh[0]).float_array.text());
-			var vs2:Array = [];
-			for (var x:int = 0, len:int = vs.length; x < len;x+=3 ) {
+			var vs2:Array = vs;// [];
+			/*for (var x:int = 0, len:int = vs.length; x < len;x+=3 ) {
 				vs2.push(vs[x]);
-				vs2.push(vs[x+2]);
 				vs2.push(vs[x+1]);
-			}
+				vs2.push(vs[x+2]);
+			}*/
 			for each(var triangleXML:XML in nodeXML.mesh.triangles) {
 				//var uv:Array = str2Floats(getVerticesById((triangleXML.input.(@semantic = "TEXCOORD").@source),nodeXML.mesh[0]).float_array);
 				var inc:Vector.<uint> = new Vector.<uint>;
 				var uvinc:Vector.<uint> = new Vector.<uint>;
 				var parray:Array = str2Floats(triangleXML.p);
 				var i:int = 0;
-				len = parray.length;
+				var len:int = parray.length;
 				var maxOffset:int = 0;
 				var vertexOffset:int = 0;
 				var uvOffset:int = 0;
@@ -197,12 +194,12 @@ package gl3d.parser
 				var adder:int = maxOffset + 1;
 				while (i < len) {
 					inc.push(parray[i+vertexOffset]);
-					inc.push(parray[i +vertexOffset+ adder]);
 					inc.push(parray[i  +vertexOffset +adder*2]);
+					inc.push(parray[i +vertexOffset+ adder]);
 					
 					uvinc.push(parray[i + uvOffset]);
-					uvinc.push(parray[i + uvOffset+adder]);
 					uvinc.push(parray[i + uvOffset+adder*2]);
+					uvinc.push(parray[i + uvOffset+adder]);
 					i += adder*3;
 				}
 				var childNode:Node3D = new Node3D;
@@ -223,58 +220,58 @@ package gl3d.parser
 		
 		private function buildAnimation():void {
 			anim = new SkinAnimation;
-			var temp:Vector.<Number> = new Vector.<Number>(16);
-			for (var animname:String in animations) {
+			for each(var animname:String in animationIDs) {
 				var animXML:XML = animations[animname];
+				var part:AnimationPart = new AnimationPart;
 				var track:Track = new Track;
 				anim.tracks.push(track);
 				for each(var channelXML:XML in animXML.channel) {
+					var can:Channel = new Channel;
 					var samplerXML:XML = animXML.sampler.(@id == (channelXML.@source.substr(1)))[0];
-					var input:Array= str2Floats(animXML.source.(@id==((samplerXML.input.(@semantic == "INPUT").@source).toString().substr(1))).float_array.text());
-					var output:Array = str2Floats(animXML.source.(@id == ((samplerXML.input.(@semantic == "OUTPUT").@source).toString().substr(1))).float_array.text());
+					can.input= str2Floats(animXML.source.(@id==((samplerXML.input.(@semantic == "INPUT").@source).toString().substr(1))).float_array.text());
+					can.output = str2Floats(animXML.source.(@id == ((samplerXML.input.(@semantic == "OUTPUT").@source).toString().substr(1))).float_array.text());
 					var targetLine:String = channelXML.@target;
-					var result:Object;
+					var result:Object=null;
 					if ((result = /(.+)\/(.+)\((\d+)\)\((\d+)\)/.exec(targetLine))) {
 						if (result[2]=="transform") {
-							var index:int = parseInt(result[4]) + result[3] * 4;
-							if (index == 15) {
-								result = null;
+							can.index = parseInt(result[4]) + parseInt(result[3])*4;
+							if (can.index != 15) {
+								part.channels.push(can);
 							}
 						}
 					}else if ((result = /(.+)\/(.+)/.exec(targetLine))) {
 						if (result[2] == "transform") {
-							var ms:Array = floats2Matrixs(output);
-							index = -1;
+							can.outputMatrix3Ds = floats2Matrixs(can.output);
+							can.index = -1;
+							part.channels.push(can);
 						}
 					}
 					if (result) {
 						track.target = id2node[result[1]];
-						for (var i:int = 0; i < input.length;i++ ) {
-							if (i >= track.frames.length) {
-								track.frames.push(new TrackFrame);
-								var frame:TrackFrame = track.frames[i];
-								frame.matrix = new Matrix3D;
-								frame.time = input[i];
-								if (frame.time > anim.endTime) anim.endTime = frame.time;
+						for (var i:int = 0; i < can.input.length; i++ ) {
+							if (anim.endTime < can.input[i]) {
+								anim.endTime = can.input[i];
 							}
-							frame = track.frames[i];
-							if (index == -1) {
-								frame.matrix = ms[i];
-							}else {
-								frame.matrix.copyRawDataTo(temp);
-								temp[index] = output[i];
-								frame.matrix.copyRawDataFrom(temp);
-							}
-							
 						}
 					}
+				}
+				var time:Number = 0;
+				var matrix:Matrix3D = new Matrix3D;
+				while(time<=anim.endTime){//缓存动画矩阵
+					var frame:TrackFrame = new TrackFrame;
+					part.doAnimation(time, anim.endTime, matrix);
+					frame.time = time;
+					frame.matrix = part.target.clone();
+					track.frames.push(frame);
+					time += 1 / 60;
 				}
 			}
 			for each(var skinnode:Node3D in skinNodes) {
 				skinnode.controllers = new Vector.<Ctrl>;
 				skinnode.controllers.push(anim);
-				anim.target = skinnode.children[0];
+				anim.targets = skinnode.children;
 			}
+			//a.debugTrace();
 		}
 		
 		private function str2Strs(str:String):Array {
@@ -298,18 +295,18 @@ package gl3d.parser
 			return ret;
 		}
 		
-		private function str2Matrixs(str:String):Array{
+		private function str2Matrixs(str:String,transpose:Boolean=true):Array{
 			var vs:Array = str2Floats(str);
-			return floats2Matrixs(vs);
+			return floats2Matrixs(vs,transpose);
 		}
 		
-		private function floats2Matrixs(vs:Array):Array {
+		private function floats2Matrixs(vs:Array,transpose:Boolean=true):Array {
 			var ms:Array = [];
 			var i:int = 0;
 			var vs2:Vector.<Number> = Vector.<Number>(vs);
 			while (i < vs2.length) {
 				var m:Matrix3D = new Matrix3D();
-				m.copyRawDataFrom(vs2, i, true);
+				m.copyRawDataFrom(vs2, i, transpose);
 				ms.push(m);
 				i += 16;
 			}
@@ -330,5 +327,62 @@ package gl3d.parser
 			return null;
 		}
 	}
+}
+import flash.geom.Matrix3D;
 
+class AnimationPart
+{
+	public var target:Matrix3D;
+	public var channels:Vector.<Channel>=new Vector.<Channel>;
+	public function AnimationPart() 
+	{
+	}
+	
+	public function doAnimation(time:Number, maxTime:Number,target:Matrix3D):void {
+		this.target = target;
+		var rd:Vector.<Number> = target.rawData;
+		for each(var channel:Channel in channels) {
+			var i:int = 0;
+			var len:int = channel.input.length;
+			while (i < len) {
+				if (channel.input[i] > time) {
+					break;
+				}
+				i++;
+			}
+			var j:int = i - 1;
+			var v:Number = 0;
+			if (j < 0) {
+				j = len - 1;
+				v =(time-channel.input[j]+maxTime) / (channel.input[i] - channel.input[j]+maxTime);
+			}else if (i>=len) {
+				i = 0;
+				v = (time-channel.input[j]) / (channel.input[i]+maxTime - channel.input[j]);
+			}else {
+				v = (time-channel.input[j]) / (channel.input[i] - channel.input[j]);
+			}
+			if (channel.index == -1) {
+				var mj:Matrix3D = channel.outputMatrix3Ds[j];
+				var mi:Matrix3D = channel.outputMatrix3Ds[i];
+				var m:Matrix3D= Matrix3D.interpolate(mi,mj, v);
+				m.copyRawDataTo(rd);
+			}else {
+				rd[channel.index] = channel.output[j] + (channel.output[i] - channel.output[j]) * v;
+			}
+		}
+		target.copyRawDataFrom(rd); 
+	}
+}
+
+class Channel
+{
+	public var index:int;
+	public var input:Array
+	public var output:Array;
+	public var outputMatrix3Ds:Array;
+	public function Channel() 
+	{
+		
+	}
+	
 }
