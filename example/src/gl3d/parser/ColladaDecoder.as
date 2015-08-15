@@ -172,49 +172,53 @@ package gl3d.parser
 				vs2.push(vs[x+1]);
 				vs2.push(vs[x+2]);
 			}*/
-			for each(var triangleXML:XML in nodeXML.mesh.triangles) {
-				//var uv:Array = str2Floats(getVerticesById((triangleXML.input.(@semantic = "TEXCOORD").@source),nodeXML.mesh[0]).float_array);
-				var inc:Vector.<uint> = new Vector.<uint>;
-				var uvinc:Vector.<uint> = new Vector.<uint>;
-				var parray:Array = str2Floats(triangleXML.p);
-				var i:int = 0;
-				var len:int = parray.length;
-				var maxOffset:int = 0;
-				var vertexOffset:int = 0;
-				var uvOffset:int = 0;
-				for each(var childXML:XML in triangleXML.input) {
-					var offset:int = parseInt(childXML.@offset);
-					if (offset > maxOffset) maxOffset = offset;
-					if (childXML.@semantic=="VERTEX") {
-						vertexOffset = offset;
-					}else if (childXML.@semantic=="TEXCOORD") {
-						uvOffset = offset;
+			for each(var faceXML:XML in nodeXML.mesh.children()) {
+				var name:String = faceXML.localName();
+				if (name == "polylist" || name == "triangles") {
+					var triangleXML:XML = faceXML;
+					var inc:Vector.<uint> = new Vector.<uint>;
+					var uvinc:Vector.<uint> = new Vector.<uint>;
+					var parray:Array = str2Floats(triangleXML.p);
+					var i:int = 0;
+					var len:int = parray.length;
+					var maxOffset:int = 0;
+					var vertexOffset:int = 0;
+					var uvOffset:int = 0;
+					for each(var childXML:XML in triangleXML.input) {
+						var offset:int = parseInt(childXML.@offset);
+						if (offset > maxOffset) maxOffset = offset;
+						if (childXML.@semantic=="VERTEX") {
+							vertexOffset = offset;
+						}else if (childXML.@semantic=="TEXCOORD") {
+							uvOffset = offset;
+						}
 					}
-				}
-				var adder:int = maxOffset + 1;
-				while (i < len) {
-					inc.push(parray[i+vertexOffset]);
-					inc.push(parray[i  +vertexOffset +adder*2]);
-					inc.push(parray[i +vertexOffset+ adder]);
+					var adder:int = maxOffset + 1;
+					while (i < len) {
+						inc.push(parray[i+vertexOffset]);
+						inc.push(parray[i  +vertexOffset +adder*2]);
+						inc.push(parray[i +vertexOffset+ adder]);
+						
+						uvinc.push(parray[i + uvOffset]);
+						uvinc.push(parray[i + uvOffset+adder*2]);
+						uvinc.push(parray[i + uvOffset+adder]);
+						i += adder*3;
+					}
+					var childNode:Node3D = new Node3D;
+					childNode.drawable = Meshs.createDrawable(Vector.<uint>(inc), Vector.<Number>(vs2), null, null);
+					childNode.material = new Material;
 					
-					uvinc.push(parray[i + uvOffset]);
-					uvinc.push(parray[i + uvOffset+adder*2]);
-					uvinc.push(parray[i + uvOffset+adder]);
-					i += adder*3;
+					var materialName:String = triangleXML.@material;
+					if (materials[materialName]) {
+						var mxml:XML = materials[materialName];
+						var effname:String = (mxml.instance_effect[0].@url).substr(1);
+						var exml:XML = effects[effname];
+						childNode.material.color = Vector.<Number>(str2Floats(exml.profile_COMMON.technique.phong.specular.color));
+						childNode.material.ambient = Vector.<Number>(str2Floats(exml.profile_COMMON.technique.phong.ambient.color));
+					}
+					node.addChild(childNode);
 				}
-				var childNode:Node3D = new Node3D;
-				childNode.drawable = Meshs.createDrawable(Vector.<uint>(inc), Vector.<Number>(vs2), null, null);
-				childNode.material = new Material;
 				
-				var materialName:String = triangleXML.@material;
-				if (materials[materialName]) {
-					var mxml:XML = materials[materialName];
-					var effname:String = (mxml.instance_effect[0].@url).substr(1);
-					var exml:XML = effects[effname];
-					childNode.material.color = Vector.<Number>(str2Floats(exml.profile_COMMON.technique.phong.specular.color));
-					childNode.material.ambient = Vector.<Number>(str2Floats(exml.profile_COMMON.technique.phong.ambient.color));
-				}
-				node.addChild(childNode);
 			}
 		}
 		
