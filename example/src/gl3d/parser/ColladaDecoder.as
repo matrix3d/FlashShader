@@ -12,6 +12,7 @@ package gl3d.parser
 	import gl3d.core.VertexBufferSet;
 	import gl3d.ctrl.Ctrl;
 	import gl3d.meshs.Meshs;
+	import gl3d.util.Converter;
 	/**
 	 * ...
 	 * @author lizhi
@@ -33,6 +34,7 @@ package gl3d.parser
 		private var id2node:Object = { };
 		private var skinNodes:Vector.<Node3D> = new Vector.<Node3D>;
 		private var anim:SkinAnimation;
+		private var converter:Converter;
 		public function ColladaDecoder(txt:String) 
 		{
 			txt = txt.replace(/xmlns=[^"]*"[^"]*"/g,"");
@@ -49,6 +51,18 @@ package gl3d.parser
 			geometries =parserLibrary("library_geometries","geometry");
 			controllers =parserLibrary("library_controllers","controller"); 
 			visualScenes = parserLibrary("library_visual_scenes", "visual_scene"); 
+			
+			switch (xml.asset.up_axis.text().charAt(0)) {
+				case 'X':
+					converter = new Converter("XtoY");
+					break;
+				case 'Y':
+					converter = new Converter(null);
+					break;
+				case 'Z':
+					converter = new Converter("ZtoY");
+					break;
+			}
 			
 			for each(var sceneNodeXML:XML in instanceScenesXML) {
 				var node:Node3D = new Node3D;
@@ -82,7 +96,7 @@ package gl3d.parser
 			id2node[nodeXML.@id] = node;
 			node.type = nodeXML.@type;
 			if (nodeXML.matrix.length()) {
-				node.matrix = str2Matrixs(nodeXML.matrix[0])[0];
+				node.matrix = converter.getConvertedMat4(str2Matrixs(nodeXML.matrix[0])[0]);
 			}
 			var url:String = nodeXML.@url;
 			if (url) {
@@ -125,6 +139,9 @@ package gl3d.parser
 				var v:Array = str2Floats(weightsXML.v.text());
 				var weights:Array = str2Floats(childXML.source.(@id==((weightsXML.input.(@semantic == "WEIGHT").@source).toString().substr(1))).float_array.text());
 				var invBindMatrixs:Array = str2Matrixs(childXML.source.(@id == ((childXML.joints.input.(@semantic == "INV_BIND_MATRIX").@source).toString().substr(1))).float_array.text());
+				for each(var ibm:Matrix3D in invBindMatrixs) {
+					converter.getConvertedMat4(ibm);
+				}
 				var jointNames:Array = str2Strs(childXML.source.(@id == ((weightsXML.input.(@semantic == "JOINT").@source).toString().substr(1))).Name_array.text());
 				var joints:Vector.<Node3D> = new Vector.<Node3D>;
 				for each(var jointName:String in jointNames) {
@@ -166,12 +183,7 @@ package gl3d.parser
 		private function buildGeometry(nodeXML:XML, node:Node3D):void 
 		{
 			var vs:Array = str2Floats(getVerticesById((nodeXML.mesh.vertices.@id), nodeXML.mesh[0]).float_array.text());
-			var vs2:Array = vs;// [];
-			/*for (var x:int = 0, len:int = vs.length; x < len;x+=3 ) {
-				vs2.push(vs[x]);
-				vs2.push(vs[x+1]);
-				vs2.push(vs[x+2]);
-			}*/
+			var vs2:Array = converter.convertedVec3s(vs);
 			for each(var faceXML:XML in nodeXML.mesh.children()) {
 				var name:String = faceXML.localName();
 				if (name == "polylist" || name == "triangles") {
@@ -196,12 +208,12 @@ package gl3d.parser
 					var adder:int = maxOffset + 1;
 					while (i < len) {
 						inc.push(parray[i+vertexOffset]);
-						inc.push(parray[i  +vertexOffset +adder*2]);
-						inc.push(parray[i +vertexOffset+ adder]);
+						inc.push(parray[i  +vertexOffset +adder]);
+						inc.push(parray[i +vertexOffset+ adder*2]);
 						
 						uvinc.push(parray[i + uvOffset]);
-						uvinc.push(parray[i + uvOffset+adder*2]);
 						uvinc.push(parray[i + uvOffset+adder]);
+						uvinc.push(parray[i + uvOffset+adder*2]);
 						i += adder*3;
 					}
 					var childNode:Node3D = new Node3D;
@@ -265,7 +277,7 @@ package gl3d.parser
 					var frame:TrackFrame = new TrackFrame;
 					part.doAnimation(time, anim.endTime, matrix);
 					frame.time = time;
-					frame.matrix = part.target.clone();
+					frame.matrix = converter.getConvertedMat4(part.target.clone());
 					track.frames.push(frame);
 					time += 1 / 60;
 				}
