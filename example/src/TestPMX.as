@@ -1,8 +1,8 @@
 package 
 {
 	import flash.display.Sprite;
-	import gl3d.parser.MMD;
-	import gl3d.parser.PmxParser;
+	import gl3d.parser.mmd.PMX;
+	import gl3d.parser.mmd.MMD;
 	//import gl3d.parser.Pmx;
 	/**
 	 * ...
@@ -22,7 +22,9 @@ package
 			//[Embed(source = "assets/haku.pmx", mimeType = "application/octet-stream")]var c:Class;
 			//var mmd:MMD = new MMD(new c);
 			//trace(JSON.stringify(new MMD(new c),null,4))
-			var p:PmxParser = new PmxParser(new c );
+			
+			[Embed(source = "assets/melt.vmd", mimeType = "application/octet-stream")]var c2:Class;
+			var p:MMD = new MMD(new c ,new c2);
 			p.node.scaleX=
 			p.node.scaleY=
 			p.node.scaleZ = .1;

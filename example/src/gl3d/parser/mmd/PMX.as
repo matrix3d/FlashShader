@@ -1,4 +1,4 @@
-package gl3d.parser 
+package gl3d.parser.mmd 
 {
 	import flash.utils.ByteArray;
 	import flash.utils.Endian;
@@ -6,13 +6,14 @@ package gl3d.parser
 	 * ...
 	 * @author lizhi
 	 */
-	dynamic public class MMD 
+	dynamic public class PMX 
 	{
-		public function MMD(buffer:ByteArray) 
+		public var bin:PMXReader;
+		public function PMX(buffer:ByteArray) 
 		{
 			buffer.endian = Endian.LITTLE_ENDIAN;
-			var bin:Reader, n:int, bones:Array;
-			bin = new Reader( buffer );
+			var n:int, bones:Array;
+			bin = new PMXReader( buffer );
 
 			this.vertices = [];
 			this.indices = [];
@@ -89,104 +90,11 @@ package gl3d.parser
 
 }
 import flash.utils.ByteArray;
-dynamic class Reader{ // extend BinaryStream
-	private var buffer:ByteArray;
-	public function Reader(buffer:ByteArray) 
-	{
-this.buffer = buffer;
+import gl3d.parser.mmd.PMXReader;
 
-	// read header
-	if ( this.readUint32() !== 0x20584d50 ) { //  'PMX '
-		throw "Exception.MAGIC";
-	}
-	this.version = this.readFloat32();
-	if ( this.version !== 2.0 ) {
-		throw "Exception.DATA"; // not supported
-	}
-	if ( this.readUint8() !== 8 ) {
-		throw "Exception.DATA";
-	}
-	this.encode = this.readUint8()==0?"utf-16":"utf-8"; // 0=UTF16_LE, 1=UTF-8
-	this.additionalUvCount = this.readUint8();
-	this.vertexIndexSize = this.readUint8();
-	this.textureIndexSize = this.readUint8();
-	this.materialIndexSize = this.readUint8();
-	this.boneIndexSize = this.readUint8();
-	this.morphIndexSize = this.readUint8();
-	this.rigidIndexSize = this.readUint8();
-	}
-
-
-	public function readText():String {
-	var l:int = this.readInt32();
-	return buffer.readMultiByte(l, this.encode);
-}
-public function readIndex ( size:int, vertex:Object=null ):int {
-	var i:int;
-	if ( size === 1 ) {
-		i = vertex ? this.readUint8() : this.readInt8();
-	} else
-	if ( size === 2 ) {
-		i = vertex ? this.readUint16() : this.readInt16();
-	} else
-	if ( size === 4 ) {
-		i = this.readInt32();
-	} else {
-		throw "Exception.DATA";
-	}
-	return i;
-}
-public function readVertexIndex ():int {
-	return this.readIndex( this.vertexIndexSize, true );
-}
-public function readTextureIndex():int {
-	return this.readIndex( this.textureIndexSize );
-}
-public function readMaterialIndex():int {
-	return this.readIndex( this.materialIndexSize );
-}
-public function readBoneIndex():int {
-	return this.readIndex( this.boneIndexSize );
-}
-public function readMorphIndex():int {
-	return this.readIndex( this.morphIndexSize );
-}
-public function readRigidIndex():int {
-	return this.readIndex( this.rigidIndexSize );
-}
-	public function readVector( n:int ):Array {
-	var v:Array = [];
-	while ( n-- > 0 ) {
-		v.push( this.readFloat32() );
-	}
-	return v;
-}
-
-public function readInt8():int {
-	return buffer.readByte();
-}
-public function readUint8 () :int{
-	return buffer.readUnsignedByte();
-}
-public function readInt16 ():int {
-	return buffer.readShort();
-}
-public function readUint16():int {
-	return buffer.readUnsignedShort();
-}
-public function readInt32():int {
-	return buffer.readInt();
-}
-public function readUint32 ():int {
-	return buffer.readUnsignedInt();
-}
-public function readFloat32():Number {
-	return buffer.readFloat();
-}
-}
 
 dynamic class Info  {
-	public function Info(bin:Reader) 
+	public function Info(bin:PMXReader) 
 	{
 		super();
 		this.name = bin.readText();
@@ -198,7 +106,7 @@ dynamic class Info  {
 }
 
 dynamic class Skin {
-public function Skin(bin:Reader) 
+public function Skin(bin:PMXReader) 
 	{var w:Number;
 	this.type = bin.readUint8();
 	switch( this.type ) {
@@ -243,7 +151,7 @@ public function Skin(bin:Reader)
 }
 
  dynamic class  Vertex  {
-	public function Vertex(bin:Reader) 
+	public function Vertex(bin:PMXReader) 
 	{ var n:int;
 	this.pos =  bin.readVector( 3 ) ;
 	this.normal =  bin.readVector( 3  );
@@ -260,7 +168,7 @@ public function Skin(bin:Reader)
 }
 
 dynamic class Texture {
-public function Texture(bin:Reader) 
+public function Texture(bin:PMXReader) 
 	{
 		this.path = bin.readText().replace(/\\/g,'/');
 	}	
@@ -268,7 +176,7 @@ public function Texture(bin:Reader)
 }
 
 dynamic class Material {
-	public function Material(bin:Reader) 
+	public function Material(bin:PMXReader) 
 	{
 		this.name = bin.readText();
 	this.nameEn = bin.readText();
@@ -303,7 +211,7 @@ dynamic class Material {
 }
 
 dynamic class IKLink {
-	public function IKLink(bin:Reader) 
+	public function IKLink(bin:PMXReader) 
 	{this.bone = bin.readBoneIndex();
 	if ( bin.readUint8() === 1 ) {
 		this.limits = [ bin.readVector(3), bin.readVector(3) ];
@@ -314,7 +222,7 @@ dynamic class IKLink {
 }
 
 dynamic class IK {
-public function IK(bin:Reader) 
+public function IK(bin:PMXReader) 
 	{var n:int;
 	this.effector = bin.readBoneIndex();
 	this.iteration = bin.readInt32();
@@ -329,7 +237,7 @@ public function IK(bin:Reader)
 }
 
 dynamic class Bone  {
-	public function Bone(bin:Reader) 
+	public function Bone(bin:PMXReader) 
 	{
 		this.name = bin.readText();
 	//console.log('*' + this.name);
@@ -393,7 +301,7 @@ dynamic class Bone  {
 }
 
 dynamic class MorphVertex{
-	public function MorphVertex(bin:Reader) 
+	public function MorphVertex(bin:PMXReader) 
 	{
 		this.target = bin.readVertexIndex();
 	this.offset =  bin.readVector(3) ;
@@ -402,7 +310,7 @@ dynamic class MorphVertex{
 }
 
 dynamic class MorphUV {
-public function MorphUV(bin:Reader) 
+public function MorphUV(bin:PMXReader) 
 	{
 		this.target = bin.readVertexIndex();
 	this.uv = bin.readVector(4);
@@ -411,7 +319,7 @@ public function MorphUV(bin:Reader)
 }
 
 dynamic class MorphBone{
-	public function MorphBone(bin:Reader) 
+	public function MorphBone(bin:PMXReader) 
 	{this.target = bin.readBoneIndex();
 	this.pos = bin.readVector(3);
 	this.rot = bin.readVector(4);
@@ -420,7 +328,7 @@ dynamic class MorphBone{
 }
 
 dynamic class MorphMaterial {
-	public function MorphMaterial(bin:Reader) 
+	public function MorphMaterial(bin:PMXReader) 
 	{this.target = bin.readMaterialIndex();
 	this.operator = bin.readUint8();
 	this.diffuse = bin.readVector(3);
@@ -438,7 +346,7 @@ dynamic class MorphMaterial {
 }
 
 dynamic class MorphGroup {
-public function MorphGroup(bin:Reader) 
+public function MorphGroup(bin:PMXReader) 
 	{this.target = bin.readMorphIndex(); // no group nest
 	this.weight = bin.readFloat32();
 	}	
@@ -446,7 +354,7 @@ public function MorphGroup(bin:Reader)
 }
 
 dynamic class Morph {
-	public function Morph(bin:Reader) 
+	public function Morph(bin:PMXReader) 
 	{	var n:int;
 	this.name = bin.readText();
 	this.nameEn = bin.readText();
@@ -496,7 +404,7 @@ dynamic class Morph {
 }
 
 dynamic class FrameItem  {
-	public function FrameItem(bin:Reader) 
+	public function FrameItem(bin:PMXReader) 
 	{this.type = bin.readUint8();
 	if ( this.type === 0 ) {
 		this.index = bin.readBoneIndex();
@@ -511,7 +419,7 @@ dynamic class FrameItem  {
 }
 
 dynamic class Frame  {
-	public function Frame(bin:Reader) 
+	public function Frame(bin:PMXReader) 
 	{var n:int;
 	this.name = bin.readText();
 	this.nameEn = bin.readText();
@@ -526,7 +434,7 @@ dynamic class Frame  {
 }
 
 dynamic class Rigid { // rigid body
-	public function Rigid(bin:Reader) 
+	public function Rigid(bin:PMXReader) 
 	{this.name = bin.readText();
 	this.nameEn = bin.readText();
 	this.bone = bin.readBoneIndex();
@@ -547,7 +455,7 @@ dynamic class Rigid { // rigid body
 }
 
 dynamic class Joint { // constraint between two rigid bodies
-	public function Joint(bin:Reader) 
+	public function Joint(bin:PMXReader) 
 	{this.name = bin.readText();
 	this.nameEn = bin.readText();
 	this.type = bin.readUint8();
