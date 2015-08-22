@@ -72,7 +72,7 @@ package gl3d.util
 			fpsCounter++;
 			
 			var text:String = "";
-			if (view) {
+			if (view&&view.driverInfo) {
 				text += "num : " + view.renderer.collects.length;
 				text += "\ndraw : " + view.drawCounter
 				text += "\ntri : " + view.drawTriangleCounter;

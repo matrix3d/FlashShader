@@ -57,7 +57,7 @@ package gl3d.core {
 		public function update(view:View3D,material:Material=null):void {
 			if (controllers) {
 				for each(var c:Ctrl in controllers) {
-					c.update();
+					c.update(view.time);
 				}
 			}
 			if (this.material) {

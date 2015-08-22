@@ -45,7 +45,7 @@ package gl3d.core.renders
 		{
 			gl3d = new GL(view.stage.stage3Ds[0].context3D);
 			view.profile = view.stage.stage3Ds[0].context3D.profile;
-			view.stage.stage3Ds[0].context3D.enableErrorChecking = true;
+			//view.stage.stage3Ds[0].context3D.enableErrorChecking = true;
 			view.driverInfo = gl3d.driverInfo;
 			if (view.profile==Context3DProfile.STANDARD) {
 				agalVersion = 2;

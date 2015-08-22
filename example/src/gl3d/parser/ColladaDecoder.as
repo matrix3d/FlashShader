@@ -165,14 +165,12 @@ package gl3d.parser
 						ws.push(0);
 					}
 				}
+				var skin:Skin = new Skin;
+				skin.invBindMatrixs = Vector.<Matrix3D>(invBindMatrixs);
+				skin.maxWeight = maxWeight;
+				skin.joints = joints;
 				for each(var childNode:Node3D in skinNode.children) {
-					var skin:Skin = new Skin;
 					childNode.skin = skin;
-					childNode.material.gpuSkin = true;
-					skin.invBindMatrixs = Vector.<Matrix3D>(invBindMatrixs);
-					skin.maxWeight = maxWeight;
-					skin.joints = joints;
-					
 					var drawable:Drawable3D = childNode.drawable;
 					drawable.joints=new  VertexBufferSet(Vector.<Number>(js),maxWeight);
 					drawable.weights=new  VertexBufferSet(Vector.<Number>(ws),maxWeight);

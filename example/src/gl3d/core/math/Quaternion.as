@@ -67,7 +67,8 @@ package gl3d.core.math{
 		public function toMatrix(matr:Matrix3D=null):Matrix3D {
 			if (matr == null) matr = new Matrix3D();
 			HELP_VEC[1] = this;
-			matr.recompose(HELP_VEC,Orientation3D.QUATERNION);
+			matr.recompose(HELP_VEC, Orientation3D.QUATERNION);
+			matr.appendTranslation(tran.x, tran.y, tran.z);
 			return matr;
 		}
 		

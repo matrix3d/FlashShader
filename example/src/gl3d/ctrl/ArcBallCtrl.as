@@ -100,7 +100,7 @@ package gl3d.ctrl
 			}
 		}
 		
-		override public function update():void
+		override public function update(time:int):void
 		{
 			if (isMouseDown&&lastPos) {
 				stagePos = new Point(stage.mouseX, stage.mouseY);

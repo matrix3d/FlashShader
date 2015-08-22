@@ -16,7 +16,6 @@ package gl3d.core.skin
 		public var tracks:Vector.<Track> = new Vector.<Track>;
 		public var bindShapeMatrix:Matrix3D;
 		public var targets:Vector.<Node3D>;
-		private var time:Number = 0;
 		public var endTime:Number = 0;
 		private var q:Quaternion = new Quaternion;
 		public function SkinAnimation() 
@@ -32,10 +31,9 @@ package gl3d.core.skin
 			return c;
 		}
 		
-		override public function update():void 
+		override public function update(time:int):void 
 		{
-			time+= 1 / 60;
-			var t:Number = time % endTime;
+			var t:Number = (time/1000) % endTime;
 			for each(var track:Track in tracks) {
 				var last:TrackFrame = null;
 				for each(var f:TrackFrame in track.frames) {

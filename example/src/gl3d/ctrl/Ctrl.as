@@ -12,7 +12,7 @@ package gl3d.ctrl
 			
 		}
 		
-		public function update():void {
+		public function update(time:int):void {
 			
 		}
 		

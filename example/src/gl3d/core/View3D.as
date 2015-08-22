@@ -58,7 +58,7 @@ package gl3d.core {
 		
 		public function updateCtrl():void {
 			for each(var ctrl:Ctrl in ctrls) {
-				ctrl.update();
+				ctrl.update(time);
 			}
 		}
 		
