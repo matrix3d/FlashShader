@@ -3,6 +3,7 @@ package
 	import flash.display.Sprite;
 	import gl3d.parser.mmd.PMX;
 	import gl3d.parser.mmd.MMD;
+	import gl3d.parser.mmd.VMD;
 	//import gl3d.parser.Pmx;
 	/**
 	 * ...
@@ -24,11 +25,15 @@ package
 			//trace(JSON.stringify(new MMD(new c),null,4))
 			
 			[Embed(source = "assets/melt.vmd", mimeType = "application/octet-stream")]var c2:Class;
-			var p:MMD = new MMD(new c ,new c2);
+			var p:MMD = new MMD(new c );
 			p.node.scaleX=
 			p.node.scaleY=
 			p.node.scaleZ = .1;
 			view.scene.addChild(p.node);
+			
+			
+			var vmd:VMD = new VMD(new c2);
+			p.bind(vmd);
 		}
 		
 	}

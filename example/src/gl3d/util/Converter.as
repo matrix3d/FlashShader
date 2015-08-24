@@ -13,7 +13,7 @@ package gl3d.util
 			this.upConversion = upConversion;
 		}
 		
-		public function convertedVec3s(data:Array):Array {
+		public function convertedVec3s(data:Object):Object {
 			if (upConversion) {
 				for (var i:int = 0, len:int = data.length; i < len;i+=3 ) {
 					fixCoords(data, 1, i);
@@ -21,7 +21,7 @@ package gl3d.util
 			}
 			return data;
 		}
-		public function fixCoords( data:Array, sign:Number, offset:int = 0):void {
+		public function fixCoords( data:Object, sign:Number, offset:int = 0):void {
 			switch ( upConversion ) {
 				case 'XtoY':
 					var tmp:Number = data[offset  ];

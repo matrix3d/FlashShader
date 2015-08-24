@@ -9,6 +9,7 @@ package gl3d.parser.mmd
 	dynamic public class PMX 
 	{
 		public var bin:PMXReader;
+		public var maxWeight:int = 0;
 		public function PMX(buffer:ByteArray) 
 		{
 			buffer.endian = Endian.LITTLE_ENDIAN;
@@ -33,7 +34,9 @@ package gl3d.parser.mmd
 			n = bin.readInt32();
 			//console.log('vertices = ' + n);
 			while ( n-- > 0 ) {
-				this.vertices.push( new Vertex( bin ) );
+				var vert:Vertex= new Vertex( bin ) 
+				this.vertices.push(vert);
+				if (maxWeight < vert.skin.bones.length) maxWeight = vert.skin.bones.length;
 			}
 			//console.log('(bdef1=' + _bdef1 + ' bdef2=' + _bdef2 +' bdef4=' + _bdef4 +' sdef=' + _sdef + ')');
 

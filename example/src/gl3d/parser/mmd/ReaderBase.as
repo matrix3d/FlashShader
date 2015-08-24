@@ -15,7 +15,7 @@ this.buffer = buffer;
 
 
 	public function readCString(len:int):String {
-		return buffer.readMultiByte(len, "ansi");
+		return buffer.readMultiByte(len, "shift-jis");
 	}
 	public function readText():String {
 	var l:int = this.readInt32();
