@@ -27,6 +27,7 @@ package gl3d.core {
 		public var specularPower:Number = 50;
 		private var _toonAble:Boolean = false;
 		public var toonStep:Number = 2;
+		public var castShadow:Boolean = false;
 		
 		public var view:View3D;
 		public var camera:Camera3D;

@@ -26,7 +26,7 @@ package gl3d.core.shaders
 			if (v.used) material.view.renderer.gl3d.setProgramConstantsFromMatrix(as3shader.programType, v.index,material.node.world,true);
 		}
 		public function bindViewUniform(shader:GLShader, material:Material):void {
-			if (v.used) material.view.renderer.gl3d.setProgramConstantsFromMatrix(as3shader.programType, v.index,material.camera.view,true);
+			if (v.used) material.view.renderer.gl3d.setProgramConstantsFromMatrix(as3shader.programType, v.index,material.camera.world2local,true);
 		}
 		public function bindPerspectiveUniform(shader:GLShader, material:Material):void {
 			if (v.used) material.view.renderer.gl3d.setProgramConstantsFromMatrix(as3shader.programType, v.index,material.camera.perspective,true);

@@ -9,7 +9,7 @@ package gl3d.pick
 	 */
 	public class AS3Picking extends Picking
 	{
-		private var inv:Matrix3D = new Matrix3D;
+		private var inv:Matrix3D;
 		public function AS3Picking() 
 		{
 			
@@ -18,8 +18,7 @@ package gl3d.pick
 		//http://www.cnblogs.com/graphics/archive/2010/08/09/1795348.html
 		override public function pick(node:Node3D,rayOrigin:Vector3D, rayDirection:Vector3D,pixelPos:Vector3D=null ):Boolean {
 			if (node.drawable) {
-				inv.copyFrom(node.world);
-				inv.invert();
+				inv = node.world2local;
 				var localRayOrigin:Vector3D = inv.transformVector(rayOrigin);
 				var localRayDirection:Vector3D = inv.deltaTransformVector(rayDirection);
 				var rox:Number = localRayOrigin.x;

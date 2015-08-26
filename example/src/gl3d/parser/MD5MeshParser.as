@@ -8,6 +8,7 @@ package gl3d.parser
 	import gl3d.core.skin.Skin;
 	import gl3d.core.VertexBufferSet;
 	import gl3d.meshs.Meshs;
+	import gl3d.util.Converter;
 	/**
 	 * ...
 	 * @author lizhi
@@ -20,6 +21,7 @@ package gl3d.parser
 		public var skinNodes:Vector.<Node3D> = new Vector.<Node3D>;
 		public function MD5MeshParser(txt:String) 
 		{
+			var converter:Converter=new Converter("ZtoY");
 			var decoder:MD5MeshDecoder = new MD5MeshDecoder(txt);
 			var jointQs:Array = [];
 			if(decoder.joints.length)
@@ -46,7 +48,7 @@ package gl3d.parser
 				}
 				
 				matr.invert();
-				skin.invBindMatrixs.push(matr);
+				skin.invBindMatrixs.push(converter.getConvertedMat4(matr));
 			}
 			var vsCounter:int = 0;
 			if (decoder.joints.length) {
@@ -95,15 +97,16 @@ package gl3d.parser
 				var indexs:Vector.<uint> =new Vector.<uint>;
 				for each(var ins:Array in mesh.ins) {
 					indexs.push(ins[0]+vsCounter);
-					indexs.push(ins[1]+vsCounter);
 					indexs.push(ins[2]+vsCounter);
+					indexs.push(ins[1]+vsCounter);
 				}
 				node.material = new Material;
+				converter.convertedVec3s(poss);
 				node.drawable = Meshs.createDrawable(indexs, poss, uvs, null);
 				node.drawable.joints=new  VertexBufferSet(Vector.<Number>(js),decoder.maxWeight);
 				node.drawable.weights=new  VertexBufferSet(Vector.<Number>(ws),decoder.maxWeight);
 				target.addChild(node);
-				vsCounter += mesh.vs.length;
+				//vsCounter += mesh.vs.length;
 			}
 		}
 		

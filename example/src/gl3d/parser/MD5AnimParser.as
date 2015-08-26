@@ -7,6 +7,7 @@ package gl3d.parser
 	import gl3d.core.skin.Track;
 	import gl3d.core.skin.TrackFrame;
 	import gl3d.ctrl.Ctrl;
+	import gl3d.util.Converter;
 	/**
 	 * ...
 	 * @author lizhi
@@ -16,6 +17,7 @@ package gl3d.parser
 		
 		public function MD5AnimParser(txt:String,md5:MD5MeshParser) 
 		{
+			var converter:Converter=new Converter("ZtoY");
 			var decoder:MD5AnimDecoder = new MD5AnimDecoder(txt);
 			var anim:SkinAnimation = new SkinAnimation();
 			md5.target.controllers = new Vector.<Ctrl>;
@@ -61,7 +63,7 @@ package gl3d.parser
 					}
 					q.computeW();
 					var frame:TrackFrame = new TrackFrame;
-					frame.matrix = q.toMatrix();
+					frame.matrix = converter.getConvertedMat4(q.toMatrix());
 					track.frames.push(frame);
 					frame.time = i/decoder.frameRate;
 				}

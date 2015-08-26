@@ -82,7 +82,7 @@ package
 				debug.height = stage.stageHeight;
 				//console.textfield = debug;
 			}
-			view = new View3D;
+			view = new View3D(0);
 			addChild(view);
 			view.camera.z = -10;
 			
@@ -235,12 +235,12 @@ package
 		protected function stage_resize(e:Event = null):void
 		{
 			view.invalid = true;
-			var w:Number = stage.stageWidth;
-			var h:Number = stage.stageHeight;
-			view.camera.perspective.perspectiveFieldOfViewLH(Math.PI / 4, stage.stageWidth / stage.stageHeight, .1, 4000);
+			view.stage3dWidth = stage.stageWidth;
+			view.stage3dHeight = stage.stageHeight;
+			view.camera.perspective.perspectiveFieldOfViewLH(Math.PI / 4, view.stage3dWidth/ view.stage3dHeight, .1, 4000);
 			if (debug) {
-				debug.width = w;
-				debug.height = h;
+				debug.width = view.stage3dWidth;
+				debug.height = view.stage3dHeight;
 			}
 		}
 		

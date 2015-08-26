@@ -49,13 +49,6 @@ package gl3d.core {
 			rayDirection.normalize();
 		}
 		
-		public function get view():Matrix3D 
-		{
-			_view.copyFrom(world);
-			_view.invert();
-			return _view;
-		}
-		
 	}
 
 }

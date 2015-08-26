@@ -1,5 +1,6 @@
 package gl3d.core.shaders 
 {
+	import as3Shader.AGALCodeCreator;
 	import com.adobe.utils.AGALMiniAssembler;
 	import flash.display3D.Context3D;
 	import flash.display3D.Context3DProgramType;
@@ -47,14 +48,17 @@ package gl3d.core.shaders
 			if(vs&&fs){
 				vs.creator = new AGALByteCreator(material.view.renderer.agalVersion);
 				fs.creator = new AGALByteCreator(material.view.renderer.agalVersion);
-				programSet = getProgramFromPool(vs.code as ByteArray, fs.code as ByteArray);
+				programSet = getProgramFromPool(material.view.id,vs.code as ByteArray, fs.code as ByteArray);
 			}
 			return programSet;
 		}
 		
-		private function getProgramFromPool(vcode:ByteArray, fcode:ByteArray):ProgramSet {
-			var classname:String = getQualifiedClassName(this);
-			var ps:Vector.<ProgramSet> = PROGRAM_POOL[classname];
+		protected function getProgramFromPool(id:Object,vcode:ByteArray, fcode:ByteArray):ProgramSet {
+			var classname:String = getQualifiedClassName(this) + id;
+			//air 18 bug
+			var pobj:Object = PROGRAM_POOL[classname];
+			if(pobj)
+			var ps:Vector.<ProgramSet> = pobj as Vector.<ProgramSet>;
 			if (ps) {
 				for each(var p:ProgramSet in ps) {
 					if (p.vcode.length!=vcode.length||p.fcode.length!=fcode.length) {
@@ -89,13 +93,15 @@ package gl3d.core.shaders
 			
 			if (debug&&vs&&fs) {
 				trace(this);
-				//var code:String = vs.code as String;
-				//trace("vcode "+vs+" numline",vs.lines.length);
+				vs.creator = new AGALCodeCreator();
+				var code:String = vs.code as String;
+				trace(code);
 				//trace(vs);
 				vs.creator = new GLCodeCreator();
 				trace(vs.code);
-				//var code:String = fs.code as String;
-				//trace("fcode "+fs+" numline",fs.lines.length);
+				fs.creator = new AGALCodeCreator();
+				code = fs.code as String;
+				trace(code);
 				//trace(fs);
 				fs.creator = new GLCodeCreator();
 				trace(fs.code);
@@ -118,7 +124,7 @@ package gl3d.core.shaders
 				programSet = getProgram(material);
 				invalid = false;
 			}
-			if(programSet){
+			if(vs&&fs){
 				vs.bind(this,material);
 				fs.bind(this, material);
 				

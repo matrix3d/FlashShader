@@ -28,8 +28,9 @@ package gl3d.core {
 		public var posts:Vector.<PostEffect> = new Vector.<PostEffect>;
 		public var postRTTs:Vector.<TextureSet> = Vector.<TextureSet>([new TextureSet(null,true), new TextureSet(null,true)]);
 		private var _antiAlias:int = 2;
-		public var stage3dWidth:Number = 0;
-		public var stage3dHeight:Number = 0;
+		public var id:Object;
+		public var stage3dWidth:Number = 200;
+		public var stage3dHeight:Number = 200;
 		public var time:Number = 0;
 		public var drawTriangleCounter:int = 0;
 		public var drawCounter:int = 0;
@@ -37,13 +38,11 @@ package gl3d.core {
 		public var profile:String;
 		public var background:uint = 0;
 		public var invalid:Boolean = true;
-		public function View3D() 
+		public function View3D(id:Object) 
 		{
+			this.id = id;
 			scene.addChild(camera);
 			renderer = new Stage3DRender(this);
-			for each(var light:Light in lights) {
-				scene.addChild(light);
-			}
 			if (stage) init();
 			else addEventListener(Event.ADDED_TO_STAGE, init);
 		}
@@ -53,8 +52,6 @@ package gl3d.core {
 			removeEventListener(Event.ADDED_TO_STAGE, init);
 			renderer.init();
 		}
-		
-		
 		
 		public function updateCtrl():void {
 			for each(var ctrl:Ctrl in ctrls) {
@@ -75,6 +72,18 @@ package gl3d.core {
 		public function set antiAlias(value:int):void 
 		{
 			_antiAlias = value;
+			invalid = true;
+		}
+		
+		override public function set x(value:Number):void 
+		{
+			super.x = value;
+			invalid = true;
+		}
+		
+		override public function set y(value:Number):void 
+		{
+			super.y = value;
 			invalid = true;
 		}
 	}

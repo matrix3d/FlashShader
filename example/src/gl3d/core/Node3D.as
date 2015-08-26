@@ -60,7 +60,7 @@ package gl3d.core {
 					c.update(view.time);
 				}
 			}
-			if (this.material) {
+			if (material||this.material) {
 				(material||this.material).draw(this,view);
 			}
 		}

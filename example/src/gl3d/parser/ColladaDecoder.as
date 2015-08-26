@@ -181,7 +181,7 @@ package gl3d.parser
 		private function buildGeometry(nodeXML:XML, node:Node3D):void 
 		{
 			var vs:Array = str2Floats(getVerticesById((nodeXML.mesh.vertices.@id), nodeXML.mesh[0]).float_array.text());
-			var vs2:Array = converter.convertedVec3s(vs);
+			var vs2:Array = converter.convertedVec3s(vs) as Array;
 			for each(var faceXML:XML in nodeXML.mesh.children()) {
 				var name:String = faceXML.localName();
 				if (name == "polylist" || name == "triangles") {
@@ -189,8 +189,6 @@ package gl3d.parser
 					var inc:Vector.<uint> = new Vector.<uint>;
 					var uvinc:Vector.<uint> = new Vector.<uint>;
 					var parray:Array = str2Floats(triangleXML.p);
-					var i:int = 0;
-					var len:int = parray.length;
 					var maxOffset:int = 0;
 					var vertexOffset:int = 0;
 					var uvOffset:int = 0;
@@ -204,16 +202,36 @@ package gl3d.parser
 						}
 					}
 					var adder:int = maxOffset + 1;
-					while (i < len) {
-						inc.push(parray[i+vertexOffset]);
-						inc.push(parray[i  +vertexOffset +adder]);
-						inc.push(parray[i +vertexOffset+ adder*2]);
-						
-						uvinc.push(parray[i + uvOffset]);
-						uvinc.push(parray[i + uvOffset+adder]);
-						uvinc.push(parray[i + uvOffset+adder*2]);
-						i += adder*3;
+					if (name=="triangles") {
+						var i:int = 0;
+						var len:int = parray.length;
+						while (i < len) {
+							inc.push(parray[i+vertexOffset]);
+							inc.push(parray[i  +vertexOffset +adder]);
+							inc.push(parray[i +vertexOffset+ adder*2]);
+							
+							uvinc.push(parray[i + uvOffset]);
+							uvinc.push(parray[i + uvOffset+adder]);
+							uvinc.push(parray[i + uvOffset+adder*2]);
+							i += adder*3;
+						}
+					}else {
+						var vcount:Array = str2Floats(triangleXML.vcount);
+						var start:int = 0;
+						for (i = 0,len=vcount.length; i < len;i++ ) {
+							var len2:int = vcount[i] - 2;
+							for (var j:int = 0; j < len2;j++ ) {
+								inc.push(parray[vertexOffset+adder*start]);
+								inc.push(parray[vertexOffset+adder*(start+j+1)]);
+								inc.push(parray[vertexOffset+adder*(start+j+2)]);
+								uvinc.push(parray[uvOffset+adder*start]);
+								uvinc.push(parray[uvOffset+adder*(start+j+1)]);
+								uvinc.push(parray[uvOffset+adder*(start+j+2)]);
+							}
+							start += vcount[i];
+						}
 					}
+					
 					var childNode:Node3D = new Node3D;
 					childNode.drawable = Meshs.createDrawable(Vector.<uint>(inc), Vector.<Number>(vs2), null, null);
 					childNode.material = new Material;

@@ -1,11 +1,13 @@
 package gl3d.core.renders 
 {
 	import flash.display.BitmapData;
+	import flash.display.Stage3D;
 	import flash.display3D.Context3DTextureFormat;
 	import flash.display3D.textures.CubeTexture;
 	import flash.display3D.textures.RectangleTexture;
 	import flash.display3D.textures.Texture;
 	import flash.geom.Matrix;
+	import gl3d.core.Light;
 	import gl3d.core.Node3D;
 	import flash.display3D.Context3DProfile;
 	import flash.display3D.Context3DRenderMode;
@@ -23,6 +25,7 @@ package gl3d.core.renders
 	public class Stage3DRender extends Render
 	{
 		public var renderTarget:TextureSet;
+		public var stage3d:Stage3D;
 		public function Stage3DRender(view:View3D) 
 		{
 			super(view);
@@ -31,21 +34,22 @@ package gl3d.core.renders
 		override public function init():void 
 		{
 			super.init();
-			view.stage.stage3Ds[0].addEventListener(Event.CONTEXT3D_CREATE, stage_context3dCreate);
-			view.stage.stage3Ds[0].addEventListener(ErrorEvent.ERROR, stage3Ds_error);
+			stage3d = view.stage.stage3Ds[view.id];
+			stage3d.addEventListener(Event.CONTEXT3D_CREATE, stage_context3dCreate);
+			stage3d.addEventListener(ErrorEvent.ERROR, stage3Ds_error);
 			//stage.stage3Ds[0].requestContext3D(Context3DRenderMode.AUTO, Context3DProfile.STANDARD);
-			view.stage.stage3Ds[0].requestContext3DMatchingProfiles(new <String>[ Context3DProfile.STANDARD,Context3DProfile.BASELINE]);
+			stage3d.requestContext3DMatchingProfiles(new <String>[ Context3DProfile.STANDARD,Context3DProfile.BASELINE]);
 		}
 		private function stage3Ds_error(e:ErrorEvent):void 
 		{
-			view.stage.stage3Ds[0].requestContext3D(Context3DRenderMode.AUTO);
+			stage3d.requestContext3D(Context3DRenderMode.AUTO);
 		}
 		
 		private function stage_context3dCreate(e:Event):void 
 		{
-			gl3d = new GL(view.stage.stage3Ds[0].context3D);
-			view.profile = view.stage.stage3Ds[0].context3D.profile;
-			//view.stage.stage3Ds[0].context3D.enableErrorChecking = true;
+			gl3d = new GL(stage3d.context3D);
+			view.profile = stage3d.context3D.profile;
+			//stage3d.context3D.enableErrorChecking = true;
 			view.driverInfo = gl3d.driverInfo;
 			if (view.profile==Context3DProfile.STANDARD) {
 				agalVersion = 2;
@@ -64,8 +68,8 @@ package gl3d.core.renders
 					return;
 				}
 				if (view.invalid) {
-					view.stage3dWidth = view.stage.stageWidth;
-					view.stage3dHeight = view.stage.stageHeight;
+					stage3d.x = view.x;
+					stage3d.y = view.y;
 					gl3d.configureBackBuffer(view.stage3dWidth, view.stage3dHeight, view.antiAlias);
 				}
 				/*if (view.posts.length) {
@@ -92,7 +96,15 @@ package gl3d.core.renders
 				view.drawTriangleCounter = 0;
 				view.drawCounter = 0;
 				collect(scene);
-				for each(var node:Node3D in collects) {
+				for each(var light:Light in view.lights) {
+					if (light.shadowMapEnabled) {
+						for each(var node:Node3D in collects) {
+							node.update(view);
+						}
+					}
+				}
+				
+				for each(node in collects) {
 					node.update(view);
 				}
 				/*if (view.posts.length) {
