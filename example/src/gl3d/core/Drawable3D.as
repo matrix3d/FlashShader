@@ -22,7 +22,6 @@ package gl3d.core {
 		public var joints:VertexBufferSet;
 		//public var quatJoints:VertexBufferSet;
 		public var weights:VertexBufferSet;
-		public var cpuSkinPos:VertexBufferSet;
 		
 		private var _index:IndexBufferSet;
 		public var id2index:Object = { };

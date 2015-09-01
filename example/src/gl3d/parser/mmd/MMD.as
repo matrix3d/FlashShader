@@ -3,6 +3,8 @@ package gl3d.parser.mmd
 	import flash.geom.Matrix3D;
 	import flash.geom.Vector3D;
 	import flash.utils.ByteArray;
+	import gl3d.core.Drawable3D;
+	import gl3d.core.IndexBufferSet;
 	import gl3d.core.Material;
 	import gl3d.core.math.Quaternion;
 	import gl3d.core.Node3D;
@@ -22,6 +24,7 @@ package gl3d.parser.mmd
 	{
 		public var pmx:PMX;
 		public var node:Node3D = new Node3D;
+		public var skinNodes:Vector.<Node3D> = new Vector.<Node3D>;
 		public var name2bone:Object = { };
 		private var q:Quaternion = new Quaternion;
 		public function MMD(pmxBuff:ByteArray) 
@@ -48,28 +51,22 @@ package gl3d.parser.mmd
 					ws.push(0);
 				}
 			}
-			var indices:Vector.<uint> = new Vector.<uint>;
-			for (i = 0; i < pmx.indices.length;i+=3 ) {
-				indices[i] = pmx.indices[i];
-				indices[i+1] = pmx.indices[i+2];
-				indices[i+2] = pmx.indices[i+1];
-			}
-			node.drawable = Meshs.createDrawable(indices, vs, null, null);
-			node.drawable.joints = new VertexBufferSet(js,pmx.maxWeight );
-			node.drawable.weights = new VertexBufferSet(ws, pmx.maxWeight );
-			node.skin = new Skin;
-			node.skin.maxWeight = pmx.maxWeight;
-			node.skin.invBindMatrixs;
-			node.skin.joints;
-			//node.material = new Material;
+			
+			var skin:Skin = new Skin;
+			skin.maxWeight = pmx.maxWeight;
 			
 			var bones:Vector.<Node3D> = new Vector.<Node3D>;
+			var iks:Array = [];
 			for each(var boneObj:Object in pmx.bones) {
+				if (boneObj.IK) {
+					iks.push(boneObj.IK);
+				}
 				var bone:Node3D = new Node3D;
 				bone.name = boneObj.name;
+				bone.type = "JOINT";
 				name2bone[bone.name] = bone;
-				bone.material = new Material;
-				bone.drawable = Meshs.cube(.5, .5, .5);
+				//bone.material = new Material;
+				//bone.drawable = Meshs.cube(.5, .5, .5);
 				var origin:Array = boneObj.origin;
 				bone.x = origin[0];
 				bone.y = origin[1];
@@ -85,16 +82,56 @@ package gl3d.parser.mmd
 					bone.z -= origin[2];
 				}
 				parent.addChild(bone);
+				var invbind:Matrix3D = new Matrix3D;
+				invbind.appendTranslation(origin[0], origin[1], origin[2]);
+				invbind.invert();
+				skin.invBindMatrixs.push(invbind);
 			}
 			
-			node.skin.joints = bones;
+			skin.joints = bones;
+			
+			var drawable:Drawable3D = Meshs.createDrawable(null, vs, null, null);
+			drawable.joints = new VertexBufferSet(js,pmx.maxWeight );
+			drawable.weights = new VertexBufferSet(ws, pmx.maxWeight );
+			
+			i = 0;
+			for each(var material:Object in pmx.materials) {
+				var count:int = material.indexCount + i;
+				var indices:Vector.<uint> = new Vector.<uint>;
+				for (; i < count;i+=3 ) {
+					indices.push(pmx.indices[i]);
+					indices.push(pmx.indices[i+2]);
+					indices.push(pmx.indices[i+1]);
+				}
+				var child:Node3D = new Node3D;
+				child.drawable = new Drawable3D;
+				child.drawable.pos = drawable.pos;
+				child.drawable.joints = drawable.joints;
+				child.drawable.weights = drawable.weights;
+				child.drawable.index = new IndexBufferSet(indices);
+				child.skin = skin;
+				child.material = new Material;
+				child.material.color[0] = material.diffuse[0];
+				child.material.color[1] = material.diffuse[1];
+				child.material.color[2] = material.diffuse[2];
+				child.material.ambient[0] = material.ambient[0];
+				child.material.ambient[1] = material.ambient[1];
+				child.material.ambient[2] = material.ambient[2];
+				node.addChild(child);
+				Skin.optimize(child);
+				skinNodes.push(child);
+			}
+			
+			
+			
 		}
 		
 		public function bind(vmd:VMD):void {
 			var anim:SkinAnimation = new SkinAnimation;
+			anim.targets = skinNodes;
 			node.controllers = new Vector.<Ctrl>;
 			node.controllers.push(anim);
-			anim.endTime = 0;
+			anim.maxTime = 0;
 			var name2track:Object = { };
 			for each(var key:Object in vmd.boneKeys) {
 				var node:Node3D = name2bone[key.name];
@@ -113,15 +150,12 @@ package gl3d.parser.mmd
 					q.tran.x = key.pos[0];
 					q.tran.y = key.pos[1];
 					q.tran.z = key.pos[2];
-					//q.computeW();
 					frame.matrix = q.toMatrix();
-					frame.matrix.invert();
-					//frame.matrix.append(node.parent.world2local);
-					//frame.matrix = new Matrix3D;
-					//frame.matrix.recompose(new <Vector3D>[new Vector3D(key.pos[0],key.pos[1],key.pos[2]),new Vector3D(key.rot[0],key.rot[1],key.rot[2]),new Vector3D(1,1,1)]);
-					frame.time = key.time/1000;
-					if (anim.endTime<frame.time) {
-						anim.endTime = frame.time;
+					if(node.parent&&name2bone[node.parent.name])
+					frame.matrix.append(node.parent.matrix);
+					frame.time = key.time / 1000 * 10;
+					if (anim.maxTime<frame.time) {
+						anim.maxTime = frame.time;
 					}
 					track.frames.push(frame);
 				}

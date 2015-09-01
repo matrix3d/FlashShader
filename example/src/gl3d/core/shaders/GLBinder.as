@@ -116,7 +116,7 @@ package gl3d.core.shaders
 		//buffs
 		public function bindPosBuff(shader:GLShader,material:Material):void {
 			if (v.used) {
-				shader.buffSets[v.index] = (material.node.skin&&material.node.skin.useCpu)?material.node.drawable.cpuSkinPos:material.node.drawable.pos;
+				shader.buffSets[v.index] = (material.node.skin&&material.node.skin.useCpu&&material.node.drawable.pos.cpuSkinPos)?material.node.drawable.pos.cpuSkinPos:material.node.drawable.pos;
 			}
 		}
 		public function bindNormBuff(shader:GLShader,material:Material):void {
@@ -150,7 +150,7 @@ package gl3d.core.shaders
 			if(v.used)shader.buffSets[v.index] = material.node.drawable.weights;
 		}
 		public function bindCpuSkinPosBuff(shader:GLShader,material:Material):void {
-			if(v.used)shader.buffSets[v.index] = material.node.drawable.cpuSkinPos;
+			if(v.used)shader.buffSets[v.index] = material.node.drawable.pos.cpuSkinPos;
 		}
 		
 	}

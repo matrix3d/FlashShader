@@ -47,7 +47,7 @@ package
 			//[Embed(source = "assets/webgl.bsp", mimeType = "application/octet-stream")]var c:Class;
 			[Embed(source = "assets/fy_iceworld.bsp", mimeType = "application/octet-stream")]var c:Class;
 			//[Embed(source = "assets/de_dust2.bsp", mimeType = "application/octet-stream")]var c:Class;
-			//dobsp(new c as ByteArray);
+			dobsp(new c as ByteArray);
 			
 			//[Embed(source = "assets/webgl.wad", mimeType = "application/octet-stream")]var tc:Class;
 			/*[Embed(source = "assets/de_vegas.wad", mimeType = "application/octet-stream")]var tc:Class;
@@ -61,8 +61,8 @@ package
 			speed = .3;
 			//movementFunc = playerMove;
 			
-			[Embed(source = "assets/cityrush.bsp", mimeType = "application/octet-stream")]var q3c:Class;
-			doq3bsp(new q3c as ByteArray);
+			/*[Embed(source = "assets/cityrush.bsp", mimeType = "application/octet-stream")]var q3c:Class;
+			doq3bsp(new q3c as ByteArray);*/
 		}
 		
 		override public function initCtrl():void 

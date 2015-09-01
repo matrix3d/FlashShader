@@ -3,6 +3,7 @@ package gl3d.hlbsp
 	import flash.geom.Matrix3D;
 	import flash.geom.Vector3D;
 	import flash.utils.ByteArray;
+	import gl3d.core.Material;
 	import gl3d.core.Node3D;
 	import gl3d.core.View3D;
 	/**
@@ -25,7 +26,7 @@ package gl3d.hlbsp
 			//addChild(render.target);
 		}
 		
-		override public function update(view:View3D):void 
+		override public function update(view:View3D, material:Material = null):void  
 		{
 			world.copyFrom(matrix);
 			if (parent) {

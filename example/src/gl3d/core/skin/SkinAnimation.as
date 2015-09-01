@@ -16,7 +16,8 @@ package gl3d.core.skin
 		public var tracks:Vector.<Track> = new Vector.<Track>;
 		public var bindShapeMatrix:Matrix3D;
 		public var targets:Vector.<Node3D>;
-		public var endTime:Number = 0;
+		public var maxTime:Number = 0;
+		public var startTime:Number = 0;
 		private var q:Quaternion = new Quaternion;
 		public function SkinAnimation() 
 		{
@@ -27,13 +28,13 @@ package gl3d.core.skin
 			var c:SkinAnimation = new SkinAnimation;
 			c.tracks = tracks;
 			c.bindShapeMatrix = bindShapeMatrix;
-			c.endTime = endTime;
+			c.maxTime = maxTime;
 			return c;
 		}
 		
 		override public function update(time:int):void 
 		{
-			var t:Number = (time/1000) % endTime;
+			var t:Number = ((time-startTime)/1000) % maxTime;
 			for each(var track:Track in tracks) {
 				var last:TrackFrame = null;
 				for each(var f:TrackFrame in track.frames) {
@@ -51,7 +52,6 @@ package gl3d.core.skin
 				var world2local:Matrix3D = target.world2local;
 				if (target.skin.skinFrame == null) target.skin.skinFrame = new SkinFrame;
 				target.skin.skinFrame.quaternions.length = 0;
-				target.skin.joints[0].updateTransforms(true);
 				
 				if (target.skin.skinFrame.matrixs.length == 0) {
 					var nj:int = target.skin.joints.length;
@@ -80,10 +80,10 @@ package gl3d.core.skin
 				
 				if (target.skin.useCpu) {
 					var source:Vector.<Number> = target.drawable.pos.data;
-					if (target.drawable.cpuSkinPos==null) {
-						target.drawable.cpuSkinPos = new VertexBufferSet(new Vector.<Number>(source.length), 3);
+					if (target.drawable.pos.cpuSkinPos==null) {
+						target.drawable.pos.cpuSkinPos = new VertexBufferSet(new Vector.<Number>(source.length), 3);
 					}
-					var out:Vector.<Number> = target.drawable.cpuSkinPos.data;
+					var out:Vector.<Number> = target.drawable.pos.cpuSkinPos.data;
 					var v:Vector3D = new Vector3D;
 					for (i = 0; i < out.length / 3; i++ ) {
 						var x:Number = 0;
@@ -91,27 +91,29 @@ package gl3d.core.skin
 						var z:Number = 0;
 						v.setTo( source[i*3], source[i*3+1],source[i*3 + 2]);
 						for (var j:int = 0; j < target.skin.maxWeight;j++ ) {
-							var weight:Number = target.drawable.weights.data[i * target.skin.maxWeight + j];
-							var jointIndex:int = target.drawable.joints.data[i * target.skin.maxWeight + j] / 4;
-							matrix = target.skin.skinFrame.matrixs[jointIndex];
-							if (weight != 0) {
-								if(!target.skin.useQuat){
-									var vr:Vector3D = matrix.transformVector(v);
-								}else {
-									q.fromMatrix(matrix);
-									vr = q.rotatePoint(v);
-									vr = vr.add(q.tran);
+							var jointIndex:int = target.drawable.joints.data[i * target.skin.maxWeight + j];
+							if(jointIndex!=-1){
+								var weight:Number = target.drawable.weights.data[i * target.skin.maxWeight + j];
+								matrix = target.skin.skinFrame.matrixs[jointIndex];
+								if (weight != 0) {
+									if(!target.skin.useQuat){
+										var vr:Vector3D = matrix.transformVector(v);
+									}else {
+										q.fromMatrix(matrix);
+										vr = q.rotatePoint(v);
+										vr = vr.add(q.tran);
+									}
+									x += vr.x*weight;
+									y += vr.y*weight;
+									z += vr.z * weight;
 								}
-								x += vr.x*weight;
-								y += vr.y*weight;
-								z += vr.z * weight;
 							}
 						}
 						out[i * 3] = x;
 						out[i*3+1] = y;
 						out[i*3 + 2] = z;
 					}
-					target.drawable.cpuSkinPos.invalid = true;
+					target.drawable.pos.cpuSkinPos.invalid = true;
 				}
 			}
 		}

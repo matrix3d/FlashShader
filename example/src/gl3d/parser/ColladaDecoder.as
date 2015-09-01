@@ -281,17 +281,17 @@ package gl3d.parser
 					if (result) {
 						track.target = id2node[result[1]];
 						for (var i:int = 0; i < can.input.length; i++ ) {
-							if (anim.endTime < can.input[i]) {
-								anim.endTime = can.input[i];
+							if (anim.maxTime < can.input[i]) {
+								anim.maxTime = can.input[i];
 							}
 						}
 					}
 				}
 				var time:Number = 0;
 				var matrix:Matrix3D = new Matrix3D;
-				while(time<=anim.endTime){//缓存动画矩阵
+				while(time<=anim.maxTime){//缓存动画矩阵
 					var frame:TrackFrame = new TrackFrame;
-					part.doAnimation(time, anim.endTime, matrix);
+					part.doAnimation(time, anim.maxTime, matrix);
 					frame.time = time;
 					frame.matrix = converter.getConvertedMat4(part.target.clone());
 					track.frames.push(frame);

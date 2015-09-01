@@ -103,7 +103,7 @@ package as3Shader {
 					var start:int = startEnd[0];
 					for (j = 0; j < i;j++ ) {
 						var startEnd2:Array = startEnds[j];
-						if (start > startEnd2[1]) {//找到没被使用的变量
+						if (startEnd2&&(start > startEnd2[1])) {//找到没被使用的变量
 							for each(v in ttypePool[i]) {
 								v.index = j;
 							}
