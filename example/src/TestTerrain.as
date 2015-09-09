@@ -162,7 +162,7 @@ package
 			player = new Node3D;
 			player.addChild(p.scenes[0]);
 			//p.root.scaleX = p.root.scaleY = p.root.scaleZ = .05;
-			p.scenes[0].setRotation( -90, 0, 0);// -Math.PI / 2 ;
+			//p.scenes[0].setRotation( -90, 0, 0);// -Math.PI / 2 ;
 			//p.root.rotationY = 0;// -Math.PI;
 			view.scene.addChild(player);
 			addNode(30);
@@ -254,7 +254,7 @@ package
 				}
 				player.y = (terrain.picking as TerrainPicking).getHeight(player.x, player.z);
 				if (v) {
-					player.setRotation(0,  Math.atan2( -v.z, v.x)*180/Math.PI+90,0);
+					player.setRotation(0,  Math.atan2( -v.z, v.x)*180/Math.PI-90,0);
 				}
 				var last:Node3D = player;
 				for each(var clone:Node3D in players) {
@@ -263,7 +263,7 @@ package
 					clone.x += v.x;
 					clone.z += v.z;
 					clone.y = (terrain.picking as TerrainPicking).getHeight(clone.x, clone.z);
-					clone.setRotation(0,  Math.atan2( -v.z, v.x)*180/Math.PI+90,0);
+					clone.setRotation(0,  Math.atan2( -v.z, v.x)*180/Math.PI-90,0);
 					last = clone;
 				}
 			}

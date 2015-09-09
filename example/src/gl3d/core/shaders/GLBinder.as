@@ -59,9 +59,19 @@ package gl3d.core.shaders
 		public function bindTimeUniform(shader:GLShader, material:Material):void {
 			if (v.used) {
 				tempvec4[0] = material.view.time;
-				tempvec4[1] = 0;
-				tempvec4[2] = 0;
-				tempvec4[3] = 0;
+				tempvec4[1] = material.view.time;
+				tempvec4[2] = material.view.time;
+				tempvec4[3] = material.view.time;
+				material.view.renderer.gl3d.setProgramConstantsFromVector(as3shader.programType, v.index,tempvec4);
+			}
+		}
+		
+		public function bindPixelSizeUniform(shader:GLShader, material:Material):void {
+			if (v.used) {
+				tempvec4[0] = material.view.stage3dWidth;
+				tempvec4[1] = material.view.stage3dHeight;
+				tempvec4[2] = 1/material.view.stage3dWidth;
+				tempvec4[3] = 1/material.view.stage3dHeight;
 				material.view.renderer.gl3d.setProgramConstantsFromVector(as3shader.programType, v.index,tempvec4);
 			}
 		}

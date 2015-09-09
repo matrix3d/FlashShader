@@ -43,7 +43,7 @@ package
 		}
 		
 		override public function initNode():void {
-			
+			addSky();
 			//[Embed(source = "assets/webgl.bsp", mimeType = "application/octet-stream")]var c:Class;
 			[Embed(source = "assets/fy_iceworld.bsp", mimeType = "application/octet-stream")]var c:Class;
 			//[Embed(source = "assets/de_dust2.bsp", mimeType = "application/octet-stream")]var c:Class;
@@ -59,7 +59,7 @@ package
 			//addChild(new Bitmap(wad.loadTexture("{webgl")));
 			
 			speed = .3;
-			//movementFunc = playerMove;
+			movementFunc = playerMove;
 			
 			/*[Embed(source = "assets/cityrush.bsp", mimeType = "application/octet-stream")]var q3c:Class;
 			doq3bsp(new q3c as ByteArray);*/

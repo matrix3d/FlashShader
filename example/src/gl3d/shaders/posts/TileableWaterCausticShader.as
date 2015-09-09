@@ -19,7 +19,7 @@ package gl3d.shaders.posts
 			var SEE_TILING:Boolean = false;
 			var UV:Var = mov(V());
 			sub(1, UV.y, UV.y);
-			var time:Var = add(mul(div(C(), mov(1000)) , .5), 23.0);
+			var time:Var = add(mul(div(uniformTime(), mov(1000)) , .5), 23.0);
 			var sp:Var = UV;
 			if (SEE_TILING) {	
 				var p:Var =sub( mod(mul2([sp ,TAU , 2.0]), TAU) , 250.0);

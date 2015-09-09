@@ -17,7 +17,7 @@ package gl3d.shaders
 			var uv:Var = vs.uvVarying;
 			var scaledUV:Var = mul(uv, 60);
 			//repeat,miplinear
-			var flags:Array = ["repeat"/*,"linear"*/,"miplinear","anisotropic16x"];
+			var flags:Array = material.terrainTextureSets[0].flags;
 			var map:Var = tex(uv, FS(), null, flags);
 			mov(sub2([1,map.x,map.y,map.z]),map.w);
 			var diffColor0:Var = tex(scaledUV, samplerTerrains(0),null,flags);

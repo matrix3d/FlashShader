@@ -72,7 +72,7 @@ package gl3d.core.renders
 					stage3d.y = view.y;
 					gl3d.configureBackBuffer(view.stage3dWidth, view.stage3dHeight, view.antiAlias);
 				}
-				/*if (view.posts.length) {
+				if (view.posts.length) {
 					var len:int = view.posts.length>1?2:1;
 					for (var i:int = 0; i < len; i++ ) {
 						if (view.invalid) {
@@ -81,10 +81,12 @@ package gl3d.core.renders
 							view.postRTTs[i].invalid = false;
 						}
 					}
-					gl3d.setRenderToTexture(view.postRTTs[0].texture, true, view.antiAlias);
+					renderTarget = view.postRTTs[0];
+					//gl3d.setRenderToTexture(view.postRTTs[0].texture, true, view.antiAlias);
 				}else {
-					gl3d.setRenderToBackBuffer();
-				}*/
+					renderTarget = null;
+					//gl3d.setRenderToBackBuffer();
+				}
 				if (renderTarget) {
 					gl3d.setRenderToTexture(renderTarget.texture, true, view.antiAlias);
 				}else {
@@ -107,7 +109,7 @@ package gl3d.core.renders
 				for each(node in collects) {
 					node.update(view);
 				}
-				/*if (view.posts.length) {
+				if (view.posts.length) {
 					for (i = 0; i < view.posts.length; i++ ) {
 						var post:PostEffect = view.posts[i];
 						post.update(view,i==view.posts.length-1);
@@ -117,7 +119,7 @@ package gl3d.core.renders
 							view.postRTTs[1] = temp;
 						}
 					}
-				}*/
+				}
 				gl3d.present();
 			}
 		}

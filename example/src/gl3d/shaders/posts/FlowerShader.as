@@ -16,9 +16,9 @@ package gl3d.shaders.posts
 			super(Context3DProgramType.FRAGMENT);
 			var UV:Var = mov(V());
 			sub(1, UV.y, UV.y);
-			var iResolution:Var = mov(C().yz);
+			var iResolution:Var = mov(uniformPixelSize());
 			var gl_FragCoord:Var = mul(UV , iResolution);
-			var iGlobalTime:Var = div(mov(C().x), 1000);
+			var iGlobalTime:Var = div(mov(uniformTime().x), 1000);
 			
 			var p:Var = div(sub(mul(2.0,gl_FragCoord),iResolution),min(iResolution.y,iResolution.x));
 

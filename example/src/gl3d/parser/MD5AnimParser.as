@@ -22,7 +22,7 @@ package gl3d.parser
 			var anim:SkinAnimation = new SkinAnimation();
 			md5.target.controllers = new Vector.<Ctrl>;
 			md5.target.controllers.push(anim);
-			anim.endTime = decoder.components.length / decoder.frameRate;
+			anim.maxTime = decoder.components.length / decoder.frameRate;
 			anim.targets = md5.skinNodes;
 			var q:Quaternion = new Quaternion;
 			for (var i:int = 0; i < decoder.components.length;i++ ) {

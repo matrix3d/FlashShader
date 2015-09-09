@@ -14,7 +14,7 @@ package gl3d.post
 	 */
 	public class PostEffect 
 	{
-		private static var node:Node3D;
+		public static var node:Node3D;
 		private var _material:Material;
 		private var numTexture:int;
 		public var shader:GLShader;

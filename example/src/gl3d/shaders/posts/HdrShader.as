@@ -18,8 +18,8 @@ package gl3d.shaders.posts
 		public function HdrShader(fAvgLum:Number=.5, fDimmer:Number=.25) 
 		{
 			super(Context3DProgramType.FRAGMENT);
-			var baseTex:Var=FS();
-			var bloomTex:Var=FS();
+			var baseTex:Var=samplerDiff();
+			var bloomTex:Var=samplerDiff();
 			var uv:Var = V();
 			var texCol:Var = tex(uv,baseTex);
 			//计算平均亮度

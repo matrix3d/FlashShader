@@ -45,6 +45,7 @@ package gl3d.core.skin
 				}
 				if (last) {
 					track.target.matrix = last.matrix;
+					track.target.updateTransforms(true);
 				}
 			}
 			

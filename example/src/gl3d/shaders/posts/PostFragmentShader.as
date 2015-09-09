@@ -13,7 +13,7 @@ package gl3d.shaders.posts
 		public function PostFragmentShader() 
 		{
 			super(Context3DProgramType.FRAGMENT);
-			tex(V(), FS(), oc);
+			tex(V(), samplerDiff(), oc);
 		}
 		
 	}

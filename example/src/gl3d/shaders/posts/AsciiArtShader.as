@@ -14,7 +14,7 @@ package gl3d.shaders.posts
 		public function AsciiArtShader(blurSize:Number=1/1000,isVertical:Boolean=true) 
 		{
 			super(Context3DProgramType.FRAGMENT);
-			oc = tex(V(), FS());
+			oc = tex(V(), samplerDiff());
 			/*var uv:Var = V();
 			var iChannel0:Var = FS();
 			var col:Var = tex(floor(uv / 8.0) * 8.0 / iResolution.xy, iChannel0);

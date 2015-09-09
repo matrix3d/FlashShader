@@ -21,7 +21,7 @@ package gl3d.ctrl
 			
 		}
 		
-		override public function update():void 
+		override public function update(time:int):void 
 		{
 			help.identity();
 			help.appendRotation(45, Vector3D.X_AXIS);

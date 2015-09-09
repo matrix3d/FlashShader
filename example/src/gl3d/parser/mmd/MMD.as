@@ -153,7 +153,7 @@ package gl3d.parser.mmd
 					frame.matrix = q.toMatrix();
 					if(node.parent&&name2bone[node.parent.name])
 					frame.matrix.append(node.parent.matrix);
-					frame.time = key.time / 1000 * 10;
+					frame.time = key.time / 1000 * 30;
 					if (anim.maxTime<frame.time) {
 						anim.maxTime = frame.time;
 					}

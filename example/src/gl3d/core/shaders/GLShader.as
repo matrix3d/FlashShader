@@ -131,12 +131,26 @@ package gl3d.core.shaders
 				material.view.renderer.gl3d.setProgramConstantsFromVector(Context3DProgramType.VERTEX, vs.constMemLen, vs.constPoolVec);
 				material.view.renderer.gl3d.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, fs.constMemLen, fs.constPoolVec);
 			}
+			var allTexReady:Boolean = true;
 			if(textureSets)
 			for (var i:int = 0; i < textureSets.length;i++ ) {
 				var textureSet:TextureSet = textureSets[i];
 				if (textureSet) {
 					textureSet.update(material.view);
-					textureSet.bind(material.view.renderer.gl3d, i);
+					if (!textureSet.ready) {
+						allTexReady = false;
+					}
+				}
+			}
+			if (!allTexReady) {
+				return;
+			}else {
+				if(textureSets)
+				for (i = 0; i < textureSets.length;i++ ) {
+					textureSet = textureSets[i];
+					if (textureSet) {
+						textureSet.bind(material.view.renderer.gl3d, i);
+					}
 				}
 			}
 			if(buffSets)

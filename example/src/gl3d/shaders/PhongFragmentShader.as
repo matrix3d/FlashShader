@@ -15,7 +15,7 @@ package gl3d.shaders
 	 */
 	public class PhongFragmentShader extends GLAS3Shader
 	{
-		private var material:Material;
+		public var material:Material;
 		private var e:Var;
 		private var n:Var;
 		public var vs:PhongVertexShader;
@@ -73,7 +73,7 @@ package gl3d.shaders
 				}
 			}
 			if (material.reflectTexture) {
-				var refc:Var = mul(1,tex(vs.reflected, reflectSampler, null, ["cube"/*,"miplinear"*/,"anisotropic16x"]));
+				var refc:Var = mul(1,tex(vs.reflected, reflectSampler, null, material.reflectTexture.flags));
 				mul(diffColor.xyz,refc.xyz,diffColor.xyz);
 			}
 			var fog:Fog = material.view.fog;
@@ -97,11 +97,11 @@ package gl3d.shaders
 				var diffColor:Var = mov(this.diffColor);
 			}else {
 				if (!material.isDistanceField) {
-					diffColor = tex(vs.uvVarying, diffSampler,null,["repeat","anisotropic16x","miplinear"]);
+					diffColor = tex(vs.uvVarying, diffSampler,null,material.diffTexture.flags);
 					mul(this.diffColor.w, diffColor.w, diffColor.w);
 				}else {
 					//http://www.valvesoftware.com/publications/2007/SIGGRAPH2007_AlphaTestedMagnification.pdf
-					var distance:Var = tex(vs.uvVarying,diffSampler,null,["repeat","anisotropic16x","miplinear"]).w;
+					var distance:Var = tex(vs.uvVarying,diffSampler,null,material.diffTexture.flags).w;
 					var smoothing:Var = fwidth(distance);
 					var alpha:Var = sat(smoothstep(sub(0.5 , smoothing),add( 0.5 , smoothing), distance));
 					diffColor = sub(1, alpha);
@@ -127,7 +127,7 @@ package gl3d.shaders
 			if (material.normalMapAble) {
 				var tangent:Var = vs.tangentVarying;
 				var biTangent:Var = crs(normal, tangent);
-				var normalMap:Var = sub(mul(tex(vs.uvVarying, normalmapSampler,null,["miplinear","anisotropic16x","repeat"]),2),1);
+				var normalMap:Var = sub(mul(tex(vs.uvVarying, normalmapSampler,null,material.normalmapTexture.flags),2),1);
 			}
 			
 			var l:Var = vs.posLightVaryings[i];

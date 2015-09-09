@@ -10,12 +10,18 @@ package gl3d.shaders.posts
 	 */
 	public class BlurShader extends GLAS3Shader
 	{
-		public function BlurShader(blurSize:Number=1/1000,isVertical:Boolean=true) 
+		public function BlurShader(blurSize:Number=1,isVertical:Boolean=true) 
 		{
 			super(Context3DProgramType.FRAGMENT);
 			var arr:Array = [0.06, 0.09, 0.12, 0.15, 0.16, 0.15, 0.12, 0.09, 0.06];
 			var color:Var;
 			var blurSizeVar:Var = mov(blurSize);
+			var pixsize:Var = uniformPixelSize();
+			if (isVertical) {
+				blurSizeVar = div(blurSizeVar,pixsize.y);
+			}else {
+				blurSizeVar = div(blurSizeVar,pixsize.x);
+			}
 			var newuv:Var;
 			
 			for (var i:int = -4; i <= 4;i++ ) {
@@ -34,7 +40,7 @@ package gl3d.shaders.posts
 						add(newuv.x,blurSizeVar, newuv.x);
 					}
 				}
-				var color2:Var = mul(tex(newuv,FS()),v);
+				var color2:Var = mul(tex(newuv,samplerDiff()),v);
 				if (color==null) {
 					color = mov(color2, color);
 				}else {

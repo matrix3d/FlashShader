@@ -27,7 +27,7 @@ package gl3d.shaders
 		
 		override public function getFragmentShader(material:Material):GLAS3Shader 
 		{
-			return new SkyBoxFragmentShader(vs as SkyBoxVertexShader);
+			return new SkyBoxFragmentShader(material,vs as SkyBoxVertexShader);
 		}
 		
 	}

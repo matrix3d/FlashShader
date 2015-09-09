@@ -48,7 +48,7 @@ package gl3d.shaders.posts
 			buffSets[1] = material.node.drawable.uv;
 		}*/
 		
-		override public function update(material:Material):void 
+		/*override public function update(material:Material):void 
 		{
 			super.update(material);
 			var context:GL = material.view.renderer.gl3d;
@@ -61,7 +61,7 @@ package gl3d.shaders.posts
 				//trace(fshader.constMemLen,fshader.constPool);
 				context.drawTriangles(node.drawable.index.buff);
 			}
-		}
+		}*/
 		
 	}
 

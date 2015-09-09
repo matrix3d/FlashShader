@@ -18,9 +18,9 @@ package gl3d.shaders.posts
 			var offset:Array = [.2,0];
 			tex(add(offset,uv),FS(),oc,["wrap"]/*,["2d","wrap"]*/
 			
-			var time:Var = div(C().x,mov(100));
+			var time:Var = div(uniformTime().x,mov(100));
 			var uv:Var = V();
-			var tex0:Var = FS();
+			var tex0:Var = samplerDiff();
 			var scale:Number = .003;
 			
 			var offset:Var = mul(sin(add(mul(uv.yx, Math.PI * 50), time)), scale);
