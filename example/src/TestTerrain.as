@@ -92,8 +92,14 @@ package
 		}
 		
 		override public function initNode():void {
-			view.camera.z = -200;
-			view.camera.y = 100;
+			addSky();
+			view.fog.mode = Fog.FOG_LINEAR;
+			view.fog.start = 100;
+			view.fog.end = 200;
+			view.fog.fogColor = [0x84 / 0xff, 0x98 / 0xff, 0xbe / 0xff];
+			view.background = 0x8498be;
+			view.camera.z = -100;
+			view.camera.y = 50;
 			view.camera.setRotation(  30 ,0,0);
 			view.lights[0].y = 2000;
 			view.lights[0].x = 0;

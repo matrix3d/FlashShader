@@ -75,12 +75,12 @@ package gl3d.core {
 					}
 				}else {
 					if (temp==null) {
-						temp = new BitmapData(w, h, bmd.transparent, 0);
+						temp = new BitmapData(Math.max(w,1), Math.max(h,1), bmd.transparent, 0);
 					}
 					if (temp.transparent) {
 						temp.fillRect(temp.rect, 0);
 					}
-					temp.draw(bmd, new Matrix(w / bmd.width, 0, 0, h / bmd.height));
+					temp.draw(bmd, new Matrix(temp.width / bmd.width, 0, 0, temp.height / bmd.height));
 					if(texture is Texture)
 					(texture as Texture).uploadFromBitmapData(temp, level);
 					else if (texture is CubeTexture)
@@ -160,20 +160,25 @@ package gl3d.core {
 						throw "Invalid ATF format";
 				}
 				
-				var type:String;
 				switch (_type) {
 					case 0:
-						type = "ATFData.TYPE_NORMAL";
+						isCube = false;
+						break;
 					case 1:
-						type = "ATFData.TYPE_CUBE";
+						isCube = true;
 				}
 				var width:int = int(Math.pow(2, data.readUnsignedByte()));
 				var height:int = int(Math.pow(2, data.readUnsignedByte()));
 				var numTextures:int = data.readUnsignedByte();
+				//mipmap = numTextures > 1;
 				
 				if(createTexture){
-					texture = context.createTexture(width, height, format, optimizeForRenderToTexture,0);
+					texture = isCube?context.createCubeTexture(width,format,optimizeForRenderToTexture,0):context.createTexture(width, height, format, optimizeForRenderToTexture,0);
+					if (isCube)
+					(texture as CubeTexture).uploadCompressedTextureFromByteArray(atf, 0, async);
+					else
 					(texture as Texture).uploadCompressedTextureFromByteArray(atf, 0, async);
+					
 					ready = !async;
 					if(async)
 					(texture as Texture).addEventListener(Event.TEXTURE_READY, function():void { ready = true } );

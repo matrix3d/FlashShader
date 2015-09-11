@@ -2,6 +2,7 @@ package
 {
 	import flash.display.Bitmap;
 	import flash.display.BitmapData;
+	import flash.display.BlendMode;
 	import flash.display.Sprite;
 	import flash.display.StageAlign;
 	import flash.display.StageScaleMode;
@@ -36,6 +37,7 @@ package
 	import gl3d.shaders.posts.PostGLShader;
 	import gl3d.shaders.posts.BlurShader;
 	import gl3d.shaders.posts.PulseShader;
+	import gl3d.shaders.posts.RedScreenShader;
 	import gl3d.shaders.posts.ShapeShader;
 	import gl3d.shaders.posts.SinWaterShader;
 	import gl3d.shaders.posts.TileableWaterCausticShader;
@@ -92,7 +94,7 @@ package
 			[Embed(source = "assets/skybox/ny.jpg")]var nyc:Class;
 			[Embed(source = "assets/skybox/pz.jpg")]var pzc:Class;
 			[Embed(source = "assets/skybox/nz.jpg")]var nzc:Class;
-			var bmds:Vector.<BitmapData> = new <BitmapData>[
+			var bmds:Array = [
 			(new pxc as Bitmap).bitmapData,
 			(new nxc as Bitmap).bitmapData,
 			(new pyc as Bitmap).bitmapData,
@@ -109,15 +111,22 @@ package
 			/*for each(var bmd2:BitmapData in bmds) {
 				Utils.createXorMap(bmd2);
 			}*/
-			skyBoxTexture = new TextureSet(bmd, false, true);
-			skyBoxTexture.datas = bmds;
+			skyBoxTexture = new TextureSet(bmds, false, true,true);
 			
 			bmd = new BitmapData(128, 128, false, 0xff0000);
 			bmd.perlinNoise(30, 30, 2, 1, true, true);
-			texture = new TextureSet(bmd);
+			
+			//atf
+			//[Embed(source = "assets/leaf.atf", mimeType = "application/octet-stream")]var leafc:Class;
+			//[Embed(source = "assets/red.atf", mimeType = "application/octet-stream")]var leafc:Class;
+			//texture = new TextureSet((new leafc as ByteArray),false,false,false,false);
+			
+			//[Embed(source = "assets/leaf.png")]var leafp:Class;
+			//texture = new TextureSet((new leafp as Bitmap).bitmapData,false,false,true,false);
 			
 			normalMapTexture = createNormalMap();
 			material.culling =  Context3DTriangleFace.NONE;
+			//material.blendModel = BlendMode.ADD;
 			material.normalMapAble = false;
 			material.specularPower = 10;
 			material.specularAble = true;
@@ -140,6 +149,7 @@ package
 			stage.scaleMode = StageScaleMode.NO_SCALE;
 			stage.addEventListener(Event.RESIZE, stage_resize);
 			stage_resize();
+			//post = "def";
 			//post = "water";
 			//post = "heart";
 			//post = "flower";
@@ -147,7 +157,8 @@ package
 			//post="hdr"
 			//post="shape"
 			//post="asciiart"
-			//post = "sinwater";
+			//post = "blur";
+			//post = "red";
 			stats = new Stats(view);
 			addChild(stats);
 		}
@@ -216,7 +227,7 @@ package
 			aui.bind(material, "alpha", AttribSeter.TYPE_NUM, new Point(.1, 1));
 			aui.bind(material, "wireframeAble", AttribSeter.TYPE_BOOL);
 			aui.bind(this, "useTexture", AttribSeter.TYPE_BOOL);
-			aui.bind(this, "post", AttribSeter.TYPE_LIST_STR, null, ["null", "blur", "water", "bend", "heart", "flower", "sinwater", "hdr", "shape","asciiart"]);
+			aui.bind(this, "post", AttribSeter.TYPE_LIST_STR, null, ["null", "blur", "water", "bend", "heart", "flower", "sinwater", "hdr", "shape","asciiart","red"]);
 			
 			if(Multitouch.supportsTouchEvents)
 			addChild(gamepad);
@@ -287,7 +298,7 @@ package
 			view.posts.length = 0;
 			switch(txt) {
 				case "blur":
-					var blurSize:Number = 1 / 400;
+					var blurSize:Number = 2;
 					view.posts.push(new PostEffect(new PostGLShader(null,new BlurShader(blurSize))));
 					view.posts.push(new PostEffect(new PostGLShader(null,new BlurShader(blurSize,false))));
 					break;
@@ -314,6 +325,12 @@ package
 					break;
 				case "asciiart":
 					view.posts.push(new PostEffect(new PostGLShader(null, new AsciiArtShader)));
+					break;
+				case "red":
+					view.posts.push(new PostEffect(new PostGLShader(null, new RedScreenShader),0));
+					break;
+				case "def":
+					view.posts.push(new PostEffect(new PostGLShader()));
 			}
 		}
 	}

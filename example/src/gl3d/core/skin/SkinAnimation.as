@@ -19,6 +19,7 @@ package gl3d.core.skin
 		public var maxTime:Number = 0;
 		public var startTime:Number = 0;
 		private var q:Quaternion = new Quaternion;
+		private var interMatrix:Matrix3D = new Matrix3D;
 		public function SkinAnimation() 
 		{
 			
@@ -38,15 +39,19 @@ package gl3d.core.skin
 			for each(var track:Track in tracks) {
 				var last:TrackFrame = null;
 				for each(var f:TrackFrame in track.frames) {
-					last = f;
 					if (f.time>=t) {
 						break;
 					}
+					last = f;
 				}
-				if (last) {
-					track.target.matrix = last.matrix;
-					track.target.updateTransforms(true);
+				if (f && last) {
+					interMatrix.copyFrom(last.matrix);
+					interMatrix.interpolateTo(f.matrix,(t-last.time) /(f.time-last.time));
+					track.target.matrix.copyFrom(interMatrix);
+				}else {
+					track.target.matrix.copyFrom(f.matrix);
 				}
+				track.target.updateTransforms(true);
 			}
 			
 			for each(var target:Node3D in targets){
