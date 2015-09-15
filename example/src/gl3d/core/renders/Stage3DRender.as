@@ -7,6 +7,7 @@ package gl3d.core.renders
 	import flash.display3D.textures.RectangleTexture;
 	import flash.display3D.textures.Texture;
 	import flash.geom.Matrix;
+	import flash.utils.Dictionary;
 	import gl3d.core.Light;
 	import gl3d.core.Node3D;
 	import flash.display3D.Context3DProfile;
@@ -98,6 +99,7 @@ package gl3d.core.renders
 				view.drawTriangleCounter = 0;
 				view.drawCounter = 0;
 				collect(scene);
+				sort();
 				for each(var light:Light in view.lights) {
 					if (light.shadowMapEnabled) {
 						for each(var node:Node3D in collects) {

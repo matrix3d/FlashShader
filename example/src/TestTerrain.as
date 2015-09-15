@@ -171,17 +171,17 @@ package
 			//p.scenes[0].setRotation( -90, 0, 0);// -Math.PI / 2 ;
 			//p.root.rotationY = 0;// -Math.PI;
 			view.scene.addChild(player);
-			addNode(30);
+			addNode(1000);
 		}
 		
 		private function addNode(num:int):void {
 			while(num-->0){
 				var d:int = 3;
-				var clone:Node3D = player.clone();
+				var clone:Node3D = player.clone(true);
 				players.push(clone);
 				
 				changeMaterial(clone);
-				view.scene.addChild(clone);
+				(new Node3D).addChild(clone);
 			}
 		}
 		

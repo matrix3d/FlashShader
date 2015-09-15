@@ -61,12 +61,12 @@ package gl3d.core {
 			this.node = node;
 			if (node.drawable&&shader) {
 				var context:GL = view.renderer.gl3d;
-				if (wireframeAble) {
+				/*if (wireframeAble) {
 					if (node.drawable.unpackedDrawable==null) {
 						node.drawable.unpackedDrawable = Meshs.unpack(node.drawable);
 					}
 					node.drawable.unpackedDrawable.update(context);
-				}
+				}*/
 				node.drawable.update(context);
 				var hasSkin:Boolean = node.skin && node.skin.skinFrame&&!node.skin.useCpu;
 				if (gpuSkin!=hasSkin) {

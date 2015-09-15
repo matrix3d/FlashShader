@@ -19,6 +19,7 @@ package gl3d.core {
 		public var _world2local:Matrix3D = new Matrix3D;
 		private var _matrix:Matrix3D = new Matrix3D;
 		public var children:Vector.<Node3D> = new Vector.<Node3D>;
+		public var renderChildren:Vector.<Node3D> = new Vector.<Node3D>;
 		public var drawable:Drawable3D;
 		public var material:Material;
 		public var name:String;
@@ -62,6 +63,9 @@ package gl3d.core {
 			}
 			if (material||this.material) {
 				(material||this.material).draw(this,view);
+			}
+			for each(var child:Node3D in renderChildren) {
+				child.update(view, material);
 			}
 		}
 		
@@ -238,7 +242,7 @@ package gl3d.core {
 			return getQualifiedClassName(this).split("::")[1]+":"+name;
 		}
 		
-		public function clone():Node3D {
+		public function clone(addRender:Boolean=false):Node3D {
 			var node:Node3D = new Node3D;
 			node.copyfrom = this;
 			node.drawable = drawable;
@@ -247,7 +251,10 @@ package gl3d.core {
 			node.skin = skin;
 			for each(var child:Node3D in children) {
 				if(child.type!="JOINT")
-				node.addChild(child.clone());
+				node.addChild(child.clone(addRender));
+			}
+			if (addRender&&drawable) {
+				renderChildren.push(node);
 			}
 			return node;
 		}

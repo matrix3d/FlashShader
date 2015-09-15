@@ -27,7 +27,7 @@ package gl3d.core {
 		public var id2index:Object = { };
 		public var oldIndex2NewIndexs:Array = [];
 		
-		public var unpackedDrawable:Drawable3D;
+		private var _unpackedDrawable:Drawable3D;
 		public function Drawable3D() 
 		{
 			
@@ -150,6 +150,12 @@ package gl3d.core {
 		public function set index(value:IndexBufferSet):void 
 		{
 			_index = value;
+		}
+		
+		public function get unpackedDrawable():Drawable3D 
+		{
+			if (_unpackedDrawable == null)_unpackedDrawable = Meshs.unpack(this);
+			return _unpackedDrawable;
 		}
 		
 		public function addVertex(posV:Array, uvV:Array,oldIndex:int=-1,hashAdder:String=""):int {

@@ -39,6 +39,10 @@ package gl3d.core.renders
 				collect(c);
 			}
 		}
+		
+		public function sort():void {
+			//collects.sort(sortFun);
+		}
 	}
 
 }
