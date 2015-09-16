@@ -171,7 +171,7 @@ package
 			//p.scenes[0].setRotation( -90, 0, 0);// -Math.PI / 2 ;
 			//p.root.rotationY = 0;// -Math.PI;
 			view.scene.addChild(player);
-			addNode(1000);
+			addNode(30);
 		}
 		
 		private function addNode(num:int):void {

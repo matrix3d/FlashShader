@@ -33,7 +33,7 @@ package gl3d.core.shaders
 		public var programSet:ProgramSet;
 		public var textureSets:Array=[];
 		public var buffSets:Array;
-		public var debug:Boolean = false;
+		public var debug:Boolean = true;
 		public static var PROGRAM_POOL:Object = { };
 		public function GLShader() 
 		{
@@ -95,16 +95,16 @@ package gl3d.core.shaders
 				trace(this);
 				vs.creator = new AGALCodeCreator();
 				var code:String = vs.code as String;
-				//trace(code);
+				trace(code);
 				//trace(vs);
 				vs.creator = new GLCodeCreator();
-				trace(vs.code);
+				//trace(vs.code);
 				fs.creator = new AGALCodeCreator();
 				code = fs.code as String;
-				//trace(code);
+				trace(code);
 				//trace(fs);
 				fs.creator = new GLCodeCreator();
-				trace(fs.code);
+				//trace(fs.code);
 				trace();
 			}
 			return ps[ps.length-1];

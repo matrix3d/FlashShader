@@ -9,6 +9,7 @@ package gl3d.core {
 	import flash.events.Event;
 	import flash.geom.Matrix;
 	import flash.utils.ByteArray;
+	import flash.utils.Endian;
 	import gl3d.core.renders.GL;
 	/**
 	 * ...
@@ -51,11 +52,11 @@ package gl3d.core {
 			var bmd:BitmapData = data as BitmapData;
 			if (bmd) {
 				texture = context.createRectangleTexture(bmd.width, bmd.height , Context3DTextureFormat.BGRA, optimizeForRenderToTexture);
-				(texture as RectangleTexture).uploadFromBitmapData(bmd);
+				uploadFromBitmapData(texture, bmd, 0);
 			}
 		}
 		
-		public function updateBMDTexture(w:int,h:int,bmd:BitmapData,texture:TextureBase, side:uint=0):void {
+		public function updateBMDTexture(w:int, h:int, bmd:BitmapData, texture:TextureBase, side:uint = 0):void {
 			var temp:BitmapData;
 			var level:int = 0;
 			if (w!=bmd.width||h!=bmd.height) {
@@ -65,33 +66,38 @@ package gl3d.core {
 			}
 			while (w > 0||h>0) {
 				if (level == 0) {
-					if(texture is Texture)
-					(texture as Texture).uploadFromBitmapData(bmd, level);
-					else if (texture is CubeTexture)
-					(texture as CubeTexture).uploadFromBitmapData(bmd, side, level);
+					uploadFromBitmapData(texture, bmd, side, level);
 					
 					if (!mipmap) {
 						break;
 					}
 				}else {
-					if (temp==null) {
-						temp = new BitmapData(Math.max(w,1), Math.max(h,1), bmd.transparent, 0);
-					}
+					temp = new BitmapData(Math.max(w,1), Math.max(h,1), bmd.transparent, 0);
 					if (temp.transparent) {
 						temp.fillRect(temp.rect, 0);
 					}
 					temp.draw(bmd, new Matrix(temp.width / bmd.width, 0, 0, temp.height / bmd.height));
-					if(texture is Texture)
-					(texture as Texture).uploadFromBitmapData(temp, level);
-					else if (texture is CubeTexture)
-					(texture as CubeTexture).uploadFromBitmapData(temp,side, level);
+					uploadFromBitmapData(texture, temp, side, level);
+					temp.dispose();
 				}
 				level++;
 				w /= 2;
 				h /= 2;
 			}
-			if(temp){
-				temp.dispose();
+		}
+		
+		private function uploadFromBitmapData (texture:TextureBase, source:BitmapData, side:uint, miplevel:uint = 0) : void {
+			var byte:ByteArray = new ByteArray;
+			byte.endian = Endian.LITTLE_ENDIAN;
+			source.copyPixelsToByteArray(source.rect, byte);
+			if (texture is Texture) {
+				(texture as Texture).uploadFromByteArray(byte, 0, miplevel);
+				//(texture as Texture).uploadFromBitmapData(source, miplevel);
+			}else if (texture is CubeTexture) {
+				(texture as CubeTexture).uploadFromByteArray(byte,0, side, miplevel);
+				//(texture as CubeTexture).uploadFromBitmapData(source, side, miplevel);
+			}else if (texture is RectangleTexture) {
+				(texture as RectangleTexture).uploadFromByteArray(byte, 0);
 			}
 		}
 		
@@ -194,7 +200,8 @@ package gl3d.core {
 					updateRect(context);
 				}else if (data is Array) {
 					updateBMDs(context);
-				}else if(data is BitmapData){
+				}else if (data is BitmapData) {
+					//data = new BitmapData(1, 1, true, 0x80ffffff);
 					updateBMD(context);
 				}else if (data is ByteArray) {
 					updateATF(context);

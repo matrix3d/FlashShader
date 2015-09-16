@@ -28,6 +28,7 @@ package gl3d.core {
 		private var _toonAble:Boolean = false;
 		public var toonStep:Number = 2;
 		public var castShadow:Boolean = false;
+		public var alphaThreshold:Number = 0;
 		
 		public var view:View3D;
 		public var camera:Camera3D;

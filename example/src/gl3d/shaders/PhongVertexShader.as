@@ -147,7 +147,7 @@ package gl3d.shaders
 				}
 			}
 			
-			if (material.diffTexture) {
+			if (material.diffTexture||material.normalMapAble) {
 				mov(uv, uvVarying);
 			}
 			if (material.wireframeAble) {

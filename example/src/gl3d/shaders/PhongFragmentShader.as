@@ -73,7 +73,7 @@ package gl3d.shaders
 				}
 			}
 			if (material.reflectTexture) {
-				var refc:Var = mul(1,tex(vs.reflected, reflectSampler, null, material.reflectTexture.flags));
+				var refc:Var = tex(vs.reflected, reflectSampler, null,material.reflectTexture.flags);
 				mul(diffColor.xyz,refc.xyz,diffColor.xyz);
 			}
 			var fog:Fog = material.view.fog;
@@ -97,8 +97,10 @@ package gl3d.shaders
 				var diffColor:Var = mov(this.diffColor);
 			}else {
 				if (!material.isDistanceField) {
-					diffColor = tex(vs.uvVarying, diffSampler,null,material.diffTexture.flags);
-					mul(this.diffColor.w, diffColor.w, diffColor.w);
+					diffColor = tex(vs.uvVarying, diffSampler, null, material.diffTexture.flags);
+					if (material.alphaThreshold > 0) {
+						kil(sub(diffColor.w,material.alphaThreshold).x);
+					}
 				}else {
 					//http://www.valvesoftware.com/publications/2007/SIGGRAPH2007_AlphaTestedMagnification.pdf
 					var distance:Var = tex(vs.uvVarying,diffSampler,null,material.diffTexture.flags).w;

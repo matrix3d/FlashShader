@@ -118,11 +118,11 @@ package
 			
 			//atf
 			//[Embed(source = "assets/leaf.atf", mimeType = "application/octet-stream")]var leafc:Class;
-			//[Embed(source = "assets/red.atf", mimeType = "application/octet-stream")]var leafc:Class;
-			//texture = new TextureSet((new leafc as ByteArray),false,false,false,false);
+			//texture = new TextureSet((new leafc as ByteArray),false,false,true,false);
+			
 			
 			//[Embed(source = "assets/leaf.png")]var leafp:Class;
-			//texture = new TextureSet((new leafp as Bitmap).bitmapData,false,false,true,false);
+			//texture = new TextureSet((new leafp as Bitmap).bitmapData, false, false, true, false);
 			
 			normalMapTexture = createNormalMap();
 			material.culling =  Context3DTriangleFace.NONE;
@@ -133,11 +133,12 @@ package
 			material.lightAble = true;
 			material.wireframeAble = false;
 			material.toonAble = false;
+			material.alphaThreshold = .7;
 			material.diffTexture = texture;
 			if (material.normalMapAble) {
 				material.normalmapTexture= normalMapTexture;
 			}
-			material.reflectTexture = skyBoxTexture;
+			//material.reflectTexture = skyBoxTexture;
 			
 			initLight();
 			initNode();
@@ -157,7 +158,7 @@ package
 			//post="hdr"
 			//post="shape"
 			//post="asciiart"
-			//post = "blur";
+			post = "blur";
 			//post = "red";
 			stats = new Stats(view);
 			addChild(stats);
@@ -165,7 +166,7 @@ package
 		
 		public function createNormalMap():TextureSet {
 			var bmd:BitmapData = new BitmapData(512, 512, false, 0);
-			bmd.perlinNoise(150, 150, 4, 1,true,true);
+			bmd.perlinNoise(100, 100, 4, 1, true, true);
 			return new TextureSet(Utils.createNormalMap(bmd));
 		}
 		
@@ -191,7 +192,7 @@ package
 		}
 		
 		public function initNode():void {
-			addSky();
+			//addSky();
 			
 			teapot = new Node3D;
 			teapot.material = material;
@@ -199,7 +200,7 @@ package
 			//teapot.drawable = Meshs.cube();
 			view.scene.addChild(teapot);
 			teapot.scaleX = teapot.scaleY = teapot.scaleZ = 1;
-			view.background = 0xffffff;
+			view.background = 0//xffffff;
 			teapot.picking = new AS3Picking();
 			stage.addEventListener(MouseEvent.MOUSE_DOWN, stage_mouseDown);
 		}

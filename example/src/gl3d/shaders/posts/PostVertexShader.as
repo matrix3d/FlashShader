@@ -11,7 +11,7 @@ package gl3d.shaders.posts
 		
 		public function PostVertexShader() 
 		{
-			m44(buffPos(),matrix(), op);
+			mov(buffPos(), op);
 			mov(buffUV(), V());
 		}
 		
