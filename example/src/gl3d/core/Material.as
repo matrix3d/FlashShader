@@ -51,6 +51,7 @@ package gl3d.core {
 		public var destinationFactor:String = Context3DBlendFactor.ZERO;
 		public var passCompareMode:String = Context3DCompareMode.LESS;
 		public var culling:String = Context3DTriangleFace.FRONT;
+		public var depthMask:Boolean = true;
 		public function Material(shader:GLShader=null) 
 		{
 			this.shader = shader||new PhongGLShader();

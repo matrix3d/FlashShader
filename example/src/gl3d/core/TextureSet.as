@@ -73,9 +73,6 @@ package gl3d.core {
 					}
 				}else {
 					temp = new BitmapData(Math.max(w,1), Math.max(h,1), bmd.transparent, 0);
-					if (temp.transparent) {
-						temp.fillRect(temp.rect, 0);
-					}
 					temp.draw(bmd, new Matrix(temp.width / bmd.width, 0, 0, temp.height / bmd.height));
 					uploadFromBitmapData(texture, temp, side, level);
 					temp.dispose();

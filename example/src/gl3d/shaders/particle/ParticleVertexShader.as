@@ -2,6 +2,7 @@ package gl3d.shaders.particle
 {
 	import as3Shader.AS3Shader;
 	import as3Shader.Var;
+	import flash.utils.getTimer;
 	import gl3d.core.Material;
 	import gl3d.particle.Particle;
 	import gl3d.core.shaders.GLAS3Shader;
@@ -41,48 +42,75 @@ package gl3d.shaders.particle
 		}
 		
 		override public function build():void {
-			var time:Var = mov(this.time);
-			var pos:Var = mov(this.pos);
-			
 			var particle:Particle = material.node as Particle;
-			var timeLife:Object = getValue(particle.timeLifeMin, particle.timeLifeMax, random.x);
-			if (particle.randomTimeLife) {
-				time = frc(add(random.y,div(time,timeLife))).x;
-			}else {
-				time = frc(div(time,timeLife)).x;
+			var time:Var = sub(mov(this.time),getTimer()).x;
+			var pos:Var = mov(this.pos);
+			var timeLife:Object = particle.timeLife.getValue(this, random.x);
+			
+			var trueTime:Var = div(time,timeLife);
+			if (particle.isAddRandomLifeTime) {
+				trueTime = sub(trueTime,random.y).x;
+			}
+			time = frc(trueTime).x;
+			var size:Object;
+			if (particle.scale) {
+				size = particle.scale.getValue(this, time);
+			}
+			if (particle.loop>0) {
+				var sizeMul:Var = slt(trueTime,particle.loop);
+				if (size) {
+					size = mul(sizeMul, size);
+				}else {
+					size = sizeMul;
+				}
+			}
+			if (particle.isAddRandomLifeTime) {
+				if (size) {
+					size =mul(sge(trueTime, 0),size);
+				}else {
+					size = sge(trueTime, 0);
+				}
+			}
+			if (size) {
+				mul(size, pos,pos.xyz);
 			}
 			
-			if (material.diffTexture) {
+			
+			if (particle.pos) {
+				add(pos, particle.pos.getValue(this,frc(mul(10, random.xyz))),pos.xyz);
+			}
+			
+			/*if (material.diffTexture) {
 				if (particle.uv) {
 					var newUv:Var = add(mul([particle.uv.z,particle.uv.w],uv), mul([particle.uv.x, particle.uv.y], time));
 					mov(newUv, uvVarying);
 				}else {
 					mov(uv, uvVarying);
 				}
-			}
+			}*/
 			
-			add(pos.xyz, mul2([getValue(particle.posScaleMin,particle.posScaleMax,time),time,sphereRandom]).xyz,pos.xyz);
-			var size:Object = getValue(particle.scaleMin,particle.scaleMax,time);
+			//add(pos.xyz, mul2([getValue(particle.posScaleMin,particle.posScaleMax,time),time,sphereRandom]).xyz,pos.xyz);
+			//var size:Object = getValue(particle.scaleMin,particle.scaleMax,time);
 			var worldPos:Var = m44(pos, model);
 			var viewPos:Var = m44(worldPos, view);
 			
-			if(particle.isBillboard){
-				add(viewPos.xy, mul(sub(uv, .5), size).xy, viewPos.xy);
-			}else {
+			//if(particle.isBillboard){
+			//	add(viewPos.xy, mul(sub(uv, .5), size).xy, viewPos.xy);
+			//}else {
 				//mul(worldPos.xy, size, viewPos.xy);
-			}
+			//}
 			
 			op = m44(viewPos, perspective);
-			var color:Object = getValue(particle.colorMin,particle.colorMax,time);
-			mov(color, colorVarying);
+			//var color:Object = getValue(particle.colorMin,particle.colorMax,time);
+			mov(particle.color.getValue(this,time), colorVarying);
 		}
 		
-		public function getValue(min:Object, max:Object, v:Var):Object {
+		/*public function getValue(min:Object, max:Object, v:Var):Object {
 			if ((min+"") != (max+"")) {
 				return mix(mov(min), max, v);
 			}
 			return min;
-		}
+		}*/
 	}
 
 }

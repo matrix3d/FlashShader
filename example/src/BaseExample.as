@@ -127,7 +127,7 @@ package
 			normalMapTexture = createNormalMap();
 			material.culling =  Context3DTriangleFace.NONE;
 			//material.blendModel = BlendMode.ADD;
-			material.normalMapAble = false;
+			material.normalMapAble = true;
 			material.specularPower = 10;
 			material.specularAble = true;
 			material.lightAble = true;
@@ -138,7 +138,7 @@ package
 			if (material.normalMapAble) {
 				material.normalmapTexture= normalMapTexture;
 			}
-			//material.reflectTexture = skyBoxTexture;
+			material.reflectTexture = skyBoxTexture;
 			
 			initLight();
 			initNode();
@@ -158,7 +158,7 @@ package
 			//post="hdr"
 			//post="shape"
 			//post="asciiart"
-			post = "blur";
+			//post = "blur";
 			//post = "red";
 			stats = new Stats(view);
 			addChild(stats);
@@ -192,7 +192,7 @@ package
 		}
 		
 		public function initNode():void {
-			//addSky();
+			addSky();
 			
 			teapot = new Node3D;
 			teapot.material = material;

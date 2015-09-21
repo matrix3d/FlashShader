@@ -18,20 +18,25 @@ package gl3d.particle
 	public class Particle extends Node3D
 	{
 		public var invalid:Boolean = true;
+		
 		public var isBillboard:Boolean = false;
-		public var count:int = 16;
+		public var isStretchedBillboard:Boolean = false;//拉伸广告板
+		public var stretchedLength:Number = 10;//拉伸长度
+		public var isVertexColor:Boolean = false;//顶点色
+		
+		public var count:int = 160;
+		public var timeLife:ParticleValue=new ParticleValue([1000],[2000]);
+		public var isAddRandomLifeTime:Boolean = true;//是否增加随机生命周期
+		
+		public var loop:Number = 0;
 		public var shapeID:int = 3;
-		public var randomTimeLife:Boolean = true;
-		public var timeLifeMin:Number = 10000;
-		public var timeLifeMax:Number = 10000;
-		public var scaleMin:Number = 0.2;
-		public var scaleMax:Number = 0.2;
-		public var posScaleMin:Number = 3;
-		public var posScaleMax:Number = 3;
-		public var rotation:Number = 0;
-		public var uv:Vector3D = new Vector3D(10, 10,10,10);
-		public var colorMin:Vector.<Number>=new <Number>[1,1,1,1];
-		public var colorMax:Vector.<Number>=new <Number>[1,1,0,0];
+		
+		public var pos:ParticleValue = new ParticleValue([-2,-2,-2],[2,2,2]);;
+		public var scale:ParticleValue=new ParticleValue([0],[1]);
+		public var velocity:ParticleValue=new ParticleValue([0],[0]);
+		public var rotation:ParticleValue;
+		public var uv:ParticleValue;
+		public var color:ParticleValue=new ParticleValue([1,0,0,1],[0,1,0,1]);
 		public function Particle() 
 		{
 		}
@@ -56,12 +61,10 @@ package gl3d.particle
 					drawable.randomStep = shape.pos.data.length / 3;
 				}
 				this.material = new Material;
-				this.material.color = new <Number>[1,0,0,1];
-				this.material.diffTexture = new TextureSet(Utils.createBlurSphere());
 				this.material.blendModel = BlendMode.ADD;
-				this.material.passCompareMode = Context3DCompareMode.ALWAYS;
+				this.material.depthMask = false;
 				this.material.shader = new ParticleGLShader;
-				
+				invalid = false;
 			}
 			super.update(view);
 		}

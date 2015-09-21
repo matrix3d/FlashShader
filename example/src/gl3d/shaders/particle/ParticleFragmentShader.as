@@ -24,12 +24,12 @@ package gl3d.shaders.particle
 		}
 		override public function build():void {
 			var color:Var = vs.colorVarying;
-			if (material.diffTexture) {
+			/*if (material.diffTexture) {
 				var tex0:Var = tex(vs.uvVarying, diffSampler, null, material.diffTexture.flags);
 				oc = mul(color, tex0);
-			}else {
+			}else {*/
 				oc = color;
-			}
+			//}
 		}
 		
 	}
