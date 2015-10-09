@@ -20,7 +20,9 @@ package gl3d.core {
 		{
 			this.data = data;
 			this.data32PerVertex = data32PerVertex;
-			
+			if (data32PerVertex>4) {
+				throw "error";
+			}
 		}
 		
 		public function update(context:GL):void 

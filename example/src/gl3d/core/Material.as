@@ -69,7 +69,7 @@ package gl3d.core {
 					}
 					node.drawable.unpackedDrawable.update(context);
 				}*/
-				node.drawable.update(context);
+				//node.drawable.update(context);
 				var hasSkin:Boolean = node.skin && node.skin.skinFrame&&!node.skin.useCpu;
 				if (gpuSkin!=hasSkin) {
 					invalid = true;

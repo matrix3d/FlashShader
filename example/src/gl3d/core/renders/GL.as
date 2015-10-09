@@ -13,6 +13,7 @@ package gl3d.core.renders
 	import flash.geom.Matrix3D;
 	import flash.geom.Rectangle;
 	import flash.utils.ByteArray;
+	import gl3d.core.IndexBufferSet;
 	/**
 	 * ...
 	 * @author lizhi
@@ -25,6 +26,8 @@ package gl3d.core.renders
 		public var nowBuffMaxIndex:int = 0;
 		public var lastTexMaxIndex:int = 0;
 		public var nowTexMaxIndex:int = 0;
+		public var drawTriangleCounter:int = 0;
+		public var drawCounter:int = 0;
 		public function GL(context:Context3D) 
 		{
 			this.context = context;
@@ -63,15 +66,16 @@ package gl3d.core.renders
 			beginDraw();
 			context.drawToBitmapData(destination);
 		}
-		public function drawTriangles(indexBuffer : IndexBuffer3D, firstIndex : int = 0, numTriangles : int = -1) : void {
+		public function drawTriangles(indexBuffer : IndexBufferSet, firstIndex : int = 0, numTriangles : int = -1, isBeginDraw:Boolean = true) : void {
+			if(isBeginDraw)
 			beginDraw();
-			context.drawTriangles(indexBuffer, firstIndex, numTriangles);
+			indexBuffer.update(this);
+			drawTriangleCounter += indexBuffer.data.length/3;
+			drawCounter++;
+			context.drawTriangles(indexBuffer.buff, firstIndex, numTriangles);
 		}
 		public function drawToBitmapDataInstance(destination : BitmapData) : void {
 			context.drawToBitmapData(destination);
-		}
-		public function drawTrianglesInstance(indexBuffer : IndexBuffer3D, firstIndex : int = 0, numTriangles : int = -1) : void {
-			context.drawTriangles(indexBuffer, firstIndex, numTriangles);
 		}
 		public function beginDraw():void {
 			while (nowBuffMaxIndex < lastBuffMaxIndex ) {
@@ -144,6 +148,12 @@ package gl3d.core.renders
 			return context.driverInfo;
 		}
 		
+		public function get enableErrorChecking():Boolean {
+			return context.enableErrorChecking;
+		}
+		public function set enableErrorChecking(v:Boolean):void {
+			context.enableErrorChecking=v;
+		}
 	}
 
 }

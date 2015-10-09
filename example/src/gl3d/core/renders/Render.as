@@ -31,10 +31,6 @@ package gl3d.core.renders
 		
 		public function collect(node:Node3D):void {
 			collects.push(node);
-			if (node.drawable) {
-				view.drawTriangleCounter += node.drawable.index.data.length / 3;
-				view.drawCounter++;
-			}
 			for each(var c:Node3D in node.children) {
 				collect(c);
 			}

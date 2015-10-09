@@ -32,8 +32,6 @@ package gl3d.core {
 		public var stage3dWidth:Number = 200;
 		public var stage3dHeight:Number = 200;
 		public var time:Number = 0;
-		public var drawTriangleCounter:int = 0;
-		public var drawCounter:int = 0;
 		public var driverInfo:String;
 		public var profile:String;
 		public var background:uint = 0;
@@ -85,6 +83,10 @@ package gl3d.core {
 		{
 			super.y = value;
 			invalid = true;
+		}
+		public function get enableErrorChecking():Boolean 
+		{
+			return renderer.gl3d.enableErrorChecking;
 		}
 	}
 

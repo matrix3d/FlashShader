@@ -25,11 +25,11 @@ package
 		
 		override public function initNode():void 
 		{
-			super.initNode();
+			//super.initNode();
+			
 			var particle:Particle = new Particle;
 			particle.scaleX = particle.scaleY = particle.scaleZ =0.5;
 			view.scene.addChild(particle);
-			
 		}
 		
 	}

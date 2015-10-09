@@ -32,7 +32,7 @@ package gl3d.util
 			addEventListener(Event.ENTER_FRAME, enterFrame);
 			tf = new TextField();
 			tf.mouseEnabled=tf.selectable = false;
-			tf.defaultTextFormat = new TextFormat("Courier New Bold");
+			tf.defaultTextFormat = new TextFormat("Consolas");
 			addChild(tf);
 			tf.autoSize = TextFieldAutoSize.LEFT;
 			addEventListener(MouseEvent.MOUSE_DOWN, mouseDown);
@@ -74,16 +74,17 @@ package gl3d.util
 			var text:String = "";
 			if (view&&view.driverInfo) {
 				text += "num : " + view.renderer.collects.length;
-				text += "\ndraw : " + view.drawCounter
-				text += "\ntri : " + view.drawTriangleCounter;
-				text += "\nantiAlias : " + view.antiAlias;
+				text += "\ndrw : " + view.renderer.gl3d.drawCounter
+				text += "\ntri : " + view.renderer.gl3d.drawTriangleCounter;
+				text += "\nani : " + view.antiAlias;
+				text += "\nenc : " + view.enableErrorChecking;
 				var info:String =view.driverInfo;
 				var indexS:int = info.indexOf(" ");
 				if (indexS!=-1) {
 					info = info.substr(0, indexS);
 				}
-				text += "\ndriver : " + info;
-				text += "\nprofile : " + view.profile;
+				text += "\ndri : " + info;
+				text += "\npro : " + view.profile;
 			}
 			text += "\nfps : " + fps + " / " ;
 			if (stage!=null) {

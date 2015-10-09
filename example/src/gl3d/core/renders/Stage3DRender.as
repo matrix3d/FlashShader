@@ -50,7 +50,6 @@ package gl3d.core.renders
 		{
 			gl3d = new GL(stage3d.context3D);
 			view.profile = stage3d.context3D.profile;
-			stage3d.context3D.enableErrorChecking = true;
 			view.driverInfo = gl3d.driverInfo;
 			if (view.profile==Context3DProfile.STANDARD) {
 				agalVersion = 2;
@@ -96,8 +95,8 @@ package gl3d.core.renders
 				view.invalid = false;
 				gl3d.clear((view.background>>16&0xff)/0xff,(view.background>>8&0xff)/0xff,(view.background&0xff)/0xff);
 				collects.length = 0;
-				view.drawTriangleCounter = 0;
-				view.drawCounter = 0;
+				gl3d.drawTriangleCounter = 0;
+				gl3d.drawCounter = 0;
 				collect(scene);
 				sort();
 				for each(var light:Light in view.lights) {

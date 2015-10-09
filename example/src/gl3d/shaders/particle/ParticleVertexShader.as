@@ -75,9 +75,13 @@ package gl3d.shaders.particle
 				mul(size, pos,pos.xyz);
 			}
 			
-			
 			if (particle.pos) {
 				add(pos, particle.pos.getValue(this,frc(mul(10, random.xyz))),pos.xyz);
+			}
+			
+			var velocity:Object;
+			if (particle.velocity) {
+				
 			}
 			
 			/*if (material.diffTexture) {

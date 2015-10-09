@@ -33,8 +33,8 @@ package gl3d.core {
 			
 		}
 		
-		public function update(context:GL):void 
-		{
+		//public function update(context:GL):void 
+		//{
 			/*if (pos) {
 				pos.update(context);
 			}if (norm) {
@@ -46,10 +46,10 @@ package gl3d.core {
 			}if (random) {
 				random.update(context);
 			}*/
-			if (index) {
+			/*if (index) {
 				index.update(context);
-			}
-		}
+			}*/
+		//}
 		
 		public function get pos():VertexBufferSet 
 		{

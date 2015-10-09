@@ -35,6 +35,7 @@ package gl3d.parser
 		private var skinNodes:Vector.<Node3D> = new Vector.<Node3D>;
 		private var anim:SkinAnimation;
 		private var converter:Converter;
+		private var controllerTasks:Array = [];
 		public function ColladaDecoder(txt:String) 
 		{
 			txt = txt.replace(/xmlns=[^"]*"[^"]*"/g,"");
@@ -69,6 +70,9 @@ package gl3d.parser
 				scenes.push(node);
 				buildNode(sceneNodeXML,node);
 			}
+			for each(var ct:Array in controllerTasks) {
+				buildController(ct[0],ct[1]);
+			}
 			buildAnimation();
 		}
 		
@@ -84,7 +88,8 @@ package gl3d.parser
 		
 		private function getJointBySID(id:String):Node3D {
 			if (sid2node[id]==null) {
-				sid2node[id] = new Node3D;
+				throw "not have joint " + id;
+				//sid2node[id] = new Node3D;
 			}
 			return sid2node[id];
 		}
@@ -105,13 +110,16 @@ package gl3d.parser
 				for each(var childXML:XML in nodeXML.children()) {
 					var name:String = childXML.localName();
 					if (name=="instance_controller") {
-						buildController(childXML,node);
+						controllerTasks.push([childXML,node]);
+						//buildController(childXML,node);
 					}else if (name=="instance_geometry") {
 						buildGeometry(geometries[(childXML.@url).substr(1)], node);
 					}else if (name=="node") {
 						var childNode:Node3D
 						if (childXML.@type=="JOINT") {
-							childNode = getJointBySID(childXML.@sid);
+							childNode = new Node3D;
+							sid2node[childXML.@sid] = childNode;
+							//getJointBySID(childXML.@sid);
 						}else {
 							childNode = new Node3D;
 						}
@@ -129,7 +137,6 @@ package gl3d.parser
 			var controllerXML:XML = controllers[(nodeXML.@url).substr(1)];
 			for each(var childXML:XML in controllerXML.skin) {
 				var skinNode:Node3D = new Node3D;
-				skinNodes.push(skinNode);
 				node.addChild(skinNode);
 				buildGeometry(geometries[(childXML.@source).substr(1)], skinNode);
 				
@@ -143,6 +150,22 @@ package gl3d.parser
 					converter.getConvertedMat4(ibm);
 				}
 				var jointNames:Array = str2Strs(childXML.source.(@id == ((weightsXML.input.(@semantic == "JOINT").@source).toString().substr(1))).Name_array.text());
+				if (jointNames.length != invBindMatrixs.length) {
+					var jointNames2:Array = [];
+					var names:Array = [];
+					for (var i:int = jointNames.length - 1; i >= 0;i-- ) {
+						names.unshift(jointNames[i]);
+						jointName = names.join(" ");
+						if (sid2node[jointName]) {
+							jointNames2.unshift(jointName);
+							names = [];
+						}
+					}
+					jointNames = jointNames2;
+					if (jointNames.length!=invBindMatrixs.length) {
+						throw "error"
+					}
+				}
 				var joints:Vector.<Node3D> = new Vector.<Node3D>;
 				for each(var jointName:String in jointNames) {
 					joints.push(getJointBySID(jointName));
@@ -156,7 +179,7 @@ package gl3d.parser
 				var ws:Vector.<Number> = new Vector.<Number>;
 				var k:int = 0;
 				for each(count in vcount ) {
-					for (var i:int = 0; i < count; i++ ) {
+					for (i = 0; i < count; i++ ) {
 						js.push(v[k++]);
 						ws.push(weights[v[k++]]);
 					}
@@ -165,15 +188,20 @@ package gl3d.parser
 						ws.push(0);
 					}
 				}
-				var skin:Skin = new Skin;
-				skin.invBindMatrixs = Vector.<Matrix3D>(invBindMatrixs);
-				skin.maxWeight = maxWeight;
-				skin.joints = joints;
-				for each(var childNode:Node3D in skinNode.children) {
-					childNode.skin = skin;
-					var drawable:Drawable3D = childNode.drawable;
-					drawable.joints=new  VertexBufferSet(Vector.<Number>(js),maxWeight);
-					drawable.weights=new  VertexBufferSet(Vector.<Number>(ws),maxWeight);
+				if (maxWeight <= 4) {
+					skinNodes.push(skinNode);	
+					var skin:Skin = new Skin;
+					skin.invBindMatrixs = Vector.<Matrix3D>(invBindMatrixs);
+					skin.maxWeight = maxWeight;
+					skin.joints = joints;
+					for each(var childNode:Node3D in skinNode.children) {
+						childNode.skin = skin;
+						var drawable:Drawable3D = childNode.drawable;
+						drawable.joints=new  VertexBufferSet(Vector.<Number>(js),maxWeight);
+						drawable.weights=new  VertexBufferSet(Vector.<Number>(ws),maxWeight);
+					}
+				}else {
+					trace("error:maxWeight=",maxWeight);
 				}
 			}
 		}
@@ -254,6 +282,9 @@ package gl3d.parser
 			anim = new SkinAnimation;
 			for each(var animname:String in animationIDs) {
 				var animXML:XML = animations[animname];
+				if (animXML.animation.length()) {
+					animXML = animXML.animation[0];
+				}
 				var part:AnimationPart = new AnimationPart;
 				var track:Track = new Track;
 				anim.tracks.push(track);
