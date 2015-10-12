@@ -1,6 +1,6 @@
 package gl3d.parser.fbx {
 	import gl3d.parser.fbx.FbxProp;
-	import gl3d.parser.fbx.Token;
+	import gl3d.parser.fbx.FbxToken;
 	public class FbxDecoder {
 		public var obj:Object;
 		
@@ -11,7 +11,7 @@ package gl3d.parser.fbx {
 		public var line : int;
 		public var buf : String;
 		public var pos : int;
-		protected var token : gl3d.parser.fbx.Token;
+		protected var token : gl3d.parser.fbx.FbxToken;
 		public function parseText(str : String) : * {
 			this.buf = str;
 			this.pos = 0;
@@ -24,7 +24,7 @@ package gl3d.parser.fbx {
 			var nodes : Array = [];
 			while(true) {
 				{
-					var _g : gl3d.parser.fbx.Token = this.peek();
+					var _g : gl3d.parser.fbx.FbxToken = this.peek();
 					switch(_g.index) {
 					case 9:case 7:
 					return nodes;
@@ -39,7 +39,7 @@ package gl3d.parser.fbx {
 		}
 		
 		protected function parseNode() : * {
-			var t : gl3d.parser.fbx.Token = this.next();
+			var t : gl3d.parser.fbx.FbxToken = this.next();
 			var name : String;
 			switch(t.index) {
 			case 1:
@@ -89,8 +89,8 @@ package gl3d.parser.fbx {
 					{
 						var v : int = t.params[0];
 						{
-							this.except(gl3d.parser.fbx.Token.TBraceOpen);
-							this.except(gl3d.parser.fbx.Token.TNode("a"));
+							this.except(gl3d.parser.fbx.FbxToken.TBraceOpen);
+							this.except(gl3d.parser.fbx.FbxToken.TNode("a"));
 							var ints : Array = [];
 							var floats : Array = null;
 							var i : int = 0;
@@ -137,7 +137,7 @@ package gl3d.parser.fbx {
 								}
 							};
 							props.push(((floats == null)?gl3d.parser.fbx.FbxProp.PInts(ints):gl3d.parser.fbx.FbxProp.PFloats(floats)));
-							this.except(gl3d.parser.fbx.Token.TBraceClose);
+							this.except(gl3d.parser.fbx.FbxToken.TBraceClose);
 							throw "__break__";
 						}
 					}
@@ -159,7 +159,7 @@ package gl3d.parser.fbx {
 					case 6:
 					{
 						childs = this.parseNodes();
-						this.except(gl3d.parser.fbx.Token.TBraceClose);
+						this.except(gl3d.parser.fbx.FbxToken.TBraceClose);
 						throw "__break__";
 					}
 					break;
@@ -173,8 +173,8 @@ package gl3d.parser.fbx {
 			return { name : name, props : props, childs : childs}
 		}
 		
-		protected function except(except : gl3d.parser.fbx.Token) : void {
-			var t : gl3d.parser.fbx.Token = this.next();
+		protected function except(except : gl3d.parser.fbx.FbxToken) : void {
+			var t : gl3d.parser.fbx.FbxToken = this.next();
 			if(!enumEq(t,except)) this.error("Unexpected '" + this.tokenStr(t) + "' (" + this.tokenStr(except) + " expected)");
 		}
 		static public function enumEq(a : *,b : *) : Boolean {
@@ -198,14 +198,14 @@ package gl3d.parser.fbx {
 			return true;
 		}
 		
-		protected function peek() : gl3d.parser.fbx.Token {
+		protected function peek() : gl3d.parser.fbx.FbxToken {
 			if(this.token == null) this.token = this.nextToken();
 			return this.token;
 		}
 		
-		protected function next() : gl3d.parser.fbx.Token {
+		protected function next() : gl3d.parser.fbx.FbxToken {
 			if(this.token == null) return this.nextToken();
-			var tmp : gl3d.parser.fbx.Token = this.token;
+			var tmp : gl3d.parser.fbx.FbxToken = this.token;
 			this.token = null;
 			return tmp;
 		}
@@ -215,11 +215,11 @@ package gl3d.parser.fbx {
 			return null;
 		}
 		
-		protected function unexpected(t : gl3d.parser.fbx.Token) : * {
+		protected function unexpected(t : gl3d.parser.fbx.FbxToken) : * {
 			return this.error("Unexpected " + this.tokenStr(t));
 		}
 		
-		protected function tokenStr(t : gl3d.parser.fbx.Token) : String {
+		protected function tokenStr(t : gl3d.parser.fbx.FbxToken) : String {
 			switch(t.index) {
 			case 9:
 			return "<eof>";
@@ -285,7 +285,7 @@ package gl3d.parser.fbx {
 			return c >= 97 && c <= 122 || c >= 65 && c <= 90 || c >= 48 && c <= 57 || c == 95 || c == 45;
 		}
 		
-		protected function nextToken() : gl3d.parser.fbx.Token {
+		protected function nextToken() : gl3d.parser.fbx.FbxToken {
 			var start : int = this.pos;
 			while(true) {
 				var c : int = this.nextChar();
@@ -312,13 +312,13 @@ package gl3d.parser.fbx {
 				}
 				break;
 				case 44:
-				return gl3d.parser.fbx.Token.TColon;
+				return gl3d.parser.fbx.FbxToken.TColon;
 				break;
 				case 123:
-				return gl3d.parser.fbx.Token.TBraceOpen;
+				return gl3d.parser.fbx.FbxToken.TBraceOpen;
 				break;
 				case 125:
-				return gl3d.parser.fbx.Token.TBraceClose;
+				return gl3d.parser.fbx.FbxToken.TBraceClose;
 				break;
 				case 34:
 				{
@@ -328,7 +328,7 @@ package gl3d.parser.fbx {
 						if(c == 34) break;
 						if(c==0 || c == 10) this.error("Unclosed string");
 					};
-					return gl3d.parser.fbx.Token.TString(this.getBuf(start,this.pos - start - 1));
+					return gl3d.parser.fbx.FbxToken.TString(this.getBuf(start,this.pos - start - 1));
 				}
 				break;
 				case 42:
@@ -336,22 +336,22 @@ package gl3d.parser.fbx {
 					start = this.pos;
 					do c = this.nextChar() while(c >= 48 && c <= 57);
 					this.pos--;
-					return gl3d.parser.fbx.Token.TLength(parseInt(this.getBuf(start,this.pos - start)));
+					return gl3d.parser.fbx.FbxToken.TLength(parseInt(this.getBuf(start,this.pos - start)));
 				}
 				break;
 				default:
 				{
 					if(c >= 97 && c <= 122 || c >= 65 && c <= 90 || c == 95) {
 						do c = this.nextChar() while(this.isIdentChar(c));
-						if(c == 58) return gl3d.parser.fbx.Token.TNode(this.getBuf(start,this.pos - start - 1));
+						if(c == 58) return gl3d.parser.fbx.FbxToken.TNode(this.getBuf(start,this.pos - start - 1));
 						this.pos--;
-						return gl3d.parser.fbx.Token.TIdent(this.getBuf(start,this.pos - start));
+						return gl3d.parser.fbx.FbxToken.TIdent(this.getBuf(start,this.pos - start));
 					};
 					if(c >= 48 && c <= 57 || c == 45) {
 						do c = this.nextChar() while(c >= 48 && c <= 57);
 						if(c != 46 && c != 69 && c != 101 && this.pos - start < 10) {
 							this.pos--;
-							return gl3d.parser.fbx.Token.TInt(this.getBuf(start,this.pos - start));
+							return gl3d.parser.fbx.FbxToken.TInt(this.getBuf(start,this.pos - start));
 						};
 						if(c == 46) do c = this.nextChar() while(c >= 48 && c <= 57);
 						if(c == 101 || c == 69) {
@@ -360,11 +360,11 @@ package gl3d.parser.fbx {
 							do c = this.nextChar() while(c >= 48 && c <= 57);
 						};
 						this.pos--;
-						return gl3d.parser.fbx.Token.TFloat(this.getBuf(start,this.pos - start));
+						return gl3d.parser.fbx.FbxToken.TFloat(this.getBuf(start,this.pos - start));
 					};
 					if(c == 0) {
 						this.pos--;
-						return gl3d.parser.fbx.Token.TEof;
+						return gl3d.parser.fbx.FbxToken.TEof;
 					};
 					this.error("Unexpected char '" + String.fromCharCode(c) + "'");
 				}

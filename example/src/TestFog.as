@@ -2,6 +2,9 @@ package
 {
 	import flash.display.Sprite;
 	import flash.geom.Point;
+	import gl3d.core.Material;
+	import gl3d.core.View3D;
+	import gl3d.parser.ColladaDecoder;
 	/**
 	 * ...
 	 * @author lizhi
@@ -19,12 +22,11 @@ package
 			var start:Number = 100;
 			for (var x:int = 0; x < 400;x++ ) {
 				for (var y:int = 0; y < 400; y++ ) {
-					var d:Number = Point.distance(new Point(mx, my), new Point(x, y));
-					var f:Number = (end - d) / (end - start)
-					if (f > 1) f = 1;
-					if (f < 0) f = 0;
-					//var f:Number=1/Math.exp(d*0.01);
-					graphics.beginFill(f * sceneColor + (1 - f) * fogColor);
+					var d:Number = Point.distance(new Point(mx, my), new Point(x, y)) / 800;
+					var a:Number = Math.atan2(y - my, x - mx);
+					a *= 10;
+					var f:Number=d+(Math.sin(a)+1)/10;
+					graphics.beginFill(f * fogColor);
 					graphics.drawRect(x, y, 1, 1);
 				}
 			}
