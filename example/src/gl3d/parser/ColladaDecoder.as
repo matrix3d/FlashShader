@@ -384,7 +384,7 @@ package gl3d.parser
 					return child;
 				}
 				if (name=="vertices"&&child.@id==id) {
-					return getVerticesById((child.input.@source).substr(1),mesh);
+					return getVerticesById((child.input.(@semantic == "POSITION").@source).substr(1),mesh);
 				}
 			}
 			return null;

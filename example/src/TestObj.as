@@ -38,14 +38,15 @@ package
 			view.scene.addChild(p);
 			p.rotationX = 90;
 			
-			/*[Embed(source = "assets/miku.obj", mimeType = "application/octet-stream")]var c:Class;
+			[Embed(source = "assets/miku.obj", mimeType = "application/octet-stream")]var c:Class;
 			[Embed(source = "assets/miku.mtl", mimeType = "application/octet-stream")]var c2:Class;
-			loader.target.y = -2;*/
+			loader = new OBJParser(new c +"",false, new c2 +"");
+			loader.target.y = -2;
 			
-			[Embed(source = "assets/yuren.obj", mimeType = "application/octet-stream")]var c:Class;
+			/*[Embed(source = "assets/yuren.obj", mimeType = "application/octet-stream")]var c:Class;
 			[Embed(source = "assets/yuren.mtl", mimeType = "application/octet-stream")]var c2:Class;
 			loader = new OBJParser(new c +"",false, new c2 +"");
-			loader.target.scaleX = loader.target.scaleY = loader.target.scaleZ = .01;
+			loader.target.scaleX = loader.target.scaleY = loader.target.scaleZ = .01;*/
 			
 			view.scene.addChild(loader.target);
 		}

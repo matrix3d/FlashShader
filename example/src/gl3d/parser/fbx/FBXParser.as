@@ -1,11 +1,14 @@
 package gl3d.parser.fbx 
 {
+	import flash.geom.Matrix3D;
 	import flash.geom.Point;
 	import flash.geom.Vector3D;
+	import gl3d.core.Drawable3D;
 	import gl3d.core.Material;
 	import gl3d.core.Node3D;
 	import gl3d.core.skin.Skin;
 	import gl3d.meshs.Meshs;
+	import gl3d.util.Utils;
 	/**
 	 * ...
 	 * @author lizhi
@@ -95,30 +98,51 @@ package gl3d.parser.fbx
 			if( d != null )
 				return d;
 			d =  { };
-			var F:Number = Math.PI / 180;
-			for each(var p:Object in FbxTools.getAll(model,"Properties70.P") )
-				switch( p.props[0].toString() ) {
+			var F:Number = 1//Math.PI / 180;
+			for each(var p:Object in FbxTools.getAll(model, "Properties70.P") ) {
+				switch( FbxTools.toString(p.props[0])) {
 				case "GeometricTranslation":
 					// handle in Geometry directly
+					break;
 				case "PreRotation":
-					d.preRot = new Vector3D(Math.round(p.props[4].toFloat() * F), Math.round(p.props[5].toFloat() * F), Math.round(p.props[6].toFloat() * F));
+					d.preRot = new Vector3D(FbxTools.toFloat(p.props[4]) * F, FbxTools.toFloat(p.props[5]) * F, FbxTools.toFloat(p.props[6]) * F);
 					if( d.preRot.x == 0 && d.preRot.y == 0 && d.preRot.z == 0 )
 						d.preRot = null;
+						break;
 				case "Lcl Rotation":
-					d.rotate = new Vector3D(Math.round(p.props[4].toFloat() * F), Math.round(p.props[5].toFloat() * F), Math.round(p.props[6].toFloat() * F));
+					d.rotate = new Vector3D(FbxTools.toFloat(p.props[4]) * F, FbxTools.toFloat(p.props[5]) * F, FbxTools.toFloat(p.props[6]) * F);
 					if( d.rotate.x == 0 && d.rotate.y == 0 && d.rotate.z == 0 )
 						d.rotate = null;
+						break;
 				case "Lcl Translation":
-					d.trans = new Vector3D(Math.round(p.props[4].toFloat()), Math.round(p.props[5].toFloat()), Math.round(p.props[6].toFloat()));
+					d.trans = new Vector3D(FbxTools.toFloat(p.props[4]), FbxTools.toFloat(p.props[5]), FbxTools.toFloat(p.props[6]));
 					if( d.trans.x == 0 && d.trans.y == 0 && d.trans.z == 0 )
 						d.trans = null;
+						break;
 				case "Lcl Scaling":
-					d.scale = new Vector3D(Math.round(p.props[4].toFloat()), Math.round(p.props[5].toFloat()), Math.round(p.props[6].toFloat()));
+					d.scale = new Vector3D(FbxTools.toFloat(p.props[4]), FbxTools.toFloat(p.props[5]), FbxTools.toFloat(p.props[6]));
 					if( d.scale.x == 1 && d.scale.y == 1 && d.scale.z == 1 )
 						d.scale = null;
+						break;
 				default:
 				}
-			defaultModelMatrixes[name]= d;
+			}
+			defaultModelMatrixes[name] = d;
+			var m:Matrix3D = new Matrix3D;
+			m.identity();
+			if( d.scale != null ) m.appendScale(d.scale.x, d.scale.y, d.scale.z);
+			if ( d.rotate != null ) {
+				m.appendRotation(d.rotate.x, Vector3D.X_AXIS);
+				m.appendRotation(d.rotate.y, Vector3D.Y_AXIS);
+				m.appendRotation(d.rotate.z, Vector3D.Z_AXIS);
+			}
+			if ( d.preRot != null ) {
+				m.appendRotation(d.preRot.x, Vector3D.X_AXIS);
+				m.appendRotation(d.preRot.y, Vector3D.Y_AXIS);
+				m.appendRotation(d.preRot.z, Vector3D.Z_AXIS);
+			}
+			if ( d.trans != null ) m.appendTranslation(d.trans.x, d.trans.y, d.trans.z);
+			d.matrix = m;
 			return d;
 		}
 		
@@ -138,6 +162,7 @@ package gl3d.parser.fbx
 			// create all models
 			for each(var o:Object in objects ) {
 				var name:String = FbxTools.getName(o.model);
+				o.obj = new Node3D(name);
 				if ( o.isMesh ) {
 					if( o.isJoint )
 						throw "Model " + getModelPath(o.model) + " was tagged as joint but is mesh";
@@ -146,8 +171,10 @@ package gl3d.parser.fbx
 					var prim:FbxGeometry = hgeom[FbxTools.getId(g)];
 					if( prim == null ) {
 						prim = new FbxGeometry(this, g);
-						hgeom[FbxTools.getId(g)]= prim;
+						hgeom[FbxTools.getId(g)] = prim;
+						prim.drawable=Meshs.createDrawable(Vector.<uint>(prim.getIndexes().vidx), Vector.<Number>(prim.getVertices()), null, null);
 					}
+					prim.nodes.push(o.obj);
 					// load materials
 					/*var mats = getChilds(o.model, "Material");
 					var tmats = [];
@@ -176,17 +203,20 @@ package gl3d.parser.fbx
 						prim.multiMaterial = true;
 						o.obj = new h3d.scene.MultiMaterial(prim, tmats, scene);
 					}*/
-					o.obj = new Node3D(name);
-					(o.obj as Node3D).drawable = Meshs.createDrawable(Vector.<uint>(prim.getIndexes().vidx), Vector.<Number>(prim.getVertices()), null, null);
+					(o.obj as Node3D).drawable = prim.drawable;
 					(o.obj as Node3D).material = new Material;
 					(o.obj as Node3D).material.color = Vector.<Number>([Math.random(),Math.random(),Math.random(),1]);
+					(o.obj as Node3D).type = "MESH";
 				} else if( o.isJoint ) {
 					/*var j = new h3d.anim.Skin.Joint();
 					getDefaultMatrixes(o.model); // store for later usage in animation
 					j.index = o.model.getId();
 					j.name = o.model.getName();
 					o.joint = j;*/
-					continue;
+					(o.obj as Node3D).type = "JOINT";
+					(o.obj as Node3D).drawable = Meshs.cube(10,10,10);
+					(o.obj as Node3D).material = new Material;
+					//continue;
 				} else {
 					var hasJoint:Boolean = false;
 					for each(var c:Object in o.childs ){
@@ -195,33 +225,33 @@ package gl3d.parser.fbx
 							break;
 						}
 					}
-					o.obj = new Node3D;
-					if( hasJoint )
+					if( hasJoint ){
 						(o.obj as Node3D).skin = new Skin;
+						(o.obj as Node3D).type = "SKIN";
+					}
 				}
 				//o.obj.name = name;
 				var m:Object = getDefaultMatrixes(o.model);
 				if( m.trans != null || m.rotate != null || m.scale != null || m.preRot != null )
-					o.obj.defaultTransform = m.toMatrix();
+					o.obj.matrix = m.matrix.clone();
 			}
 			// rebuild scene hierarchy
 			for each( o in objects ) {
-				if( o.isJoint ) {
-					if( o.parent.isJoint ) {
+				//if( o.isJoint ) {
+				//	if( o.parent.isJoint ) {
 						//o.joint.parent = o.parent.joint;
 						//o.parent.joint.subs.push(o.joint);
-					}
-				} else {
+				//	}
+				//} else {
 					// put it into the first non-joint parent
 					var p:Object = o.parent;
 					while( p.obj == null )
 						p = p.parent;
 					if(o.obj)
 					p.obj.addChild(o.obj);
-				}
+				//}
 			}
 			// build skins
-			//var hgeom = [for( k in hgeom.keys() ) k => (hgeom.get(k) : {function getVerticesCount():Int;function setSkin(s:h3d.anim.Skin):Void;})];
 			for each( o in objects ) {
 				if( o.isJoint ) continue;
 				// /!\ currently, childs of joints will work but will not cloned
@@ -229,12 +259,8 @@ package gl3d.parser.fbx
 					//o.obj.follow = scene.getObjectByName(o.parent.joint.name);
 				var skin:Skin = (o.obj as Node3D).skin;
 				if( skin == null ) continue;
-				trace("skin");
 				var rootJoints:Array = [];
-				for each(var j:Object in o.childs )
-					if( j.isJoint )
-						rootJoints.push(j.joint);
-				//var skinData = createSkin(hskins, hgeom, rootJoints, bonesPerVertex);
+				createSkin(o,hgeom);
 				// remove the corresponding Geometry-Model and copy its material
 				/*for( o2 in objects ) {
 					if( o2.obj == null || o2 == o || !o2.obj.isMesh() ) continue;
@@ -259,6 +285,31 @@ package gl3d.parser.fbx
 
 			return scene.children.length == 1 ? scene.children[0] : scene;
 		}
+		
+		private function createSkin(o:Object,hgeom:Object):void {
+			doobj(o);
+			function doobj(o:Object):void {
+				if (o.isJoint) {
+					for each(var subDef:Object in getParents(o.model, "Deformer")) {
+						var def:Object = getParent(subDef, "Deformer");
+						var prim:FbxGeometry = hgeom[FbxTools.getId(getParent(def, "Geometry"))];
+						var transPos:Array = FbxTools.getFloats(FbxTools.get(subDef, "Transform"));
+						var weightss:Array = FbxTools.getAll(subDef, "Weights");
+						if (weightss.length) {
+							var weights:Array = FbxTools.getFloats(weightss[0]);
+							var indexes:Array = FbxTools.getInts(FbxTools.get(subDef, "Indexes"));
+							
+							var drawable:Drawable3D = prim.drawable;
+							drawable
+						}
+					}
+				}
+				for each(var c:Object in o.childs) {
+					doobj(c);
+				}
+			}
+		}
+		
 		private function buildHierarchy():Object {
 			// init objects
 			var oroot:Object = {childs:[] };
@@ -346,32 +397,6 @@ package gl3d.parser.fbx
 				}
 			}
 
-			// propagates joint flags
-			var changed:Boolean = true;
-			while( changed ) {
-				changed = false;
-				for each(o in objects ) {
-					if( o.isJoint || o.isMesh ) continue;
-					if( o.parent.isJoint ) {
-						o.isJoint = true;
-						changed = true;
-						continue;
-					}
-					var hasJoint:Boolean = false;
-					for each(var c:Object in o.childs )
-						if( c.isJoint ) {
-							hasJoint = true;
-							break;
-						}
-					if( hasJoint )
-						for each( c in o.parent.childs )
-							if( c.isJoint ) {
-								o.isJoint = true;
-								changed = true;
-								break;
-							}
-				}
-			}
 			return { root : oroot, objects : objects };
 		}
 		private function isNullJoint( model : Object ):Boolean {

@@ -1,11 +1,13 @@
 package gl3d.parser.fbx{
 	import flash.geom.Vector3D;
+	import gl3d.core.Drawable3D;
 
 	public class FbxGeometry {
 
 		private var lib : FBXParser;
 		private var root : Object;
-
+		public var drawable:Drawable3D;
+		public var nodes:Array = [];
 		public function FbxGeometry(l:FBXParser, root:Object) {
 			this.lib = l;
 			this.root = root;

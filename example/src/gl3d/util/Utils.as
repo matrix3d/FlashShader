@@ -5,6 +5,7 @@ package gl3d.util
 	import flash.filters.BlurFilter;
 	import flash.geom.Vector3D;
 	import flash.utils.ByteArray;
+	import gl3d.core.Node3D;
 	import ui.Color;
 	/**
 	 * ...
@@ -124,6 +125,17 @@ package gl3d.util
 				return String( e ).replace( /.*(@\w+).*/, "$1" );
 			}
 			return null;
+		}
+		
+		public static function traceNode(node:Node3D,depth:int=0):void {
+			var tab:String = "";
+			for (var i:int = 0; i < depth;i++ ) {
+				tab += "\t";
+			}
+			trace(tab+node.name+":"+node.type);
+			for each(var c:Node3D in node.children) {
+				traceNode(c, depth + 1);
+			}
 		}
 		
 	}
