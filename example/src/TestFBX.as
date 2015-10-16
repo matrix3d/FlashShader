@@ -19,8 +19,8 @@ package
 		
 		override public function initNode():void 
 		{
-			//[Embed(source = "assets/test4.FBX", mimeType = "application/octet-stream")]var c:Class;
-			[Embed(source = "assets/aoying.FBX", mimeType = "application/octet-stream")]var c:Class;
+			[Embed(source = "assets/test4.FBX", mimeType = "application/octet-stream")]var c:Class;
+			//[Embed(source = "assets/aoying.FBX", mimeType = "application/octet-stream")]var c:Class;
 			//[Embed(source = "assets/blender.FBX", mimeType = "application/octet-stream")]var c:Class;
 			var fbx:FBXParser = new FBXParser(new c + "");
 			view.scene.addChild(fbx.rootNode);
@@ -31,7 +31,7 @@ package
 			fbx.rootNode.rotationY = 180;
 			//fbx.rootNode.scaleZ *= -1;
 			
-			Utils.traceNode(fbx.rootNode);
+			//Utils.traceNode(fbx.rootNode);
 		}
 		
 	}

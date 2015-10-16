@@ -19,6 +19,8 @@ package
 		{
 			addSky();
 			[Embed(source = "assets/astroBoy_walk_Max.dae", mimeType = "application/octet-stream")]
+			//[Embed(source = "assets/aoyingfbx2dae.DAE", mimeType = "application/octet-stream")]
+			//[Embed(source = "assets/yurenfbx2dae.DAE", mimeType = "application/octet-stream")]
 			//[Embed(source = "assets/yuren.dae", mimeType = "application/octet-stream")]
 			//[Embed(source = "assets/test4.dae", mimeType = "application/octet-stream")]
 			//[Embed(source = "assets/untitled.dae", mimeType = "application/octet-stream")]

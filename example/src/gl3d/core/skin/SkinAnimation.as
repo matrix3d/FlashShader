@@ -46,7 +46,7 @@ package gl3d.core.skin
 				}
 				if (f && last) {
 					interMatrix.copyFrom(last.matrix);
-					interMatrix.interpolateTo(f.matrix,(t-last.time) /(f.time-last.time));
+					interMatrix.interpolateTo(f.matrix, (t - last.time) / (f.time-last.time));
 					track.target.matrix.copyFrom(interMatrix);
 				}else {
 					track.target.matrix.copyFrom(f.matrix);

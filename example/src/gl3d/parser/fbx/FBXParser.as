@@ -3,14 +3,20 @@ package gl3d.parser.fbx
 	import flash.geom.Matrix3D;
 	import flash.geom.Point;
 	import flash.geom.Vector3D;
+	import flash.utils.Dictionary;
 	import gl3d.core.Drawable3D;
 	import gl3d.core.Material;
+	import gl3d.core.math.Quaternion;
 	import gl3d.core.Node3D;
 	import gl3d.core.skin.Skin;
+	import gl3d.core.skin.SkinAnimation;
+	import gl3d.core.skin.Track;
+	import gl3d.core.skin.TrackFrame;
+	import gl3d.core.VertexBufferSet;
+	import gl3d.ctrl.Ctrl;
 	import gl3d.meshs.Meshs;
 	import gl3d.util.Utils;
 	/**
-	 * ...
 	 * @author lizhi
 	 */
 	public class FBXParser 
@@ -23,7 +29,9 @@ package gl3d.parser.fbx
 		private var defaultModelMatrixes : Object = { };
 		public var skipObjects : Object={};
 		private var root:Object = { name : "Root", props : [], childs : [] };
+		private var hobjects:Object;
 		public var rootNode:Node3D
+		public var skinNodes:Vector.<Node3D> = new Vector.<Node3D>;
 		public function FBXParser(txt:String) 
 		{
 			decoder = new FbxDecoder(txt);
@@ -32,6 +40,7 @@ package gl3d.parser.fbx
 				init(obj);
 			}
 			rootNode = makeObject();
+			loadAnimation();
 		}
 		
 		private function init(n:Object):void {
@@ -286,27 +295,79 @@ package gl3d.parser.fbx
 			return scene.children.length == 1 ? scene.children[0] : scene;
 		}
 		
-		private function createSkin(o:Object,hgeom:Object):void {
-			doobj(o);
-			function doobj(o:Object):void {
+		private function createSkin(o:Object, hgeom:Object):void {
+			var skin:Skin = (o.obj as Node3D).skin;
+			var prim2skinData:Object = { };
+			doobj(o,skin,skinNodes,prim2skinData);
+			function doobj(o:Object,skin:Skin,skinNodes:Vector.<Node3D>,prim2skinData:Object):void {
 				if (o.isJoint) {
 					for each(var subDef:Object in getParents(o.model, "Deformer")) {
 						var def:Object = getParent(subDef, "Deformer");
-						var prim:FbxGeometry = hgeom[FbxTools.getId(getParent(def, "Geometry"))];
+						var primID:int = FbxTools.getId(getParent(def, "Geometry"));
+						var prim:FbxGeometry = hgeom[primID];
+						var skinData:Object = prim2skinData[primID] ;
+						if (skinData == null) {
+							skinData = prim2skinData[primID] = { };
+							skinData.wj = [];
+						}
 						var transPos:Array = FbxTools.getFloats(FbxTools.get(subDef, "Transform"));
 						var weightss:Array = FbxTools.getAll(subDef, "Weights");
 						if (weightss.length) {
 							var weights:Array = FbxTools.getFloats(weightss[0]);
 							var indexes:Array = FbxTools.getInts(FbxTools.get(subDef, "Indexes"));
+							var joint:Node3D = o.obj as Node3D;
+							var jid:int = skin.joints.indexOf(joint);
+							if (jid == -1) {
+								jid = skin.joints.length;
+								skin.joints.push(joint);
+							}
+							for (var i:int = 0; i < indexes.length; i++) 
+							{
+								var index:int = indexes[i];
+								var wjdata:Array = skinData.wj[index] = skinData.wj[index] || [];
+								if(wjdata.length<4){
+									wjdata.push([weights[i],jid]);
+									if (skin.maxWeight<wjdata.length) {
+										skin.maxWeight = wjdata.length;
+									}
+								}
+							}
 							
-							var drawable:Drawable3D = prim.drawable;
-							drawable
+							for each(var skinNode:Node3D in prim.nodes) {
+								if (skinNode.skin==null) {
+									skinNode.skin = skin;
+									skinNodes.push(skinNode);
+								}
+							}
 						}
 					}
 				}
 				for each(var c:Object in o.childs) {
-					doobj(c);
+					doobj(c,skin,skinNodes,prim2skinData);
 				}
+			}
+			
+			for (var primID:String in prim2skinData) {
+				var drawable:Drawable3D = (hgeom[primID] as FbxGeometry).drawable;
+				var skinData:Object = prim2skinData[primID];
+				var weightVec:Vector.<Number> = new Vector.<Number>(drawable.pos.data.length / 3 * skin.maxWeight);
+				var jointVec:Vector.<Number> = new Vector.<Number>(weightVec.length);
+				for (var index:String in skinData.wj) {
+					for (var i:int = 0; i < skinData.wj[index].length; i++ ) {
+						for (var j:int = 0; j < skinData.wj[index].length;j++ ) {
+							var ii:int = int(index) * skin.maxWeight + j;
+							weightVec[ii] = skinData.wj[index][j][0];
+							jointVec[ii] = skinData.wj[index][j][1];
+						}
+					}
+				}
+				drawable.weights = new VertexBufferSet(weightVec,skin.maxWeight);
+				drawable.joints = new VertexBufferSet(jointVec,skin.maxWeight);
+			}
+			for each(var joint:Node3D in skin.joints) {
+				var m:Matrix3D = joint.matrix.clone();
+				m.invert();
+				skin.invBindMatrixs.push(m);
 			}
 		}
 		
@@ -314,7 +375,7 @@ package gl3d.parser.fbx
 			// init objects
 			var oroot:Object = {childs:[] };
 			var objects:Array = [];
-			var hobjects:Object = {};
+			hobjects = {};
 
 			hobjects[0]= oroot;
 			for each(var model:Object in FbxTools.getAll(root,"Objects.Model") ) {
@@ -474,6 +535,65 @@ package gl3d.parser.fbx
 					pl.push(n);
 				}
 			return pl;
+		}
+		
+		public function loadAnimation() :void {
+			var animDatas:Object = { };
+			for each(var a:Object in FbxTools.getAll(root,"Objects.AnimationStack") ){
+				var name:String = FbxTools.getName(a);
+				var animData:Object = {}
+				animDatas[name] = animData;
+				var	animNode:Object = getChild(a, "AnimationLayer");
+				for each(var cn:Object in getChilds(animNode,"AnimationCurveNode")) {
+					var model:Object = getParent(cn, "Model", true);
+					var cname:String = FbxTools.getName(cn);
+					if( model == null ) continue;
+					var data:Array = getChilds(cn, "AnimationCurve");
+					if( data.length == 0 ) continue;
+					var times:Array = FbxTools.getFloats(FbxTools.get(data[0], "KeyTime"));
+					if (data.length != 3) {
+						continue;
+					}
+					var x:Object = FbxTools.getFloats(FbxTools.get(data[0],"KeyValueFloat"));
+					var y:Object = FbxTools.getFloats(FbxTools.get(data[1],"KeyValueFloat"));
+					var z:Object = FbxTools.getFloats(FbxTools.get(data[2], "KeyValueFloat"));
+					var mid:int = FbxTools.getId(model);
+					var animDataBase:Object= animData[mid] = animData[mid] || { };
+					animDataBase[cname] = [x, y, z];
+					animDataBase.times = times;
+					animDataBase.target = hobjects[FbxTools.getId(model)].obj;
+				}
+			}
+			
+			for each(animData in animDatas) {
+				var anim3d:SkinAnimation = new SkinAnimation;
+				anim3d.targets = skinNodes;
+				for each(animDataBase in animData) {
+					var track:Track = new Track;
+					track.target = animDataBase.target;
+					anim3d.tracks.push(track);
+					for (var i:int = 0; i < animDataBase.times.length;i++ ) {
+						var time:Number = animDataBase.times[i]/20000000000;
+						var s:Array = animDataBase.S;
+						var r:Array = animDataBase.R;
+						var t:Array = animDataBase.T;
+						var frame:TrackFrame = new TrackFrame;
+						var m:Matrix3D = new Matrix3D;
+						m.appendScale(s[0][i],s[1][i],s[2][i]);
+						m.appendRotation(r[0][i], Vector3D.X_AXIS);
+						m.appendRotation(r[1][i], Vector3D.Y_AXIS);
+						m.appendRotation(r[2][i], Vector3D.Z_AXIS);
+						m.appendTranslation(t[0][i], t[1][i], t[2][i]);
+						
+						frame.matrix = m;
+						frame.time = time;
+						track.frames.push(frame);
+					}
+					anim3d.maxTime = anim3d.maxTime>time?anim3d.maxTime:time;
+				}
+				rootNode.controllers = new Vector.<Ctrl>;
+				rootNode.controllers.push(anim3d);
+			}
 		}
 	}
 

@@ -33,7 +33,7 @@ package gl3d.core.shaders
 		public var programSet:ProgramSet;
 		public var textureSets:Array=[];
 		public var buffSets:Array;
-		public var debug:Boolean = true;
+		public var debug:Boolean = false;
 		public static var PROGRAM_POOL:Object = { };
 		public function GLShader() 
 		{
