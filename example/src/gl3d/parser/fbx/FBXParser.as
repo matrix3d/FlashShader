@@ -298,8 +298,9 @@ package gl3d.parser.fbx
 		private function createSkin(o:Object, hgeom:Object):void {
 			var skin:Skin = (o.obj as Node3D).skin;
 			var prim2skinData:Object = { };
-			doobj(o,skin,skinNodes,prim2skinData);
-			function doobj(o:Object,skin:Skin,skinNodes:Vector.<Node3D>,prim2skinData:Object):void {
+			var transPoss:Array = [];
+			doobj(o,skin,skinNodes,prim2skinData,transPoss);
+			function doobj(o:Object,skin:Skin,skinNodes:Vector.<Node3D>,prim2skinData:Object,transPoss:Array):void {
 				if (o.isJoint) {
 					for each(var subDef:Object in getParents(o.model, "Deformer")) {
 						var def:Object = getParent(subDef, "Deformer");
@@ -310,7 +311,6 @@ package gl3d.parser.fbx
 							skinData = prim2skinData[primID] = { };
 							skinData.wj = [];
 						}
-						var transPos:Array = FbxTools.getFloats(FbxTools.get(subDef, "Transform"));
 						var weightss:Array = FbxTools.getAll(subDef, "Weights");
 						if (weightss.length) {
 							var weights:Array = FbxTools.getFloats(weightss[0]);
@@ -320,6 +320,8 @@ package gl3d.parser.fbx
 							if (jid == -1) {
 								jid = skin.joints.length;
 								skin.joints.push(joint);
+								var transPos:Array = FbxTools.getFloats(FbxTools.get(subDef, "Transform"));
+								transPoss.push(transPos);
 							}
 							for (var i:int = 0; i < indexes.length; i++) 
 							{
@@ -343,7 +345,7 @@ package gl3d.parser.fbx
 					}
 				}
 				for each(var c:Object in o.childs) {
-					doobj(c,skin,skinNodes,prim2skinData);
+					doobj(c,skin,skinNodes,prim2skinData,transPoss);
 				}
 			}
 			
@@ -364,9 +366,10 @@ package gl3d.parser.fbx
 				drawable.weights = new VertexBufferSet(weightVec,skin.maxWeight);
 				drawable.joints = new VertexBufferSet(jointVec,skin.maxWeight);
 			}
-			for each(var joint:Node3D in skin.joints) {
-				var m:Matrix3D = joint.matrix.clone();
-				m.invert();
+			
+			for (i = 0; i < transPoss.length;i++ ) {
+				var m:Matrix3D = new Matrix3D;
+				m.copyRawDataFrom(Vector.<Number>(transPoss[i]));
 				skin.invBindMatrixs.push(m);
 			}
 		}
