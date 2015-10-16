@@ -82,7 +82,7 @@ package gl3d.parser.fbx {
 						props.push(gl3d.parser.fbx.FbxProp.PIdent(s3));
 					}
 					break;
-					case 6:case 7:
+					case 6:case 7:case 1:
 					this.token = t;
 					break;
 					case 5:
@@ -164,7 +164,8 @@ package gl3d.parser.fbx {
 					}
 					break;
 					default:
-					this.unexpected(t);
+						throw "__break__";
+						//this.unexpected(t);
 					break;
 					}
 				}

@@ -196,11 +196,12 @@ package gl3d.parser.fbx {
 		}
 		
 		static public function getId(n : *) : int {
-			if(n.props.length != 3) throw n.name + " is not an object";
-			{
+			//if(n.props.length != 3) throw n.name + " is not an object";
+			//{
 				var _g : gl3d.parser.fbx.FbxProp = n.props[0];
+				if(_g){
 				switch(_g.index) {
-				case 0:
+				case 0:case 2:
 				{
 					var id : int = _g.params[0];
 					return id;
@@ -216,13 +217,14 @@ package gl3d.parser.fbx {
 				throw n.name + " is not an object " + String(n.props);
 				break;
 				}
-			};
+				}
+			//};
 			return 0;
 		}
 		
 		static public function getName(n : *) : String {
-			if(n.props.length != 3) throw n.name + " is not an object";
-			{
+			//if(n.props.length != 3) throw n.name + " is not an object";
+			//{
 				var _g : gl3d.parser.fbx.FbxProp = n.props[1];
 				switch(_g.index) {
 				case 2:
@@ -235,14 +237,15 @@ package gl3d.parser.fbx {
 				throw n.name + " is not an object";
 				break;
 				}
-			};
+			//};
 			return null;
 		}
 		
 		static public function getType(n : *) : String {
-			if(n.props.length != 3) throw n.name + " is not an object";
-			{
+			//if(n.props.length != 3) throw n.name + " is not an object";
+			//{
 				var _g : gl3d.parser.fbx.FbxProp = n.props[2];
+				if(_g){
 				switch(_g.index) {
 				case 2:
 				{
@@ -254,7 +257,8 @@ package gl3d.parser.fbx {
 				throw n.name + " is not an object";
 				break;
 				}
-			};
+				}
+			//};
 			return null;
 		}
 		
