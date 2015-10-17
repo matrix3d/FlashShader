@@ -81,6 +81,14 @@ package gl3d.parser.fbx {
 			return null;
 		}
 		
+		static public function props2array(n:*):Array {
+			var arr:Array = [];
+			for each(var p:Object in n.props) {
+				arr.push(p.params[0]);
+			}
+			return arr;
+		}
+		
 		static public function getFloats(n : *) : Array {
 			if(n.props.length != 1) throw n.name + " has " + String(n.props) + " props";
 			{
@@ -195,22 +203,17 @@ package gl3d.parser.fbx {
 			return null;
 		}
 		
-		static public function getId(n : *) : int {
+		static public function getId(n : *) : String {
 			//if(n.props.length != 3) throw n.name + " is not an object";
 			//{
 				var _g : gl3d.parser.fbx.FbxProp = n.props[0];
 				if(_g){
 				switch(_g.index) {
-				case 0:case 2:
-				{
-					var id : int = _g.params[0];
-					return id;
-				}
-				break;
+				case 0:
 				case 1:
+				case 2:
 				{
-					var id1 : Number = _g.params[0];
-					return FbxTools.idToInt(id1);
+					return String(_g.params[0]);
 				}
 				break;
 				default:
@@ -219,13 +222,13 @@ package gl3d.parser.fbx {
 				}
 				}
 			//};
-			return 0;
+			return "";
 		}
 		
 		static public function getName(n : *) : String {
 			//if(n.props.length != 3) throw n.name + " is not an object";
 			//{
-				var _g : gl3d.parser.fbx.FbxProp = n.props[1];
+				var _g : gl3d.parser.fbx.FbxProp = n.props[n.props.length-2];
 				switch(_g.index) {
 				case 2:
 				{
@@ -244,7 +247,7 @@ package gl3d.parser.fbx {
 		static public function getType(n : *) : String {
 			//if(n.props.length != 3) throw n.name + " is not an object";
 			//{
-				var _g : gl3d.parser.fbx.FbxProp = n.props[2];
+				var _g : gl3d.parser.fbx.FbxProp = n.props[n.props.length-1];
 				if(_g){
 				switch(_g.index) {
 				case 2:

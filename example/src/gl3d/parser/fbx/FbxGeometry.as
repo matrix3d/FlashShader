@@ -4,12 +4,14 @@ package gl3d.parser.fbx{
 
 	public class FbxGeometry {
 
-		private var lib : FBXParser;
 		private var root : Object;
+		private var vertices:Array;
+		private var polygons:Array;
 		public var drawable:Drawable3D;
 		public var nodes:Array = [];
-		public function FbxGeometry(l:FBXParser, root:Object) {
-			this.lib = l;
+		public function FbxGeometry( root:Object,vertices:Array=null,polygons:Array=null) {
+			this.polygons = polygons;
+			this.vertices = vertices;
 			this.root = root;
 		}
 
@@ -18,11 +20,11 @@ package gl3d.parser.fbx{
 		}
 
 		public function getVertices():Array {
-			return FbxTools.getFloats(FbxTools.get(root,"Vertices"));
+			return vertices||FbxTools.getFloats(FbxTools.get(root,"Vertices"));
 		}
 
 		public function getPolygons():Array {
-			return FbxTools.getInts(FbxTools.get(root, "PolygonVertexIndex"));
+			return polygons||FbxTools.getInts(FbxTools.get(root, "PolygonVertexIndex"));
 		}
 
 		public function getMaterials():Array {
@@ -110,13 +112,6 @@ package gl3d.parser.fbx{
 				uvs.push({ values : values, index : index });
 			}*/
 			return uvs;
-		}
-
-		public function getGeomTranslate():Vector3D {
-			for each(var p:Object in FbxTools.getAll(lib.getParent(root, "Model"),"Properties70.P") )
-				if( p.props[0].toString() == "GeometricTranslation" )
-					return new Vector3D(p.props[4].toFloat() , p.props[5].toFloat(), p.props[6].toFloat());
-			return null;
 		}
 
 	}

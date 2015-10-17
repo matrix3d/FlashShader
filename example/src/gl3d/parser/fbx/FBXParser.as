@@ -26,9 +26,8 @@ package gl3d.parser.fbx
 		private var connect : Object = { };
 		private var namedConnect : Object={};
 		private var invConnect : Object={};
-		private var defaultModelMatrixes : Object = { };
 		public var skipObjects : Object={};
-		private var root:Object = { name : "Root", props : [], childs : [] };
+		private var root:Object;
 		private var hobjects:Object;
 		public var rootNode:Node3D
 		public var skinNodes:Vector.<Node3D> = new Vector.<Node3D>;
@@ -47,26 +46,13 @@ package gl3d.parser.fbx
 			switch( n.name ) {
 				case "Connections":
 					for each(var c:Object in n.childs ) {
-						if( c.name != "C" )
+						if( c.name != "C" &&c.name!="Connect")
 							continue;
-						var child:int =FbxTools.toInt(c.props[1]);
-						var parent:int = FbxTools.toInt(c.props[2]);
+						var child:String = c.props[1].params[0];
+						var parent:String = c.props[2].params[0];
 
 						// Maya exports invalid references
 						if( ids[child] == null || ids[parent] == null ) continue;
-
-						var name:String = c.props[3];
-
-						if( name != null ) {
-							var nc:Object = namedConnect[parent];
-							if( nc == null ) {
-								nc = {};
-								namedConnect[parent]= nc;
-							}
-							nc[name]= child;
-							// don't register as a parent, since the target can also be the child of something else
-							if( name == "LookAtProperty" ) continue;
-						}
 
 						var ca:Array = connect[parent];
 						if( ca == null ) {
@@ -75,7 +61,7 @@ package gl3d.parser.fbx
 						}
 						ca.push(child);
 
-						if( parent == 0 )
+						if( parent == null )
 							continue;
 
 						ca = invConnect[child];
@@ -93,64 +79,43 @@ package gl3d.parser.fbx
 				default:
 			}
 		}
-		private function getModelPath( model : Object ):String {
-			var parent:Object = getParent(model, "Model", true);
-			var name:String = FbxTools.getName(model);
-			if( parent == null )
-				return name;
-			return getModelPath(parent) + "." + name;
-		}
 		
 		private function getDefaultMatrixes( model : Object ):Object {
-			var name:String = FbxTools.getName(model);
-			var d:Object = defaultModelMatrixes[name];
-			if( d != null )
-				return d;
-			d =  { };
-			var F:Number = 1//Math.PI / 180;
-			for each(var p:Object in FbxTools.getAll(model, "Properties70.P") ) {
-				switch( FbxTools.toString(p.props[0])) {
+			var d:Object = { };
+			for each(var p:Object in FbxTools.getAll(model, "Properties70.P").concat(FbxTools.getAll(model, "Properties60.Property")) ) {
+				var name:String = FbxTools.toString(p.props[0]);
+				switch( name) {
 				case "GeometricTranslation":
-					// handle in Geometry directly
-					break;
 				case "PreRotation":
-					d.preRot = new Vector3D(FbxTools.toFloat(p.props[4]) * F, FbxTools.toFloat(p.props[5]) * F, FbxTools.toFloat(p.props[6]) * F);
-					if( d.preRot.x == 0 && d.preRot.y == 0 && d.preRot.z == 0 )
-						d.preRot = null;
-						break;
 				case "Lcl Rotation":
-					d.rotate = new Vector3D(FbxTools.toFloat(p.props[4]) * F, FbxTools.toFloat(p.props[5]) * F, FbxTools.toFloat(p.props[6]) * F);
-					if( d.rotate.x == 0 && d.rotate.y == 0 && d.rotate.z == 0 )
-						d.rotate = null;
-						break;
 				case "Lcl Translation":
-					d.trans = new Vector3D(FbxTools.toFloat(p.props[4]), FbxTools.toFloat(p.props[5]), FbxTools.toFloat(p.props[6]));
-					if( d.trans.x == 0 && d.trans.y == 0 && d.trans.z == 0 )
-						d.trans = null;
-						break;
 				case "Lcl Scaling":
-					d.scale = new Vector3D(FbxTools.toFloat(p.props[4]), FbxTools.toFloat(p.props[5]), FbxTools.toFloat(p.props[6]));
-					if( d.scale.x == 1 && d.scale.y == 1 && d.scale.z == 1 )
-						d.scale = null;
-						break;
-				default:
+					var l:int = p.props.length;
+					d[name] = new Vector3D(FbxTools.toFloat(p.props[l-3]), FbxTools.toFloat(p.props[l-2]), FbxTools.toFloat(p.props[l-1]));
+					break;
 				}
 			}
-			defaultModelMatrixes[name] = d;
 			var m:Matrix3D = new Matrix3D;
 			m.identity();
-			if( d.scale != null ) m.appendScale(d.scale.x, d.scale.y, d.scale.z);
-			if ( d.rotate != null ) {
-				m.appendRotation(d.rotate.x, Vector3D.X_AXIS);
-				m.appendRotation(d.rotate.y, Vector3D.Y_AXIS);
-				m.appendRotation(d.rotate.z, Vector3D.Z_AXIS);
+			if ( d["Lcl Scaling"] != null ) {
+				m.appendScale(d["Lcl Scaling"].x, d["Lcl Scaling"].y, d["Lcl Scaling"].z);
 			}
-			if ( d.preRot != null ) {
-				m.appendRotation(d.preRot.x, Vector3D.X_AXIS);
-				m.appendRotation(d.preRot.y, Vector3D.Y_AXIS);
-				m.appendRotation(d.preRot.z, Vector3D.Z_AXIS);
+			if ( d["Lcl Rotation"] != null ) {
+				m.appendRotation(d["Lcl Rotation"].x, Vector3D.X_AXIS);
+				m.appendRotation(d["Lcl Rotation"].y, Vector3D.Y_AXIS);
+				m.appendRotation(d["Lcl Rotation"].z, Vector3D.Z_AXIS);
 			}
-			if ( d.trans != null ) m.appendTranslation(d.trans.x, d.trans.y, d.trans.z);
+			if ( d["PreRotation"] != null ) {
+				m.appendRotation(d["PreRotation"].x, Vector3D.X_AXIS);
+				m.appendRotation(d["PreRotation"].y, Vector3D.Y_AXIS);
+				m.appendRotation(d["PreRotation"].z, Vector3D.Z_AXIS);
+			}
+			if ( d["Lcl Translation"] != null ) {
+				m.appendTranslation(d["Lcl Translation"].x, d["Lcl Translation"].y, d["Lcl Translation"].z);
+			}
+			if ( d["GeometricTranslation"] != null ) {
+				m.appendTranslation(d["GeometricTranslation"].x, d["GeometricTranslation"].y, d["GeometricTranslation"].z);
+			}
 			d.matrix = m;
 			return d;
 		}
@@ -159,11 +124,6 @@ package gl3d.parser.fbx
 			var scene:Node3D = new Node3D;
 			var hgeom:Object = {}
 			var hskins:Object = {};
-
-			
-
-			//autoMerge();
-
 			var hier:Object = buildHierarchy();
 			var objects:Array = hier.objects;
 			hier.root.obj = scene;
@@ -173,58 +133,37 @@ package gl3d.parser.fbx
 				var name:String = FbxTools.getName(o.model);
 				o.obj = new Node3D(name);
 				if ( o.isMesh ) {
-					if( o.isJoint )
-						throw "Model " + getModelPath(o.model) + " was tagged as joint but is mesh";
 					// load geometry
 					var g:Object = getChild(o.model, "Geometry");
-					var prim:FbxGeometry = hgeom[FbxTools.getId(g)];
-					if( prim == null ) {
-						prim = new FbxGeometry(this, g);
-						hgeom[FbxTools.getId(g)] = prim;
-						prim.drawable=Meshs.createDrawable(Vector.<uint>(prim.getIndexes().vidx), Vector.<Number>(prim.getVertices()), null, null);
-					}
-					prim.nodes.push(o.obj);
-					// load materials
-					/*var mats = getChilds(o.model, "Material");
-					var tmats = [];
-					var vcolor = prim.geom.getColors() != null;
-					var lastAdded = 0;
-					for( mat in mats ) {
-						var tex = getChilds(mat, "Texture")[0];
-						if( tex == null ) {
-							tmats.push(null);
-							continue;
+					if(g){
+						var prim:FbxGeometry = hgeom[FbxTools.getId(g)];
+						if( prim == null ) {
+							prim = new FbxGeometry(g);
+							hgeom[FbxTools.getId(g)] = prim;
 						}
-						//var mat = textureLoader(tex.get("FileName").props[0].toString(),mat);
-						//if( vcolor && allowVertexColor )
-							mat.mainPass.addShader(new h3d.shader.VertexColor());
-						tmats.push(mat);
-						lastAdded = tmats.length;
+					}else {
+						var verticesData:Object = FbxTools.get(o.model, "Vertices");
+						var polygonVertexIndexData:Object = FbxTools.get(o.model, "PolygonVertexIndex");
+						if(verticesData&&polygonVertexIndexData){
+							var vertices:Array = FbxTools.props2array(verticesData);
+							var polygonVertexIndex:Array = FbxTools.props2array(polygonVertexIndexData);
+							prim = new FbxGeometry(null, vertices, polygonVertexIndex);
+						}
 					}
-					while( tmats.length > lastAdded )
-						tmats.pop();
-					if( tmats.length == 0 )
-						tmats.push(new h3d.mat.MeshMaterial(h3d.mat.Texture.fromColor(0xFF00FF)));
-					// create object
-					if( tmats.length == 1 )
-						o.obj = new h3d.scene.Mesh(prim, tmats[0], scene);
-					else {
-						prim.multiMaterial = true;
-						o.obj = new h3d.scene.MultiMaterial(prim, tmats, scene);
-					}*/
-					(o.obj as Node3D).drawable = prim.drawable;
-					(o.obj as Node3D).material = new Material;
-					(o.obj as Node3D).material.color = Vector.<Number>([Math.random(),Math.random(),Math.random(),1]);
-					(o.obj as Node3D).type = "MESH";
+					if (prim) {
+						if(prim.drawable==null){
+							prim.drawable = Meshs.createDrawable(Vector.<uint>(prim.getIndexes().vidx), Vector.<Number>(prim.getVertices()), null, null);
+						}
+						prim.nodes.push(o.obj);
+						(o.obj as Node3D).drawable = prim.drawable;
+						(o.obj as Node3D).material = new Material;
+						(o.obj as Node3D).material.color = Vector.<Number>([Math.random(),Math.random(),Math.random(),1]);
+						(o.obj as Node3D).type = "MESH";
+					}
 				} else if( o.isJoint ) {
-					/*var j = new h3d.anim.Skin.Joint();
-					getDefaultMatrixes(o.model); // store for later usage in animation
-					j.index = o.model.getId();
-					j.name = o.model.getName();
-					o.joint = j;*/
 					(o.obj as Node3D).type = "JOINT";
 					(o.obj as Node3D).drawable = Meshs.cube(10,10,10);
-					(o.obj as Node3D).material = new Material;
+					//(o.obj as Node3D).material = new Material;
 					//continue;
 				} else {
 					var hasJoint:Boolean = false;
@@ -239,26 +178,13 @@ package gl3d.parser.fbx
 						(o.obj as Node3D).type = "SKIN";
 					}
 				}
-				//o.obj.name = name;
-				var m:Object = getDefaultMatrixes(o.model);
-				if( m.trans != null || m.rotate != null || m.scale != null || m.preRot != null )
-					o.obj.matrix = m.matrix.clone();
+				o.obj.matrix =getDefaultMatrixes(o.model).matrix;
 			}
 			// rebuild scene hierarchy
 			for each( o in objects ) {
-				//if( o.isJoint ) {
-				//	if( o.parent.isJoint ) {
-						//o.joint.parent = o.parent.joint;
-						//o.parent.joint.subs.push(o.joint);
-				//	}
-				//} else {
-					// put it into the first non-joint parent
-					var p:Object = o.parent;
-					while( p.obj == null )
-						p = p.parent;
-					if(o.obj)
-					p.obj.addChild(o.obj);
-				//}
+				var p:Object = o.parent;
+				if(o.obj)
+				p.obj.addChild(o.obj);
 			}
 			// build skins
 			for each( o in objects ) {
@@ -268,7 +194,6 @@ package gl3d.parser.fbx
 					//o.obj.follow = scene.getObjectByName(o.parent.joint.name);
 				var skin:Skin = (o.obj as Node3D).skin;
 				if( skin == null ) continue;
-				var rootJoints:Array = [];
 				createSkin(o,hgeom);
 				// remove the corresponding Geometry-Model and copy its material
 				/*for( o2 in objects ) {
@@ -304,7 +229,7 @@ package gl3d.parser.fbx
 				if (o.isJoint) {
 					for each(var subDef:Object in getParents(o.model, "Deformer")) {
 						var def:Object = getParent(subDef, "Deformer");
-						var primID:int = FbxTools.getId(getParent(def, "Geometry"));
+						var primID:String = FbxTools.getId(getParent(def, "Geometry"));
 						var prim:FbxGeometry = hgeom[primID];
 						var skinData:Object = prim2skinData[primID] ;
 						if (skinData == null) {
@@ -384,11 +309,10 @@ package gl3d.parser.fbx
 			for each(var model:Object in FbxTools.getAll(root,"Objects.Model") ) {
 				if( skipObjects[FbxTools.getName(model)] )
 					continue;
-				var mtype:String = FbxTools.getType(model);
-				var isJoint:Boolean = mtype == "LimbNode" && ( !isNullJoint(model));
 				var o:Object = {childs:[] };
 				o.model = model;
-				o.isJoint = isJoint;
+				var mtype:String = FbxTools.getType(model);
+				o.isJoint = (mtype == "LimbNode") || (mtype == "Limb");
 				o.isMesh = mtype == "Mesh";
 				hobjects[FbxTools.getId(model)]= o;
 				objects.push(o);
@@ -397,93 +321,13 @@ package gl3d.parser.fbx
 			// build hierarchy
 			for each( o in objects ) {
 				var p:Object = getParent(o.model, "Model", true);
-				var pid:int =  p == null ? 0 : FbxTools.getId(p);
+				var pid:String =  p == null ? "" : FbxTools.getId(p);
 				var op:Object = hobjects[pid];
 				if( op == null ) op = oroot; // if parent has been removed
 				op.childs.push(o);
 				o.parent = op;
 			}
-
-			function getDepth( o : Object ):int {
-				var k:int = 0;
-				while( o != oroot ) {
-					o = o.parent;
-					k++;
-				}
-				return k;
-			}
-
-			// look for common skin ancestor
-			for each(o in objects ) {
-				if( ! o.isMesh ) continue;
-				var g:Object = getChild(o.model, "Geometry");
-				var def:Object = getChild(g, "Deformer", true);
-				if( def == null ) continue;
-				var bones:Array = []
-				for each(var dobj:Object in getChilds(def, "Deformer") ) {
-					bones.push(hobjects[FbxTools.getId(getChild(dobj, "Model"))]);
-				}
-				if( bones.length == 0 ) continue;
-
-
-				// first let's go the minimal depth for all bones
-				var minDepth:int = getDepth(bones[0]);
-				for (var i:int = 1; i < bones.length;i++ ) {
-					var d:int = getDepth(bones[i]);
-					if( d < minDepth ) minDepth = d;
-				}
-				var out:Array = [];
-				for ( i = 0 ; i < bones.length;i++ ) {
-					var b:Object = bones[i];
-					var n:int = getDepth(b) - minDepth;
-					for (var j:int = 0; j < n; j++ ) {
-						b.isJoint = true;
-						b = b.parent;
-					}
-					var idx:int = out.indexOf(b);
-					if (idx != -1) out.splice(idx, 1);
-					out.push(b);
-				}
-				bones = out;
-
-				while( bones.length > 1 ) {
-					for each( b in bones )
-						b.isJoint = true;
-					var parents:Array = [];
-					for each( b in bones ) {
-						if ( b.parent == oroot || b.parent.isMesh ) continue;
-						idx = parents.indexOf(b.parent);
-						if(idx!=-1)
-						parents.splice(idx, 1);// .remove(b.parent);
-						parents.push(b.parent);
-					}
-					bones = parents;
-				}
-			}
-
 			return { root : oroot, objects : objects };
-		}
-		private function isNullJoint( model : Object ):Boolean {
-			if( getParents(model, "Deformer").length > 0 )
-				return false;
-			var parent:Object = getParent(model, "Model", true);
-			if( parent == null )
-				return true;
-			var t:String = FbxTools.getType(parent);
-			if( t == "LimbNode" || t == "Root" )
-				return false;
-			return true;
-		}
-		public function getGeometry( name : String = "" ):FbxGeometry {
-			var geom:Object = null;
-			for each(var g:Object in FbxTools.getAll(root,"Objects.Geometry") )
-				if( FbxTools.hasProp( g,FbxProp.PString("Geometry::" + name)) ) {
-					geom = g;
-					break;
-				}
-			if( geom == null )
-				throw "Geometry " + name + " not found";
-			return new FbxGeometry(this, geom);
 		}
 
 		public function getParent( node : Object, nodeName : String, opt : Boolean =false):Object {
@@ -497,33 +341,24 @@ package gl3d.parser.fbx
 
 		public function getChild( node : Object, nodeName : String, opt : Boolean=false ):Object {
 			var c:Array = getChilds(node, nodeName);
-			if( c.length > 1 )
-				throw node.getName() + " has " + c.length + " " + nodeName + " childs ";
-			if( c.length == 0 && !opt )
-				throw "Missing " + node.getName() + " " + nodeName + " child";
+			//if( c.length > 1 )
+			//	throw node.getName() + " has " + c.length + " " + nodeName + " childs ";
+			//if( c.length == 0 && !opt )
+			//	throw "Missing " + node.getName() + " " + nodeName + " child";
 			return c[0];
-		}
-
-		public function getSpecChild( node : Object, name : String ):Object {
-			var nc:Object = namedConnect[FbxTools.getId(node)];
-			if( nc == null )
-				return null;
-			var id:Object = nc[name];
-			if( id == null )
-				return null;
-			return ids[id];
 		}
 
 		public function getChilds( node : Object, nodeName : String ):Array {
 			var c:Object = connect[FbxTools.getId(node)];
 			var subs:Array = [];
-			if( c != null )
+			if( c != null ){
 				for each(var id:String in c ) {
 					var n:Object = ids[id];
 					if( n == null ) throw id + " not found";
 					if( nodeName != null && n.name != nodeName ) continue;
 					subs.push(n);
 				}
+			}
 			return subs;
 		}
 
@@ -560,7 +395,7 @@ package gl3d.parser.fbx
 					var x:Object = FbxTools.getFloats(FbxTools.get(data[0],"KeyValueFloat"));
 					var y:Object = FbxTools.getFloats(FbxTools.get(data[1],"KeyValueFloat"));
 					var z:Object = FbxTools.getFloats(FbxTools.get(data[2], "KeyValueFloat"));
-					var mid:int = FbxTools.getId(model);
+					var mid:String = FbxTools.getId(model);
 					var animDataBase:Object= animData[mid] = animData[mid] || { };
 					animDataBase[cname] = [x, y, z];
 					animDataBase.times = times;
@@ -576,7 +411,7 @@ package gl3d.parser.fbx
 					track.target = animDataBase.target;
 					anim3d.tracks.push(track);
 					for (var i:int = 0; i < animDataBase.times.length;i++ ) {
-						var time:Number = animDataBase.times[i]/20000000000;
+						var time:Number = animDataBase.times[i]/2000000000000*60;
 						var s:Array = animDataBase.S;
 						var r:Array = animDataBase.R;
 						var t:Array = animDataBase.T;
