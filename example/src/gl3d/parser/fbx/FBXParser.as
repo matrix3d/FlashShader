@@ -3,6 +3,7 @@ package gl3d.parser.fbx
 	import flash.geom.Matrix3D;
 	import flash.geom.Point;
 	import flash.geom.Vector3D;
+	import flash.utils.ByteArray;
 	import flash.utils.Dictionary;
 	import gl3d.core.Drawable3D;
 	import gl3d.core.Material;
@@ -19,9 +20,9 @@ package gl3d.parser.fbx
 	/**
 	 * @author lizhi
 	 */
-	public class FBXParser 
+	public class FbxParser 
 	{
-		public var decoder:FbxDecoder;
+		public var decoder:Object;
 		private var ids:Object = { };
 		private var connect : Object = { };
 		private var namedConnect : Object={};
@@ -31,10 +32,16 @@ package gl3d.parser.fbx
 		private var hobjects:Object;
 		public var rootNode:Node3D
 		public var skinNodes:Vector.<Node3D> = new Vector.<Node3D>;
-		public function FBXParser(txt:String) 
+		public function FbxParser(data:Object) 
 		{
-			decoder = new FbxDecoder(txt);
-			root = decoder.obj;
+			if(data is String){
+				decoder = new FbxTextDecoder(data as String);
+				var childs:Array = decoder.childs;
+			}else {
+				decoder = new FbxBinDecoder(data as ByteArray);
+				childs = decoder.childs;
+			}
+			root = { name : "Root", props : [FbxProp.PInt(0), FbxProp.PString("Root"), FbxProp.PString("Root")], childs :childs };
 			for each(var obj:Object in root.childs) {
 				init(obj);
 			}
@@ -163,7 +170,7 @@ package gl3d.parser.fbx
 				} else if( o.isJoint ) {
 					(o.obj as Node3D).type = "JOINT";
 					(o.obj as Node3D).drawable = Meshs.cube(10,10,10);
-					//(o.obj as Node3D).material = new Material;
+					(o.obj as Node3D).material = new Material;
 					//continue;
 				} else {
 					var hasJoint:Boolean = false;
@@ -178,7 +185,7 @@ package gl3d.parser.fbx
 						(o.obj as Node3D).type = "SKIN";
 					}
 				}
-				o.obj.matrix =getDefaultMatrixes(o.model).matrix;
+				o.obj.matrix = getDefaultMatrixes(o.model).matrix;
 			}
 			// rebuild scene hierarchy
 			for each( o in objects ) {
@@ -379,7 +386,7 @@ package gl3d.parser.fbx
 			var animDatas:Object = { };
 			for each(var a:Object in FbxTools.getAll(root,"Objects.AnimationStack") ){
 				var name:String = FbxTools.getName(a);
-				var animData:Object = {}
+				var animData:Object = { };
 				animDatas[name] = animData;
 				var	animNode:Object = getChild(a, "AnimationLayer");
 				for each(var cn:Object in getChilds(animNode,"AnimationCurveNode")) {
@@ -410,18 +417,29 @@ package gl3d.parser.fbx
 					var track:Track = new Track;
 					track.target = animDataBase.target;
 					anim3d.tracks.push(track);
-					for (var i:int = 0; i < animDataBase.times.length;i++ ) {
-						var time:Number = animDataBase.times[i]/2000000000000*60;
+					for (var i:int = 0; i < animDataBase.times.length; i++ ) {
+						if (animDataBase.times[i] is Array) {
+							var timeValue:Number = animDataBase.times[i][0]+0x100000000*animDataBase.times[i][1];
+						}else {
+							timeValue = animDataBase.times[i];
+						}
+						var time:Number = timeValue/2000000000000*60;
 						var s:Array = animDataBase.S;
 						var r:Array = animDataBase.R;
 						var t:Array = animDataBase.T;
 						var frame:TrackFrame = new TrackFrame;
 						var m:Matrix3D = new Matrix3D;
-						m.appendScale(s[0][i],s[1][i],s[2][i]);
-						m.appendRotation(r[0][i], Vector3D.X_AXIS);
-						m.appendRotation(r[1][i], Vector3D.Y_AXIS);
-						m.appendRotation(r[2][i], Vector3D.Z_AXIS);
-						m.appendTranslation(t[0][i], t[1][i], t[2][i]);
+						if(s){
+							m.appendScale(s[0][i], s[1][i], s[2][i]);
+						}
+						if(r){
+							m.appendRotation(r[0][i], Vector3D.X_AXIS);
+							m.appendRotation(r[1][i], Vector3D.Y_AXIS);
+							m.appendRotation(r[2][i], Vector3D.Z_AXIS);
+						}
+						if(t){
+							m.appendTranslation(t[0][i], t[1][i], t[2][i]);
+						}
 						
 						frame.matrix = m;
 						frame.time = time;

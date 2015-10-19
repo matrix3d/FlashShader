@@ -133,36 +133,10 @@ package gl3d.parser.fbx {
 				while(_g < _g1.length) {
 					var p2 : gl3d.parser.fbx.FbxProp = _g1[_g];
 					++_g;
-					if(FbxDecoder.enumEq(p,p2)) return true;
+					if(FbxTextDecoder.enumEq(p,p2)) return true;
 				}
 			};
 			return false;
-		}
-		
-		static protected function idToInt(f : Number) : int {
-			return int(f);
-		}
-		
-		static public function toInt(n : gl3d.parser.fbx.FbxProp) : int {
-			if(n == null) throw "null prop";
-			switch(n.index) {
-			case 0:
-			{
-				var v : int = n.params[0];
-				return v;
-			}
-			break;
-			case 1:
-			{
-				var f : Number = n.params[0];
-				return FbxTools.idToInt(f);
-			}
-			break;
-			default:
-			throw "Invalid prop " + String(n);
-			break;
-			};
-			return 0;
 		}
 		
 		static public function toFloat(n : gl3d.parser.fbx.FbxProp) : Number {

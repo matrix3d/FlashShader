@@ -1,11 +1,11 @@
 package gl3d.parser.fbx {
 	import gl3d.parser.fbx.FbxProp;
 	import gl3d.parser.fbx.FbxToken;
-	public class FbxDecoder {
-		public var obj:Object;
+	public class FbxTextDecoder {
+		public var childs:Array;
 		
-		public function FbxDecoder(txt:String) : void {
-			obj=parseText(txt);
+		public function FbxTextDecoder(txt:String) : void {
+			childs=parseText(txt);
 		}
 		
 		public var line : int;
@@ -17,7 +17,8 @@ package gl3d.parser.fbx {
 			this.pos = 0;
 			this.line = 1;
 			this.token = null;
-			return { name : "Root", props : [gl3d.parser.fbx.FbxProp.PInt(0),gl3d.parser.fbx.FbxProp.PString("Root"),gl3d.parser.fbx.FbxProp.PString("Root")], childs : this.parseNodes()}
+			
+			return  this.parseNodes();
 		}
 		
 		protected function parseNodes() : Array {
