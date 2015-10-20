@@ -1,9 +1,13 @@
 package 
 {
 	import flash.display.Sprite;
+	import flash.system.System;
 	import flash.utils.ByteArray;
-	import gl3d.parser.fbx.FbxDecoder;
-	import gl3d.parser.fbx.FBXParser;
+	import flash.utils.Endian;
+	import gl3d.parser.fbx.FbxBinDecoder;
+	import gl3d.parser.fbx.FbxTextDecoder;
+	import gl3d.parser.fbx.FbxParser;
+	import gl3d.parser.fbx.FbxTools;
 	import gl3d.util.Utils;
 	/**
 	 * ...
@@ -19,20 +23,23 @@ package
 		
 		override public function initNode():void 
 		{
-			/*var test:Object=( new FbxDecoder("test:  test2:2")).obj.childs;
-			trace(JSON.stringify(test, null, 4));
-			return;*/
+			//[Embed(source = "assets/cubebin.fbx", mimeType = "application/octet-stream")]var c:Class;
+			//[Embed(source = "assets/test4bin.fbx", mimeType = "application/octet-stream")]var c:Class;
+			
 			//[Embed(source = "assets/test4.FBX", mimeType = "application/octet-stream")]var c:Class;
+			//[Embed(source = "assets/cubetext.FBX", mimeType = "application/octet-stream")]var c:Class;
 			[Embed(source = "assets/aoying.FBX", mimeType = "application/octet-stream")]var c:Class;
+			//[Embed(source = "assets/aoying gongji.FBX", mimeType = "application/octet-stream")]var c:Class;
 			//[Embed(source = "assets/blender.FBX", mimeType = "application/octet-stream")]var c:Class;
-			var fbx:FBXParser = new FBXParser(new c + "");
+			var fbx:FbxParser = new FbxParser(new c);
 			view.scene.addChild(fbx.rootNode);
 			fbx.rootNode.scaleX=
 			fbx.rootNode.scaleY=
-			fbx.rootNode.scaleZ = .01;
+			fbx.rootNode.scaleZ = 0.01;
 			fbx.rootNode.rotationX = -90;
 			fbx.rootNode.rotationY = 180;
 			//fbx.rootNode.scaleZ *= -1;
+			//Utils.traceNode(fbx.rootNode);
 		}
 		
 	}

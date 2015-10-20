@@ -34,11 +34,14 @@ package gl3d.parser.fbx
 		public var skinNodes:Vector.<Node3D> = new Vector.<Node3D>;
 		public function FbxParser(data:Object) 
 		{
-			if(data is String){
-				decoder = new FbxTextDecoder(data as String);
-				var childs:Array = decoder.childs;
-			}else {
+			if (data is ByteArray) {
 				decoder = new FbxBinDecoder(data as ByteArray);
+				if(decoder.isBin){
+					var childs:Array = decoder.childs;
+				}
+			}
+			if(childs==null){
+				decoder = new FbxTextDecoder(String(data));
 				childs = decoder.childs;
 			}
 			root = { name : "Root", props : [FbxProp.PInt(0), FbxProp.PString("Root"), FbxProp.PString("Root")], childs :childs };
@@ -159,7 +162,7 @@ package gl3d.parser.fbx
 					}
 					if (prim) {
 						if(prim.drawable==null){
-							prim.drawable = Meshs.createDrawable(Vector.<uint>(prim.getIndexes().vidx), Vector.<Number>(prim.getVertices()), null, null);
+							prim.drawable = Meshs.createDrawable(Vector.<uint>(prim.getIndexes()), Vector.<Number>(prim.getVertices()), null, null);
 						}
 						prim.nodes.push(o.obj);
 						(o.obj as Node3D).drawable = prim.drawable;
@@ -423,7 +426,7 @@ package gl3d.parser.fbx
 						}else {
 							timeValue = animDataBase.times[i];
 						}
-						var time:Number = timeValue/2000000000000*60;
+						var time:Number = timeValue / 46186158000;
 						var s:Array = animDataBase.S;
 						var r:Array = animDataBase.R;
 						var t:Array = animDataBase.T;

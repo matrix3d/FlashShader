@@ -53,28 +53,24 @@ package gl3d.parser.fbx{
 			Decode polygon informations into triangle indexes and vertices indexes.
 			Returns vidx, which is the list of vertices indexes and iout which is the index buffer for the full vertex model
 		**/
-		public function getIndexes():Object {
-			var count:int = 0, pos:int = 0;
-			var index:Array = getPolygons();
-			var vout:Array = [], iout:Array = [];
-			for each(var i:int in index ) {
-				count++;
-				if( i < 0 ) {
-					index[pos] = -i - 1;
-					var start:int = pos - count + 1;
-					for (var n:int = 0; n < count;n++ )
-						vout.unshift(index[n + start]);
-					for (n = 0; n < count - 2 ;n++ ) {
-						iout.push(start + n);
-						iout.push(start + count - 1);
-						iout.push(start + n + 1);
+		public function getIndexes():Array {
+			var prev:int = 0;
+			var p:Array = getPolygons();
+			var out:Array = [];
+			for (var i:int = 0; i < p.length;i++ ){
+				var index:int = p[i];
+				p[i] = index
+				if (index < 0){
+					var start:int = prev;
+					var total:int = i - prev + 1;
+					prev = i + 1
+					p[i] ^= -1
+					for (var j:int = 2; j < total;j++ ) {
+						out.push(p[start],p[start+j],p[start+j-1]);
 					}
-					index[pos] = i; // restore
-					count = 0;
 				}
-				pos++;
 			}
-			return { vidx : vout, idx : iout };
+			return out;
 		}
 
 		public function getNormals():Array {

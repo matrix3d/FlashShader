@@ -12,10 +12,16 @@ package gl3d.parser.fbx
 		private const _BLOCK_SENTINEL_LENGTH:int = 13;
 		private var useFbxPropClass:Boolean;
 		public var childs:Array;
+		public var isBin:Boolean = false;
 		public function FbxBinDecoder(byte:ByteArray,useFbxPropClass:Boolean=true) 
 		{
 			this.useFbxPropClass = useFbxPropClass;
 			byte.endian = Endian.LITTLE_ENDIAN;
+			if (byte.readUTFBytes(18) == "Kaydara FBX Binary") {
+				isBin = true;
+			}else {
+				return;
+			}
 			byte.position = 23;
 			var version:int = byte.readUnsignedInt();
 			childs = [];
