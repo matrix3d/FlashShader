@@ -85,17 +85,27 @@ package gl3d.core.skin
 				}
 				
 				if (target.skin.useCpu) {
-					var source:Vector.<Number> = target.drawable.pos.data;
-					if (target.drawable.pos.cpuSkinPos==null) {
-						target.drawable.pos.cpuSkinPos = new VertexBufferSet(new Vector.<Number>(source.length), 3);
+					var sourcePos:Vector.<Number> = target.drawable.pos.data;
+					var sourceNorm:Vector.<Number> = target.drawable.norm.data;
+					if (target.drawable.pos.cpuSkin==null) {
+						target.drawable.pos.cpuSkin = new VertexBufferSet(new Vector.<Number>(sourcePos.length), 3);
 					}
-					var out:Vector.<Number> = target.drawable.pos.cpuSkinPos.data;
-					var v:Vector3D = new Vector3D;
-					for (i = 0; i < out.length / 3; i++ ) {
+					if (target.drawable.norm.cpuSkin==null) {
+						target.drawable.norm.cpuSkin = new VertexBufferSet(new Vector.<Number>(sourceNorm.length), 3);
+					}
+					var outpos:Vector.<Number> = target.drawable.pos.cpuSkin.data;
+					var outnorm:Vector.<Number> = target.drawable.norm.cpuSkin.data;
+					var pos:Vector3D = new Vector3D;
+					var norm:Vector3D = new Vector3D;
+					for (i = 0; i < outpos.length / 3; i++ ) {
 						var x:Number = 0;
 						var y:Number = 0;
 						var z:Number = 0;
-						v.setTo( source[i*3], source[i*3+1],source[i*3 + 2]);
+						var nx:Number = 0;
+						var ny:Number = 0;
+						var nz:Number = 0;
+						pos.setTo( sourcePos[i*3], sourcePos[i*3+1],sourcePos[i*3 + 2]);
+						norm.setTo( sourceNorm[i*3], sourceNorm[i*3+1],sourceNorm[i*3 + 2]);
 						for (var j:int = 0; j < target.skin.maxWeight;j++ ) {
 							var jointIndex:int = target.drawable.joints.data[i * target.skin.maxWeight + j];
 							if(jointIndex!=-1){
@@ -103,23 +113,37 @@ package gl3d.core.skin
 								matrix = target.skin.skinFrame.matrixs[jointIndex];
 								if (weight != 0) {
 									if(!target.skin.useQuat){
-										var vr:Vector3D = matrix.transformVector(v);
+										var vr:Vector3D = matrix.transformVector(pos);
+										var nr:Vector3D = matrix.deltaTransformVector(norm);
 									}else {
 										q.fromMatrix(matrix);
-										vr = q.rotatePoint(v);
+										vr = q.rotatePoint(pos);
 										vr = vr.add(q.tran);
+										nr = q.rotatePoint(norm);
 									}
 									x += vr.x*weight;
 									y += vr.y*weight;
 									z += vr.z * weight;
+									
+									nx += nr.x*weight;
+									ny += nr.y*weight;
+									nz += nr.z * weight;
 								}
 							}
 						}
-						out[i * 3] = x;
-						out[i*3+1] = y;
-						out[i*3 + 2] = z;
+						outpos[i * 3] = x;
+						outpos[i*3+1] = y;
+						outpos[i * 3 + 2] = z;
+						var len:Number = Math.sqrt(nx * nx + ny * ny + nz * nz);
+						nx /= len;
+						ny /= len;
+						nz /= len;
+						outnorm[i * 3] = nx;
+						outnorm[i * 3+1] = ny;
+						outnorm[i * 3+2] = nz;
 					}
-					target.drawable.pos.cpuSkinPos.invalid = true;
+					target.drawable.pos.cpuSkin.invalid = true;
+					target.drawable.norm.cpuSkin.invalid = true;
 				}
 			}
 		}

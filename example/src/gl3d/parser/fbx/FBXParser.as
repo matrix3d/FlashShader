@@ -307,6 +307,10 @@ package gl3d.parser.fbx
 				m.copyRawDataFrom(Vector.<Number>(transPoss[i]));
 				skin.invBindMatrixs.push(m);
 			}
+			
+			for each(var skinNode:Node3D in skinNodes) {
+				Skin.optimize(skinNode);
+			}
 		}
 		
 		private function buildHierarchy():Object {

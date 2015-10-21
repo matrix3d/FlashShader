@@ -217,7 +217,7 @@ package gl3d.core {
 		public function set matrix(value:Matrix3D):void 
 		{
 			_matrix = value;
-			dirty = true;
+			updateTransforms(true);
 		}
 		
 		public function updateTransforms(includeChildren:Boolean = false) : void

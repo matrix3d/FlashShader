@@ -15,7 +15,7 @@ package gl3d.core {
 		private var context:GL;
 		public static var FORMATS:Array = [null, "float1", "float2", "float3", "float4"];
 		//public var subBuffs:Array;
-		public var cpuSkinPos:VertexBufferSet;
+		public var cpuSkin:VertexBufferSet;
 		public function VertexBufferSet(data:Vector.<Number>,data32PerVertex:int) 
 		{
 			this.data = data;

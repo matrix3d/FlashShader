@@ -307,7 +307,7 @@ package gl3d.core.shaders
 			binds.push(binder.bindWeightsBuff);
 			return buff;
 		}
-		public function buffCpuSkinPos():Var {
+		/*public function buffCpuSkinPos():Var {
 			var name:String = "bcpuskinpos";
 			if (getNamedVar(name)) return getNamedVar(name);
 			var buff:Var = buff();
@@ -316,7 +316,15 @@ package gl3d.core.shaders
 			binds.push(binder.bindCpuSkinPosBuff);
 			return buff;
 		}
-		
+		public function buffCpuSkinNorm():Var {
+			var name:String = "bcpuskinnorm";
+			if (getNamedVar(name)) return getNamedVar(name);
+			var buff:Var = buff();
+			setNamedVar(name, buff);
+			var binder:GLBinder = new GLBinder(this,buff);
+			binds.push(binder.bindCpuSkinNormBuff);
+			return buff;
+		}*/
 		public function getNamedVar(name:String):Var {
 			return namedVars[name];
 		}

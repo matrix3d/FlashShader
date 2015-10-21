@@ -126,11 +126,13 @@ package gl3d.core.shaders
 		//buffs
 		public function bindPosBuff(shader:GLShader,material:Material):void {
 			if (v.used) {
-				shader.buffSets[v.index] = (material.node.skin&&material.node.skin.useCpu&&material.node.drawable.pos.cpuSkinPos)?material.node.drawable.pos.cpuSkinPos:material.node.drawable.pos;
+				shader.buffSets[v.index] = (material.node.skin&&material.node.skin.useCpu&&material.node.drawable.pos.cpuSkin)?material.node.drawable.pos.cpuSkin:material.node.drawable.pos;
 			}
 		}
 		public function bindNormBuff(shader:GLShader,material:Material):void {
-			if(v.used)shader.buffSets[v.index] = material.node.drawable.norm;
+			if (v.used) {
+				shader.buffSets[v.index] = (material.node.skin&&material.node.skin.useCpu&&material.node.drawable.norm.cpuSkin)?material.node.drawable.norm.cpuSkin:material.node.drawable.norm;
+			}
 		}
 		public function bindTangentBuff(shader:GLShader,material:Material):void {
 			if(v.used)shader.buffSets[v.index] = material.node.drawable.tangent;
@@ -159,10 +161,12 @@ package gl3d.core.shaders
 		public function bindWeightsBuff(shader:GLShader,material:Material):void {
 			if(v.used)shader.buffSets[v.index] = material.node.drawable.weights;
 		}
-		public function bindCpuSkinPosBuff(shader:GLShader,material:Material):void {
+		/*public function bindCpuSkinPosBuff(shader:GLShader,material:Material):void {
 			if(v.used)shader.buffSets[v.index] = material.node.drawable.pos.cpuSkinPos;
 		}
-		
+		public function bindCpuSkinNormBuff(shader:GLShader,material:Material):void {
+			if(v.used)shader.buffSets[v.index] = material.node.drawable.pos.cpuSkinNorm;
+		}*/
 	}
 
 }
