@@ -159,6 +159,7 @@ package
 			//post="shape"
 			//post="asciiart"
 			//post = "blur";
+			//post = "bend";
 			//post = "red";
 			stats = new Stats(view);
 			addChild(stats);

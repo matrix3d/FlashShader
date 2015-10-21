@@ -16,6 +16,7 @@ package gl3d.parser.fbx
 	import gl3d.core.VertexBufferSet;
 	import gl3d.ctrl.Ctrl;
 	import gl3d.meshs.Meshs;
+	import gl3d.util.Converter;
 	import gl3d.util.Utils;
 	/**
 	 * @author lizhi
@@ -32,6 +33,7 @@ package gl3d.parser.fbx
 		private var hobjects:Object;
 		public var rootNode:Node3D
 		public var skinNodes:Vector.<Node3D> = new Vector.<Node3D>;
+		private var converter:Converter;
 		public function FbxParser(data:Object) 
 		{
 			if (data is ByteArray) {
@@ -44,6 +46,9 @@ package gl3d.parser.fbx
 				decoder = new FbxTextDecoder(String(data));
 				childs = decoder.childs;
 			}
+			
+			converter = new Converter("ZtoY");
+			
 			root = { name : "Root", props : [FbxProp.PInt(0), FbxProp.PString("Root"), FbxProp.PString("Root")], childs :childs };
 			for each(var obj:Object in root.childs) {
 				init(obj);
@@ -126,7 +131,7 @@ package gl3d.parser.fbx
 			if ( d["GeometricTranslation"] != null ) {
 				m.appendTranslation(d["GeometricTranslation"].x, d["GeometricTranslation"].y, d["GeometricTranslation"].z);
 			}
-			d.matrix = m;
+			d.matrix = converter.getConvertedMat4(m);
 			return d;
 		}
 		
@@ -162,7 +167,7 @@ package gl3d.parser.fbx
 					}
 					if (prim) {
 						if(prim.drawable==null){
-							prim.drawable = Meshs.createDrawable(Vector.<uint>(prim.getIndexes()), Vector.<Number>(prim.getVertices()), null, null);
+							prim.drawable = Meshs.createDrawable(Vector.<uint>(prim.getIndexes()), Vector.<Number>(converter.convertedVec3s(prim.getVertices())), null, null);
 						}
 						prim.nodes.push(o.obj);
 						(o.obj as Node3D).drawable = prim.drawable;
@@ -305,6 +310,7 @@ package gl3d.parser.fbx
 			for (i = 0; i < transPoss.length;i++ ) {
 				var m:Matrix3D = new Matrix3D;
 				m.copyRawDataFrom(Vector.<Number>(transPoss[i]));
+				converter.getConvertedMat4(m);
 				skin.invBindMatrixs.push(m);
 			}
 			
@@ -448,7 +454,7 @@ package gl3d.parser.fbx
 							m.appendTranslation(t[0][i], t[1][i], t[2][i]);
 						}
 						
-						frame.matrix = m;
+						frame.matrix = converter.getConvertedMat4(m);
 						frame.time = time;
 						track.frames.push(frame);
 					}

@@ -66,7 +66,7 @@ package gl3d.parser.fbx{
 					prev = i + 1
 					p[i] ^= -1
 					for (var j:int = 2; j < total;j++ ) {
-						out.push(p[start],p[start+j],p[start+j-1]);
+						out.push(p[start],p[start+j-1],p[start+j]);
 					}
 				}
 			}

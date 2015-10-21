@@ -75,7 +75,7 @@ package gl3d.core.renders
 				if (view.posts.length) {
 					var len:int = view.posts.length>1?2:1;
 					for (var i:int = 0; i < len; i++ ) {
-						if (view.invalid) {
+						if (view.invalid||view.postRTTs[i].texture==null) {
 							view.postRTTs[i].update(view);
 							view.postRTTs[i].texture = gl3d.createRectangleTexture(view.stage3dWidth, view.stage3dHeight,Context3DTextureFormat.BGRA, true);
 							view.postRTTs[i].invalid = false;

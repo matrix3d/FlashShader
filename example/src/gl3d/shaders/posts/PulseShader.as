@@ -14,9 +14,9 @@ package gl3d.shaders.posts
 		public function PulseShader() 
 		{
 			super(Context3DProgramType.FRAGMENT);
-			var time:Var = div(C().x,mov(1000));
-			var resolution:Var = mov(C().yz);
-			var tex0:Var = FS();
+			var time:Var = div(uniformTime(),mov(1000));
+			var resolution:Var = uniformPixelSize();
+			var tex0:Var = samplerDiff();
 			
 			var halfres:Var = div(resolution, mov(2));
 			var cPos:Var = mul(V(),resolution);
