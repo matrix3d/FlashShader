@@ -16,6 +16,7 @@ package gl3d.parser.mmd
 	import gl3d.ctrl.Ctrl;
 	import gl3d.meshs.Meshs;
 	import gl3d.parser.mmd.PMX;
+	import gl3d.util.Matrix3DUtils;
 	/**
 	 * ...
 	 * @author lizhi
@@ -65,8 +66,8 @@ package gl3d.parser.mmd
 				bone.name = boneObj.name;
 				bone.type = "JOINT";
 				name2bone[bone.name] = bone;
-				//bone.material = new Material;
-				//bone.drawable = Meshs.cube(.5, .5, .5);
+				bone.material = new Material;
+				bone.drawable = Meshs.cube(.5, .5, .5);
 				var origin:Array = boneObj.origin;
 				bone.x = origin[0];
 				bone.y = origin[1];
@@ -76,15 +77,14 @@ package gl3d.parser.mmd
 					var parent:Node3D = node;
 				}else {
 					parent = bones[boneObj.parent];
-					origin = pmx.bones[boneObj.parent].origin;
-					bone.x -= origin[0];
-					bone.y -= origin[1];
-					bone.z -= origin[2];
+					var porigin:Array = pmx.bones[boneObj.parent].origin;
+					bone.x -= porigin[0];
+					bone.y -= porigin[1];
+					bone.z -= porigin[2];
 				}
 				parent.addChild(bone);
 				var invbind:Matrix3D = new Matrix3D;
-				invbind.appendTranslation(origin[0], origin[1], origin[2]);
-				invbind.invert();
+				invbind.appendTranslation( -origin[0], -origin[1], -origin[2]);
 				skin.invBindMatrixs.push(invbind);
 			}
 			

@@ -47,12 +47,14 @@ package gl3d.core {
 			}
 			children.push(n);
 			n.parent = this;
+			n.updateTransforms(true);
 		}
 		
 		public function removeChild(n:Node3D):void {
 			var i:int = children.indexOf(n);
 			if (i != -1) children.splice(i, 1);
 			n.parent = null;
+			n.updateTransforms(true);
 		}
 		
 		public function update(view:View3D,material:Material=null):void {
