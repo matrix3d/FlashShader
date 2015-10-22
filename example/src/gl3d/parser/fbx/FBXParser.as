@@ -47,7 +47,7 @@ package gl3d.parser.fbx
 				childs = decoder.childs;
 			}
 			
-			converter = new Converter("ZtoY");
+			converter = new Converter(null,new Vector3D(1,1,-1));
 			
 			root = { name : "Root", props : [FbxProp.PInt(0), FbxProp.PString("Root"), FbxProp.PString("Root")], childs :childs };
 			for each(var obj:Object in root.childs) {
@@ -102,6 +102,7 @@ package gl3d.parser.fbx
 				switch( name) {
 				case "GeometricTranslation":
 				case "PreRotation":
+				case "PostRotation":
 				case "Lcl Rotation":
 				case "Lcl Translation":
 				case "Lcl Scaling":
@@ -127,6 +128,11 @@ package gl3d.parser.fbx
 			}
 			if ( d["Lcl Translation"] != null ) {
 				m.appendTranslation(d["Lcl Translation"].x, d["Lcl Translation"].y, d["Lcl Translation"].z);
+			}
+			if ( d["PostRotation"] != null ) {
+				m.appendRotation(d["PostRotation"].x, Vector3D.X_AXIS);
+				m.appendRotation(d["PostRotation"].y, Vector3D.Y_AXIS);
+				m.appendRotation(d["PostRotation"].z, Vector3D.Z_AXIS);
 			}
 			if ( d["GeometricTranslation"] != null ) {
 				m.appendTranslation(d["GeometricTranslation"].x, d["GeometricTranslation"].y, d["GeometricTranslation"].z);
@@ -193,7 +199,8 @@ package gl3d.parser.fbx
 						(o.obj as Node3D).type = "SKIN";
 					}
 				}
-				o.obj.matrix = getDefaultMatrixes(o.model).matrix;
+				o.m = getDefaultMatrixes(o.model);
+				o.obj.matrix = o.m.matrix;
 			}
 			// rebuild scene hierarchy
 			for each( o in objects ) {
@@ -419,7 +426,7 @@ package gl3d.parser.fbx
 					var animDataBase:Object= animData[mid] = animData[mid] || { };
 					animDataBase[cname] = [x, y, z];
 					animDataBase.times = times;
-					animDataBase.target = hobjects[FbxTools.getId(model)].obj;
+					animDataBase.target = hobjects[FbxTools.getId(model)];// .obj;
 				}
 			}
 			
@@ -428,7 +435,9 @@ package gl3d.parser.fbx
 				anim3d.targets = skinNodes;
 				for each(animDataBase in animData) {
 					var track:Track = new Track;
-					track.target = animDataBase.target;
+					track.target = animDataBase.target.obj;
+					var perRot:Vector3D = animDataBase.target.m.PreRotation;
+					var postRot:Vector3D = animDataBase.target.m.PostRotation;
 					anim3d.tracks.push(track);
 					for (var i:int = 0; i < animDataBase.times.length; i++ ) {
 						if (animDataBase.times[i] is Array) {
@@ -450,8 +459,18 @@ package gl3d.parser.fbx
 							m.appendRotation(r[1][i], Vector3D.Y_AXIS);
 							m.appendRotation(r[2][i], Vector3D.Z_AXIS);
 						}
+						if (perRot) {
+							m.appendRotation(perRot.x, Vector3D.X_AXIS);
+							m.appendRotation(perRot.y, Vector3D.Y_AXIS);
+							m.appendRotation(perRot.z, Vector3D.Z_AXIS);
+						}
 						if(t){
 							m.appendTranslation(t[0][i], t[1][i], t[2][i]);
+						}
+						if (postRot) {
+							m.appendRotation(postRot.x, Vector3D.X_AXIS);
+							m.appendRotation(postRot.y, Vector3D.Y_AXIS);
+							m.appendRotation(postRot.z, Vector3D.Z_AXIS);
 						}
 						
 						frame.matrix = converter.getConvertedMat4(m);
