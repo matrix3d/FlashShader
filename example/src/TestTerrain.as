@@ -19,8 +19,8 @@ package
 	import gl3d.core.Material;
 	import gl3d.meshs.Meshs;
 	import gl3d.core.Node3D;
-	import gl3d.parser.ColladaDecoder;
-	import gl3d.parser.OBJEncoder;
+	import gl3d.parser.dae.ColladaDecoder;
+	import gl3d.parser.obj.OBJEncoder;
 	import gl3d.pick.TerrainPicking;
 	import gl3d.shaders.TerrainPhongGLShader;
 	import gl3d.core.TextureSet;

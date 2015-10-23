@@ -11,7 +11,7 @@ package
 	import gl3d.core.renders.GraphicsRender;
 	import gl3d.core.TextureSet;
 	import gl3d.meshs.Meshs;
-	import gl3d.parser.OBJParser;
+	import gl3d.parser.obj.OBJParser;
 	/**
 	 * ...
 	 * @author lizhi

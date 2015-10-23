@@ -27,7 +27,7 @@ package gl3d.shaders
 		}
 		
 		override public function getFragmentShader(material:Material):GLAS3Shader {
-			return new LightMapFragmentShader;
+			return new LightMapFragmentShader(material);
 		}
 		
 	}

@@ -22,10 +22,10 @@ package
 	import gl3d.ctrl.ArcBallCtrl;
 	import gl3d.ctrl.FirstPersonCtrl;
 	import gl3d.core.Material;
-	import gl3d.hlbsp.Bsp;
-	import gl3d.hlbsp.BspRender;
-	import gl3d.hlbsp.console;
-	import gl3d.hlbsp.Wad;
+	import gl3d.parser.hlbsp.Bsp;
+	import gl3d.parser.hlbsp.BspRender;
+	import gl3d.parser.hlbsp.console;
+	import gl3d.parser.hlbsp.Wad;
 	import gl3d.meshs.Meshs;
 	import gl3d.core.Node3D;
 	import gl3d.pick.AS3Picking;

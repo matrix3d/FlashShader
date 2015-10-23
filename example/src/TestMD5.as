@@ -1,9 +1,9 @@
 package 
 {
-	import gl3d.parser.MD5AnimDecoder;
-	import gl3d.parser.MD5AnimParser;
-	import gl3d.parser.MD5MeshDecoder;
-	import gl3d.parser.MD5MeshParser;
+	import gl3d.parser.md5.MD5AnimDecoder;
+	import gl3d.parser.md5.MD5AnimParser;
+	import gl3d.parser.md5.MD5MeshDecoder;
+	import gl3d.parser.md5.MD5MeshParser;
 	/**
 	 * ...
 	 * @author lizhi

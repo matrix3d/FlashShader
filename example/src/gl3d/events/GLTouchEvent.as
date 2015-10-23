@@ -6,7 +6,7 @@ package gl3d.events
 	import flash.events.TouchEvent;
 	import flash.geom.Point;
 	import flash.ui.Multitouch;
-	import gl3d.hlbsp.console;
+	import gl3d.parser.hlbsp.console;
 	/**
 	 * ...
 	 * @author lizhi

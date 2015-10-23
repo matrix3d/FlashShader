@@ -4,6 +4,7 @@ package
 	import gl3d.parser.mmd.PMX;
 	import gl3d.parser.mmd.MMD;
 	import gl3d.parser.mmd.VMD;
+	import gl3d.util.Utils;
 	//import gl3d.parser.Pmx;
 	/**
 	 * ...
@@ -30,7 +31,6 @@ package
 			p.node.scaleY=
 			p.node.scaleZ = .1;
 			view.scene.addChild(p.node);
-			
 			
 			var vmd:VMD = new VMD(new c2);
 			p.bind(vmd);

@@ -28,6 +28,9 @@ package
 			//[Embed(source = "assets/cubebin.fbx", mimeType = "application/octet-stream")]var c:Class;
 			//[Embed(source = "assets/test4bin.fbx", mimeType = "application/octet-stream")]var c:Class;
 			[Embed(source = "assets/test4.FBX", mimeType = "application/octet-stream")]var c:Class;
+			//[Embed(source = "assets/teapot.FBX", mimeType = "application/octet-stream")]var c:Class;
+			//[Embed(source = "assets/prims.FBX", mimeType = "application/octet-stream")]var c:Class;
+			//[Embed(source = "assets/primsbin.FBX", mimeType = "application/octet-stream")]var c:Class;
 			//[Embed(source = "assets/cubetext.FBX", mimeType = "application/octet-stream")]var c:Class;
 			//[Embed(source = "assets/aoying.FBX", mimeType = "application/octet-stream")]var c:Class;
 			//[Embed(source = "assets/yurenxuanfeng.FBX", mimeType = "application/octet-stream")]var c:Class;

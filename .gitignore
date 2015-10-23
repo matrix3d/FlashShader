@@ -5,3 +5,4 @@ example/obj/FlashShaderConfig.xml
 example/obj/FlashShaderConfig.old
 example/obj/FlashShaderConfig.xml
 /example/bin
+/example/src/assets/*

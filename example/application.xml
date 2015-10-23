@@ -17,17 +17,15 @@
 <string>UIStatusBarStyleBlackOpaque</string>
 <key>UIRequiresPersistentWiFi</key>
 <string>NO</string>
-<key>UIPrerenderedIcon</key>
-<true />
 <key>UIApplicationExitsOnSuspend</key>
 <true />
 <key>UIDeviceFamily</key>
 <array>
-	<!-- iPhone support -->
 	<string>1</string>
-	<!-- iPad support -->
-	<!--<string>2</string>-->
-</array>]]></InfoAdditions>
+	<string>2</string>
+</array>
+<key>MinimumOSVersion</key>
+<string>4.3</string>]]></InfoAdditions>
     <requestedDisplayResolution>high</requestedDisplayResolution>
   </iPhone>
   <initialWindow>

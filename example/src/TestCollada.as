@@ -2,7 +2,7 @@ package
 {
 	import flash.display.Sprite;
 	import gl3d.core.Node3D;
-	import gl3d.parser.ColladaDecoder;
+	import gl3d.parser.dae.ColladaDecoder;
 	/**
 	 * ...
 	 * @author lizhi

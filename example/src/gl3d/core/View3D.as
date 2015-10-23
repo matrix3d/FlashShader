@@ -36,7 +36,7 @@ package gl3d.core {
 		public var profile:String;
 		public var background:uint = 0;
 		public var invalid:Boolean = true;
-		public function View3D(id:Object) 
+		public function View3D(id:Object=0) 
 		{
 			this.id = id;
 			scene.addChild(camera);

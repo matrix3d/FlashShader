@@ -16,15 +16,15 @@ package
 	import flash.ui.ContextMenuItem;
 	import flash.utils.ByteArray;
 	import gl3d.ctrl.FirstPersonCtrl;
-	import gl3d.hlbsp.Bsp;
-	import gl3d.hlbsp.BspFace;
-	import gl3d.hlbsp.BspMipTexture;
-	import gl3d.hlbsp.BspRender;
-	import gl3d.hlbsp.BspRenderNode;
-	import gl3d.hlbsp.Movement;
-	import gl3d.hlbsp.Wad;
-	import gl3d.q3bsp.Q3BSP;
-	import gl3d.q3bsp.render.PreRender;
+	import gl3d.parser.hlbsp.Bsp;
+	import gl3d.parser.hlbsp.BspFace;
+	import gl3d.parser.hlbsp.BspMipTexture;
+	import gl3d.parser.hlbsp.BspRender;
+	import gl3d.parser.hlbsp.BspRenderNode;
+	import gl3d.parser.hlbsp.Movement;
+	import gl3d.parser.hlbsp.Wad;
+	import gl3d.parser.q3bsp.Q3BSP;
+	import gl3d.parser.q3bsp.render.PreRender;
 	/**
 	 * ...
 	 * @author lizhi
