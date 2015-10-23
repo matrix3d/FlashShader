@@ -3,6 +3,7 @@ package gl3d.parser.mmd
 	import flash.geom.Matrix3D;
 	import flash.geom.Vector3D;
 	import flash.utils.ByteArray;
+	import flash.utils.Dictionary;
 	import gl3d.core.Drawable3D;
 	import gl3d.core.IndexBufferSet;
 	import gl3d.core.Material;
@@ -27,6 +28,7 @@ package gl3d.parser.mmd
 		public var node:Node3D = new Node3D;
 		public var skinNodes:Vector.<Node3D> = new Vector.<Node3D>;
 		public var name2bone:Object = { };
+		public var name2matrix:Object = {};
 		private var q:Quaternion = new Quaternion;
 		public function MMD(pmxBuff:ByteArray) 
 		{
@@ -83,6 +85,7 @@ package gl3d.parser.mmd
 					bone.z -= porigin[2];
 				}
 				parent.addChild(bone);
+				name2matrix[bone.name] = bone.matrix.clone();
 				var invbind:Matrix3D = new Matrix3D;
 				invbind.appendTranslation( -origin[0], -origin[1], -origin[2]);
 				skin.invBindMatrixs.push(invbind);
@@ -148,7 +151,7 @@ package gl3d.parser.mmd
 					q.tran.y = key.pos[1];
 					q.tran.z = key.pos[2];
 					frame.matrix = q.toMatrix();
-					frame.matrix.append(node.matrix);
+					frame.matrix.append(name2matrix[node.name]);
 					frame.time = key.time / 1000 * 30;
 					if (anim.maxTime<frame.time) {
 						anim.maxTime = frame.time;
