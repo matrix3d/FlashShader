@@ -121,9 +121,6 @@ package gl3d.parser.mmd
 				Skin.optimize(child);
 				skinNodes.push(child);
 			}
-			
-			
-			
 		}
 		
 		public function bind(vmd:VMD):void {
@@ -151,8 +148,7 @@ package gl3d.parser.mmd
 					q.tran.y = key.pos[1];
 					q.tran.z = key.pos[2];
 					frame.matrix = q.toMatrix();
-					if(node.parent&&name2bone[node.parent.name])
-					frame.matrix.append(node.parent.matrix);
+					frame.matrix.append(node.matrix);
 					frame.time = key.time / 1000 * 30;
 					if (anim.maxTime<frame.time) {
 						anim.maxTime = frame.time;
