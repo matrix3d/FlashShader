@@ -21,6 +21,7 @@ package
 	import gl3d.parser.mmd.MMD;
 	import gl3d.parser.mmd.VMD;
 	import gl3d.parser.obj.OBJParser;
+	import gl3d.util.Utils;
 	import ui.Button;
 	/**
 	 * ...
@@ -42,13 +43,19 @@ package
 		{
 			addSky();
 			for each(var v:String in loaderInfo.parameters) {
-				var loader:URLLoader = new URLLoader;
-				loader.dataFormat = URLLoaderDataFormat.BINARY;
-				loader.addEventListener(Event.COMPLETE, loader_complete);
-				loader.addEventListener(IOErrorEvent.IO_ERROR, loader_ioError);
-				loader2url[loader] = v;
-				loader.load(new URLRequest(v));
+				load(v);
 			}
+			//load("C:/Users/aaaa/Desktop/woman22.FBX");
+			//load("../src/assets/test4.FBX");
+		}
+		
+		private function load(v:String):void {
+			var loader:URLLoader = new URLLoader;
+			loader.dataFormat = URLLoaderDataFormat.BINARY;
+			loader.addEventListener(Event.COMPLETE, loader_complete);
+			loader.addEventListener(IOErrorEvent.IO_ERROR, loader_ioError);
+			loader2url[loader] = v;
+			loader.load(new URLRequest(v));
 		}
 		
 		private function loader_ioError(e:IOErrorEvent):void 
@@ -139,6 +146,8 @@ package
 				node.scaleZ = defScale;
 				view.scene.addChild(node);
 			}
+			
+			//Utils.traceNode(node);
 		}
 		
 	}

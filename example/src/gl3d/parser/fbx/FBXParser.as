@@ -142,6 +142,15 @@ package gl3d.parser.fbx
 			return d;
 		}
 		
+		private function isHasJoint(o:Object):Boolean {
+			for each(var c:Object in o.childs ){
+				if( c.isJoint ) {
+					return true;
+				}
+			}
+			return false;
+		}
+		
 		public function makeObject( ) :Node3D {
 			var scene:Node3D = new Node3D;
 			var hgeom:Object = {}
@@ -185,18 +194,12 @@ package gl3d.parser.fbx
 				} else if ( o.isJoint ) {
 					o.obj = new Joint(name);
 					(o.obj as Node3D).type = "JOINT";
-					(o.obj as Node3D).drawable = Meshs.cube(10,10,10);
-					(o.obj as Node3D).material = new Material;
+					//(o.obj as Node3D).drawable = Meshs.cube(10,10,10);
+					//(o.obj as Node3D).material = new Material;
 					//continue;
 				} else {
 					o.obj = new Node3D(name);
-					var hasJoint:Boolean = false;
-					for each(var c:Object in o.childs ){
-						if( c.isJoint ) {
-							hasJoint = true;
-							break;
-						}
-					}
+					var hasJoint:Boolean = isHasJoint(o);
 					if( hasJoint ){
 						(o.obj as Node3D).skin = new Skin;
 						(o.obj as Node3D).type = "SKIN";
@@ -240,6 +243,11 @@ package gl3d.parser.fbx
 					skinData.split(maxBonesPerSkin, [for( i in idx.idx) idx.vidx[i]], model.multiMaterial ? model.geom.getMaterialByTriangle() : null);
 				}
 				skin.setSkinData(skinData);*/
+			}
+			if (isHasJoint(hier.root)) {
+				(hier.root.obj as Node3D).skin = new Skin;
+				(hier.root.obj as Node3D).type = "SKIN";
+				createSkin(hier.root, hgeom);
 			}
 
 			return scene.children.length == 1 ? scene.children[0] : scene;
