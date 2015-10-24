@@ -6,6 +6,7 @@ package gl3d.parser.fbx
 	import flash.utils.ByteArray;
 	import flash.utils.Dictionary;
 	import gl3d.core.Drawable3D;
+	import gl3d.core.skin.Joint;
 	import gl3d.core.Material;
 	import gl3d.core.math.Quaternion;
 	import gl3d.core.Node3D;
@@ -152,8 +153,8 @@ package gl3d.parser.fbx
 			// create all models
 			for each(var o:Object in objects ) {
 				var name:String = FbxTools.getName(o.model);
-				o.obj = new Node3D(name);
 				if ( o.isMesh ) {
+					o.obj = new Node3D(name);
 					// load geometry
 					var g:Object = getChild(o.model, "Geometry");
 					if(g){
@@ -181,12 +182,14 @@ package gl3d.parser.fbx
 						(o.obj as Node3D).material.color = Vector.<Number>([Math.random(),Math.random(),Math.random(),1]);
 						(o.obj as Node3D).type = "MESH";
 					}
-				} else if( o.isJoint ) {
+				} else if ( o.isJoint ) {
+					o.obj = new Joint(name);
 					(o.obj as Node3D).type = "JOINT";
 					(o.obj as Node3D).drawable = Meshs.cube(10,10,10);
 					(o.obj as Node3D).material = new Material;
 					//continue;
 				} else {
+					o.obj = new Node3D(name);
 					var hasJoint:Boolean = false;
 					for each(var c:Object in o.childs ){
 						if( c.isJoint ) {
@@ -318,7 +321,7 @@ package gl3d.parser.fbx
 				var m:Matrix3D = new Matrix3D;
 				m.copyRawDataFrom(Vector.<Number>(transPoss[i]));
 				converter.getConvertedMat4(m);
-				skin.invBindMatrixs.push(m);
+				skin.joints[i].invBindMatrix.copyFrom(m);
 			}
 			
 			for each(var skinNode:Node3D in skinNodes) {

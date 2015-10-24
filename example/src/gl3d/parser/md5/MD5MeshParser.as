@@ -2,6 +2,7 @@ package gl3d.parser.md5
 {
 	import flash.geom.Matrix3D;
 	import flash.geom.Vector3D;
+	import gl3d.core.skin.Joint;
 	import gl3d.core.Material;
 	import gl3d.core.math.Quaternion;
 	import gl3d.core.Node3D;
@@ -35,7 +36,7 @@ package gl3d.parser.md5
 				jointQs.push(q);
 				var matr:Matrix3D = q.toMatrix();
 				
-				var jnode:Node3D = new Node3D;
+				var jnode:Joint = new Joint;
 				jnode.type = "JOINT";
 				//jnode.material = new Material;
 				//jnode.drawable = Meshs.cube(.1, .1, .1);
@@ -49,15 +50,10 @@ package gl3d.parser.md5
 				}
 				
 				matr.invert();
-				skin.invBindMatrixs.push(converter.getConvertedMat4(matr));
+				jnode.invBindMatrix.copyFrom(converter.getConvertedMat4(matr));
+				//skin.invBindMatrixs.push();
 			}
 			var vsCounter:int = 0;
-			if (decoder.joints.length) {
-				
-				skin.joints
-				skin.maxWeight;
-				skin.invBindMatrixs
-			}
 			for each(var mesh:Object in decoder.meshs) {
 				var node:Node3D = new Node3D;
 				skinNodes.push(node);

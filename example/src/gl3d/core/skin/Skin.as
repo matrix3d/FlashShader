@@ -2,6 +2,7 @@ package gl3d.core.skin
 {
 	import flash.geom.Matrix3D;
 	import gl3d.core.Drawable3D;
+	import gl3d.core.skin.Joint;
 	import gl3d.core.Node3D;
 	import gl3d.core.VertexBufferSet;
 	import gl3d.meshs.Meshs;
@@ -13,8 +14,8 @@ package gl3d.core.skin
 	{
 		public var skinFrame:SkinFrame;
 		public var maxWeight:int;
-		public var joints:Vector.<Node3D> = new Vector.<Node3D>;
-		public var invBindMatrixs:Vector.<Matrix3D> = new Vector.<Matrix3D>;
+		public var joints:Vector.<Joint> = new Vector.<Joint>;
+		//public var invBindMatrixs:Vector.<Matrix3D> = new Vector.<Matrix3D>;
 		public var useQuat:Boolean = true;
 		public var useCpu:Boolean = false;
 		public function Skin() 
@@ -29,8 +30,8 @@ package gl3d.core.skin
 		 */
 		public static function optimize(node:Node3D):void {
 			var jid2newjid:Object = { };
-			var joints:Vector.<Node3D> = new Vector.<Node3D>;
-			var invBindMatrixs:Vector.<Matrix3D> = new Vector.<Matrix3D>;
+			var joints:Vector.<Joint> = new Vector.<Joint>;
+			//var invBindMatrixs:Vector.<Matrix3D> = new Vector.<Matrix3D>;
 			var drawable:Drawable3D = node.drawable;
 			var js:Vector.<Number> = drawable.joints.data;
 			var ws:Vector.<Number> = drawable.weights.data;
@@ -48,7 +49,7 @@ package gl3d.core.skin
 						if (jid2newjid[jid] == null) {
 							jid2newjid[jid] = newjid;
 							joints[newjid] = node.skin.joints[jid];
-							invBindMatrixs[newjid] = node.skin.invBindMatrixs[jid];
+							//invBindMatrixs[newjid] = node.skin.invBindMatrixs[jid];
 							newjid++;
 						}
 						count++;
@@ -70,7 +71,7 @@ package gl3d.core.skin
 			node.drawable.joints = new VertexBufferSet(newjs, newMaxWeight);
 			node.drawable.weights = drawable.weights;
 			var news:Skin = new Skin;
-			news.invBindMatrixs = invBindMatrixs;
+			//news.invBindMatrixs = invBindMatrixs;
 			news.joints = joints;
 			news.maxWeight = newMaxWeight;
 			node.skin = news;

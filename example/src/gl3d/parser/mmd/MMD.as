@@ -6,6 +6,9 @@ package gl3d.parser.mmd
 	import flash.utils.Dictionary;
 	import gl3d.core.Drawable3D;
 	import gl3d.core.IndexBufferSet;
+	import gl3d.core.skin.IK;
+	import gl3d.core.skin.IKLink;
+	import gl3d.core.skin.Joint;
 	import gl3d.core.Material;
 	import gl3d.core.math.Quaternion;
 	import gl3d.core.Node3D;
@@ -58,13 +61,9 @@ package gl3d.parser.mmd
 			var skin:Skin = new Skin;
 			skin.maxWeight = pmx.maxWeight;
 			
-			var bones:Vector.<Node3D> = new Vector.<Node3D>;
-			var iks:Array = [];
+			var bones:Vector.<Joint> = new Vector.<Joint>;
 			for each(var boneObj:Object in pmx.bones) {
-				if (boneObj.IK) {
-					iks.push(boneObj.IK);
-				}
-				var bone:Node3D = new Node3D;
+				var bone:Joint = new Joint;
 				bone.name = boneObj.name;
 				bone.type = "JOINT";
 				name2bone[bone.name] = bone;
@@ -88,7 +87,24 @@ package gl3d.parser.mmd
 				name2matrix[bone.name] = bone.matrix.clone();
 				var invbind:Matrix3D = new Matrix3D;
 				invbind.appendTranslation( -origin[0], -origin[1], -origin[2]);
-				skin.invBindMatrixs.push(invbind);
+				bone.invBindMatrix = invbind;
+				//skin.invBindMatrixs.push(invbind);
+			}
+			for (i = 0; i < pmx.bones.length;i++ ) {
+				boneObj = pmx.bones[i];
+				bone = bones[i];
+				if (boneObj.IK) {
+					bone.ik = new IK;
+					bone.ik.control = boneObj.IK.control;
+					bone.ik.effector = bones[boneObj.IK.effector];
+					bone.ik.iteration = boneObj.IK.iteration;
+					for each(var linkObj:Object in boneObj.IK.links) {
+						var link:IKLink = new IKLink;
+						link.limits = linkObj.limits;
+						link.joint = bones[linkObj.bone];
+						bone.ik.links.push(link);
+					}
+				}
 			}
 			
 			skin.joints = bones;

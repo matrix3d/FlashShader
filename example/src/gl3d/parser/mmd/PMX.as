@@ -100,10 +100,16 @@ dynamic class Info  {
 	public function Info(bin:PMXReader) 
 	{
 		super();
-		this.name = bin.readText();
-	this.nameEn = bin.readText();
-	this.comment = bin.readText();
-	this.commentEn = bin.readText();
+		if (bin.magic == "PMX ") {
+			this.name = bin.readText();
+			this.nameEn = bin.readText();
+			this.comment = bin.readText();
+			this.commentEn = bin.readText();
+		}else {
+			this.name = bin.readCString(20);
+			this.comment = bin.readCString(256);
+		}
+
 	}
 	
 }

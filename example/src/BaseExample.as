@@ -162,7 +162,6 @@ package
 			//post = "bend";
 			//post = "red";
 			stats = new Stats(view);
-			addChild(stats);
 		}
 		
 		public function createNormalMap():TextureSet {
@@ -235,6 +234,7 @@ package
 			addChild(gamepad);
 			gamepad.x = 200;
 			gamepad.y = 200;
+			addChild(stats);
 		}
 		public function initCtrl():void {
 			fc = new FirstPersonCtrl(view.camera, stage);

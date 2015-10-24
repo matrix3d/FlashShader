@@ -2,6 +2,7 @@ package gl3d.parser.dae
 {
 	import flash.geom.Matrix3D;
 	import gl3d.core.Drawable3D;
+	import gl3d.core.skin.Joint;
 	import gl3d.core.Material;
 	import gl3d.core.Node3D;
 	import gl3d.core.skin.Skin;
@@ -117,7 +118,7 @@ package gl3d.parser.dae
 					}else if (name=="node") {
 						var childNode:Node3D
 						if (childXML.@type=="JOINT") {
-							childNode = new Node3D;
+							childNode = new Joint;
 							sid2node[childXML.@sid] = childNode;
 							//getJointBySID(childXML.@sid);
 						}else {
@@ -166,9 +167,12 @@ package gl3d.parser.dae
 						throw "error"
 					}
 				}
-				var joints:Vector.<Node3D> = new Vector.<Node3D>;
-				for each(var jointName:String in jointNames) {
-					joints.push(getJointBySID(jointName));
+				var joints:Vector.<Joint> = new Vector.<Joint>;
+				for (i = 0; i < jointNames.length ;i++ ) {
+					var jointName:String = jointNames[i];
+					var joint:Joint = getJointBySID(jointName) as Joint;
+					joint.invBindMatrix = invBindMatrixs[i];
+					joints.push(joint);
 				}
 				
 				var maxWeight:int = 0;
@@ -191,7 +195,7 @@ package gl3d.parser.dae
 				if (maxWeight <= 4) {
 					skinNodes.push(skinNode);	
 					var skin:Skin = new Skin;
-					skin.invBindMatrixs = Vector.<Matrix3D>(invBindMatrixs);
+					//skin.invBindMatrixs = Vector.<Matrix3D>(invBindMatrixs);
 					skin.maxWeight = maxWeight;
 					skin.joints = joints;
 					for each(var childNode:Node3D in skinNode.children) {

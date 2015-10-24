@@ -3,6 +3,7 @@ package gl3d.core.skin
 	import flash.geom.Matrix3D;
 	import flash.geom.Vector3D;
 	import gl3d.core.animation.IAnimation;
+	import gl3d.core.skin.Joint;
 	import gl3d.core.math.Quaternion;
 	import gl3d.core.Node3D;
 	import gl3d.core.VertexBufferSet;
@@ -67,8 +68,8 @@ package gl3d.core.skin
 				}
 				
 				for (var i:int = 0; i < target.skin.joints.length;i++ ) {
-					var joint:Node3D = target.skin.joints[i];
-					var invBindMatrix:Matrix3D = target.skin.invBindMatrixs[i];
+					var joint:Joint = target.skin.joints[i];
+					var invBindMatrix:Matrix3D = joint.invBindMatrix//target.skin.invBindMatrixs[i];
 					var matrix:Matrix3D = target.skin.skinFrame.matrixs[i];
 					matrix.identity();
 					matrix.append(invBindMatrix);
