@@ -102,7 +102,7 @@ package
 			switch(type) {
 				case "pmx":
 					mmd = new MMD(byte );
-					node = mmd.node;
+					var curnode:Node3D = mmd.node;
 					defScale = .1;
 					if (vmd) {
 						mmd.bind(vmd);
@@ -115,11 +115,11 @@ package
 					break;
 				case "obj":
 					var obj:OBJParser = new OBJParser(byte +"", false);
-					node = obj.target;
+					curnode = obj.target;
 					break;
 				case "md5mesh":
 					md5mesh = new MD5MeshParser(byte+"");
-					node = md5mesh.target;
+					curnode = md5mesh.target;
 					break;
 				case "md5anim":
 					if (md5mesh) {
@@ -129,18 +129,19 @@ package
 				case "dae":
 				case "collada":
 					var dae:ColladaDecoder = new ColladaDecoder(byte+"");
-					node = dae.scenes[0];
+					curnode = dae.scenes[0];
 					break;
 				case "fbx":
 					var fbx:FbxParser = new FbxParser(byte);
-					node = fbx.rootNode;
+					curnode = fbx.rootNode;
 					defScale = 0.01;
 					break;
 			}
-			if (node) {
+			if (curnode) {
 				if (lastNode&&lastNode.parent) {
 					lastNode.parent.removeChild(lastNode);
 				}
+				node = curnode;
 				node.scaleX=
 				node.scaleY=
 				node.scaleZ = defScale;
