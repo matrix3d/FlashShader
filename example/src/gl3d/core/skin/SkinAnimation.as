@@ -36,7 +36,10 @@ package gl3d.core.skin
 		
 		override public function update(time:int):void 
 		{
-			var t:Number = ((time-startTime)/1000) % maxTime;
+			var t:Number = ((time-startTime) / 1000) % maxTime;
+			if (isNaN(t)) {
+				t = 0;
+			}
 			for each(var track:Track in tracks) {
 				var last:TrackFrame = null;
 				for each(var f:TrackFrame in track.frames) {

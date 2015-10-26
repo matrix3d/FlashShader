@@ -45,7 +45,11 @@ package
 			for each(var v:String in loaderInfo.parameters) {
 				load(v);
 			}
-			//load("C:/Users/aaaa/Desktop/woman22.FBX");
+			//load("C:/Users/aaaa/Desktop/Beta.fbx");
+			//load("C:/Users/aaaa/Desktop/Betau3d.fbx");
+			load("C:/Users/aaaa/Desktop/Beta@running.fbx");
+			//load("C:/Users/aaaa/Desktop/runningmax.fbx");
+			//load("C:/Users/aaaa/Desktop/running.fbx");
 			//load("../src/assets/test4.FBX");
 		}
 		
@@ -75,6 +79,9 @@ package
 			btn.x = btn.y = 5;
 			addChild(btn);
 			btn.addEventListener(MouseEvent.CLICK, btn_click);
+			
+			addChild(stats);
+			stats.x = btn.x + btn.width + 5;
 		}
 		
 		private function btn_click(e:MouseEvent):void 

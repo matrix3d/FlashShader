@@ -96,7 +96,7 @@ package gl3d.parser.fbx
 			}
 		}
 		
-		private function getDefaultMatrixes( model : Object ):Object {
+		private function getFbxMatrixes( model : Object ):Object {
 			var d:Object = { };
 			for each(var p:Object in FbxTools.getAll(model, "Properties70.P").concat(FbxTools.getAll(model, "Properties60.Property")) ) {
 				var name:String = FbxTools.toString(p.props[0]);
@@ -112,34 +112,39 @@ package gl3d.parser.fbx
 					break;
 				}
 			}
+			return d;
+		}
+		
+		private function getMatrix(d:Object,s:Vector3D=null,r:Vector3D=null,t:Vector3D=null,isGT:Boolean=true):Matrix3D {
 			var m:Matrix3D = new Matrix3D;
-			m.identity();
-			if ( d["Lcl Scaling"] != null ) {
-				m.appendScale(d["Lcl Scaling"].x, d["Lcl Scaling"].y, d["Lcl Scaling"].z);
+			var sv:Vector3D = s||d["Lcl Scaling"];
+			var rv:Vector3D = r||d["Lcl Rotation"];
+			var tv:Vector3D = t||d["Lcl Translation"];
+			if ( sv != null ) {
+				m.appendScale(sv.x, sv.y, sv.z);
 			}
-			if ( d["Lcl Rotation"] != null ) {
-				m.appendRotation(d["Lcl Rotation"].x, Vector3D.X_AXIS);
-				m.appendRotation(d["Lcl Rotation"].y, Vector3D.Y_AXIS);
-				m.appendRotation(d["Lcl Rotation"].z, Vector3D.Z_AXIS);
+			if (rv != null ) {
+				m.appendRotation(rv.x, Vector3D.X_AXIS);
+				m.appendRotation(rv.y, Vector3D.Y_AXIS);
+				m.appendRotation(rv.z, Vector3D.Z_AXIS);
 			}
 			if ( d["PreRotation"] != null ) {
 				m.appendRotation(d["PreRotation"].x, Vector3D.X_AXIS);
 				m.appendRotation(d["PreRotation"].y, Vector3D.Y_AXIS);
 				m.appendRotation(d["PreRotation"].z, Vector3D.Z_AXIS);
 			}
-			if ( d["Lcl Translation"] != null ) {
-				m.appendTranslation(d["Lcl Translation"].x, d["Lcl Translation"].y, d["Lcl Translation"].z);
+			if ( tv != null ) {
+				m.appendTranslation(tv.x, tv.y, tv.z);
 			}
 			if ( d["PostRotation"] != null ) {
 				m.appendRotation(d["PostRotation"].x, Vector3D.X_AXIS);
 				m.appendRotation(d["PostRotation"].y, Vector3D.Y_AXIS);
 				m.appendRotation(d["PostRotation"].z, Vector3D.Z_AXIS);
 			}
-			if ( d["GeometricTranslation"] != null ) {
+			if ( d["GeometricTranslation"] != null &&isGT) {
 				m.appendTranslation(d["GeometricTranslation"].x, d["GeometricTranslation"].y, d["GeometricTranslation"].z);
 			}
-			d.matrix = converter.getConvertedMat4(m);
-			return d;
+			return converter.getConvertedMat4(m);
 		}
 		
 		private function isHasJoint(o:Object):Boolean {
@@ -205,8 +210,8 @@ package gl3d.parser.fbx
 						(o.obj as Node3D).type = "SKIN";
 					}
 				}
-				o.m = getDefaultMatrixes(o.model);
-				o.obj.matrix = o.m.matrix;
+				o.m = getFbxMatrixes(o.model);
+				o.obj.matrix = getMatrix(o.m);
 			}
 			// rebuild scene hierarchy
 			for each( o in objects ) {
@@ -447,8 +452,6 @@ package gl3d.parser.fbx
 				for each(animDataBase in animData) {
 					var track:Track = new Track;
 					track.target = animDataBase.target.obj;
-					var perRot:Vector3D = animDataBase.target.m.PreRotation;
-					var postRot:Vector3D = animDataBase.target.m.PostRotation;
 					anim3d.tracks.push(track);
 					for (var i:int = 0; i < animDataBase.times.length; i++ ) {
 						if (animDataBase.times[i] is Array) {
@@ -461,30 +464,20 @@ package gl3d.parser.fbx
 						var r:Array = animDataBase.R;
 						var t:Array = animDataBase.T;
 						var frame:TrackFrame = new TrackFrame;
-						var m:Matrix3D = new Matrix3D;
-						if(s){
-							m.appendScale(s[0][i], s[1][i], s[2][i]);
+						var sv:Vector3D=null;
+						var rv:Vector3D=null;
+						var tv:Vector3D=null;
+						if (s) {
+							sv=new Vector3D(s[0][i], s[1][i], s[2][i]);
 						}
-						if(r){
-							m.appendRotation(r[0][i], Vector3D.X_AXIS);
-							m.appendRotation(r[1][i], Vector3D.Y_AXIS);
-							m.appendRotation(r[2][i], Vector3D.Z_AXIS);
-						}
-						if (perRot) {
-							m.appendRotation(perRot.x, Vector3D.X_AXIS);
-							m.appendRotation(perRot.y, Vector3D.Y_AXIS);
-							m.appendRotation(perRot.z, Vector3D.Z_AXIS);
+						if (r) {
+							rv=new Vector3D(r[0][i], r[1][i], r[2][i]);
 						}
 						if(t){
-							m.appendTranslation(t[0][i], t[1][i], t[2][i]);
-						}
-						if (postRot) {
-							m.appendRotation(postRot.x, Vector3D.X_AXIS);
-							m.appendRotation(postRot.y, Vector3D.Y_AXIS);
-							m.appendRotation(postRot.z, Vector3D.Z_AXIS);
+							tv=new Vector3D(t[0][i], t[1][i], t[2][i]);
 						}
 						
-						frame.matrix = converter.getConvertedMat4(m);
+						frame.matrix = getMatrix(animDataBase.target.m, sv, rv, tv,false);
 						frame.time = time;
 						track.frames.push(frame);
 					}

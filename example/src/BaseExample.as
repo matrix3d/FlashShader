@@ -140,6 +140,7 @@ package
 			}
 			material.reflectTexture = skyBoxTexture;
 			
+			stats = new Stats(view);
 			initLight();
 			initNode();
 			initUI();
@@ -161,7 +162,6 @@ package
 			//post = "blur";
 			//post = "bend";
 			//post = "red";
-			stats = new Stats(view);
 		}
 		
 		public function createNormalMap():TextureSet {
