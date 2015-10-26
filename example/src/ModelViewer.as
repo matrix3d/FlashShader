@@ -5,6 +5,7 @@ package
 	import flash.events.Event;
 	import flash.events.IOErrorEvent;
 	import flash.events.MouseEvent;
+	import flash.events.SecurityErrorEvent;
 	import flash.external.ExternalInterface;
 	import flash.net.FileReference;
 	import flash.net.URLLoader;
@@ -47,7 +48,7 @@ package
 			}
 			//load("C:/Users/aaaa/Desktop/Beta.fbx");
 			//load("C:/Users/aaaa/Desktop/Betau3d.fbx");
-			load("C:/Users/aaaa/Desktop/Beta@running.fbx");
+			//load("C:/Users/aaaa/Desktop/Beta@running.fbx");
 			//load("C:/Users/aaaa/Desktop/runningmax.fbx");
 			//load("C:/Users/aaaa/Desktop/running.fbx");
 			//load("../src/assets/test4.FBX");
@@ -58,8 +59,14 @@ package
 			loader.dataFormat = URLLoaderDataFormat.BINARY;
 			loader.addEventListener(Event.COMPLETE, loader_complete);
 			loader.addEventListener(IOErrorEvent.IO_ERROR, loader_ioError);
+			loader.addEventListener(SecurityErrorEvent.SECURITY_ERROR, loader_securityError);
 			loader2url[loader] = v;
 			loader.load(new URLRequest(v));
+		}
+		
+		private function loader_securityError(e:SecurityErrorEvent):void 
+		{
+			
 		}
 		
 		private function loader_ioError(e:IOErrorEvent):void 
