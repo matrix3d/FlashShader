@@ -12,6 +12,7 @@ package
 	import flash.events.MouseEvent;
 	import flash.geom.Point;
 	import flash.geom.Vector3D;
+	import flash.system.Capabilities;
 	import flash.text.TextField;
 	import flash.ui.Multitouch;
 	import flash.ui.MultitouchInputMode;
@@ -66,6 +67,7 @@ package
 		public var skyBoxTexture:TextureSet;
 		private var debug:TextField;
 		private var bmd:BitmapData;
+		private var ac:ArcBallCtrl;
 		public var skybox:Node3D;
 		public var stats:Stats;
 		public var teapot:Node3D;
@@ -75,7 +77,7 @@ package
 		public var fc:FirstPersonCtrl;
 		public function BaseExample() 
 		{
-			if (Multitouch.supportsTouchEvents) {
+			if (Multitouch.supportsTouchEvents&&Multitouch.maxTouchPoints) {
 				Multitouch.inputMode = MultitouchInputMode.TOUCH_POINT;
 				debug = new TextField;
 				debug.mouseEnabled = debug.mouseWheelEnabled = false;
@@ -117,8 +119,9 @@ package
 			bmd.perlinNoise(30, 30, 2, 1, true, true);
 			
 			//atf
+			[Embed(source = "assets/leaf_apple.atf", mimeType = "application/octet-stream")]var leafc:Class;
 			//[Embed(source = "assets/leaf.atf", mimeType = "application/octet-stream")]var leafc:Class;
-			//texture = new TextureSet((new leafc as ByteArray),false,false,true,false);
+			texture = new TextureSet((new leafc as ByteArray),false,false,false,false);
 			
 			
 			//[Embed(source = "assets/leaf.png")]var leafp:Class;
@@ -185,7 +188,7 @@ package
 			skybox.material = new Material(new SkyBoxGLShader);
 			skybox.material.diffTexture = skyBoxTexture
 			skybox.material.specularPower = 10;
-			skybox.material.color = new <Number>[.5,.5,.5,.5];
+			skybox.material.color.setTo(.5,.5,.5);
 			skybox.material.culling = Context3DTriangleFace.BACK;
 			skybox.drawable = Meshs.cube(2000,2000,2000);
 			view.scene.addChild(skybox);
@@ -219,7 +222,6 @@ package
 		public function initUI():void {
 			//addChild(aui);
 			aui.bind(material, "specularPower", AttribSeter.TYPE_NUM, new Point(1, 100));
-			aui.bind(material, "shininess", AttribSeter.TYPE_NUM, new Point(.5, 5));
 			aui.bind(material, "toonAble", AttribSeter.TYPE_BOOL);
 			aui.bind(view, "antiAlias", AttribSeter.TYPE_NUM, new Point(0, 16));
 			//aui.bind(view.light, "color", AttribSeter.TYPE_VEC_COLOR);
@@ -230,7 +232,7 @@ package
 			aui.bind(this, "useTexture", AttribSeter.TYPE_BOOL);
 			aui.bind(this, "post", AttribSeter.TYPE_LIST_STR, null, ["null", "blur", "water", "bend", "heart", "flower", "sinwater", "hdr", "shape","asciiart","red"]);
 			
-			if(Multitouch.supportsTouchEvents)
+			if(Multitouch.supportsTouchEvents&&Multitouch.maxTouchPoints)
 			addChild(gamepad);
 			gamepad.x = 200;
 			gamepad.y = 200;
@@ -241,7 +243,7 @@ package
 			fc.speed = speed;
 			fc.movementFunc = movementFunc;
 			
-			var ac:ArcBallCtrl = new ArcBallCtrl(view.camera, stage);
+			ac = new ArcBallCtrl(view.camera, stage);
 			view.ctrls.push(ac);
 		}
 		
@@ -265,12 +267,14 @@ package
 				//teapot.matrix.appendRotation(1, Vector3D.Y_AXIS);// .setRotation(r.x, r.y + 1, r.z);// += .01;
 				//teapot.updateTransforms(true);
 			}
+			Capabilities.os
 			view.updateCtrl();
 			view.render(getTimer());
 			
 			aui.update();
-			if (gamepad&&fc) {
-				fc.inputSpeed = gamepad.speed;
+			if (gamepad) {
+				if(fc)fc.inputSpeed = gamepad.speed;
+				if(ac)ac.inputSpeed = gamepad.speed;
 			}
 		}
 		

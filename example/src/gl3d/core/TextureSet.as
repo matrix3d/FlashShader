@@ -111,14 +111,14 @@ package gl3d.core {
 		public function updateBMDs(context:GL):void {
 			var datas:Array = data as Array;
 			if (datas) {
-				texture = context.createCubeTexture(datas[0].width, Context3DTextureFormat.BGRA, optimizeForRenderToTexture);
+				
 				var ct:CubeTexture = texture as CubeTexture;
 				for (var s:int = 0; s < 6;s++ ) {
 					var level:int = 0;
 					var bmd:BitmapData = datas[s];
-					var w:int = getNextPow2(bmd.width);
-					var h:int = getNextPow2(bmd.height);
-					updateBMDTexture(w, h, bmd, texture, s);
+					var w:int = getNextPow2(Math.max(bmd.width,bmd.height));
+					if(texture==null)texture = context.createCubeTexture(w, Context3DTextureFormat.BGRA, optimizeForRenderToTexture);
+					updateBMDTexture(w, w, bmd, texture, s);
 				}
 			}
 		}

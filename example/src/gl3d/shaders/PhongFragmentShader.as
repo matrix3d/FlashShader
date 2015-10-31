@@ -51,11 +51,24 @@ package gl3d.shaders
 			}
 			var diffColor:Var = getDiffColor();
 			if (material.lightAble) {
-				for (var i:int = 0; i < material.view.lights.length;i++ ) {
-					if (phongColor == null) {
-						var phongColor:Var = getPhongColor(i);
+				for (var i:int = 0; i < material.view.lights.length; i++ ) {
+					var light:Light = material.view.lights[i];
+					var curPhongColor:Var;
+					if (light.lightType==Light.AMBIENT) {
+						curPhongColor = uniformLightColor(i);
 					}else {
-						phongColor = add(phongColor, getPhongColor(i));
+						curPhongColor = getPhongColor(i);
+						if (light.lightType == Light.POINT||light.lightType==Light.SPOT) {
+							curPhongColor = mul(curPhongColor, getDistanceColor(i));
+						}
+						if (light.lightType==Light.SPOT) {
+							curPhongColor = mul(curPhongColor, getSmoothColor(i));
+						}
+					}
+					if (phongColor == null) {
+						var phongColor:Var = curPhongColor;
+					}else {
+						phongColor = add(phongColor, curPhongColor);
 					}
 				}
 				if (material.toonAble) {
@@ -78,7 +91,7 @@ package gl3d.shaders
 			}
 			var fog:Fog = material.view.fog;
 			if (fog.mode != Fog.FOG_NONE) {
-				var d:Var = distance(uniformCameraPos(), vs.fogModelPos, 3);
+				var d:Var = distance(uniformCameraPos(), vs.modelPosVarying, 3);
 				if (fog.mode == Fog.FOG_EXP) {
 					var f:Var = rcp(exp(mul(d, fog.density)));
 				}else if (fog.mode==Fog.FOG_EXP2) {
@@ -148,20 +161,25 @@ package gl3d.shaders
 				var r:Var = nrm(sub(mul2([2, dp3(l, n), n]), l));
 				var cosAlpha:Var = sat(dp3(e, r));
 			}
-			if (material.shininess!=1) {
-				if (material.specularAble) {
-					return add(ambientColor, mul2([lightColor, add(cosTheta, pow(cosAlpha, specularPow)), lightPower]));
-				}else {
-					return add(ambientColor, mul2([lightColor, cosTheta, lightPower]));
-				}
+			if (material.specularAble) {
+				return add(ambientColor, mul2([lightColor, add(cosTheta, pow(cosAlpha, specularPow)), lightPower]));
 			}else {
-				if (material.specularAble) {
-					return add(ambientColor, mul2([lightColor, add(cosTheta, pow(cosAlpha, specularPow))]));
-				}else {
-					return add(ambientColor, mul2([lightColor, cosTheta]));
-				}
+				return add(ambientColor, mul2([lightColor, cosTheta, lightPower]));
 			}
 			return null;
+		}
+		
+		public function getDistanceColor(i:int):Var {
+			var d:Var = sub(uniformLightPos(i), vs.modelPosVarying);
+			return sat(sub(1,div(dp3(d,d),mul(mov(uniformLightVar(i).x),uniformLightVar(i).x))));
+		}
+		
+		public function getSmoothColor(i:int):Var {
+			var factor1:Var = uniformLightVar(i).y;
+			var factor2:Var = uniformLightVar(i).z;
+			var lightToPoint:Var = sub(vs.modelPosVarying,uniformLightPos(i));
+			var lightAngleCosine:Var = dp3(nrm(uniformLightPos(i)), nrm(lightToPoint));
+			return sat(add(mul(factor1, lightAngleCosine), factor2));
 		}
 		
 	}

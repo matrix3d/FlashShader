@@ -193,8 +193,32 @@ package gl3d.parser.fbx
 						prim.nodes.push(o.obj);
 						(o.obj as Node3D).drawable = prim.drawable;
 						(o.obj as Node3D).material = new Material;
-						(o.obj as Node3D).material.color = Vector.<Number>([Math.random(),Math.random(),Math.random(),1]);
 						(o.obj as Node3D).type = "MESH";
+						var material:Object = getChild(o.model, "Material");
+						
+						if(material){
+							var tex:Object = getChild(material, "Texture") ;
+							if (tex) {
+								var texPath:String=FbxTools.toString(FbxTools.get(tex, "FileName").props[0]);
+							}
+							var materialObj:Object = { };
+							for each(var p:Object in FbxTools.getAll(material, "Properties70.P").concat(FbxTools.getAll(material, "Properties60.Property"))) {
+								name = FbxTools.toString(p.props[0]);
+								switch( name) {
+								case "AmbientColor":
+								case "DiffuseColor":
+									var l:int = p.props.length;
+									materialObj[name] = new Vector3D(FbxTools.toFloat(p.props[l-3]), FbxTools.toFloat(p.props[l-2]), FbxTools.toFloat(p.props[l-1]));
+									break;
+								}
+							}
+							if (materialObj.DiffuseColor) {
+								(o.obj as Node3D).material.color.setTo(materialObj.DiffuseColor.x,materialObj.DiffuseColor.y,materialObj.DiffuseColor.z);
+							}
+							if (materialObj.AmbientColor) {
+								(o.obj as Node3D).material.ambient.setTo(materialObj.AmbientColor.x,materialObj.AmbientColor.y,materialObj.AmbientColor.z);
+							}
+						}
 					}
 				} else if ( o.isJoint ) {
 					o.obj = new Joint(name);
@@ -215,7 +239,7 @@ package gl3d.parser.fbx
 			}
 			// rebuild scene hierarchy
 			for each( o in objects ) {
-				var p:Object = o.parent;
+				p = o.parent;
 				if(o.obj)
 				p.obj.addChild(o.obj);
 			}

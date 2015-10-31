@@ -4,7 +4,9 @@ package gl3d.core.shaders
 	import flash.display3D.Context3DProgramType;
 	import flash.geom.Matrix3D;
 	import flash.geom.Vector3D;
+	import gl3d.core.Light;
 	import gl3d.core.Material;
+	import gl3d.core.renders.GL;
 	/**
 	 * ...
 	 * @author lizhi
@@ -14,7 +16,6 @@ package gl3d.core.shaders
 		private var v:Var;
 		private var index:int;
 		private var as3shader:GLAS3Shader;
-		private var tempvec4:Vector.<Number> = new Vector.<Number>(4);
 		public function GLBinder(as3shader:GLAS3Shader,v:Var,index:int=0) 
 		{
 			this.as3shader = as3shader;
@@ -38,41 +39,26 @@ package gl3d.core.shaders
 		public function bindLightPosUniform(shader:GLShader, material:Material):void {
 			if (v.used) {
 				var pos:Vector3D = material.view.lights[index].world.position;
-				tempvec4[0] = pos.x;
-				tempvec4[1] = pos.y;
-				tempvec4[2] = pos.z;
-				tempvec4[3] = 1;
-				material.view.renderer.gl3d.setProgramConstantsFromVector(as3shader.programType, v.index,tempvec4);
+				pos.w = 1;
+				material.view.renderer.gl3d.setProgramConstantsFromVector3D(as3shader.programType, v.index,pos);
 			}
 		}
 		public function bindCameraPosUniform(shader:GLShader, material:Material):void {
 			if (v.used) {
 				var pos:Vector3D = material.camera.world.position;
-				tempvec4[0] = pos.x;
-				tempvec4[1] = pos.y;
-				tempvec4[2] = pos.z;
-				tempvec4[3] = 1;
-				material.view.renderer.gl3d.setProgramConstantsFromVector(as3shader.programType, v.index,tempvec4);
+				material.view.renderer.gl3d.setProgramConstantsFromVector3D(as3shader.programType, v.index,pos);
 			}
 		}
 		
 		public function bindTimeUniform(shader:GLShader, material:Material):void {
 			if (v.used) {
-				tempvec4[0] = material.view.time;
-				tempvec4[1] = material.view.time;
-				tempvec4[2] = material.view.time;
-				tempvec4[3] = material.view.time;
-				material.view.renderer.gl3d.setProgramConstantsFromVector(as3shader.programType, v.index,tempvec4);
+				material.view.renderer.gl3d.setProgramConstantsFromXYZW(as3shader.programType, v.index,material.view.time,material.view.time,material.view.time,material.view.time);
 			}
 		}
 		
 		public function bindPixelSizeUniform(shader:GLShader, material:Material):void {
 			if (v.used) {
-				tempvec4[0] = material.view.stage3dWidth;
-				tempvec4[1] = material.view.stage3dHeight;
-				tempvec4[2] = 1/material.view.stage3dWidth;
-				tempvec4[3] = 1/material.view.stage3dHeight;
-				material.view.renderer.gl3d.setProgramConstantsFromVector(as3shader.programType, v.index,tempvec4);
+				material.view.renderer.gl3d.setProgramConstantsFromXYZW(as3shader.programType, v.index,material.view.stage3dWidth,material.view.stage3dWidth,1/material.view.stage3dWidth,1/material.view.stage3dHeight);
 			}
 		}
 		public function bindJointsQuatUniform(shader:GLShader, material:Material):void {
@@ -88,22 +74,27 @@ package gl3d.core.shaders
 			}
 		}
 		public function bindMaterialColorUniform(shader:GLShader, material:Material):void {
-			if (v.used) material.view.renderer.gl3d.setProgramConstantsFromVector(as3shader.programType, v.index,material.color);
+			if (v.used) material.view.renderer.gl3d.setProgramConstantsFromVector3D(as3shader.programType, v.index,material.color);
 		}
 		public function bindLightColorUniform(shader:GLShader, material:Material):void {
-			if (v.used) material.view.renderer.gl3d.setProgramConstantsFromVector(as3shader.programType, v.index,material.view.lights[index].color);
+			if (v.used) material.view.renderer.gl3d.setProgramConstantsFromVector3D(as3shader.programType, v.index,material.view.lights[index].color);
+		}
+		public function bindLightColorVar(shader:GLShader, material:Material):void {
+			var light:Light = material.view.lights[index];
+			var factor1:Number = 1/ (Math.cos(light.innerConeAngle/2)- Math.cos(light.outerConeAngle/2));
+			var factor2:Number = 1- Math.cos(light.innerConeAngle/2)* factor1;
+			if (v.used) material.view.renderer.gl3d.setProgramConstantsFromXYZW(as3shader.programType,v.index, light.distance,factor1,factor2);
 		}
 		public function bindAmbientUniform(shader:GLShader, material:Material):void {
-			if (v.used) material.view.renderer.gl3d.setProgramConstantsFromVector(as3shader.programType, v.index,material.ambient);
+			if (v.used) material.view.renderer.gl3d.setProgramConstantsFromVector3D(as3shader.programType, v.index,material.ambient);
 		}
 		public function bindSpecularUniform(shader:GLShader, material:Material):void {
 			if (v.used) {
-				tempvec4[0] = material.specularPower;
-				material.view.renderer.gl3d.setProgramConstantsFromVector(as3shader.programType, v.index,tempvec4);
+				material.view.renderer.gl3d.setProgramConstantsFromXYZW(as3shader.programType, v.index,material.specularPower);
 			}
 		}
 		public function bindWireframeColorUniform(shader:GLShader, material:Material):void {
-			if (v.used) material.view.renderer.gl3d.setProgramConstantsFromVector(as3shader.programType, v.index,material.wireframeColor);
+			if (v.used) material.view.renderer.gl3d.setProgramConstantsFromVector3D(as3shader.programType, v.index,material.wireframeColor);
 		}
 		
 		//textures
@@ -167,6 +158,7 @@ package gl3d.core.shaders
 		public function bindCpuSkinNormBuff(shader:GLShader,material:Material):void {
 			if(v.used)shader.buffSets[v.index] = material.node.drawable.pos.cpuSkinNorm;
 		}*/
+		
 	}
 
 }

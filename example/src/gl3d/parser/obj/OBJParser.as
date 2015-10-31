@@ -44,9 +44,9 @@ package gl3d.parser.obj
 						if (mtldecode&&g.mtl) {
 							var mtl:Array = mtldecode.getmtl(g.mtl);
 							if (mtl&&mtl[3]) {
-								node.material.color[0] = mtl[3][0];
-								node.material.color[1] = mtl[3][1];
-								node.material.color[2] = mtl[3][2];
+								node.material.color.x = mtl[3][0];
+								node.material.color.y = mtl[3][1];
+								node.material.color.z = mtl[3][2];
 							}
 						}
 						

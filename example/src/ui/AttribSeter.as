@@ -118,7 +118,7 @@ package ui
 					case TYPE_VEC_COLOR:
 						var colorui:ColorChooser = nui as ColorChooser;
 						var color:Color = new Color;
-						color.fromRGB(v[0]*0xff, v[1]*0xff, v[2]*0xff);
+						color.fromRGB(v.x*0xff, v.y*0xff, v.z*0xff);
 						if(colorui.value!=color.toHex())
 						colorui.value = color.toHex();
 						break;

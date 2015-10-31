@@ -2,10 +2,17 @@ package gl3d.util
 {
 	import flash.display.BitmapData;
 	import flash.display.Sprite;
+	import flash.external.ExternalInterface;
 	import flash.filters.BlurFilter;
 	import flash.geom.Vector3D;
+	import flash.net.URLRequest;
+	import flash.net.URLRequestHeader;
 	import flash.utils.ByteArray;
+	import flash.utils.Dictionary;
 	import gl3d.core.Node3D;
+	import gl3d.core.skin.Joint;
+	import gl3d.core.skin.SkinAnimation;
+	import gl3d.ctrl.Ctrl;
 	import ui.Color;
 	/**
 	 * ...
@@ -17,6 +24,21 @@ package gl3d.util
 		public function Utils() 
 		{
 			
+		}
+		
+		public static function getParameters():Object {
+			var p:Object = { };
+			if (ExternalInterface.available) {
+				var search:String = decodeURI(ExternalInterface.call("function(){return window.location.search}"));
+				if (search.length > 0) {
+					var kvs:Array = search.substr(1).split("&");
+					for each(var kv:String in kvs) {
+						var i:int = kv.indexOf("=");
+						p[kv.substr(0, i)] = kv.substr(i+1);
+					}
+				}
+			}
+			return p;
 		}
 		
 		public static function randomSphere(vector:Vector3D=null,rotation:Vector3D=null):Vector3D {
@@ -136,6 +158,37 @@ package gl3d.util
 			for each(var c:Node3D in node.children) {
 				traceNode(c, depth + 1);
 			}
+		}
+		
+		public static function exportNode(node:Node3D,geoms:Dictionary=null):Object {
+			geoms = geoms||new Dictionary;
+			var nodeObj:Object = { };
+			if (node.name) {
+				nodeObj.name = node.name;
+				if (node is Joint) {
+					node.type = "JOINT";
+				}
+				if (node.skin) {
+					
+				}
+				if (node.drawable) {
+					
+				}
+				if (node.controllers) {
+					for each(var controller:Ctrl in node.controllers) {
+						if (controller is SkinAnimation) {
+							
+						}
+					}
+				}
+			}
+			if (node.children.length) {
+				nodeObj.children = [];
+				for each(var child:Node3D in node.children) {
+					nodeObj.children.push(exportNode(child, geoms));
+				}
+			}
+			return {root:nodeObj,geoms:[]};
 		}
 		
 	}

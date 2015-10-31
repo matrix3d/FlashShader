@@ -273,8 +273,10 @@ package gl3d.parser.dae
 						var mxml:XML = materials[materialName];
 						var effname:String = (mxml.instance_effect[0].@url).substr(1);
 						var exml:XML = effects[effname];
-						childNode.material.color = Vector.<Number>(str2Floats(exml.profile_COMMON.technique.phong.specular.color));
-						childNode.material.ambient = Vector.<Number>(str2Floats(exml.profile_COMMON.technique.phong.ambient.color));
+						var color:Array = str2Floats(exml.profile_COMMON.technique.phong.specular.color);
+						var ambient:Array = str2Floats(exml.profile_COMMON.technique.phong.ambient.color);
+						childNode.material.color.setTo(color[0],color[1],color[2]);
+						childNode.material.ambient.setTo(ambient[0],ambient[1],ambient[2]);
 					}
 					node.addChild(childNode);
 				}

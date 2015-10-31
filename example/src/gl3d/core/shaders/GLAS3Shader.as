@@ -132,6 +132,15 @@ package gl3d.core.shaders
 			binds.push(binder.bindLightColorUniform);
 			return u;
 		}
+		public function uniformLightVar(index:int):Var {
+			var name:String = "ulightvar"+index;
+			if (getNamedVar(name)) return getNamedVar(name);
+			var u:Var = uniform();
+			setNamedVar(name, u);
+			var binder:GLBinder = new GLBinder(this, u,index);
+			binds.push(binder.bindLightColorVar);
+			return u;
+		}
 		public function uniformAmbient():Var {
 			var name:String = "uambient";
 			if (getNamedVar(name)) return getNamedVar(name);

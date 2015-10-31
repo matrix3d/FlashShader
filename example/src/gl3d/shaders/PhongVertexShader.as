@@ -5,6 +5,7 @@ package gl3d.shaders
 	import as3Shader.AS3Shader;
 	import as3Shader.Var;
 	import gl3d.core.Fog;
+	import gl3d.core.Light;
 	import gl3d.core.shaders.GLAS3Shader;
 	import gl3d.core.Material;
 	import gl3d.core.TextureSet;
@@ -40,7 +41,7 @@ package gl3d.shaders
 		public var uvVarying:Var = varying();
 		public var targetPositionVarying:Var = varying();
 		public var reflected:Var = varying();
-		public var fogModelPos:Var = varying();
+		public var modelPosVarying:Var = varying();
 		public function PhongVertexShader(material:Material) 
 		{
 			super(Context3DProgramType.VERTEX);
@@ -153,8 +154,16 @@ package gl3d.shaders
 			if (material.wireframeAble) {
 				mov(targetPosition,targetPositionVarying);
 			}
-			if (material.view.fog.mode!=Fog.FOG_NONE) {
-				mov(worldPos, fogModelPos);
+			
+			var needModelPos:Boolean = false;
+			for each(var light:Light in material.view.lights) {
+				if (light.lightType==Light.POINT||light.lightType==Light.SPOT) {
+					needModelPos = true;
+				}
+			}
+			
+			if (material.view.fog.mode!=Fog.FOG_NONE||needModelPos) {
+				mov(worldPos, modelPosVarying);
 			}
 		}
 		

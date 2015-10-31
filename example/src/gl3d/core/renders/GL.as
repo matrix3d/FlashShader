@@ -12,6 +12,7 @@ package gl3d.core.renders
 	import flash.display3D.VertexBuffer3D;
 	import flash.geom.Matrix3D;
 	import flash.geom.Rectangle;
+	import flash.geom.Vector3D;
 	import flash.utils.ByteArray;
 	import gl3d.core.IndexBufferSet;
 	/**
@@ -28,6 +29,7 @@ package gl3d.core.renders
 		public var nowTexMaxIndex:int = 0;
 		public var drawTriangleCounter:int = 0;
 		public var drawCounter:int = 0;
+		private var tempvec4:Vector.<Number> = new Vector.<Number>(4);
 		public function GL(context:Context3D) 
 		{
 			this.context = context;
@@ -115,6 +117,20 @@ package gl3d.core.renders
 		}
 		public function setProgramConstantsFromVector(programType : String, firstRegister : int, data : Vector.<Number>, numRegisters : int = -1) : void {
 			context.setProgramConstantsFromVector(programType, firstRegister, data, numRegisters);
+		}
+		public function setProgramConstantsFromVector3D(programType : String, firstRegister : int, data : Vector3D) : void {
+			tempvec4[0] = data.x;
+			tempvec4[1] = data.y;
+			tempvec4[2] = data.z;
+			tempvec4[3] = data.w;
+			context.setProgramConstantsFromVector(programType, firstRegister, tempvec4);
+		}
+		public function setProgramConstantsFromXYZW(programType : String, firstRegister : int, x:Number=0,y:Number=0,z:Number=0,w:Number=0) : void {
+			tempvec4[0] = x;
+			tempvec4[1] = y;
+			tempvec4[2] = z;
+			tempvec4[3] = w;
+			context.setProgramConstantsFromVector(programType, firstRegister, tempvec4);
 		}
 		public function setRenderToBackBuffer() : void {
 			context.setRenderToBackBuffer();

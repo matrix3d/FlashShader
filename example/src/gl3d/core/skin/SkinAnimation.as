@@ -34,6 +34,68 @@ package gl3d.core.skin
 			return c;
 		}
 		
+		private function updateIK(iks:Vector.<Joint>, mesh:Node3D):void {
+			return;
+			if (iks == null) return;
+			for (var a:int=0,al:int=iks.length; a<al; a++) {
+				var target:Joint = iks[a];
+				var ik:IK = target.ik;
+				var effector:Joint = ik.effector;
+				var targetPosMatrix:Matrix3D = target.world.clone();
+				targetPosMatrix.append(mesh.world2local);
+				var targetPos:Vector3D = targetPosMatrix.position;
+				var il:int = ik.iteration;
+				var jl:int = ik.links.length;
+				// リンクの回転を初期化。
+				for (var j:int=0; j<jl; j++) {
+					var ikl:IKLink = ik.links[j];
+					var link:Joint = ikl.joint;
+					link.matrix.identity();
+					link.updateTransforms(true);
+				}
+				for (var i:int=0; i<il; i++) {
+					for (j=0; j<jl; j++) {
+						ikl = ik.links[j];
+						link = ikl.joint;
+						var inv:Matrix3D = link.world.clone();
+						inv.append(mesh.world2local);
+						inv.invert();
+						var effectorVecMatrix:Matrix3D = effector.world.clone();
+						effectorVecMatrix.append(mesh.world2local);
+						var effectorVec:Vector3D = effectorVecMatrix.position;
+						var targetVec:Vector3D = targetPos.clone();
+						inv.transformVector(targetVec);
+						//targetVec.project();
+						targetVec.normalize();
+						var angle:Number = targetVec.dotProduct(effectorVec);
+						if (angle > 1) { // 誤差対策。
+							angle = 1;
+						}
+						angle = Math.acos(angle);
+						if (angle < 1.0e-5) { // 発散対策。
+							continue; // 微妙に振動することになるから抜ける方が無難かな。
+						}
+						if (angle > ik.control) {
+							angle = ik.control;
+						}
+						var m:Matrix3D = new Matrix3D;
+						var axis:Vector3D = effectorVec.crossProduct(targetVec);
+						axis.normalize();
+						m.appendRotation(angle, axis);
+						link.matrix.append(m);
+						if (ikl.limits) { // 実質的に「ひざ」限定。
+							// 簡易版
+							var q:Quaternion = new Quaternion;
+							q.fromMatrix(link.matrix);
+							var t:Number = q.w;
+							q.setTo(Math.sqrt(1 - t * t), 0, 0); // X軸回転に限定。
+							q.toMatrix(link.matrix);
+						}
+					}
+				}
+			}
+		}
+		
 		override public function update(time:int):void 
 		{
 			var t:Number = ((time-startTime) / 1000) % maxTime;
@@ -58,11 +120,12 @@ package gl3d.core.skin
 				track.target.updateTransforms(true);
 			}
 			
+			
 			for each(var target:Node3D in targets){
 				var world2local:Matrix3D = target.world2local;
 				if (target.skin.skinFrame == null) target.skin.skinFrame = new SkinFrame;
 				target.skin.skinFrame.quaternions.length = 0;
-				
+				updateIK(target.skin.iks,target);
 				if (target.skin.skinFrame.matrixs.length == 0) {
 					var nj:int = target.skin.joints.length;
 					for (i = 0; i < nj;i++ ) {

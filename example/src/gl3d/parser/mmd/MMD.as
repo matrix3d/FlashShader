@@ -90,10 +90,12 @@ package gl3d.parser.mmd
 				bone.invBindMatrix = invbind;
 				//skin.invBindMatrixs.push(invbind);
 			}
+			var iks:Vector.<Joint> = new Vector.<Joint>;
 			for (i = 0; i < pmx.bones.length;i++ ) {
 				boneObj = pmx.bones[i];
 				bone = bones[i];
 				if (boneObj.IK) {
+					iks.push(bone);
 					bone.ik = new IK;
 					bone.ik.control = boneObj.IK.control;
 					bone.ik.effector = bones[boneObj.IK.effector];
@@ -130,15 +132,18 @@ package gl3d.parser.mmd
 				child.drawable.index = new IndexBufferSet(indices);
 				child.skin = skin;
 				child.material = new Material;
-				child.material.color[0] = material.diffuse[0];
-				child.material.color[1] = material.diffuse[1];
-				child.material.color[2] = material.diffuse[2];
-				child.material.ambient[0] = material.ambient[0];
-				child.material.ambient[1] = material.ambient[1];
-				child.material.ambient[2] = material.ambient[2];
+				child.material.color.x = material.diffuse[0];
+				child.material.color.y = material.diffuse[1];
+				child.material.color.z = material.diffuse[2];
+				child.material.ambient.x = material.ambient[0];
+				child.material.ambient.y = material.ambient[1];
+				child.material.ambient.z = material.ambient[2];
 				node.addChild(child);
 				Skin.optimize(child);
 				skinNodes.push(child);
+				
+				child.skin.iks = iks;
+				iks = null;
 			}
 		}
 		
