@@ -358,7 +358,7 @@ package as3Shader {
 				throw "no target"
 			}*/
 			
-			line.flag = flag;
+			line["flag"] = flag;
 			lines.push(line);
 			return c;
 		}

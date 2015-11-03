@@ -1,12 +1,8 @@
 package gl3d.util 
 {
 	import flash.display.BitmapData;
-	import flash.display.Sprite;
 	import flash.external.ExternalInterface;
-	import flash.filters.BlurFilter;
 	import flash.geom.Vector3D;
-	import flash.net.URLRequest;
-	import flash.net.URLRequestHeader;
 	import flash.utils.ByteArray;
 	import flash.utils.Dictionary;
 	import gl3d.core.Node3D;
@@ -27,7 +23,7 @@ package gl3d.util
 		}
 		
 		public static function getParameters():Object {
-			var p:Object = { };
+			/*var p:Object = { };
 			if (ExternalInterface.available) {
 				var search:String = decodeURI(ExternalInterface.call("function(){return window.location.search}"));
 				if (search.length > 0) {
@@ -38,7 +34,8 @@ package gl3d.util
 					}
 				}
 			}
-			return p;
+			return p;*/
+			return null;
 		}
 		
 		public static function randomSphere(vector:Vector3D=null,rotation:Vector3D=null):Vector3D {
@@ -56,16 +53,6 @@ package gl3d.util
 			return vector;
 		}
 		
-		public static function createBlurSphere(size:Number=32,color:uint=0xffffff):BitmapData {
-			var shadow:BitmapData = new BitmapData(size, size, true, 0);
-			var pen:Sprite = new Sprite();
-			pen.graphics.beginFill(color);
-			pen.graphics.drawCircle(size/2, size/2, size/3);
-			pen.graphics.endFill();
-			pen.filters = [new BlurFilter(size/6,size/6,3)];
-			shadow.draw(pen);
-			return shadow;
-		}
 		public static function createXorMap(b:BitmapData):void {
 			for (var i:int = 0; i < b.height; i++){
 				for (var k:int = 0; k < b.width; k++){

@@ -8,7 +8,6 @@ package
 	import flash.display.Sprite;
 	import flash.events.ContextMenuEvent;
 	import flash.events.Event;
-	import flash.geom.ColorTransform;
 	import flash.geom.Matrix3D;
 	import flash.geom.Vector3D;
 	import flash.net.FileReference;

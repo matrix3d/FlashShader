@@ -35,8 +35,8 @@ package as3Shader
 					var v:Var = line[j];
 					txt += " " + var2String(v);
 				}
-				if (line.flag) {
-					txt += ",<" + line.flag+">";
+				if (line["flag"]) {
+					txt += ",<" + line["flag"]+">";
 				}
 				txt += "\n"
 			}

@@ -54,7 +54,7 @@ package gl3d.core.shaders
 		}
 		
 		protected function getProgramFromPool(id:Object,vcode:ByteArray, fcode:ByteArray):ProgramSet {
-			var classname:String = getQualifiedClassName(this) + id;
+			var classname:String = this+":"/*getQualifiedClassName(this)*/ + id;
 			//air 18 bug
 			var pobj:Object = PROGRAM_POOL[classname];
 			if(pobj)

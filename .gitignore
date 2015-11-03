@@ -5,4 +5,5 @@ example/obj/FlashShaderConfig.xml
 example/obj/FlashShaderConfig.old
 example/obj/FlashShaderConfig.xml
 /example/bin
+/flexjs5/bin
 /example/src/assets/*

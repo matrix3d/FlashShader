@@ -171,9 +171,9 @@ package gl3d.meshs
 			}
 			var drawable:Drawable3D = Meshs.createDrawable(indexData, vertexData, null,null);
 			Meshs.removeDuplicatedVertices(drawable);
-			drawable.norm = Meshs.computeNormal(drawable);
-			drawable.uv = Meshs.computeUV(drawable);
-			drawable.tangent = Meshs.computeTangent(drawable);
+			//drawable.norm = Meshs.computeNormal(drawable);
+			//drawable.uv = Meshs.computeUV(drawable);
+			//drawable.tangent = Meshs.computeTangent(drawable);
 			return drawable;
 		}
 		

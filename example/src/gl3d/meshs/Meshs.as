@@ -7,7 +7,6 @@ package gl3d.meshs
 	import gl3d.core.Drawable3D;
 	import gl3d.core.IndexBufferSet;
 	import gl3d.core.VertexBufferSet;
-	import gl3d.util.Utils;
 	/**
 	 * ...
 	 * @author lizhi
@@ -401,7 +400,7 @@ package gl3d.meshs
 		{
 			var randomVec:Vector3D = new Vector3D;
 			var random:Vector.<Number> = new Vector.<Number>(drawable.pos.data.length/3*4);
-			for (var i:int = 0; i < random.length/4; )
+			/*for (var i:int = 0; i < random.length/4; )
 			{
 				Utils.randomSphere(randomVec);
 				for (var j:int = 0; j < step; j++,i++ ) {
@@ -410,7 +409,7 @@ package gl3d.meshs
 					random[i*4+2] = randomVec.z;
 					random[i*4+3] = randomVec.w;
 				}
-			}
+			}*/
 			return new VertexBufferSet(random, 4);
 		}
 		

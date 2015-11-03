@@ -99,16 +99,16 @@ package as3Shader
 				}
 				if (op2simple1(op)) {
 					txt += "\t" + v1 + " = " + ps.join(" "+op2simple1(op)+" ");
-					if (line.flag) {
-						txt += ",<" + line.flag+">";
+					if (line["flag"]) {
+						txt += ",<" + line["flag"]+">";
 					}
 					txt += ";";
 				}else if (op2simple2(op)) {
 					txt += "\t" + v1 + " = " +op2simple2(op)[0]+ ps+op2simple2(op)[1]+";";
 				}else {
 					txt += "\t" + v1 + " = " + op2simple3(op) + "(" +ps;
-					if (line.flag) {
-						txt += ",<" + line.flag+">";
+					if (line["flag"]) {
+						txt += ",<" + line["flag"]+">";
 					}
 					txt += ");";
 				}

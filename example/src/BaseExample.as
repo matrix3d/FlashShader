@@ -119,8 +119,8 @@ package
 			bmd.perlinNoise(30, 30, 2, 1, true, true);
 			
 			//atf
-			[Embed(source = "assets/leaf_apple.atf", mimeType = "application/octet-stream")]var leafc:Class;
-			//[Embed(source = "assets/leaf.atf", mimeType = "application/octet-stream")]var leafc:Class;
+			//[Embed(source = "assets/leaf_apple.atf", mimeType = "application/octet-stream")]var leafc:Class;
+			[Embed(source = "assets/leaf.atf", mimeType = "application/octet-stream")]var leafc:Class;
 			texture = new TextureSet((new leafc as ByteArray),false,false,false,false);
 			
 			
@@ -236,7 +236,7 @@ package
 			addChild(gamepad);
 			gamepad.x = 200;
 			gamepad.y = 200;
-			addChild(stats);
+			//addChild(stats);
 		}
 		public function initCtrl():void {
 			fc = new FirstPersonCtrl(view.camera, stage);
@@ -267,7 +267,6 @@ package
 				//teapot.matrix.appendRotation(1, Vector3D.Y_AXIS);// .setRotation(r.x, r.y + 1, r.z);// += .01;
 				//teapot.updateTransforms(true);
 			}
-			Capabilities.os
 			view.updateCtrl();
 			view.render(getTimer());
 			

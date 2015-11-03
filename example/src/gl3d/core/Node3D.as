@@ -1,8 +1,6 @@
 package gl3d.core {
-	import flash.display3D.Context3D;
 	import flash.geom.Matrix3D;
 	import flash.geom.Vector3D;
-	import flash.utils.getQualifiedClassName;
 	import gl3d.core.skin.Skin;
 	import gl3d.ctrl.Ctrl;
 	import gl3d.pick.AS3Picking;
@@ -238,10 +236,6 @@ package gl3d.core {
 				return picking.pick(this,rayOrigin, rayDirection, pixelPos);
 			}
 			return false;
-		}
-		
-		public function toString():String {
-			return getQualifiedClassName(this).split("::")[1]+":"+name;
 		}
 		
 		public function clone(addRender:Boolean=false):Node3D {

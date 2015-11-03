@@ -51,7 +51,7 @@ package as3Shader
 				var line:Array = lines[i];
 				var opName:String = line[0];
 				var opFound:OpCode = OPMAP[opName];
-				var opts:Array=line.flag;
+				var opts:Array=line["flag"];
 				if ( opFound == null )
 				{
 					if ( line.length >= 3 )
