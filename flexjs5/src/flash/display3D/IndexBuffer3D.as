@@ -2,10 +2,10 @@ package flash.display3D
 {
    import flash.utils.ByteArray;
    
-   [API("674")]
    public final class IndexBuffer3D extends Object
    {
-       
+       public var count:int;
+	   public var buff:WebGLBuffer;
       public function IndexBuffer3D()
       {
          super();

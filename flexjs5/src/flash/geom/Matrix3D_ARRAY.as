@@ -1,10 +1,10 @@
 package  flash.geom{
 	import flash.geom.Orientation3D;
 	import flash.geom.Vector3D;
-	public class Matrix3D {
-		public function Matrix3D(v : Vector.<Number> = null) : void { 
+	public class Matrix3D_ARRAY {
+		public function Matrix3D_ARRAY(v : Array = null) : void { 
 			if(v != null && v.length == 16) this.rawData = v;
-			else this.rawData = Vector.<Number>([1.0,0.0,0.0,0.0,0.0,1.0,0.0,0.0,0.0,0.0,1.0,0.0,0.0,0.0,0.0,1.0]);
+			else this.rawData = [1.0,0.0,0.0,0.0,0.0,1.0,0.0,0.0,0.0,0.0,1.0,0.0,0.0,0.0,0.0,1.0];
 		}
 		
 		public function get determinant() : Number { return get_determinant(); }
@@ -13,8 +13,8 @@ package  flash.geom{
 		public function get position() : flash.geom.Vector3D { return get_position(); }
 		public function set position( __v : flash.geom.Vector3D ) : void { set_position(__v); }
 		protected var $position : flash.geom.Vector3D;
-		public var rawData : Vector.<Number>;
-		public function append(lhs : Matrix3D) : void {
+		public var rawData : Array;
+		public function append(lhs : Matrix3D_ARRAY) : void {
 			var m111 : Number = this.rawData[0];
 			var m121 : Number = this.rawData[4];
 			var m131 : Number = this.rawData[8];
@@ -66,7 +66,7 @@ package  flash.geom{
 		}
 		
 		public function appendRotation(degrees : Number,axis : flash.geom.Vector3D,pivotPoint : flash.geom.Vector3D = null) : void {
-			var m : Matrix3D = Matrix3D.getAxisRotation(axis.x,axis.y,axis.z,degrees);
+			var m : Matrix3D_ARRAY = Matrix3D_ARRAY.getAxisRotation(axis.x,axis.y,axis.z,degrees);
 			if(pivotPoint != null) {
 				var p : flash.geom.Vector3D = pivotPoint;
 				m.appendTranslation(p.x,p.y,p.z);
@@ -75,7 +75,7 @@ package  flash.geom{
 		}
 		
 		public function appendScale(xScale : Number,yScale : Number,zScale : Number) : void {
-			this.append(new Matrix3D(Vector.<Number>([xScale,0.0,0.0,0.0,0.0,yScale,0.0,0.0,0.0,0.0,zScale,0.0,0.0,0.0,0.0,1.0])));
+			this.append(new Matrix3D_ARRAY([xScale,0.0,0.0,0.0,0.0,yScale,0.0,0.0,0.0,0.0,zScale,0.0,0.0,0.0,0.0,1.0]));
 		}
 		
 		public function appendTranslation(x : Number,y : Number,z : Number) : void {
@@ -84,8 +84,8 @@ package  flash.geom{
 			this.rawData[14] += z;
 		}
 		
-		public function clone() : Matrix3D {
-			return new Matrix3D(this.rawData.concat());
+		public function clone() : Matrix3D_ARRAY {
+			return new Matrix3D_ARRAY(this.rawData.concat());
 		}
 		
 		public function copyColumnFrom(column : int,vector3D : flash.geom.Vector3D) : void {
@@ -168,11 +168,11 @@ package  flash.geom{
 			}
 		}
 		
-		public function copyFrom(other : Matrix3D) : void {
+		public function copyFrom(other : Matrix3D_ARRAY) : void {
 			this.rawData = other.rawData.concat();
 		}
 		
-		public function copyRawDataFrom(vector : Vector.<Number>,index : uint = 0,transpose : Boolean = false) : void {
+		public function copyRawDataFrom(vector : Array,index : uint = 0,transpose : Boolean = false) : void {
 			if(transpose) this.transpose();
 			var l : uint = vector.length - index;
 			{
@@ -185,7 +185,7 @@ package  flash.geom{
 			if(transpose) this.transpose();
 		}
 		
-		public function copyRawDataTo(vector : Vector.<Number>,index : uint = 0,transpose : Boolean = false) : void {
+		public function copyRawDataTo(vector : Array,index : uint = 0,transpose : Boolean = false) : void {
 			if(transpose) this.transpose();
 			var l : uint = this.rawData.length;
 			{
@@ -278,15 +278,15 @@ package  flash.geom{
 			}
 		}
 		
-		public function copyToMatrix3D(other : Matrix3D) : void {
+		public function copyToMatrix3D(other : Matrix3D_ARRAY) : void {
 			other.rawData = this.rawData.concat();
 		}
 		
 		public function decompose(orientationStyle : String = null) : Vector.<flash.geom.Vector3D> {
 			if(orientationStyle == null) orientationStyle = flash.geom.Orientation3D.EULER_ANGLES;
 			var vec : Vector.<flash.geom.Vector3D> = new Vector.<flash.geom.Vector3D>();
-			var m : Matrix3D = this.clone();
-			var mr : Vector.<Number> = m.rawData.concat();
+			var m : Matrix3D_ARRAY = this.clone();
+			var mr : Array = m.rawData.concat();
 			var pos : flash.geom.Vector3D = new flash.geom.Vector3D(mr[12],mr[13],mr[14]);
 			mr[12] = 0;
 			mr[13] = 0;
@@ -376,10 +376,10 @@ package  flash.geom{
 		}
 		
 		public function identity() : void {
-			this.rawData = Vector.<Number>([1.0,0.0,0.0,0.0,0.0,1.0,0.0,0.0,0.0,0.0,1.0,0.0,0.0,0.0,0.0,1.0]);
+			this.rawData = [1.0,0.0,0.0,0.0,0.0,1.0,0.0,0.0,0.0,0.0,1.0,0.0,0.0,0.0,0.0,1.0];
 		}
 		
-		public function interpolateTo(toMat : Matrix3D,percent : Number) : void {
+		public function interpolateTo(toMat : Matrix3D_ARRAY,percent : Number) : void {
 			var _g : int = 0;
 			while(_g < 16) {
 				var i : int = _g++;
@@ -462,7 +462,7 @@ package  flash.geom{
 			this.rawData[15] = 1.0;
 		}
 		
-		public function prepend(rhs : Matrix3D) : void {
+		public function prepend(rhs : Matrix3D_ARRAY) : void {
 			var m111 : Number = rhs.rawData[0];
 			var m121 : Number = rhs.rawData[4];
 			var m131 : Number = rhs.rawData[8];
@@ -514,7 +514,7 @@ package  flash.geom{
 		}
 		
 		public function prependRotation(degrees : Number,axis : flash.geom.Vector3D,pivotPoint : flash.geom.Vector3D = null) : void {
-			var m : Matrix3D = Matrix3D.getAxisRotation(axis.x,axis.y,axis.z,degrees);
+			var m : Matrix3D_ARRAY = Matrix3D_ARRAY.getAxisRotation(axis.x,axis.y,axis.z,degrees);
 			if(pivotPoint != null) {
 				var p : flash.geom.Vector3D = pivotPoint;
 				m.appendTranslation(p.x,p.y,p.z);
@@ -523,11 +523,11 @@ package  flash.geom{
 		}
 		
 		public function prependScale(xScale : Number,yScale : Number,zScale : Number) : void {
-			this.prepend(new Matrix3D(Vector.<Number>([xScale,0.0,0.0,0.0,0.0,yScale,0.0,0.0,0.0,0.0,zScale,0.0,0.0,0.0,0.0,1.0])));
+			this.prepend(new Matrix3D_ARRAY([xScale,0.0,0.0,0.0,0.0,yScale,0.0,0.0,0.0,0.0,zScale,0.0,0.0,0.0,0.0,1.0]));
 		}
 		
 		public function prependTranslation(x : Number,y : Number,z : Number) : void {
-			var m : Matrix3D = new Matrix3D();
+			var m : Matrix3D_ARRAY = new Matrix3D_ARRAY();
 			m.set_position(new flash.geom.Vector3D(x,y,z));
 			this.prepend(m);
 		}
@@ -611,7 +611,7 @@ package  flash.geom{
 			return new flash.geom.Vector3D(x * this.rawData[0] + y * this.rawData[4] + z * this.rawData[8] + this.rawData[12],x * this.rawData[1] + y * this.rawData[5] + z * this.rawData[9] + this.rawData[13],x * this.rawData[2] + y * this.rawData[6] + z * this.rawData[10] + this.rawData[14],x * this.rawData[3] + y * this.rawData[7] + z * this.rawData[11] + this.rawData[15]);
 		}
 		
-		public function transformVectors(vin : Vector.<Number>,vout : Vector.<Number>) : void {
+		public function transformVectors(vin : Array,vout : Array) : void {
 			var i : int = 0;
 			while(i + 3 <= vin.length) {
 				var x : Number = vin[i];
@@ -625,7 +625,7 @@ package  flash.geom{
 		}
 		
 		public function transpose() : void {
-			var oRawData : Vector.<Number> = this.rawData.concat();
+			var oRawData : Array = this.rawData.concat();
 			this.rawData[1] = oRawData[4];
 			this.rawData[2] = oRawData[8];
 			this.rawData[3] = oRawData[12];
@@ -655,26 +655,26 @@ package  flash.geom{
 			return val;
 		}
 		
-		static public function create2D(x : Number,y : Number,scale : Number = 1,rotation : Number = 0) : Matrix3D {
+		static public function create2D(x : Number,y : Number,scale : Number = 1,rotation : Number = 0) : Matrix3D_ARRAY {
 			var theta : Number = rotation * Math.PI / 180.0;
 			var c : Number = Math.cos(theta);
 			var s : Number = Math.sin(theta);
-			return new Matrix3D(Vector.<Number>([c * scale,-s * scale,0,0,s * scale,c * scale,0,0,0,0,1,0,x,y,0,1]));
+			return new Matrix3D_ARRAY([c * scale,-s * scale,0,0,s * scale,c * scale,0,0,0,0,1,0,x,y,0,1]);
 		}
 		
-		static public function createABCD(a : Number,b : Number,c : Number,d : Number,tx : Number,ty : Number) : Matrix3D {
-			return new Matrix3D(Vector.<Number>([a,b,0,0,c,d,0,0,0,0,1,0,tx,ty,0,1]));
+		static public function createABCD(a : Number,b : Number,c : Number,d : Number,tx : Number,ty : Number) : Matrix3D_ARRAY {
+			return new Matrix3D_ARRAY([a,b,0,0,c,d,0,0,0,0,1,0,tx,ty,0,1]);
 		}
 		
-		static public function createOrtho(x0 : Number,x1 : Number,y0 : Number,y1 : Number,zNear : Number,zFar : Number) : Matrix3D {
+		static public function createOrtho(x0 : Number,x1 : Number,y0 : Number,y1 : Number,zNear : Number,zFar : Number) : Matrix3D_ARRAY {
 			var sx : Number = 1.0 / (x1 - x0);
 			var sy : Number = 1.0 / (y1 - y0);
 			var sz : Number = 1.0 / (zFar - zNear);
-			return new Matrix3D(Vector.<Number>([2.0 * sx,0,0,0,0,2.0 * sy,0,0,0,0,-2. * sz,0,-(x0 + x1) * sx,-(y0 + y1) * sy,-(zNear + zFar) * sz,1]));
+			return new Matrix3D_ARRAY([2.0 * sx,0,0,0,0,2.0 * sy,0,0,0,0,-2. * sz,0,-(x0 + x1) * sx,-(y0 + y1) * sy,-(zNear + zFar) * sz,1]);
 		}
 		
-		static public function interpolate(thisMat : Matrix3D,toMat : Matrix3D,percent : Number) : Matrix3D {
-			var m : Matrix3D = new Matrix3D();
+		static public function interpolate(thisMat : Matrix3D_ARRAY,toMat : Matrix3D_ARRAY,percent : Number) : Matrix3D_ARRAY {
+			var m : Matrix3D_ARRAY = new Matrix3D_ARRAY();
 			{
 				var _g : int = 0;
 				while(_g < 16) {
@@ -685,8 +685,8 @@ package  flash.geom{
 			return m;
 		}
 		
-		static protected function getAxisRotation(x : Number,y : Number,z : Number,degrees : Number) : Matrix3D {
-			var m : Matrix3D = new Matrix3D();
+		static protected function getAxisRotation(x : Number,y : Number,z : Number,degrees : Number) : Matrix3D_ARRAY {
+			var m : Matrix3D_ARRAY = new Matrix3D_ARRAY();
 			var a1 : flash.geom.Vector3D = new flash.geom.Vector3D(x,y,z);
 			var rad : Number = -degrees * (Math.PI / 180);
 			var c : Number = Math.cos(rad);

@@ -2,10 +2,9 @@ package flash.display3D
 {
    import flash.utils.ByteArray;
    
-   [API("674")]
    public final class Program3D extends Object
    {
-       
+       public var program:WebGLProgram;
       public function Program3D()
       {
          super();

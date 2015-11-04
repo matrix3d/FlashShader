@@ -1,6 +1,5 @@
 package flash.geom
 {
-   [Version("10")]
    public class Utils3D extends Object
    {
        

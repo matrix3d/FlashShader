@@ -104,7 +104,8 @@ package gl3d.core.skin
 			}
 			for each(var track:Track in tracks) {
 				var last:TrackFrame = null;
-				for each(var f:TrackFrame in track.frames) {
+				var f:TrackFrame = null;
+				for each(f in track.frames) {
 					if (f.time>=t) {
 						break;
 					}

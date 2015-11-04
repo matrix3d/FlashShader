@@ -9,10 +9,16 @@ package flash.display3D
    
    public final class Context3D extends EventDispatcher
    {
+	   private var canvas:HTMLCanvasElement;
+	   private var gl:WebGLRenderingContext;
        
       public function Context3D()
       {
          super();
+		 canvas = document.createElement("canvas") as HTMLCanvasElement;
+		document.body.appendChild(canvas);
+		gl = (canvas.getContext("webgl")||canvas.getContext("experimental-webgl")) as WebGLRenderingContext;
+			
       }
       
      public static function get supportsVideoTexture() : Boolean{return false}
@@ -25,17 +31,40 @@ package flash.display3D
       
      public function set enableErrorChecking(param1:Boolean) : void{}
       
-     public function configureBackBuffer(param1:int, param2:int, param3:int, param4:Boolean = true, param5:Boolean = false, param6:Boolean = false) : void{}
+     public function configureBackBuffer(width:int, height:int, antiAlias:int, enableDepthAndStencil:Boolean=true, wantsBestResolution:Boolean=false) : void { 
+		canvas.width = width;
+		canvas.height = height;
+		gl.viewport(0, 0, width, height);
+		 if(enableDepthAndStencil){
+			gl.enable(WebGLRenderingContext.DEPTH_TEST);
+			gl.enable(WebGLRenderingContext.STENCIL_TEST);
+		 }else{
+			gl.disable(WebGLRenderingContext.DEPTH_TEST);
+			gl.disable(WebGLRenderingContext.STENCIL_TEST);
+		 }
+	 }
       
-     public function clear(param1:Number = 0.0, param2:Number = 0.0, param3:Number = 0.0, param4:Number = 1.0, param5:Number = 1.0, param6:uint = 0, param7:uint = 4.294967295E9) : void{}
+     public function clear(red:Number = 0, green:Number = 0, blue:Number = 0, alpha:Number = 1, depth:Number = 1, stencil:uint = 0, mask:uint = 4294967295) : void {
+		gl.clearColor(red, green, blue, alpha);
+		gl.clearDepth(depth);
+		gl.clearStencil(stencil);
+		gl.clear(WebGLRenderingContext.COLOR_BUFFER_BIT | WebGLRenderingContext.DEPTH_BUFFER_BIT);
+	 }
       
-     public function drawTriangles(param1:IndexBuffer3D, param2:int = 0, param3:int = -1) : void{}
+     public function drawTriangles(indexBuffer:IndexBuffer3D, firstIndex:int=0, numTriangles:int=-1) : void{
+		gl.bindBuffer(WebGLRenderingContext.ELEMENT_ARRAY_BUFFER, indexBuffer.buff);
+		gl.drawElements(WebGLRenderingContext.TRIANGLES, numTriangles<0?indexBuffer.count:numTriangles*3, WebGLRenderingContext.UNSIGNED_SHORT, firstIndex*2);
+	 }
       
      public function present() : void{}
       
-     public function setProgram(param1:Program3D) : void{}
+     public function setProgram(program:Program3D) : void{
+		 gl.useProgram(program.program);
+	 }
       
-     public function setProgramConstantsFromVector(param1:String, param2:int, param3:Vector.<Number>, param4:int = -1) : void{}
+     public function setProgramConstantsFromVector(programType:String, firstRegister:int, data:Vector.<Number>, numRegisters:int = -1) : void {
+		
+	 }
       
      public function setProgramConstantsFromMatrix(param1:String, param2:int, param3:Matrix3D, param4:Boolean = false) : void{}
       
