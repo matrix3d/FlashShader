@@ -640,37 +640,19 @@ package  flash.geom{
 			this.rawData[14] = oRawData[11];
 		}
 		
-		public function get_determinant() : Number {
+		private function get_determinant() : Number {
 			return (this.rawData[0] * this.rawData[5] - this.rawData[4] * this.rawData[1]) * (this.rawData[10] * this.rawData[15] - this.rawData[14] * this.rawData[11]) - (this.rawData[0] * this.rawData[9] - this.rawData[8] * this.rawData[1]) * (this.rawData[6] * this.rawData[15] - this.rawData[14] * this.rawData[7]) + (this.rawData[0] * this.rawData[13] - this.rawData[12] * this.rawData[1]) * (this.rawData[6] * this.rawData[11] - this.rawData[10] * this.rawData[7]) + (this.rawData[4] * this.rawData[9] - this.rawData[8] * this.rawData[5]) * (this.rawData[2] * this.rawData[15] - this.rawData[14] * this.rawData[3]) - (this.rawData[4] * this.rawData[13] - this.rawData[12] * this.rawData[5]) * (this.rawData[2] * this.rawData[11] - this.rawData[10] * this.rawData[3]) + (this.rawData[8] * this.rawData[13] - this.rawData[12] * this.rawData[9]) * (this.rawData[2] * this.rawData[7] - this.rawData[6] * this.rawData[3]);
 		}
 		
-		public function get_position() : flash.geom.Vector3D {
+		private function get_position() : flash.geom.Vector3D {
 			return new flash.geom.Vector3D(this.rawData[12],this.rawData[13],this.rawData[14]);
 		}
 		
-		public function set_position(val : flash.geom.Vector3D) : flash.geom.Vector3D {
+		private function set_position(val : flash.geom.Vector3D) : flash.geom.Vector3D {
 			this.rawData[12] = val.x;
 			this.rawData[13] = val.y;
 			this.rawData[14] = val.z;
 			return val;
-		}
-		
-		static public function create2D(x : Number,y : Number,scale : Number = 1,rotation : Number = 0) : Matrix3D {
-			var theta : Number = rotation * Math.PI / 180.0;
-			var c : Number = Math.cos(theta);
-			var s : Number = Math.sin(theta);
-			return new Matrix3D(Vector.<Number>([c * scale,-s * scale,0,0,s * scale,c * scale,0,0,0,0,1,0,x,y,0,1]));
-		}
-		
-		static public function createABCD(a : Number,b : Number,c : Number,d : Number,tx : Number,ty : Number) : Matrix3D {
-			return new Matrix3D(Vector.<Number>([a,b,0,0,c,d,0,0,0,0,1,0,tx,ty,0,1]));
-		}
-		
-		static public function createOrtho(x0 : Number,x1 : Number,y0 : Number,y1 : Number,zNear : Number,zFar : Number) : Matrix3D {
-			var sx : Number = 1.0 / (x1 - x0);
-			var sy : Number = 1.0 / (y1 - y0);
-			var sz : Number = 1.0 / (zFar - zNear);
-			return new Matrix3D(Vector.<Number>([2.0 * sx,0,0,0,0,2.0 * sy,0,0,0,0,-2. * sz,0,-(x0 + x1) * sx,-(y0 + y1) * sy,-(zNear + zFar) * sz,1]));
 		}
 		
 		static public function interpolate(thisMat : Matrix3D,toMat : Matrix3D,percent : Number) : Matrix3D {

@@ -1,6 +1,5 @@
 package flash.display3D
 {
-   [API("674")]
    public final class Context3DVertexBufferFormat extends Object
    {
       

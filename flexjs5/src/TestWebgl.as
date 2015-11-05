@@ -73,6 +73,7 @@ package
 			gl.bindBuffer(WebGLRenderingContext.ELEMENT_ARRAY_BUFFER, ibuffer);
 			
 			
+			//draw
 			var matr:Matrix3D_ARRAY = new Matrix3D_ARRAY();
 			setInterval(function():void { 
 				var mvpLoction:WebGLUniformLocation = gl.getUniformLocation(program, "mvp");

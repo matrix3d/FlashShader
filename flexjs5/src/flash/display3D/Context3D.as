@@ -11,6 +11,7 @@ package flash.display3D
    {
 	   private var canvas:HTMLCanvasElement;
 	   private var gl:WebGLRenderingContext;
+	   private var currentProgram:Program3D;
        
       public function Context3D()
       {
@@ -25,11 +26,11 @@ package flash.display3D
       
      public function get driverInfo() : String{return null}
       
-     public function dispose(param1:Boolean = true) : void{}
+     public function dispose(recreate:Boolean = true) : void{}
       
      public function get enableErrorChecking() : Boolean{return false}
       
-     public function set enableErrorChecking(param1:Boolean) : void{}
+     public function set enableErrorChecking(toggle:Boolean) : void{}
       
      public function configureBackBuffer(width:int, height:int, antiAlias:int, enableDepthAndStencil:Boolean=true, wantsBestResolution:Boolean=false) : void { 
 		canvas.width = width;
@@ -58,25 +59,49 @@ package flash.display3D
       
      public function present() : void{}
       
-     public function setProgram(program:Program3D) : void{
+     public function setProgram(program:Program3D) : void {
+		currentProgram = program; 
 		 gl.useProgram(program.program);
 	 }
       
      public function setProgramConstantsFromVector(programType:String, firstRegister:int, data:Vector.<Number>, numRegisters:int = -1) : void {
-		
+		//var num:int =gl.getProgramParameter(currentProgram.program, WebGLRenderingContext.ACTIVE_UNIFORMS);
+		//var count:int = 0;
+		//for (var i:int = 0; i < num;i++ ) {
+		//	var au:WebGLActiveInfo = gl(currentProgram.program, i);
+		//}
+		gl.uniformMatrix4fv(gl.getUniformLocation(currentProgram.program,"u" + firstRegister), false, data);
 	 }
       
-     public function setProgramConstantsFromMatrix(param1:String, param2:int, param3:Matrix3D, param4:Boolean = false) : void{}
+     public function setProgramConstantsFromMatrix(programType:String, firstRegister:int, matrix:Matrix3D, transposedMatrix:Boolean=false) : void{}
       
-     public function setProgramConstantsFromByteArray(param1:String, param2:int, param3:int, param4:ByteArray, param5:uint) : void{}
+     public function setProgramConstantsFromByteArray(programType:String, firstRegister:int, numRegisters:int, data:ByteArray, byteArrayOffset:uint) : void{}
       
-     public function setVertexBufferAt(param1:int, param2:VertexBuffer3D, param3:int = 0, param4:String = "float4") : void{}
+     public function setVertexBufferAt(index:int, buffer:VertexBuffer3D, bufferOffset:int=0, format:String="float4") : void{
+		gl.bindBuffer(WebGLRenderingContext.ARRAY_BUFFER, buffer.buff);
+		var size:int = 0;
+		switch(format) {
+			case Context3DVertexBufferFormat.FLOAT_1:
+				size = 1;
+				break;
+			case Context3DVertexBufferFormat.FLOAT_2:
+				size = 2;
+				break;
+			case Context3DVertexBufferFormat.FLOAT_3:
+				size = 3;
+				break;
+			case Context3DVertexBufferFormat.FLOAT_4:
+				size = 4;
+				break;
+		}
+		gl.vertexAttribPointer(index, size, WebGLRenderingContext.FLOAT, false, 0, bufferOffset);
+	 }
       
-     public function setBlendFactors(param1:String, param2:String) : void{}
+     public function setBlendFactors(sourceFactor:String, destinationFactor:String) : void{}
       
-     public function setColorMask(param1:Boolean, param2:Boolean, param3:Boolean, param4:Boolean) : void{}
+     public function setColorMask(red:Boolean, green:Boolean, blue:Boolean, alpha:Boolean) : void{}
       
-     public function setDepthTest(param1:Boolean, param2:String) : void{}
+     public function setDepthTest(depthMask:Boolean, passCompareMode:String) : void{}
       
       public function setTextureAt(sampler:int, texture:TextureBase) : void
       {
@@ -128,29 +153,45 @@ package flash.display3D
       
      private function setRenderToTextureInternal(param1:TextureBase, param2:int, param3:Boolean, param4:int, param5:int, param6:int) : void{}
       
-	 public function setCulling(param1:String) : void{}
+	 public function setCulling(triangleFaceToCull:String) : void{}
       
-     public function setStencilActions(param1:String = "frontAndBack", param2:String = "always", param3:String = "keep", param4:String = "keep", param5:String = "keep") : void{}
+     public function setStencilActions(triangleFace:String="frontAndBack", compareMode:String="always", actionOnBothPass:String="keep", actionOnDepthFail:String="keep", actionOnDepthPassStencilFail:String="keep") : void{}
       
-     public function setStencilReferenceValue(param1:uint, param2:uint = 255, param3:uint = 255) : void{}
+     public function setStencilReferenceValue(referenceValue:uint, readMask:uint=255, writeMask:uint=255) : void{}
       
-     public function setScissorRectangle(param1:Rectangle) : void{}
+     public function setScissorRectangle(rectangle:Rectangle) : void{}
       
-     public function createVertexBuffer(param1:int, param2:int, param3:String = "staticDraw") : VertexBuffer3D{return null}
+     public function createVertexBuffer(numVertices:int, data32PerVertex:int, bufferUsage:String = "staticDraw") : VertexBuffer3D {
+		 var buffer:VertexBuffer3D = new VertexBuffer3D;
+		 buffer.buff = gl.createBuffer();
+		 buffer.gl = gl;
+		 return buffer;
+	}
       
-     public function createIndexBuffer(param1:int, param2:String = "staticDraw") : IndexBuffer3D{return null}
+     public function createIndexBuffer(numIndices:int, bufferUsage:String = "staticDraw") : IndexBuffer3D {
+		 var buffer:IndexBuffer3D = new IndexBuffer3D;
+		 buffer.buff = gl.createBuffer();
+		 buffer.gl = gl;
+		 buffer.count = numIndices;
+		 return buffer;
+	 }
       
-     public function createTexture(param1:int, param2:int, param3:String, param4:Boolean, param5:int = 0) : Texture{return null}
+     public function createTexture(width:int, height:int, format:String, optimizeForRenderToTexture:Boolean, streamingLevels:int=0) : Texture{return null}
       
-     public function createCubeTexture(param1:int, param2:String, param3:Boolean, param4:int = 0) : CubeTexture{return null}
+     public function createCubeTexture(size:int, format:String, optimizeForRenderToTexture:Boolean, streamingLevels:int=0) : CubeTexture{return null}
       
-     public function createRectangleTexture(param1:int, param2:int, param3:String, param4:Boolean) : RectangleTexture{return null}
+     public function createRectangleTexture(width:int, height:int, format:String, optimizeForRenderToTexture:Boolean) : RectangleTexture{return null}
       
-     public function createProgram() : Program3D{return null}
+     public function createProgram() : Program3D {
+		 var p:Program3D = new Program3D;
+		 p.gl = gl;
+		 p.program = gl.createProgram();
+		 return p;
+	}
       
-     public function drawToBitmapData(param1:BitmapData) : void{}
+     public function drawToBitmapData(destination:BitmapData) : void{}
       
-     public function setSamplerStateAt(param1:int, param2:String, param3:String, param4:String) : void{}
+     public function setSamplerStateAt(sampler:int, wrap:String, filter:String, mipfilter:String) : void{}
       
      public function get profile() : String{return null}
       
@@ -168,11 +209,11 @@ package flash.display3D
       
      public function get maxBackBufferWidth() : int{return 0}
       
-     public function set maxBackBufferWidth(param1:int) : void{}
+     public function set maxBackBufferWidth(width:int) : void{}
       
      public function get maxBackBufferHeight() : int{return 0}
       
-     public function set maxBackBufferHeight(param1:int) : void{}
+     public function set maxBackBufferHeight(height:int) : void{}
       
      public function createVideoTexture() : VideoTexture{return null}
    }

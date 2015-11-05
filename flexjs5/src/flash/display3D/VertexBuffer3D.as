@@ -2,18 +2,22 @@ package flash.display3D
 {
    import flash.utils.ByteArray;
    
-   [API("674")]
    public class VertexBuffer3D extends Object
    {
-       
+       public var buff:WebGLBuffer;
+	   public var gl:WebGLRenderingContext;
       public function VertexBuffer3D()
       {
          super();
       }
       
-     public function uploadFromVector(param1:Vector.<Number>, param2:int, param3:int) : void{}
+     public function uploadFromVector(data:Vector.<Number>, startVertex:int, numVertices:int) : void{
+		 gl.bindBuffer(WebGLRenderingContext.ARRAY_BUFFER, buff);
+		gl.bufferData(WebGLRenderingContext.ARRAY_BUFFER, new Float32Array(data), WebGLRenderingContext.STATIC_DRAW);
+			
+	 }
       
-     public function uploadFromByteArray(param1:ByteArray, param2:int, param3:int, param4:int) : void{}
+     public function uploadFromByteArray(data:ByteArray, byteArrayOffset:int, startVertex:int, numVertices:int) : void{}
       
      public function dispose() : void{}
    }
