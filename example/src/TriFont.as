@@ -12,6 +12,7 @@ package
 	import flash.display3D.Context3DTriangleFace;
 	import flash.events.Event;
 	import flash.geom.Vector3D;
+	import flash.text.Font;
 	import gl3d.util.Utils;
 	
 	import flash.display.BitmapData;
@@ -39,10 +40,12 @@ package
 		
 		override public function initNode():void 
 		{
+			var arr:Array= Font.enumerateFonts(true);
+			
 			addSky();
 			var tf:TextField = new TextField;
 			tf.defaultTextFormat = new TextFormat("宋体", 100,null,true);
-			tf.text = loaderInfo.parameters["text"]||Utils.getParameters()["text"]||"毛泽东万岁";
+			tf.text = loaderInfo.parameters["text"] || "毛泽东万岁";
 			tf.autoSize = "left";
 			var bmd:BitmapData = new BitmapData(tf.width, tf.height, false, 0xffffff);
 			bmd.draw(tf);

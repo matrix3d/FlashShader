@@ -163,7 +163,7 @@ package gl3d.meshs
 		}
 		
 		
-		public static function createDrawable(index:Vector.<uint>,pos:Vector.<Number>,uv:Vector.<Number>,norm:Vector.<Number>,tangent:Vector.<Number>=null):Drawable3D {
+		public static function createDrawable(index:Vector.<uint>,pos:Vector.<Number>,uv:Vector.<Number>=null,norm:Vector.<Number>=null,tangent:Vector.<Number>=null):Drawable3D {
 			var drawable:Drawable3D = new Drawable3D;
 			if(index)
 			drawable.index = new IndexBufferSet(index);
