@@ -1,7 +1,11 @@
 package 
 {
+	import flash.display.BlendMode;
+	import flash.display.Sprite;
 	import flash.display3D.Context3DTriangleFace;
 	import flash.events.Event;
+	import flash.events.MouseEvent;
+	import flash.geom.Point;
 	import gl3d.core.Material;
 	import gl3d.core.Node3D;
 	import gl3d.core.shaders.GLShader;
@@ -12,10 +16,10 @@ package
 	 */
 	public class TestCurve extends BaseExample
 	{
-		private var cube:Node3D;
-		private var size:Number=2;
-		private var ctrl:Node3D;
-		
+		private var curve:Node3D;
+		private var p0:Sprite;
+		private var c:Sprite;
+		private var p1:Sprite;
 		public function TestCurve() 
 		{
 			
@@ -23,27 +27,61 @@ package
 		
 		override public function initNode():void 
 		{
-			cube = new Node3D();
-			cube.material = new Material;
-			cube.material.shader = new CurveShader;
-			cube.material.culling = Context3DTriangleFace.NONE;
-			cube.drawable = Meshs.createDrawable(new <uint>[0,1,2],new <Number>[size,-size,0,size,size,0,-size,size,0],new <Number>[0,0,.5,0,1,1]);
+			addSky();
 			
-			view.scene.addChild(cube);
+			curve = new Node3D();
+			curve.material = new Material;
+			curve.material.shader = new CurveShader;
+			curve.material.culling = Context3DTriangleFace.NONE;
+			curve.material.blendModel = BlendMode.LAYER;
+			curve.drawable = Meshs.createDrawable(new <uint>[0,1,2],new <Number>[0,0,0,0,0,0,0,0,0],new <Number>[0,0,.5,0,1,1]);
 			
-			ctrl = new Node3D;
-			ctrl.material = new Material;
-			ctrl.drawable = Meshs.cube(.1, .1, .1);
-			view.scene.addChild(ctrl);
+			view.scene.addChild(curve);
+			p0=addPoint(100, 100);
+			c=addPoint(400, 100);
+			p1=addPoint(500, 500);
+			
+			stats.visible = false;
+		}
+		
+		private function addPoint(x:Number, y:Number):Sprite {
+			var s:Sprite = new Sprite;
+			s.graphics.beginFill(0xff0000);
+			s.graphics.lineStyle(0);
+			s.graphics.drawCircle(0, 0, 10);
+			addChild(s);
+			s.x = x;
+			s.y = y;
+			s.buttonMode = true;
+			s.addEventListener(MouseEvent.MOUSE_DOWN, s_mouseDown);
+			return s;
+		}
+		
+		private function s_mouseDown(e:MouseEvent):void 
+		{
+			stage.addEventListener(MouseEvent.MOUSE_UP, stage_mouseUp);
+			var s:Sprite = e.currentTarget as Sprite;
+			s.startDrag();
+		}
+		
+		private function stage_mouseUp(e:MouseEvent):void 
+		{
+			stopDrag();
+		}
+		
+		private function d2d3(s:Sprite):Point {
+			return new Point(s.x/view.stage3dWidth*2-1,1-s.y/view.stage3dHeight*2);
 		}
 		
 		override public function enterFrame(e:Event):void 
 		{
-			var x:Number=Math.sin(view.time/400)*size;
-			var y:Number=Math.sin(view.time/600)*size;
-			cube.drawable.pos.data[3] =ctrl.x= x;
-			cube.drawable.pos.data[4] =ctrl.y= y;
-			cube.drawable.pos.invalid = true;
+			curve.drawable.pos.data[0] = d2d3(p0).x;
+			curve.drawable.pos.data[1] = d2d3(p0).y;
+			curve.drawable.pos.data[3] = d2d3(c).x;
+			curve.drawable.pos.data[4] = d2d3(c).y;
+			curve.drawable.pos.data[6] = d2d3(p1).x;
+			curve.drawable.pos.data[7] = d2d3(p1).y;
+			curve.drawable.pos.invalid = true;
 			super.enterFrame(e);
 		}
 	}
@@ -91,7 +129,7 @@ class CurveFShader extends GLAS3Shader {
 		
 		alpha=sat(alpha);
 		
-		oc = alpha;
+		oc = vec4(1,1,1,alpha);
 	}
 }
 
@@ -100,7 +138,7 @@ class CurveVShader extends GLAS3Shader {
 	public function CurveVShader() 
 	{
 		super(Context3DProgramType.VERTEX);
-		op = m44(m44(m44(buffPos(), uniformModel()), uniformView()), uniformPerspective());
+		op = buffPos();//m44(m44(m44(buffPos(), uniformModel()), uniformView()), uniformPerspective());
 		uv = varying();
 		mov(buffUV(), uv);
 	}
