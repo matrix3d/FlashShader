@@ -50,6 +50,11 @@ package as3Shader
 			for (var i:int = 0; i < lines.length;i++ ) {
 				var line:Array = lines[i];
 				var opName:String = line[0];
+				if (version==1) {
+					if (opName=="ddx"||opName=="ddy") {
+						opName = "mov";
+					}
+				}
 				var opFound:OpCode = OPMAP[opName];
 				var opts:Array=line["flag"];
 				if ( opFound == null )

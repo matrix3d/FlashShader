@@ -236,7 +236,7 @@ package
 			addChild(gamepad);
 			gamepad.x = 200;
 			gamepad.y = 200;
-			//addChild(stats);
+			addChild(stats);
 		}
 		public function initCtrl():void {
 			fc = new FirstPersonCtrl(view.camera, stage);
@@ -261,7 +261,9 @@ package
 		
 		public function enterFrame(e:Event):void
 		{
-			if(teapot){
+			if (teapot) {
+				teapot.matrix.appendRotation(1, Vector3D.Y_AXIS);
+				teapot.updateTransforms(true);
 				//teapot.rotationX+=.01;
 				//var r:Vector3D = teapot.getRotation();
 				//teapot.matrix.appendRotation(1, Vector3D.Y_AXIS);// .setRotation(r.x, r.y + 1, r.z);// += .01;

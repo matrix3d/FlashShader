@@ -1,6 +1,7 @@
 package gl3d.core.skin 
 {
 	import flash.geom.Matrix3D;
+	import flash.geom.Utils3D;
 	import flash.geom.Vector3D;
 	import gl3d.core.animation.IAnimation;
 	import gl3d.core.skin.Joint;
@@ -35,7 +36,7 @@ package gl3d.core.skin
 		}
 		
 		private function updateIK(iks:Vector.<Joint>, mesh:Node3D):void {
-			return;
+			//return;
 			if (iks == null) return;
 			for (var a:int=0,al:int=iks.length; a<al; a++) {
 				var target:Joint = iks[a];
@@ -50,7 +51,9 @@ package gl3d.core.skin
 				for (var j:int=0; j<jl; j++) {
 					var ikl:IKLink = ik.links[j];
 					var link:Joint = ikl.joint;
+					var p:Vector3D = link.matrix.position;
 					link.matrix.identity();
+					link.matrix.appendTranslation(p.x, p.y, p.z);
 					link.updateTransforms(true);
 				}
 				for (var i:int=0; i<il; i++) {
@@ -63,9 +66,10 @@ package gl3d.core.skin
 						var effectorVecMatrix:Matrix3D = effector.world.clone();
 						effectorVecMatrix.append(mesh.world2local);
 						var effectorVec:Vector3D = effectorVecMatrix.position;
+						effectorVec = Utils3D.projectVector(inv, effectorVec);
+						effectorVec.normalize();
 						var targetVec:Vector3D = targetPos.clone();
-						inv.transformVector(targetVec);
-						//targetVec.project();
+						targetVec = Utils3D.projectVector(inv, targetVec);
 						targetVec.normalize();
 						var angle:Number = targetVec.dotProduct(effectorVec);
 						if (angle > 1) { // 誤差対策。
@@ -78,19 +82,21 @@ package gl3d.core.skin
 						if (angle > ik.control) {
 							angle = ik.control;
 						}
-						var m:Matrix3D = new Matrix3D;
+						
 						var axis:Vector3D = effectorVec.crossProduct(targetVec);
 						axis.normalize();
-						m.appendRotation(angle, axis);
-						link.matrix.append(m);
+						p = link.matrix.position;
+						link.matrix.appendRotation(angle * 180 / Math.PI, axis);
+						link.matrix.position = p;
 						if (ikl.limits) { // 実質的に「ひざ」限定。
 							// 簡易版
 							var q:Quaternion = new Quaternion;
 							q.fromMatrix(link.matrix);
 							var t:Number = q.w;
-							q.setTo(Math.sqrt(1 - t * t), 0, 0); // X軸回転に限定。
-							q.toMatrix(link.matrix);
+							q.setTo(-Math.sqrt(1 - t * t), 0, 0); // X軸回転に限定。
+							q.toMatrix(link.matrix);	
 						}
+						link.updateTransforms(true);
 					}
 				}
 			}

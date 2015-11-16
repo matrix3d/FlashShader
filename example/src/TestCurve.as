@@ -94,6 +94,10 @@ import gl3d.core.shaders.GLAS3Shader;
 import gl3d.core.shaders.GLShader;
 
 class CurveShader extends GLShader {
+	public function CurveShader() 
+	{
+		debug = true;
+	}
 	override public function getFragmentShader(material:Material):GLAS3Shader 
 	{
 		return new CurveFShader(vs as CurveVShader);

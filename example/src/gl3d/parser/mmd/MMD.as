@@ -67,8 +67,8 @@ package gl3d.parser.mmd
 				bone.name = boneObj.name;
 				bone.type = "JOINT";
 				name2bone[bone.name] = bone;
-				bone.material = new Material;
-				bone.drawable = Meshs.cube(.5, .5, .5);
+				//bone.material = new Material;
+				//bone.drawable = Meshs.cube(.5, .5, .5);
 				var origin:Array = boneObj.origin;
 				bone.x = origin[0];
 				bone.y = origin[1];
