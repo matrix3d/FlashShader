@@ -9,6 +9,7 @@ package gl3d.particle
 	import gl3d.core.TextureSet;
 	import gl3d.core.View3D;
 	import gl3d.meshs.Meshs;
+	import gl3d.meshs.Teapot;
 	import gl3d.shaders.particle.ParticleGLShader;
 	import gl3d.util.Utils;
 	/**
@@ -51,7 +52,7 @@ package gl3d.particle
 					if (shapeID==0) {
 						var shape:Drawable3D = Meshs.cube();
 					}else if (shapeID==1) {
-						shape = Meshs.teapot(2);
+						shape = Teapot.teapot(2);
 					}else if (shapeID==2) {
 						shape = Meshs.plane();
 					}else {

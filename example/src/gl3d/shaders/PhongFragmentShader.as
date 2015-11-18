@@ -177,8 +177,8 @@ package gl3d.shaders
 		public function getSmoothColor(i:int):Var {
 			var factor1:Var = uniformLightVar(i).y;
 			var factor2:Var = uniformLightVar(i).z;
-			var lightToPoint:Var = sub(vs.modelPosVarying,uniformLightPos(i));
-			var lightAngleCosine:Var = dp3(nrm(uniformLightPos(i)), nrm(lightToPoint));
+			var lightToPoint:Var = sub(vs.modelPosVarying, uniformLightPos(i));
+			var lightAngleCosine:Var = dp3(nrm(mov(uniformLightPos(i))), nrm(lightToPoint));
 			return sat(add(mul(factor1, lightAngleCosine), factor2));
 		}
 		

@@ -7,6 +7,7 @@ package
 	import gl3d.core.Node3D;
 	import gl3d.core.View3D;
 	import gl3d.meshs.Meshs;
+	import gl3d.meshs.Teapot;
 	/**
 	 * ...
 	 * @author lizhi
@@ -42,7 +43,7 @@ package
 			view2.camera.perspective.perspectiveFieldOfViewLH(Math.PI / 4, view1.stage3dWidth/ view1.stage3dHeight, .1, 4000);
 			view2.lights[0].z = -10;
 			n2 = new Node3D;
-			n2.drawable = Meshs.teapot();
+			n2.drawable = Teapot.teapot();
 			n2.material = new Material;
 			view2.scene.addChild(n2);
 			

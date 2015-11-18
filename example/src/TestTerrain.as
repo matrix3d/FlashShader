@@ -19,6 +19,7 @@ package
 	import gl3d.core.Material;
 	import gl3d.meshs.Meshs;
 	import gl3d.core.Node3D;
+	import gl3d.meshs.Teapot;
 	import gl3d.parser.dae.ColladaDecoder;
 	import gl3d.parser.obj.OBJEncoder;
 	import gl3d.pick.TerrainPicking;
@@ -154,7 +155,7 @@ package
 			targetCube = new Node3D;
 			targetCube.material = new Material;
 			targetCube.material.color[1] = 0;
-			targetCube.drawable = Meshs.teapot();
+			targetCube.drawable = Teapot.teapot();
 			targetCube.scaleX = targetCube.scaleY = targetCube.scaleZ = .3;
 			view.scene.addChild(targetCube);
 			stage.addEventListener(MouseEvent.MOUSE_DOWN, stage_mouseDown);

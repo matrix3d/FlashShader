@@ -15,8 +15,8 @@ package gl3d.core {
 		public var shadowMapEnabled:Boolean = false;
 		public var shadowMapSize:int = 1024;
 		public var distance:Number = 10;
-		public var innerConeAngle:Number = 3.14 / 6;
-		public var outerConeAngle:Number = 3.14 / 3;
+		public var innerConeAngle:Number = Math.PI / 6;
+		public var outerConeAngle:Number = Math.PI / 3;
 		public function Light(lightType:int=DISTANT,name:String="light") 
 		{
 			this.lightType = lightType;

@@ -23,6 +23,7 @@ package
 	import gl3d.ctrl.ArcBallCtrl;
 	import gl3d.ctrl.FirstPersonCtrl;
 	import gl3d.core.Material;
+	import gl3d.meshs.Teapot;
 	import gl3d.parser.hlbsp.Bsp;
 	import gl3d.parser.hlbsp.BspRender;
 	import gl3d.parser.hlbsp.console;
@@ -120,8 +121,8 @@ package
 			
 			//atf
 			//[Embed(source = "assets/leaf_apple.atf", mimeType = "application/octet-stream")]var leafc:Class;
-			[Embed(source = "assets/leaf.atf", mimeType = "application/octet-stream")]var leafc:Class;
-			texture = new TextureSet((new leafc as ByteArray),false,false,false,false);
+			//[Embed(source = "assets/leaf.atf", mimeType = "application/octet-stream")]var leafc:Class;
+			//texture = new TextureSet((new leafc as ByteArray),false,false,false,false);
 			
 			
 			//[Embed(source = "assets/leaf.png")]var leafp:Class;
@@ -130,7 +131,7 @@ package
 			normalMapTexture = createNormalMap();
 			material.culling =  Context3DTriangleFace.NONE;
 			//material.blendModel = BlendMode.ADD;
-			material.normalMapAble = true;
+			material.normalMapAble = false;
 			material.specularPower = 10;
 			material.specularAble = true;
 			material.lightAble = true;
@@ -141,7 +142,7 @@ package
 			if (material.normalMapAble) {
 				material.normalmapTexture= normalMapTexture;
 			}
-			material.reflectTexture = skyBoxTexture;
+			//material.reflectTexture = skyBoxTexture;
 			
 			stats = new Stats(view);
 			initLight();
@@ -199,8 +200,7 @@ package
 			
 			teapot = new Node3D;
 			teapot.material = material;
-			teapot.drawable = Meshs.teapot(10);
-			//teapot.drawable = Meshs.cube();
+			teapot.drawable = Meshs.cube();
 			view.scene.addChild(teapot);
 			teapot.scaleX = teapot.scaleY = teapot.scaleZ = 1;
 			view.background = 0//xffffff;

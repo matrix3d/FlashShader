@@ -58,8 +58,8 @@ package
 			//load("C:/Users/aaaa/Desktop/running.fbx");
 			//load("C:/Users/aaaa/Desktop/2.fbx");
 			//load("../src/assets/test4.FBX");
-			load("../src/assets/miku.pmx");
-			load("../src/assets/melt.vmd");
+			//load("../src/assets/miku.pmx");
+			//load("../src/assets/melt.vmd");
 		}
 		
 		private function load(v:String):void {
