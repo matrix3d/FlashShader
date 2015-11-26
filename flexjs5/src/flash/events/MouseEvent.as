@@ -27,25 +27,18 @@ package flash.events
       
       public static const ROLL_OVER:String = "rollOver";
       
-      [API("678")]
       public static const MIDDLE_CLICK:String = "middleClick";
       
-      [API("678")]
       public static const MIDDLE_MOUSE_DOWN:String = "middleMouseDown";
       
-      [API("678")]
       public static const MIDDLE_MOUSE_UP:String = "middleMouseUp";
       
-      [API("678")]
       public static const RIGHT_CLICK:String = "rightClick";
       
-      [API("678")]
       public static const RIGHT_MOUSE_DOWN:String = "rightMouseDown";
       
-      [API("678")]
       public static const RIGHT_MOUSE_UP:String = "rightMouseUp";
       
-      [API("678")]
       public static const CONTEXT_MENU:String = "contextMenu";
        
       private var m_relatedObject:Sprite;
@@ -87,11 +80,11 @@ package flash.events
       
      public function get localX() : Number{return 0}
       
-     public function set localX(param1:Number) : void{return 0}
+     public function set localX(param1:Number) : void{}
       
      public function get localY() : Number{return 0}
       
-     public function set localY(param1:Number) : void{return 0}
+     public function set localY(param1:Number) : void{}
       
       public function get relatedObject() : Sprite
       {

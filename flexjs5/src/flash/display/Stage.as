@@ -9,7 +9,7 @@ package flash.display
    import flash.text.TextSnapshot;
    import flash.ui.ContextMenu;
    
-   public class Stage extends Sprite
+   public class Stage extends DisplayObject
    {
       
       private static const kInvalidParamError:uint = 2004;

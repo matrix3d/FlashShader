@@ -6,7 +6,7 @@ package flash.events
    [Event(name="activate",type="flash.events.Event")]
    public class EventDispatcher
    {
-       
+       private var listeners:Object = { };
       public function EventDispatcher(target:EventDispatcher = null)
       {
          super();
@@ -44,9 +44,24 @@ package flash.events
       
      private function ctor(param1:EventDispatcher) : void{}
       
-     public function addEventListener(param1:String, param2:Function, param3:Boolean = false, param4:int = 0, param5:Boolean = false) : void{}
+     public function addEventListener(type:String, listener:Function, useCapture:Boolean = false, priority:int = 0, useWeakReference:Boolean = false) : void{
+		 var funcs:Array = listeners[type] = listeners[type] || [];
+		 //var i:int = funcs.indexOf(listener);
+		// if (i!=-1) {
+		//	funcs.splice(i, 1);
+		 //}
+		 funcs.push(listener);
+	 }
       
-     public function removeEventListener(param1:String, param2:Function, param3:Boolean = false) : void{}
+     public function removeEventListener(type:String, listener:Function, useCapture:Boolean = false) : void{
+		var funcs:Array = listeners[type];
+		if (funcs) {
+			//var i:int = funcs.indexOf(listener);
+			 //if (i!=-1) {
+			//	funcs.splice(i, 1);
+			 //}
+		}
+	 }
       
       public function dispatchEvent(event:Event) : Boolean
       {
@@ -57,11 +72,21 @@ package flash.events
          return this.dispatchEventFunction(event);
       }
       
-     public function hasEventListener(param1:String) : Boolean{return false}
+     public function hasEventListener(type:String) : Boolean{return false}
       
      public function willTrigger(param1:String) : Boolean{return false}
       
-     private function dispatchEventFunction(param1:Event) : Boolean{return false}
+     private function dispatchEventFunction(event:Event) : Boolean {
+		 event.target = this;
+		 event.currentTarget = this;
+		 var funcs:Array = listeners[event.type];
+		 if (funcs) {
+			for each(var func:Function in funcs) {
+				func(event);
+			}
+		 }
+		 return false;
+	}
       
      
    }

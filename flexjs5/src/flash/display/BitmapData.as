@@ -5,20 +5,25 @@ package flash.display
    
    public class BitmapData
    {
-       
+	   public var image:Image;
+       private var _width:int;
+	   private var _height:int;
       public function BitmapData(width:int, height:int, transparent:Boolean = true, fillColor:uint = 4.294967295E9)
       {
          super();
          this.ctor(width,height,transparent,fillColor);
       }
       
-     private function ctor(param1:int, param2:int, param3:Boolean, param4:uint) : void{}
+     private function ctor(width:int, height:int, transparent:Boolean = true, fillColor:uint = 4.294967295E9) : void{
+		 _width = width;
+		 _height = height;
+	 }
       
      public function clone() : BitmapData{return null}
       
-     public function get width() : int{return 0}
+     public function get width() : int{return _width}
       
-     public function get height() : int{return 0}
+     public function get height() : int{return _height}
       
      public function get transparent() : Boolean{return true}
       

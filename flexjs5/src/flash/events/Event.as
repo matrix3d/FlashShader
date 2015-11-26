@@ -89,18 +89,21 @@ package flash.events
       
       public static const WORKER_STATE:String = "workerState";
        
+	  private var _type:String;
       public function Event(type:String, bubbles:Boolean = false, cancelable:Boolean = false)
       {
          super();
          this.ctor(type,bubbles,cancelable);
       }
       
-      public function formatToString(className:String, ... arguments) : String
+      public function formatToString(className:String, ... args) : String
       {
          return null
       }
       
-     private function ctor(param1:String, param2:Boolean, param3:Boolean) : void{}
+     private function ctor(type:String, bubbles:Boolean, cancelable:Boolean) : void{
+		 _type = type;
+	 }
       
       public function clone() : Event
       {
@@ -112,15 +115,15 @@ package flash.events
          return this.formatToString("Event","type","bubbles","cancelable","eventPhase");
       }
       
-     public function get type() : String{return null}
+     public function get type() : String{return _type}
       
      public function get bubbles() : Boolean{return false}
       
      public function get cancelable() : Boolean{return false}
       
-     public function get target() : Object{return null}
+     public var target : Object;
       
-     public function get currentTarget() : Object{return null}
+     public var currentTarget : Object;
       
      public function get eventPhase() : uint{return 0}
       

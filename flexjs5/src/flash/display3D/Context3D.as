@@ -206,7 +206,12 @@ package flash.display3D
 		 return buffer;
 	 }
       
-     public function createTexture(width:int, height:int, format:String, optimizeForRenderToTexture:Boolean, streamingLevels:int=0) : Texture{return null}
+     public function createTexture(width:int, height:int, format:String, optimizeForRenderToTexture:Boolean, streamingLevels:int=0) : Texture{
+		 var t:Texture = new Texture;
+		 t.gl = gl;
+		 t.texture = gl.createTexture();
+		 return t;
+	 }
       
      public function createCubeTexture(size:int, format:String, optimizeForRenderToTexture:Boolean, streamingLevels:int=0) : CubeTexture{return null}
       
@@ -225,7 +230,13 @@ package flash.display3D
       
      public function get profile() : String{return null}
       
-     private function setTextureInternal(param1:int, param2:Texture) : void{}
+     private function setTextureInternal(sampler:int, texture:Texture) : void{
+		 if (texture) {
+			gl.activeTexture(WebGLRenderingContext.TEXTURE0);
+			gl.bindTexture(WebGLRenderingContext.TEXTURE_2D, texture.texture);
+			gl.uniform1i(gl.getUniformLocation(currentProgram.program, "fs" + sampler),0);
+		 }
+	 }
       
      private function setCubeTextureInternal(param1:int, param2:CubeTexture) : void{}
       
