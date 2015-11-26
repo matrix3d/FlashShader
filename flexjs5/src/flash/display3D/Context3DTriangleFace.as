@@ -1,16 +1,15 @@
 package flash.display3D
 {
-   [API("674")]
    public final class Context3DTriangleFace extends Object
    {
       
-      public static const NONE:String = "none";
+      public static const NONE:int =WebGLRenderingContext.NONE;// "none";
       
-      public static const BACK:String = "back";
+      public static const BACK:int = WebGLRenderingContext.BACK;//"back";
       
-      public static const FRONT:String = "front";
+      public static const FRONT:int = WebGLRenderingContext.FRONT;//"front";
       
-      public static const FRONT_AND_BACK:String = "frontAndBack";
+      public static const FRONT_AND_BACK:int = WebGLRenderingContext.FRONT_AND_BACK; //"frontAndBack";
        
       public function Context3DTriangleFace()
       {

@@ -70,10 +70,16 @@ package flash.display3D
 		//for (var i:int = 0; i < num;i++ ) {
 		//	var au:WebGLActiveInfo = gl(currentProgram.program, i);
 		//}
-		gl.uniformMatrix4fv(gl.getUniformLocation(currentProgram.program,"u" + firstRegister), false, data);
+		gl.uniform4fv(getUniformLocation(programType,firstRegister), data);
 	 }
       
-     public function setProgramConstantsFromMatrix(programType:String, firstRegister:int, matrix:Matrix3D, transposedMatrix:Boolean=false) : void{}
+     public function setProgramConstantsFromMatrix(programType:String, firstRegister:int, matrix:Matrix3D, transposedMatrix:Boolean=false) : void{
+		gl.uniformMatrix4fv(getUniformLocation(programType,firstRegister), transposedMatrix, matrix.rawData);
+	 }
+	 
+	 private function getUniformLocation(programType:String, register:int):WebGLUniformLocation {
+		return gl.getUniformLocation(currentProgram.program, (Context3DProgramType.VERTEX==programType)?("vc" + register):("fc" + register));
+	 }
       
      public function setProgramConstantsFromByteArray(programType:String, firstRegister:int, numRegisters:int, data:ByteArray, byteArrayOffset:uint) : void{}
       
@@ -95,13 +101,23 @@ package flash.display3D
 				break;
 		}
 		gl.vertexAttribPointer(index, size, WebGLRenderingContext.FLOAT, false, 0, bufferOffset);
+		gl.enableVertexAttribArray(index);
 	 }
       
-     public function setBlendFactors(sourceFactor:String, destinationFactor:String) : void{}
+     public function setBlendFactors(sourceFactor:int, destinationFactor:int) : void{
+		 gl.enable(WebGLRenderingContext.BLEND);
+		 gl.blendEquation(WebGLRenderingContext.FUNC_ADD);
+		 gl.blendFunc(sourceFactor, destinationFactor);
+	 }
       
-     public function setColorMask(red:Boolean, green:Boolean, blue:Boolean, alpha:Boolean) : void{}
+     public function setColorMask(red:Boolean, green:Boolean, blue:Boolean, alpha:Boolean) : void{
+		gl.colorMask(red, green, blue, alpha);
+	 }
       
-     public function setDepthTest(depthMask:Boolean, passCompareMode:String) : void{}
+     public function setDepthTest(depthMask:Boolean, passCompareMode:int) : void {
+		gl.depthFunc(passCompareMode);
+		gl.depthMask(depthMask);
+	 }
       
       public function setTextureAt(sampler:int, texture:TextureBase) : void
       {
@@ -153,13 +169,27 @@ package flash.display3D
       
      private function setRenderToTextureInternal(param1:TextureBase, param2:int, param3:Boolean, param4:int, param5:int, param6:int) : void{}
       
-	 public function setCulling(triangleFaceToCull:String) : void{}
+	 public function setCulling(triangleFaceToCull:int) : void{
+		 if (triangleFaceToCull==WebGLRenderingContext.NONE) {
+			gl.disable(WebGLRenderingContext.CULL_FACE);
+		 }else {
+			gl.enable(WebGLRenderingContext.CULL_FACE);
+			gl.cullFace(triangleFaceToCull);
+		 }
+	 }
       
      public function setStencilActions(triangleFace:String="frontAndBack", compareMode:String="always", actionOnBothPass:String="keep", actionOnDepthFail:String="keep", actionOnDepthPassStencilFail:String="keep") : void{}
       
      public function setStencilReferenceValue(referenceValue:uint, readMask:uint=255, writeMask:uint=255) : void{}
       
-     public function setScissorRectangle(rectangle:Rectangle) : void{}
+     public function setScissorRectangle(rectangle:Rectangle) : void{
+		 if (rectangle==null) {
+			 gl.disable(WebGLRenderingContext.SCISSOR_TEST);
+		 }else {
+			gl.enable(WebGLRenderingContext.SCISSOR_TEST);
+			gl.scissor(rectangle.x, rectangle.y, rectangle.width, rectangle.height);
+		 }
+	 }
       
      public function createVertexBuffer(numVertices:int, data32PerVertex:int, bufferUsage:String = "staticDraw") : VertexBuffer3D {
 		 var buffer:VertexBuffer3D = new VertexBuffer3D;

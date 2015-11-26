@@ -1,6 +1,5 @@
 package flash.display3D
 {
-   [API("692")]
    public final class Context3DBufferUsage extends Object
    {
       

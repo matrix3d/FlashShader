@@ -24,11 +24,12 @@ package flash.display3D
 		gl.attachShader(program,vshader);
 		gl.attachShader(program,fshader);
 		gl.linkProgram(program);
-		gl.useProgram(program);
-		gl.enableVertexAttribArray(0);
-		gl.enableVertexAttribArray(1);
 	 }
       
-     public function dispose() : void{}
+     public function dispose() : void{
+		 gl.deleteShader(fshader);
+		 gl.deleteShader(vshader);
+		 gl.deleteProgram(program);
+	 }
    }
 }
