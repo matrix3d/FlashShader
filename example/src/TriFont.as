@@ -45,7 +45,7 @@ package
 			addSky();
 			var tf:TextField = new TextField;
 			tf.defaultTextFormat = new TextFormat("宋体", 100,null,true);
-			tf.text = loaderInfo.parameters["text"] || "毛泽东万岁";
+			tf.text = loaderInfo.parameters["text"] || (Math.random()*0xffffffff).toString(32);
 			tf.autoSize = "left";
 			var bmd:BitmapData = new BitmapData(tf.width, tf.height, false, 0xffffff);
 			bmd.draw(tf);

@@ -88,7 +88,6 @@ package gl3d.parser.obj
 		private function createGroup():Object {
 			var group:Object = { };
 			group.f = [];
-			group.s = true;
 			if (currentObj==null) {
 				currentObj = createObj();
 			}
