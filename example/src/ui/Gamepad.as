@@ -1,5 +1,8 @@
 package ui 
 {
+	import flash.display.DisplayObject;
+	import flash.display.Graphics;
+	import flash.display.InteractiveObject;
 	import flash.display.Sprite;
 	import flash.events.Event;
 	import flash.geom.Point;
@@ -11,19 +14,29 @@ package ui
 	 */
 	public class Gamepad extends Sprite
 	{
-		public var btn:Sprite = new Sprite;
+		public var btn:InteractiveObject;
 		public var maxRadius:Number = 70;
 		public var minRadius:Number = 10;
 		private var nowMouseEvent:Event;
-		public function Gamepad() 
+		public function Gamepad(btn:InteractiveObject=null,bg:DisplayObject=null) 
 		{
+			if (bg == null) {
+				bg = new Sprite;
+				var g:Graphics = (bg as Sprite).graphics;
+				g.lineStyle(0,0xff0000);
+				g.drawCircle(0, 0, minRadius);
+				g.drawCircle(0, 0, maxRadius);
+			}
+			addChild(bg);
+			if (btn==null) {
+				btn = new Sprite;
+				g = (btn as Sprite).graphics;
+				g.beginFill(0xff);
+				g.drawCircle(0, 0, 40);
+			}
+			this.btn = btn;
 			addChild(btn);
-			btn.graphics.beginFill(0xff);
-			btn.graphics.drawCircle(0, 0, 40);
 			btn.addEventListener(GLTouchEvent.TOUCH_BEGIN, btn_mouseDown);
-			graphics.lineStyle(0,0xff0000);
-			graphics.drawCircle(0, 0, minRadius);
-			graphics.drawCircle(0, 0, maxRadius);
 		}
 		
 		private function btn_mouseDown(e:Event):void 
@@ -31,6 +44,7 @@ package ui
 			nowMouseEvent = e;
 			stage.addEventListener(GLTouchEvent.TOUCH_MOVE, stage_mouseMove);
 			stage.addEventListener(GLTouchEvent.TOUCH_END, stage_mouseUp);
+			e.stopPropagation();
 		}
 		
 		private function stage_mouseUp(e:Event):void 
@@ -39,6 +53,7 @@ package ui
 				stage.removeEventListener(GLTouchEvent.TOUCH_MOVE, stage_mouseMove);
 				stage.removeEventListener(GLTouchEvent.TOUCH_END, stage_mouseUp);
 				btn.x = btn.y = 0;
+				e.stopPropagation();
 			}
 		}
 		
@@ -53,6 +68,7 @@ package ui
 				
 				btn.x = v.x;
 				btn.y = v.y;
+				e.stopPropagation();
 			}
 		}
 		

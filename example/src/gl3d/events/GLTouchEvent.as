@@ -22,7 +22,7 @@ package gl3d.events
 			if (Multitouch.supportsTouchEvents&&Multitouch.maxTouchPoints) {
 				return TouchEvent.TOUCH_BEGIN;
 			}
-			return MouseEvent.RIGHT_MOUSE_DOWN;
+			return MouseEvent.MOUSE_DOWN;
 		}
 		
 		static public function get TOUCH_END():String 
@@ -30,7 +30,7 @@ package gl3d.events
 			if (Multitouch.supportsTouchEvents&&Multitouch.maxTouchPoints) {
 				return TouchEvent.TOUCH_END;
 			}
-			return MouseEvent.RIGHT_MOUSE_UP;
+			return MouseEvent.MOUSE_UP;
 		}
 		
 		static public function get TOUCH_MOVE():String 

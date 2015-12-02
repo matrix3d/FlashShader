@@ -220,7 +220,7 @@ package
 		}
 		
 		public function initUI():void {
-			//addChild(aui);
+			addChild(aui);
 			aui.bind(material, "specularPower", AttribSeter.TYPE_NUM, new Point(1, 100));
 			aui.bind(material, "toonAble", AttribSeter.TYPE_BOOL);
 			aui.bind(view, "antiAlias", AttribSeter.TYPE_NUM, new Point(0, 16));
