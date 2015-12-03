@@ -39,7 +39,13 @@ package gl3d.core.renders
 			stage3d.addEventListener(Event.CONTEXT3D_CREATE, stage_context3dCreate);
 			stage3d.addEventListener(ErrorEvent.ERROR, stage3Ds_error);
 			//stage.stage3Ds[0].requestContext3D(Context3DRenderMode.AUTO, Context3DProfile.STANDARD);
-			stage3d.requestContext3DMatchingProfiles(new <String>[ Context3DProfile.STANDARD,Context3DProfile.BASELINE]);
+			var pfs:Vector.<String> = new <String>[Context3DProfile.STANDARD,Context3DProfile.STANDARD_CONSTRAINED,Context3DProfile.BASELINE_EXTENDED,Context3DProfile.BASELINE,Context3DProfile.BASELINE_CONSTRAINED];
+			for (var i:int = pfs.length - 1; i >= 0;i-- ) {
+				if (pfs[i]==null) {
+					pfs.splice(i, 1);
+				}
+			}
+			stage3d.requestContext3DMatchingProfiles(pfs);
 		}
 		private function stage3Ds_error(e:ErrorEvent):void 
 		{
@@ -51,7 +57,7 @@ package gl3d.core.renders
 			gl3d = new GL(stage3d.context3D);
 			view.profile = stage3d.context3D.profile;
 			view.driverInfo = gl3d.driverInfo;
-			if (view.profile==Context3DProfile.STANDARD) {
+			if (view.profile==Context3DProfile.STANDARD||view.profile==Context3DProfile.STANDARD_CONSTRAINED) {
 				agalVersion = 2;
 			}else {
 				agalVersion = 1;
