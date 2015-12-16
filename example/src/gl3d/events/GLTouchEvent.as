@@ -58,6 +58,13 @@ package gl3d.events
 			}
 			return true;
 		}
+		
+		static public function haveSameTouch(es:Array, e2:Event):Boolean {
+			for each(var e:Event in es) {
+				if (isSameTouch(e, e2)) return true;
+			}
+			return false;
+		}
 	}
 
 }

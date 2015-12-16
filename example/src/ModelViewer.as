@@ -1,5 +1,6 @@
 package 
 {
+	import com.bit101.components.PushButton;
 	import flash.display.Loader;
 	import flash.display.Sprite;
 	import flash.events.Event;
@@ -23,7 +24,6 @@ package
 	import gl3d.parser.mmd.VMD;
 	import gl3d.parser.obj.OBJParser;
 	import gl3d.util.Utils;
-	import ui.Button;
 	/**
 	 * ...
 	 * @author lizhi
@@ -90,9 +90,7 @@ package
 		
 		override public function initUI():void 
 		{
-			var btn:Button = new Button("browse");
-			btn.x = btn.y = 5;
-			addChild(btn);
+			var btn:PushButton = new PushButton(this,5,5,"browse");
 			btn.addEventListener(MouseEvent.CLICK, btn_click);
 			
 			addChild(stats);

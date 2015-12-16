@@ -15,7 +15,7 @@ package ui
 	 * ...
 	 * @author lizhi
 	 */
-	public class NumericStepper extends UIComponent
+	public class NumericStepper
 	{
 		public var label:TextField;
 		public var input:TextField;

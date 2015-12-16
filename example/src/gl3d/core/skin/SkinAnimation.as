@@ -131,7 +131,7 @@ package gl3d.core.skin
 			for each(var target:Node3D in targets){
 				var world2local:Matrix3D = target.world2local;
 				if (target.skin.skinFrame == null) target.skin.skinFrame = new SkinFrame;
-				target.skin.skinFrame.quaternions.length = 0;
+				target.skin.skinFrame.quaternions.length = target.skin.skinFrame.matrixs.length * 8;
 				updateIK(target.skin.iks,target);
 				if (target.skin.skinFrame.matrixs.length == 0) {
 					var nj:int = target.skin.joints.length;
@@ -151,10 +151,17 @@ package gl3d.core.skin
 					
 					if(target.skin.useQuat){
 						q.fromMatrix(matrix);
-						target.skin.skinFrame.quaternions.push(
-							q.x, q.y, q.z, q.w,
-							q.tran.x,q.tran.y,q.tran.z,q.tran.w
-						);
+						var qs:Vector.<Number> = target.skin.skinFrame.quaternions;
+						var i8:int = i * 8;
+						qs[i8++] = q.x;
+						qs[i8++] = q.y;
+						qs[i8++] = q.z;
+						qs[i8++] = q.w;
+						var r:Vector3D = q.tran;
+						qs[i8++] = r.x;
+						qs[i8++] = r.y;
+						qs[i8++] = r.z;
+						qs[i8] = r.w;
 					}
 				}
 				

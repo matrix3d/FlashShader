@@ -89,9 +89,9 @@ package ui
 					var colorui:ColorChooser = nui as ColorChooser;
 					var color:Color = new Color;
 					color.fromHex(colorui.value);
-					v[0] = color.r/0xff;
-					v[1] = color.g/0xff;
-					v[2] = color.b/0xff;
+					v.x = color.r/0xff;
+					v.y = color.g/0xff;
+					v.z = color.b/0xff;
 					break;
 				case TYPE_BOOL:
 					var cb:CheckBox = nui as CheckBox;

@@ -1,16 +1,19 @@
 package 
 {
+	import com.bit101.components.Style;
 	import flash.display.Bitmap;
 	import flash.display.BitmapData;
 	import flash.display.BlendMode;
 	import flash.display.Sprite;
 	import flash.display.StageAlign;
+	import flash.display.StageDisplayState;
 	import flash.display.StageScaleMode;
 	import flash.display3D.Context3DCompareMode;
 	import flash.display3D.Context3DTriangleFace;
 	import flash.events.Event;
 	import flash.events.MouseEvent;
 	import flash.geom.Point;
+	import flash.geom.Rectangle;
 	import flash.geom.Vector3D;
 	import flash.system.Capabilities;
 	import flash.text.TextField;
@@ -49,7 +52,6 @@ package
 	import gl3d.util.Stats;
 	import gl3d.util.Utils;
 	import ui.AttribSeter;
-	import ui.Color;
 	import ui.Gamepad;
 	/**
 	 * ...
@@ -121,8 +123,8 @@ package
 			
 			//atf
 			//[Embed(source = "assets/leaf_apple.atf", mimeType = "application/octet-stream")]var leafc:Class;
-			//[Embed(source = "assets/leaf.atf", mimeType = "application/octet-stream")]var leafc:Class;
-			//texture = new TextureSet((new leafc as ByteArray),false,false,false,false);
+			[Embed(source = "assets/new_leaf.atf", mimeType = "application/octet-stream")]var leafc:Class;
+			texture = new TextureSet((new leafc as ByteArray),false,false,false,false);
 			
 			
 			//[Embed(source = "assets/leaf.png")]var leafp:Class;
@@ -238,6 +240,7 @@ package
 			gamepad.y = 200;
 			addChild(stats);
 		}
+		
 		public function initCtrl():void {
 			fc = new FirstPersonCtrl(view.camera, stage);
 			fc.speed = speed;

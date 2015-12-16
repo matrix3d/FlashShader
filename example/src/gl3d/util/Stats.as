@@ -1,15 +1,14 @@
 package gl3d.util 
 {
 	import flash.display.Sprite;
-	import flash.events.ContextMenuEvent;
 	import flash.events.Event;
 	import flash.events.MouseEvent;
 	import flash.geom.Rectangle;
+	import flash.system.Capabilities;
 	import flash.system.System;
 	import flash.text.TextField;
 	import flash.text.TextFieldAutoSize;
 	import flash.text.TextFormat;
-	import flash.ui.ContextMenu;
 	import flash.ui.ContextMenuItem;
 	import flash.utils.getTimer;
 	import gl3d.core.View3D;
@@ -31,8 +30,8 @@ package gl3d.util
 			
 			addEventListener(Event.ENTER_FRAME, enterFrame);
 			tf = new TextField();
-			tf.mouseEnabled=tf.selectable = false;
-			tf.defaultTextFormat = new TextFormat("Consolas");
+			tf.mouseEnabled = tf.selectable = false;
+			tf.defaultTextFormat = new TextFormat("Courier New",Capabilities.screenDPI > 200?24:12);
 			addChild(tf);
 			tf.autoSize = TextFieldAutoSize.LEFT;
 			addEventListener(MouseEvent.MOUSE_DOWN, mouseDown);

@@ -2,6 +2,7 @@ package gl3d.core.math{
 	import flash.geom.Matrix3D;
 	import flash.geom.Orientation3D;
 	import flash.geom.Vector3D;
+	import gl3d.util.Matrix3DUtils;
 
 	/**
 	 * ...
@@ -12,9 +13,14 @@ package gl3d.core.math{
 		private static var HELP_VEC:Vector.<Vector3D> = new <Vector3D>[new Vector3D(), new Vector3D(), new Vector3D(1, 1, 1)];
 		private static var HELP_MATRIX:Matrix3D = new Matrix3D();
 		public var tran:Vector3D = new Vector3D;
+		public var scale:Vector3D = new Vector3D;
+		private var vec:Vector.<Vector3D> = new Vector.<Vector3D>;
 		public function Quaternion(x:Number=0,y:Number=0,z:Number=0,w:Number=1) 
 		{
 			super(x, y, z, w);
+			vec.push(tran);
+			vec.push(this);
+			vec.push(scale);
 		}
 		
 		public function computeW ():void{
@@ -52,10 +58,7 @@ package gl3d.core.math{
 		
 		public function fromMatrix(matrix:Matrix3D):void
 		{
-			var temp:Vector.<Vector3D> = matrix.decompose(Orientation3D.QUATERNION);
-			copyFrom(temp[1]);
-			w = temp[1].w;
-			tran.copyFrom(temp[0]);
+			Matrix3DUtils.decompose(matrix,Orientation3D.QUATERNION,vec);
 		}
 		
 		public function fromAxisAngle(axis:Vector3D, angle:Number):void {

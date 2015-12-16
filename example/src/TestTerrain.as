@@ -25,7 +25,6 @@ package
 	import gl3d.pick.TerrainPicking;
 	import gl3d.shaders.TerrainPhongGLShader;
 	import gl3d.core.TextureSet;
-	import ui.Log;
 	/**
 	 * ...
 	 * @author lizhi
@@ -137,7 +136,6 @@ package
 			
 			var texture:TextureSet=new TextureSet(bmd);
 			//material.color = Vector.<Number>([.6, .6, .6, 1]);
-			material.shininess = 1.5;
 			material.normalMapAble = false;
 			material.diffTexture = texture;
 			material.terrainTextureSets = [getTerrainTexture(c0), getTerrainTexture(c1), getTerrainTexture(c2), getTerrainTexture(c3)];
@@ -154,7 +152,7 @@ package
 			
 			targetCube = new Node3D;
 			targetCube.material = new Material;
-			targetCube.material.color[1] = 0;
+			targetCube.material.color.x = 0;
 			targetCube.drawable = Teapot.teapot();
 			targetCube.scaleX = targetCube.scaleY = targetCube.scaleZ = .3;
 			view.scene.addChild(targetCube);

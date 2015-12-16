@@ -4,9 +4,12 @@ package gl3d.ctrl
 	import flash.events.Event;
 	import flash.events.KeyboardEvent;
 	import flash.events.MouseEvent;
+	import flash.events.TouchEvent;
 	import flash.geom.Matrix3D;
 	import flash.geom.Point;
 	import flash.geom.Vector3D;
+	import flash.text.TextField;
+	import flash.text.TextFormat;
 	import flash.ui.Keyboard;
 	import gl3d.core.Node3D;
 	import gl3d.events.GLTouchEvent;
@@ -26,7 +29,6 @@ package gl3d.ctrl
 		public var position:Vector3D=new Vector3D;
 		private var node:Node3D;
 		private var stage:Stage;
-		private var nowMouseDownEvent:Event;
 		private var stagePos:Point=new Point
 		private var lastPos:Point;
 		private var distancePos:Point=new Point;
@@ -34,7 +36,7 @@ package gl3d.ctrl
 		public var distance:Number = 10;
 		public var lookat:Vector3D = new Vector3D();
 		private var helpV:Vector3D = new Vector3D;
-		private var isMouseDown:Boolean=false;
+		private var nowMouseDownEvents:Array = [];
 		public function ArcBallCtrl(node:Node3D,stage:Stage) 
 		{
 			position.copyFrom(node.matrix.position);
@@ -67,34 +69,31 @@ package gl3d.ctrl
 		
 		private function stage_mouseDown(e:Event):void
 		{
-			isMouseDown = true;
-			nowMouseDownEvent = e;
-			if(e.target is Stage){
-				stagePos = GLTouchEvent.getMousePos(e);
+			if (e.target is Stage) {
+				nowMouseDownEvents.push(e);
 				lastPos = GLTouchEvent.getMousePos(e);
 				distancePos.setTo(0, 0);
 				lastRotation = rotation.clone();
 				stage.addEventListener(GLTouchEvent.TOUCH_END, stage_mouseUp);
-				stage.addEventListener(GLTouchEvent.TOUCH_MOVE, stage_touchMove);
 			}
-		}
-		
-		private function stage_touchMove(e:Event):void 
-		{
-			/*if (GLTouchEvent.isSameTouch(nowMouseDownEvent, e)) {
-				stagePos = GLTouchEvent.getMousePos(e);
-				distancePos = stagePos.subtract(lastPos);
-				lastPos.setTo(stagePos.x, stagePos.y);
-				lastDistancePos.setTo(distancePos.x, distancePos.y);
-			}*/
 		}
 		
 		private function stage_mouseUp(e:Event):void
 		{
-			isMouseDown = false;
-			if (GLTouchEvent.isSameTouch(nowMouseDownEvent, e)) {
-				stage.removeEventListener(GLTouchEvent.TOUCH_END, stage_mouseUp);
-				stage.removeEventListener(GLTouchEvent.TOUCH_MOVE, stage_touchMove);
+			if (GLTouchEvent.haveSameTouch(nowMouseDownEvents, e)) {
+				if (e is TouchEvent) {
+					for (var i:int = 0; i < nowMouseDownEvents.length;i++ ) {
+						var e2:Event = nowMouseDownEvents[i];
+						if (e2 is TouchEvent) {
+							if ((e2 as TouchEvent).touchPointID == (e as TouchEvent).touchPointID) {
+								nowMouseDownEvents.splice(i, 1);
+								break;
+							}
+						}
+					}
+				}else {
+					nowMouseDownEvents = [];
+				}
 				distancePos.setTo(lastDistancePos.x, lastDistancePos.y);
 				lastDistancePos.setTo(0, 0);
 			}
@@ -102,7 +101,7 @@ package gl3d.ctrl
 		
 		override public function update(time:int):void
 		{
-			if (isMouseDown&&lastPos) {
+			if (nowMouseDownEvents.length!=0&&lastPos) {
 				stagePos = new Point(stage.mouseX, stage.mouseY);
 				distancePos = stagePos.subtract(lastPos);
 				lastPos.setTo(stagePos.x, stagePos.y);
@@ -114,7 +113,7 @@ package gl3d.ctrl
 			rotation.x = Math.min(Math.max( -90, rotation.x), 90);
 			distancePos.x *= .99;
 			distancePos.y *= .99;
-			if (isMouseDown) {
+			if (nowMouseDownEvents.length!=0) {
 				distancePos.setTo(0, 0);
 			}
 			

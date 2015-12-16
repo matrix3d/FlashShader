@@ -1,4 +1,4 @@
-package flash3d {
+package gl3d.core.math {
 	import flash.geom.Point;
 	/**
 	 * ...
