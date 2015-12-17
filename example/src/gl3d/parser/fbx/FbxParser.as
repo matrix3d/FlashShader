@@ -35,6 +35,7 @@ package gl3d.parser.fbx
 		public var rootNode:Node3D
 		public var skinNodes:Vector.<Node3D> = new Vector.<Node3D>;
 		private var converter:Converter;
+		public var anim3d:SkinAnimation;
 		public function FbxParser(data:Object) 
 		{
 			if (data is ByteArray) {
@@ -115,7 +116,7 @@ package gl3d.parser.fbx
 			return d;
 		}
 		
-		private function getMatrix(d:Object,s:Vector3D=null,r:Vector3D=null,t:Vector3D=null,isGT:Boolean=true):Matrix3D {
+		private function getMatrix(d:Object,s:Vector3D=null,r:Vector3D=null,t:Vector3D=null):Matrix3D {
 			var m:Matrix3D = new Matrix3D;
 			var sv:Vector3D = s||d["Lcl Scaling"];
 			var rv:Vector3D = r||d["Lcl Rotation"];
@@ -141,9 +142,9 @@ package gl3d.parser.fbx
 				m.appendRotation(d["PostRotation"].y, Vector3D.Y_AXIS);
 				m.appendRotation(d["PostRotation"].z, Vector3D.Z_AXIS);
 			}
-			if ( d["GeometricTranslation"] != null &&isGT) {
-				m.appendTranslation(d["GeometricTranslation"].x, d["GeometricTranslation"].y, d["GeometricTranslation"].z);
-			}
+			//if ( d["GeometricTranslation"] != null ) {
+				//m.appendTranslation(d["GeometricTranslation"].x, d["GeometricTranslation"].y, d["GeometricTranslation"].z);
+			//}
 			return converter.getConvertedMat4(m);
 		}
 		
@@ -236,6 +237,17 @@ package gl3d.parser.fbx
 				}
 				o.m = getFbxMatrixes(o.model);
 				o.obj.matrix = getMatrix(o.m);
+				if (o.obj.drawable && o.m.GeometricTranslation) {
+					var gt:Vector3D = o.m.GeometricTranslation;
+					var drawable:Drawable3D = o.obj.drawable as Drawable3D;
+					var pos:Vector.<Number> = drawable.pos.data;
+					var gtv:Array = converter.convertedVec3s([gt.x,gt.y,gt.z]) as Array;
+					for (var i:int = 0; i < pos.length; i += 3 ) {
+						pos[i] += gtv[0];
+						pos[i+1] += gtv[1];
+						pos[i+2] += gtv[2];
+					}
+				}
 			}
 			// rebuild scene hierarchy
 			for each( o in objects ) {
@@ -471,7 +483,7 @@ package gl3d.parser.fbx
 			}
 			
 			for each(animData in animDatas) {
-				var anim3d:SkinAnimation = new SkinAnimation;
+				anim3d = new SkinAnimation;
 				anim3d.targets = skinNodes;
 				for each(animDataBase in animData) {
 					var track:Track = new Track;
@@ -501,7 +513,7 @@ package gl3d.parser.fbx
 							tv=new Vector3D(t[0][i], t[1][i], t[2][i]);
 						}
 						
-						frame.matrix = getMatrix(animDataBase.target.m, sv, rv, tv,false);
+						frame.matrix = getMatrix(animDataBase.target.m, sv, rv, tv);
 						frame.time = time;
 						track.frames.push(frame);
 					}

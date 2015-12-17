@@ -34,7 +34,7 @@ package gl3d.parser.dae
 		private var sid2node:Object = { };
 		private var id2node:Object = { };
 		private var skinNodes:Vector.<Node3D> = new Vector.<Node3D>;
-		private var anim:SkinAnimation;
+		public var anim:SkinAnimation;
 		private var converter:Converter;
 		private var controllerTasks:Array = [];
 		public function ColladaDecoder(txt:String) 

@@ -15,12 +15,12 @@ package gl3d.parser.md5
 	 */
 	public class MD5AnimParser 
 	{
-		
+		public var anim:SkinAnimation
 		public function MD5AnimParser(txt:String,md5:MD5MeshParser) 
 		{
 			var converter:Converter=new Converter("ZtoY");
 			var decoder:MD5AnimDecoder = new MD5AnimDecoder(txt);
-			var anim:SkinAnimation = new SkinAnimation();
+			anim = new SkinAnimation();
 			md5.target.controllers = new Vector.<Ctrl>;
 			md5.target.controllers.push(anim);
 			anim.maxTime = decoder.components.length / decoder.frameRate;

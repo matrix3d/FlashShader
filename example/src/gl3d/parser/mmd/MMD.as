@@ -147,7 +147,7 @@ package gl3d.parser.mmd
 			}
 		}
 		
-		public function bind(vmd:VMD):void {
+		public function bind(vmd:VMD):SkinAnimation {
 			var anim:SkinAnimation = new SkinAnimation;
 			anim.targets = skinNodes;
 			node.controllers = new Vector.<Ctrl>;
@@ -180,6 +180,7 @@ package gl3d.parser.mmd
 					track.frames.push(frame);
 				}
 			}
+			return anim;
 		}
 		
 	}

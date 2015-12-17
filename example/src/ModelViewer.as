@@ -1,6 +1,9 @@
 package 
 {
+	import com.bit101.components.CheckBox;
+	import com.bit101.components.HUISlider;
 	import com.bit101.components.PushButton;
+	import com.bit101.components.VBox;
 	import flash.display.Loader;
 	import flash.display.Sprite;
 	import flash.events.Event;
@@ -15,6 +18,7 @@ package
 	import flash.utils.ByteArray;
 	import flash.utils.Dictionary;
 	import gl3d.core.Node3D;
+	import gl3d.core.skin.SkinAnimation;
 	import gl3d.core.View3D;
 	import gl3d.parser.dae.ColladaDecoder;
 	import gl3d.parser.fbx.FbxParser;
@@ -36,6 +40,10 @@ package
 		private var loader2url:Dictionary = new Dictionary;
 		private var md5mesh:MD5MeshParser;
 		private var node:Node3D;
+		private var scaleUI:HUISlider;
+		private var timeUI:HUISlider;
+		private var pauseUI:CheckBox;
+		private var anim:SkinAnimation;
 		public function ModelViewer() 
 		{
 		}
@@ -49,7 +57,7 @@ package
 			for each(v in Utils.getParameters()) {
 				load(v);
 			}
-			//load("C:/Users/aaaa/Desktop/hero_02_idle test.FBX");
+			load("C:/Users/aaaa/Desktop/test2.fbx");
 			//load("C:/Users/aaaa/Desktop/aoying gongji.FBX");
 			//load("C:/Users/aaaa/Desktop/Beta.fbx");
 			//load("C:/Users/aaaa/Desktop/Betau3d.fbx");
@@ -90,11 +98,40 @@ package
 		
 		override public function initUI():void 
 		{
-			var btn:PushButton = new PushButton(this,5,5,"browse");
+			var vbox:VBox = new VBox(this, 5, 5);
+			var btn:PushButton = new PushButton(vbox,0,0,"browse");
 			btn.addEventListener(MouseEvent.CLICK, btn_click);
+			scaleUI = new HUISlider(vbox, 0, 0, "scale", onScale);
+			scaleUI.setSliderParams(0.01, 10, .001);
+			pauseUI = new CheckBox(vbox, 0, 0, "pause", onPause);
+			timeUI = new HUISlider(vbox, 0, 0, "time", onTime);
+			timeUI.setSliderParams(0, 1, .01);
 			
 			addChild(stats);
-			stats.x = btn.x + btn.width + 5;
+			stats.y = vbox.y + vbox.height + 5;
+		}
+		
+		private function onPause(e:Event):void 
+		{
+			if (anim) {
+				anim.playing = !pauseUI.selected;
+			}
+		}
+		
+		private function onScale(e:Event):void 
+		{
+			if (node) {
+				node.scaleX=
+				node.scaleY=
+				node.scaleZ = scaleUI.value;
+			}
+		}
+		
+		private function onTime(e:Event):void 
+		{
+			if (anim) {
+				anim.time = anim.maxTime * timeUI.value*1000;
+			}
 		}
 		
 		private function btn_click(e:MouseEvent):void 
@@ -119,19 +156,20 @@ package
 			var type:String = url.substr(url.lastIndexOf(".") + 1).toLowerCase();
 			var defScale:Number = 1;
 			var lastNode:Node3D = node;
+			anim = null;
 			switch(type) {
 				case "pmx":
 					mmd = new MMD(byte );
 					var curnode:Node3D = mmd.node;
 					defScale = .1;
 					if (vmd) {
-						mmd.bind(vmd);
+						anim = mmd.bind(vmd);
 					}
 					break;
 				case "vmd":
 					vmd = new VMD(byte);
 					if(mmd)
-					mmd.bind(vmd);
+					anim = mmd.bind(vmd);
 					break;
 				case "obj":
 					var obj:OBJParser = new OBJParser(byte +"", false);
@@ -143,21 +181,25 @@ package
 					break;
 				case "md5anim":
 					if (md5mesh) {
-						new MD5AnimParser(byte+"",md5mesh);
+						var md5a:MD5AnimParser = new MD5AnimParser(byte+"", md5mesh);
+						anim = md5a.anim;
 					}
 					break;
 				case "dae":
 				case "collada":
 					var dae:ColladaDecoder = new ColladaDecoder(byte+"");
 					curnode = dae.scenes[0];
+					anim = dae.anim;
 					break;
 				case "fbx":
 					var fbx:FbxParser = new FbxParser(byte);
+					anim = fbx.anim3d;
 					curnode = fbx.rootNode;
 					defScale = 0.01;
 					break;
 			}
 			if (curnode) {
+				scaleUI.value = defScale;
 				if (lastNode&&lastNode.parent) {
 					lastNode.parent.removeChild(lastNode);
 				}
