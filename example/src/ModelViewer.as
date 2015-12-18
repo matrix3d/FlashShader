@@ -57,7 +57,7 @@ package
 			for each(v in Utils.getParameters()) {
 				load(v);
 			}
-			load("C:/Users/aaaa/Desktop/test2.fbx");
+			//load("C:/Users/aaaa/Desktop/test2.fbx");
 			//load("C:/Users/aaaa/Desktop/aoying gongji.FBX");
 			//load("C:/Users/aaaa/Desktop/Beta.fbx");
 			//load("C:/Users/aaaa/Desktop/Betau3d.fbx");

@@ -27,6 +27,8 @@ package gl3d.core.skin
 		private var q:Quaternion = new Quaternion;
 		private static var raw1:Vector.<Number> = new Vector.<Number>(16);
 		private static var raw2:Vector.<Number> = new Vector.<Number>(16);
+		static private var q1:Quaternion= new Quaternion;
+		static private var q2:Quaternion = new Quaternion;
 		public function SkinAnimation() 
 		{
 			
@@ -44,14 +46,11 @@ package gl3d.core.skin
 			if (target==null) {
 				target = new Matrix3D;
 			}
-			m1.copyRawDataTo(raw1);
-			m2.copyRawDataTo(raw2);
-			var p1:Number = 1 - p;
-			for (var i:int = 0; i < 16;i++ ) {
-				raw1[i] = raw1[i] * p1 + raw2[i] * p;
-			}
-			target.copyRawDataFrom(raw1);
-			return target;
+			q1.fromMatrix(m1);
+			q2.fromMatrix(m2);
+			q1.lerpTo(q2, p);
+			
+			return q1.toMatrix(target);
 		}
 		
 		override public function update(time:int):void 
