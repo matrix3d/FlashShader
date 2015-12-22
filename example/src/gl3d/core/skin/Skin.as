@@ -1,7 +1,7 @@
 package gl3d.core.skin 
 {
 	import flash.geom.Matrix3D;
-	import gl3d.core.Drawable3D;
+	import gl3d.core.Drawable;
 	import gl3d.core.skin.Joint;
 	import gl3d.core.Node3D;
 	import gl3d.core.VertexBufferSet;
@@ -33,9 +33,9 @@ package gl3d.core.skin
 			var jid2newjid:Object = { };
 			var joints:Vector.<Joint> = new Vector.<Joint>;
 			//var invBindMatrixs:Vector.<Matrix3D> = new Vector.<Matrix3D>;
-			var drawable:Drawable3D = node.drawable;
-			var js:Vector.<Number> = drawable.joints.data;
-			var ws:Vector.<Number> = drawable.weights.data;
+			var drawable:Drawable = node.drawable;
+			var js:Vector.<Number> = drawable.joint.data;
+			var ws:Vector.<Number> = drawable.weight.data;
 			var ins:Vector.<uint> = drawable.index.data;
 			var maxWeight:int = node.skin.maxWeight;
 			var newMaxWeight:int = 0;
@@ -65,12 +65,12 @@ package gl3d.core.skin
 				newjs.push(int(jid2newjid[jid]));
 			}
 			
-			node.drawable = new Drawable3D;
+			node.drawable = new Drawable;
 			node.drawable.index = drawable.index;
 			node.drawable.uv = drawable.uv;
 			node.drawable.pos = drawable.pos;
-			node.drawable.joints = new VertexBufferSet(newjs, newMaxWeight);
-			node.drawable.weights = drawable.weights;
+			node.drawable.joint = new VertexBufferSet(newjs, newMaxWeight);
+			node.drawable.weight = drawable.weight;
 			var news:Skin = new Skin;
 			//news.invBindMatrixs = invBindMatrixs;
 			news.joints = joints;

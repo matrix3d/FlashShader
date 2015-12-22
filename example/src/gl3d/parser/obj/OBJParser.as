@@ -1,7 +1,8 @@
 package gl3d.parser.obj 
 {
 	import flash.utils.getTimer;
-	import gl3d.core.Drawable3D;
+	import gl3d.core.Drawable;
+	import gl3d.core.DrawableSource;
 	import gl3d.core.IndexBufferSet;
 	import gl3d.core.Material;
 	import gl3d.core.Node3D;
@@ -17,9 +18,14 @@ package gl3d.parser.obj
 	{
 		private var decoder:OBJDecoder;
 		public var target:Node3D = new Node3D;
-		private var hash:int = 0;
 		private var alwaysSmoothing:Boolean;
 		private var mtldecode:MTLDecoder;
+		private var oldindex2newindex:Object;
+		private var oldindex2newindexUV:Object;
+		private var maxIndex:int;
+		private var maxIndexUV:int;
+		private var face:Array;
+		private var faceUV:Array;
 		public function OBJParser(txt:String,alwaysSmoothing:Boolean=false,mtltxt:String=null,basePath:String="") 
 		{
 			this.alwaysSmoothing = alwaysSmoothing;
@@ -35,10 +41,9 @@ package gl3d.parser.obj
 					if(g.f.length){
 						var node:Node3D = new Node3D;
 						target.addChild(node);
-						var drawable:Drawable3D = new Drawable3D;
-						drawable.index = new IndexBufferSet(new <uint>[]);
-						drawable.pos = new VertexBufferSet(new <Number>[],3);
-						drawable.uv = new VertexBufferSet(new <Number>[],2);
+						var drawable:Drawable = new Drawable;
+						drawable.smooting = alwaysSmoothing || g.s;
+						drawable.source = new DrawableSource;
 						node.drawable = drawable;
 						node.material = new Material;
 						if (mtldecode&&g.mtl) {
@@ -49,12 +54,15 @@ package gl3d.parser.obj
 								node.material.color.z = mtl[3][2];
 							}
 						}
-						
+						oldindex2newindex = { };
+						oldindex2newindexUV = { };
+						maxIndex = 0;
+						maxIndexUV = 0;
 						for each(var f:Array in g.f) {
-							for (var i:int = 2, len:int = f.length; i < len ; i++ ) {
-								addVertex(drawable,f[0],g.s);
-								addVertex(drawable,f[i-1],g.s);
-								addVertex(drawable,f[i],g.s);
+							face = null;
+							faceUV = null;
+							for (var i:int = 0, len:int = f.length; i < len;i++ ) {
+								addVertex(drawable, f[i]);
 							}
 						}
 					}
@@ -62,13 +70,50 @@ package gl3d.parser.obj
 			}
 			trace("obj parser time: " + (getTimer() - t) + " ms");
 		}
-		private function addVertex(drawable:Drawable3D,f:Array,smooting:Boolean):void 
+		
+		private function addVertex(drawable:Drawable,f:Array):void 
 		{
-			var v:int = f[0];
-			var vt:int = f[1];
-			var vn:int = f[2];
-			drawable.addVertex([decoder.vs[v * 3], decoder.vs[v * 3 + 1], -decoder.vs[v * 3 + 2]], [decoder.vts[vt*3], 1-decoder.vts[vt*3+1]], -1,(alwaysSmoothing||smooting)?"":hash + "");
-			hash++;
+			
+			var v:Object = f[0];
+			var vt:Object = f[1];
+			var vn:Object = f[2];
+			var source:DrawableSource = drawable.source;
+			if (v != null) {
+				if (source.pos==null) {
+					source.pos = [];
+					source.index = [];
+				}
+				if (face==null) {
+					face = [];
+					source.index.push(face);
+				}
+				var newindex:Object = oldindex2newindex[v];
+				if (newindex == null) {
+					var vi:int = v as int;
+					source.pos.push(decoder.vs[vi * 3], decoder.vs[vi * 3 + 1], -decoder.vs[vi * 3 + 2]);
+					newindex = maxIndex++;
+					oldindex2newindex[v] = newindex;
+				}
+				face.push(newindex);
+			}
+			if (vt != null) {
+				if (source.uv==null) {
+					source.uv = [];
+					source.uvIndex = [];
+				}
+				if (faceUV==null) {
+					faceUV = [];
+					source.uvIndex.push(faceUV);
+				}
+				var newindexUV:Object = oldindex2newindexUV[vt];
+				if (newindexUV == null) {
+					var vti:int = vt as int;
+					source.uv.push(decoder.vts[vti * 3], decoder.vts[vti * 3 + 1]);
+					newindexUV = maxIndexUV++;
+					oldindex2newindexUV[v] = newindexUV;
+				}
+				faceUV.push(newindexUV);
+			}
 		}
 	}
 }

@@ -18,7 +18,7 @@ package gl3d.core {
 		private var _matrix:Matrix3D = new Matrix3D;
 		public var children:Vector.<Node3D> = new Vector.<Node3D>;
 		public var renderChildren:Vector.<Node3D> = new Vector.<Node3D>;
-		public var drawable:Drawable3D;
+		public var drawable:Drawable;
 		public var material:Material;
 		public var name:String;
 		public var picking:Picking = new AS3Picking;

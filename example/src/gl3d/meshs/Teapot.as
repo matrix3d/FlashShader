@@ -1,7 +1,7 @@
 package gl3d.meshs 
 {
 	import flash.geom.Vector3D;
-	import gl3d.core.Drawable3D;
+	import gl3d.core.Drawable;
 	/**
 	 * ...
 	 * @author lizhi
@@ -152,7 +152,7 @@ package gl3d.meshs
 			
 		}
 		
-		public static function teapot(divs:uint = 10):Drawable3D {
+		public static function teapot(divs:uint = 10):Drawable {
 			var indexData	: Vector.<uint>	= new Vector.<uint>();
 			var vertexData	: Vector.<Number>	= new Vector.<Number>;
 			
@@ -169,7 +169,7 @@ package gl3d.meshs
 				
 				currentVertexId += (divs + 1) * (divs + 1);
 			}
-			var drawable:Drawable3D = Meshs.createDrawable(indexData, vertexData, null,null);
+			var drawable:Drawable = Meshs.createDrawable(indexData, vertexData, null,null);
 			Meshs.removeDuplicatedVertices(drawable);
 			//drawable.norm = Meshs.computeNormal(drawable);
 			//drawable.uv = Meshs.computeUV(drawable);

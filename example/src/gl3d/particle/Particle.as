@@ -3,7 +3,7 @@ package gl3d.particle
 	import flash.display.BlendMode;
 	import flash.display3D.Context3DCompareMode;
 	import flash.geom.Vector3D;
-	import gl3d.core.Drawable3D;
+	import gl3d.core.Drawable;
 	import gl3d.core.Material;
 	import gl3d.core.Node3D;
 	import gl3d.core.TextureSet;
@@ -46,11 +46,11 @@ package gl3d.particle
 		{
 			if (invalid) {
 				if(isBillboard){
-					var bb:Drawable3D = Meshs.billboard();
+					var bb:Drawable = Meshs.billboard();
 					drawable = Meshs.mul(bb, count);
 				}else {
 					if (shapeID==0) {
-						var shape:Drawable3D = Meshs.cube();
+						var shape:Drawable = Meshs.cube();
 					}else if (shapeID==1) {
 						shape = Teapot.teapot(2);
 					}else if (shapeID==2) {

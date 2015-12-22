@@ -1,6 +1,6 @@
 package gl3d.parser.obj 
 {
-	import gl3d.core.Drawable3D;
+	import gl3d.core.Drawable;
 	/**
 	 * ...
 	 * @author lizhi
@@ -12,7 +12,7 @@ package gl3d.parser.obj
 		{
 		}
 		
-		public static function encode(drawable:Drawable3D):String {
+		public static function encode(drawable:Drawable):String {
 			var obj:String="# objencode v0.1\r\n";
 			var v:Vector.<Number> = drawable.pos.data;
 			for (var i:int = 0; i < v.length;i+=3 ) {

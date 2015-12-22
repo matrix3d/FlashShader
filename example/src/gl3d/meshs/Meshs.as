@@ -4,7 +4,7 @@ package gl3d.meshs
 	import flash.display3D.VertexBuffer3D;
 	import flash.geom.Matrix;
 	import flash.geom.Vector3D;
-	import gl3d.core.Drawable3D;
+	import gl3d.core.Drawable;
 	import gl3d.core.IndexBufferSet;
 	import gl3d.core.VertexBufferSet;
 	/**
@@ -18,7 +18,7 @@ package gl3d.meshs
 		{
 			
 		}
-		public static function billboard():Drawable3D
+		public static function billboard():Drawable
 		{
 			var vs:Vector.<Number> = new Vector.<Number>(4 * 3);
 			var uv:Vector.<Number> = Vector.<Number>([0, 0, 1, 0, 0, 1, 1, 1]);
@@ -26,7 +26,7 @@ package gl3d.meshs
 			return createDrawable(ins, vs, uv, null);
 		}
 		
-		public static function plane(r:Number=1):Drawable3D
+		public static function plane(r:Number=1):Drawable
 		{
 			var vs:Vector.<Number> = Vector.<Number>([-r, -r, 0, r, -r, 0, -r, r, 0, r, r, 0]);
 			var uv:Vector.<Number> = Vector.<Number>([0, 1, 1, 1, 0, 0, 1, 0]);
@@ -34,7 +34,7 @@ package gl3d.meshs
 			return createDrawable(ins, vs, uv, null);
 		}
 		
-		public static function sphere(w:Number = 20, h:Number = 20):Drawable3D {
+		public static function sphere(w:Number = 20, h:Number = 20):Drawable {
 			var ins:Vector.<uint> = new Vector.<uint>;
 			var vs:Vector.<Number> = new Vector.<Number>;
 			var uv:Vector.<Number> = new Vector.<Number>;
@@ -53,10 +53,10 @@ package gl3d.meshs
 			return createDrawable(ins, vs,uv, vs);
 		}
 		
-		public static function test():Drawable3D {
+		public static function test():Drawable {
 			return createDrawable(Vector.<uint>([1,0,2]), Vector.<Number>([1,1,0,1,0,0,0,1,0]), null, null);
 		}
-		public static function cube(width:Number=1,heigth:Number=1,depth:Number=1):Drawable3D {
+		public static function cube(width:Number=1,heigth:Number=1,depth:Number=1):Drawable {
 			var hw:Number = width / 2;
 			var hh:Number = heigth / 2;
 			var hd:Number = depth / 2;
@@ -124,7 +124,7 @@ package gl3d.meshs
 			return vin;
 		}
 		
-		public static function terrain(w:int=64,scale:Vector3D=null,sbmd:BitmapData=null,tempbmd:BitmapData=null):Drawable3D {
+		public static function terrain(w:int=64,scale:Vector3D=null,sbmd:BitmapData=null,tempbmd:BitmapData=null):Drawable {
 			var ins:Vector.<uint> = new Vector.<uint>;
 			var vin:Vector.<Number> = new Vector.<Number>;
 			var uv:Vector.<Number> = new Vector.<Number>;
@@ -152,14 +152,14 @@ package gl3d.meshs
                     }
                 }
             }
-			var drawable:Drawable3D = createDrawable(ins, vin, uv,null);
+			var drawable:Drawable = createDrawable(ins, vin, uv,null);
 			if(tempbmd==null)
 			bmd.dispose();
 			return drawable;
 		}
 		
-		public static function createDrawable(index:Vector.<uint>,pos:Vector.<Number>,uv:Vector.<Number>=null,norm:Vector.<Number>=null,tangent:Vector.<Number>=null):Drawable3D {
-			var drawable:Drawable3D = new Drawable3D;
+		public static function createDrawable(index:Vector.<uint>,pos:Vector.<Number>,uv:Vector.<Number>=null,norm:Vector.<Number>=null,tangent:Vector.<Number>=null):Drawable {
+			var drawable:Drawable = new Drawable;
 			if(index)
 			drawable.index = new IndexBufferSet(index);
 			if(pos)
@@ -173,8 +173,23 @@ package gl3d.meshs
 			return drawable;
 		}
 		
-		public static function unpack(drawable:Drawable3D):Drawable3D {
-			var newDrawable:Drawable3D = new Drawable3D;
+		public static function createDrawable2(index:Vector.<uint>,pos:Vector.<Number>,uvIndex:Vector.<uint>=null,uv:Vector.<Number>=null,norm:Vector.<Number>=null,tangent:Vector.<Number>=null):Drawable {
+			var drawable:Drawable = new Drawable;
+			if(index)
+			drawable.index = new IndexBufferSet(index);
+			if(pos)
+			drawable.pos = new VertexBufferSet(pos,3);
+			if(uv)
+			drawable.uv = new VertexBufferSet(uv, 2);
+			if(norm)
+			drawable.norm = new VertexBufferSet(norm, 3);
+			if(tangent)
+			drawable.tangent = new VertexBufferSet(tangent, 3);
+			return drawable;
+		}
+		
+		public static function unpack(drawable:Drawable):Drawable {
+			var newDrawable:Drawable = new Drawable;
 			var idata:Vector.<uint> = drawable.index.data;
 			newDrawable.index = new IndexBufferSet(new Vector.<uint>());
 			var vbnames:Array = ["pos","uv","norm","joints","weights"];
@@ -199,7 +214,7 @@ package gl3d.meshs
 			return newDrawable;
 		}
 		
-		public static function removeDuplicatedVertices(drawable:Drawable3D):void {
+		public static function removeDuplicatedVertices(drawable:Drawable):void {
 			var posdata:Vector.<Number> = drawable.pos.data;
 			//var uvdata:Vector.<Number> = drawable.uv.data;
 			var hashToNewVertexId:Object = { };
@@ -233,7 +248,7 @@ package gl3d.meshs
 			}
 		}
 		
-		public static function computeUV(drawable:Drawable3D):VertexBufferSet {
+		public static function computeUV(drawable:Drawable):VertexBufferSet {
 			var normal:Vector.<Number> = drawable.pos.data;
 			var uv:Vector.<Number> = new Vector.<Number>();
 			for (var i:int = 0,len:int=normal.length/3; i < len;i++ ) {
@@ -252,8 +267,11 @@ package gl3d.meshs
 			}
 			return new VertexBufferSet(uv, 2);
 		}
-		public static function computeNormal(drawable:Drawable3D):VertexBufferSet
+		public static function computeNormal(drawable:Drawable):VertexBufferSet
 		{
+			if (drawable.source&&drawable.smooting) {
+				return computeNormal2(drawable);
+			}
 			var norm:Vector.<Number> = new Vector.<Number>(drawable.pos.data.length);
 			var vin:Vector.<Number> = drawable.pos.data;
 			var idata:Vector.<uint> = drawable.index.data;
@@ -295,7 +313,49 @@ package gl3d.meshs
 			return new VertexBufferSet(norm,3);
 		}
 		
-		public static function computeTangent(drawable:Drawable3D) : VertexBufferSet
+		private static function computeNormal2(drawable:Drawable):VertexBufferSet
+		{
+			var vin:Array = drawable.source.pos;
+			var norm:Vector.<Number> = new Vector.<Number>(drawable.pos.data.length);
+			var idata:Array = drawable.source.index;
+			var o2ns:Object = drawable.oldi2newis;
+			for each(var face:Array in idata) {
+				var i0:int = face[0]*3;
+				var i1:int = face[1]*3;
+				var i2:int = face[2]*3;
+				var x0:Number = vin[i0 ];
+				var y0:Number = vin[i0 +1];
+				var z0:Number = vin[i0 +2];
+				var x1:Number = vin[i1];
+				var y1:Number = vin[i1+1];
+				var z1:Number = vin[i1+2];
+				var x2:Number = vin[i2];
+				var y2:Number = vin[i2+1];
+				var z2:Number = vin[i2+2];
+				var nx:Number = (y0 - y2) * (z0 - z1) - (z0 - z2) * (y0 - y1);
+				var ny:Number = (z0 - z2) * (x0 - x1) - (x0 - x2) * (z0 - z1);
+				var nz:Number = (x0 - x2) * (y0 - y1) - (y0 - y2) * (x0 - x1);
+				for (var i:int = 0, len:int = face.length; i < len; i++ ) {
+					for each(var ni:int in o2ns[face[i]]) {
+						norm[ni*3] += nx;
+						norm[ni*3+1] += ny;
+						norm[ni*3+2] += nz;
+					}
+				}
+			}
+			for (i = 0; i < norm.length;i+=3 ) {
+				nx = norm[i];
+				ny = norm[i+1];
+				nz = norm[i+2];
+				var distance:Number = Math.sqrt(nx * nx + ny * ny + nz * nz);
+				norm[i] /= distance;
+				norm[i+1] /= distance;
+				norm[i + 2] /= distance;
+			}
+			return new VertexBufferSet(norm,3);
+		}
+		
+		public static function computeTangent(drawable:Drawable) : VertexBufferSet
 		{
 			var tangent:Vector.<Number> = new Vector.<Number>(drawable.pos.data.length);
 			var vin:Vector.<Number> = drawable.pos.data;
@@ -371,7 +431,7 @@ package gl3d.meshs
 			return new VertexBufferSet(tangent,3);
 		}
 		
-		public static function computeRandom(drawable:Drawable3D,step:int=4) : VertexBufferSet
+		public static function computeRandom(drawable:Drawable,step:int=4) : VertexBufferSet
 		{
 			var random:Vector.<Number> = new Vector.<Number>(drawable.pos.data.length/3*4);
 			for (var i:int = 0; i < random.length/4; )
@@ -391,7 +451,7 @@ package gl3d.meshs
 			return new VertexBufferSet(random, 4);
 		}
 		
-		public static function computeSphereRandom(drawable:Drawable3D,step:int=4) : VertexBufferSet
+		public static function computeSphereRandom(drawable:Drawable,step:int=4) : VertexBufferSet
 		{
 			var randomVec:Vector3D = new Vector3D;
 			var random:Vector.<Number> = new Vector.<Number>(drawable.pos.data.length/3*4);
@@ -408,7 +468,7 @@ package gl3d.meshs
 			return new VertexBufferSet(random, 4);
 		}
 		
-		public static function computeTargetPosition(drawable:Drawable3D) : VertexBufferSet
+		public static function computeTargetPosition(drawable:Drawable) : VertexBufferSet
 		{
 			var targetPosition:Vector.<Number> = new Vector.<Number>(drawable.pos.data.length);
 			var idata:Vector.<uint> = drawable.index.data;
@@ -430,7 +490,7 @@ package gl3d.meshs
 			return new VertexBufferSet(targetPosition, 3);
 		}
 		
-		public static function computeIndex(drawable:Drawable3D) : IndexBufferSet
+		public static function computeIndex(drawable:Drawable) : IndexBufferSet
 		{
 			var index:Vector.<uint> = new Vector.<uint>;
 			var numt:int = drawable.pos.data.length / 3 / 3;
@@ -447,7 +507,7 @@ package gl3d.meshs
 		 * @param	value 叠加数
 		 * @return
 		 */
-		public static function mul(drawable:Drawable3D,value:int=1):Drawable3D {
+		public static function mul(drawable:Drawable,value:int=1):Drawable {
 			var indexSource:Vector.<uint> = drawable.index.data;
 			var posSource:Vector.<Number> = drawable.pos.data;
 			var uvSource:Vector.<Number> = drawable.uv.data;

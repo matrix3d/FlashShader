@@ -100,8 +100,8 @@ package gl3d.parser.md5
 				node.material = new Material;
 				converter.convertedVec3s(poss);
 				node.drawable = Meshs.createDrawable(indexs, poss, uvs, null);
-				node.drawable.joints=new  VertexBufferSet(Vector.<Number>(js),decoder.maxWeight);
-				node.drawable.weights=new  VertexBufferSet(Vector.<Number>(ws),decoder.maxWeight);
+				node.drawable.joint=new  VertexBufferSet(Vector.<Number>(js),decoder.maxWeight);
+				node.drawable.weight=new  VertexBufferSet(Vector.<Number>(ws),decoder.maxWeight);
 				target.addChild(node);
 				//vsCounter += mesh.vs.length;
 			}

@@ -7,7 +7,7 @@ package gl3d.core {
 	 * ...
 	 * @author lizhi
 	 */
-	public class Drawable3D 
+	public class Drawable 
 	{
 		private var _pos:VertexBufferSet;
 		private var _norm:VertexBufferSet;
@@ -17,42 +17,33 @@ package gl3d.core {
 		private var _sphereRandom:VertexBufferSet;
 		public var randomStep:int = 4;
 		private var _targetPosition:VertexBufferSet;
-		public var lightmapUV:VertexBufferSet;
+		public var uv2:VertexBufferSet;
 		
-		public var joints:VertexBufferSet;
-		//public var quatJoints:VertexBufferSet;
-		public var weights:VertexBufferSet;
+		public var joint:VertexBufferSet;
+		public var weight:VertexBufferSet;
 		
 		private var _index:IndexBufferSet;
-		public var id2index:Object = { };
-		public var oldIndex2NewIndexs:Array = [];
+		public var source:DrawableSource;
+		/*public var id2index:Object = { };
+		public var oldIndex2NewIndexs:Array = [];*/
 		
-		private var _unpackedDrawable:Drawable3D;
-		public function Drawable3D() 
+		private var _unpackedDrawable:Drawable;
+		public var oldi2newis:Object;
+		public var smooting:Boolean = false;
+		public function Drawable() 
 		{
 			
 		}
 		
-		//public function update(context:GL):void 
-		//{
-			/*if (pos) {
-				pos.update(context);
-			}if (norm) {
-				norm.update(context);
-			}if (uv) {
-				uv.update(context);
-			}if (tangent) {
-				tangent.update(context);
-			}if (random) {
-				random.update(context);
-			}*/
-			/*if (index) {
-				index.update(context);
-			}*/
-		//}
-		
 		public function get pos():VertexBufferSet 
 		{
+			if (_pos == null && source && source.pos) {
+				if (source.index&&source.uvIndex) {
+					index;
+				}else{
+					_pos = new VertexBufferSet(Vector.<Number>(source.pos), 3);
+				}
+			}
 			return _pos;
 		}
 		
@@ -89,6 +80,13 @@ package gl3d.core {
 		
 		public function get uv():VertexBufferSet 
 		{
+			if (_uv == null && source && source.uv) {
+				if (source.index&&source.uvIndex) {
+					index;
+				}else{
+					_uv = new VertexBufferSet(Vector.<Number>(source.uv), 2);
+				}
+			}
 			if (_uv == null) {
 				_uv = Meshs.computeUV(this);
 			}
@@ -141,6 +139,60 @@ package gl3d.core {
 		
 		public function get index():IndexBufferSet 
 		{
+			if (_index == null && source && source.index) {
+				if(source.uvIndex==null){
+					_index = new IndexBufferSet(Vector.<uint>(source.index));
+				}else {
+					var maxI:int = 0;
+					oldi2newis = { };
+					var oldh2newi:Object = { };
+					var sIndex:Array = [];
+					var face:Array = null;
+					var sPos:Array = [];
+					var sUV:Array = [];
+					for (var i:int = 0, len:int = source.index.length; i < len; i++) {
+						face = null;
+						for (var j:int = 0, len2:int = source.index[i].length; j < len2 ; j++ ) {
+							if (face == null) {
+								face = [];
+								sIndex.push(face);
+							}
+							var oldI:int = source.index[i][j];
+							var oldUVI:int = source.uvIndex[i][j];
+							if(smooting){
+								var hash:String = oldI + " " + oldUVI;
+								var newi:Object = oldh2newi[hash];
+							}else {
+								newi = null;
+							}
+							if (newi==null) {
+								newi = maxI++;
+								sPos.push(source.pos[oldI * 3], source.pos[oldI * 3 + 1], source.pos[oldI * 3 + 2]);
+								sUV.push(source.uv[oldUVI * 2], source.uv[oldUVI * 2 + 1]);
+								if(smooting){
+									oldh2newi[hash] = newi;
+									var newis:Array = oldi2newis[oldI];
+									if (newis==null) {
+										oldi2newis[oldI] = newis = [];
+									}
+									newis.push(newi);
+								}
+							}
+							face.push(newi);
+						}
+					}
+					var sIndex2:Array = [];
+					for each(face in sIndex) {
+						len = face.length;
+						for (i = 2; i < len;i++ ) {
+							sIndex2.push(face[0],face[i-1],face[i]);
+						}
+					}
+					_pos = new VertexBufferSet(Vector.<Number>(sPos), 3);
+					_uv = new VertexBufferSet(Vector.<Number>(sUV), 2);
+					_index = new IndexBufferSet(Vector.<uint>(sIndex2));
+				}
+			}
 			if (_index==null) {
 				_index = Meshs.computeIndex(this);
 			}
@@ -152,45 +204,10 @@ package gl3d.core {
 			_index = value;
 		}
 		
-		public function get unpackedDrawable():Drawable3D 
+		public function get unpackedDrawable():Drawable 
 		{
 			if (_unpackedDrawable == null)_unpackedDrawable = Meshs.unpack(this);
 			return _unpackedDrawable;
-		}
-		
-		public function addVertex(posV:Array, uvV:Array,oldIndex:int=-1,hashAdder:String=""):int {
-			var id:String = posV + ":" + uvV+hashAdder;
-			if (id2index[id]==null) {
-				var indexV:int = pos.data.length / 3;
-				pos.data.push(posV[0], posV[1], posV[2]);
-				uv.data.push(uvV[0], uvV[1]);
-				id2index[id] = indexV;
-				if (oldIndex!=-1) {
-					if (oldIndex2NewIndexs[oldIndex]==null) {
-						oldIndex2NewIndexs[oldIndex] = [];
-					}
-					oldIndex2NewIndexs[oldIndex].push(indexV);
-				}
-			}else {
-				indexV=id2index[id] as int;
-			}
-			index.data.push(indexV);
-			return indexV;
-		}
-		
-		public function addVertex2(posV:Array, uvV:Array, indexV:int):void {
-			if (pos.data.length<(indexV+1)*3) {
-				pos.data.length = (indexV+1) * 3;
-			}
-			if (uv.data.length<(indexV+1)*2) {
-				uv.data.length = (indexV+1) * 2;
-			}
-			pos.data[indexV * 3 + 0] = posV[0];
-			pos.data[indexV * 3 + 1] = posV[1];
-			pos.data[indexV * 3 + 2] = posV[2];
-			uv.data[indexV * 2 + 0] = uvV[0];
-			uv.data[indexV * 2 + 1] = uvV[1];
-			index.data.push(indexV);
 		}
 	}
 

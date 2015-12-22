@@ -48,7 +48,7 @@ package gl3d.core.skin
 			}
 			q1.fromMatrix(m1);
 			q2.fromMatrix(m2);
-			q1.lerpTo(q2, p);
+			//q1.lerpTo(q2, p);
 			
 			return q1.toMatrix(target);
 		}
@@ -141,9 +141,9 @@ package gl3d.core.skin
 						pos.setTo( sourcePos[i*3], sourcePos[i*3+1],sourcePos[i*3 + 2]);
 						norm.setTo( sourceNorm[i*3], sourceNorm[i*3+1],sourceNorm[i*3 + 2]);
 						for (var j:int = 0; j < target.skin.maxWeight;j++ ) {
-							var jointIndex:int = target.drawable.joints.data[i * target.skin.maxWeight + j];
+							var jointIndex:int = target.drawable.joint.data[i * target.skin.maxWeight + j];
 							if(jointIndex!=-1){
-								var weight:Number = target.drawable.weights.data[i * target.skin.maxWeight + j];
+								var weight:Number = target.drawable.weight.data[i * target.skin.maxWeight + j];
 								matrix = target.skin.skinFrame.matrixs[jointIndex];
 								if (weight != 0) {
 									if(!target.skin.useQuat){

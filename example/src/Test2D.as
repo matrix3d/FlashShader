@@ -2,7 +2,7 @@ package
 {
 	import flash.events.Event;
 	import flash.utils.ByteArray;
-	import gl3d.core.Drawable3D;
+	import gl3d.core.Drawable;
 	import gl3d.core.InstanceMaterial;
 	import gl3d.core.Node3D;
 	import gl3d.meshs.Meshs;
@@ -25,7 +25,7 @@ package
 		override public function initNode():void 
 		{
 			view.scene.addChild(map2d);
-			var cubed:Drawable3D = Meshs.cube(100,100,100);
+			var cubed:Drawable = Meshs.cube(100,100,100);
 			var c:int = 10;
 			view.antiAlias = 0;
 			cube = new Node3D;

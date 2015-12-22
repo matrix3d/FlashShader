@@ -1,7 +1,7 @@
 package gl3d.parser.q3bsp.render 
 {
 	import flash.display.BitmapData;
-	import gl3d.core.Drawable3D;
+	import gl3d.core.Drawable;
 	import gl3d.core.Material;
 	import gl3d.core.Node3D;
 	import gl3d.core.TextureSet;
@@ -74,8 +74,8 @@ package gl3d.parser.q3bsp.render
 					}
 				}
 				if (vertices.length>0&&index.length>0) {
-					var d:Drawable3D = Meshs.createDrawable(index, vertices, uvs, null);
-					d.lightmapUV = new VertexBufferSet(lmuvs, 2);
+					var d:Drawable = Meshs.createDrawable(index, vertices, uvs, null);
+					d.uv2 = new VertexBufferSet(lmuvs, 2);
 					var node:Node3D = new Node3D;
 					node.drawable = d;
 					node.material = new Material;

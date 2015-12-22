@@ -4,7 +4,7 @@ package gl3d.parser.mmd
 	import flash.geom.Vector3D;
 	import flash.utils.ByteArray;
 	import flash.utils.Dictionary;
-	import gl3d.core.Drawable3D;
+	import gl3d.core.Drawable;
 	import gl3d.core.IndexBufferSet;
 	import gl3d.core.skin.IK;
 	import gl3d.core.skin.IKLink;
@@ -111,9 +111,9 @@ package gl3d.parser.mmd
 			
 			skin.joints = bones;
 			
-			var drawable:Drawable3D = Meshs.createDrawable(null, vs, null, null);
-			drawable.joints = new VertexBufferSet(js,pmx.maxWeight );
-			drawable.weights = new VertexBufferSet(ws, pmx.maxWeight );
+			var drawable:Drawable = Meshs.createDrawable(null, vs, null, null);
+			drawable.joint = new VertexBufferSet(js,pmx.maxWeight );
+			drawable.weight = new VertexBufferSet(ws, pmx.maxWeight );
 			
 			i = 0;
 			for each(var material:Object in pmx.materials) {
@@ -125,10 +125,10 @@ package gl3d.parser.mmd
 					indices.push(pmx.indices[i+1]);
 				}
 				var child:Node3D = new Node3D;
-				child.drawable = new Drawable3D;
+				child.drawable = new Drawable;
 				child.drawable.pos = drawable.pos;
-				child.drawable.joints = drawable.joints;
-				child.drawable.weights = drawable.weights;
+				child.drawable.joint = drawable.joint;
+				child.drawable.weight = drawable.weight;
 				child.drawable.index = new IndexBufferSet(indices);
 				child.skin = skin;
 				child.material = new Material;

@@ -6,7 +6,7 @@ package gl3d.shaders
 	import flash.geom.Vector3D;
 	import as3Shader.AS3Shader;
 	import gl3d.core.Camera3D;
-	import gl3d.core.Drawable3D;
+	import gl3d.core.Drawable;
 	import gl3d.core.renders.GL;
 	import gl3d.core.shaders.GLAS3Shader;
 	import gl3d.core.shaders.GLShader;
@@ -21,7 +21,7 @@ package gl3d.shaders
 	 */
 	public class PhongGLShader extends GLShader
 	{
-		private var drawable:Drawable3D;
+		private var drawable:Drawable;
 		//private var lightPosVec:Vector.<Number> = Vector.<Number>([0,0,0,1]);
 		//private var specularPowerVec:Vector.<Number> = Vector.<Number>([0,0,0,0]);
 		public function PhongGLShader() 

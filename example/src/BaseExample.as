@@ -65,7 +65,7 @@ package
 		public var view:View3D;
 		public var aui:AttribSeter = new AttribSeter;
 		private var _useTexture:Boolean = true;
-		private var texture:TextureSet;
+		protected var texture:TextureSet;
 		private var normalMapTexture:TextureSet;
 		public var skyBoxTexture:TextureSet;
 		private var debug:TextField;

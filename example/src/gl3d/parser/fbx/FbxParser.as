@@ -1,15 +1,12 @@
 package gl3d.parser.fbx 
 {
 	import flash.geom.Matrix3D;
-	import flash.geom.Point;
 	import flash.geom.Vector3D;
 	import flash.utils.ByteArray;
-	import flash.utils.Dictionary;
-	import gl3d.core.Drawable3D;
-	import gl3d.core.skin.Joint;
+	import gl3d.core.Drawable;
 	import gl3d.core.Material;
-	import gl3d.core.math.Quaternion;
 	import gl3d.core.Node3D;
+	import gl3d.core.skin.Joint;
 	import gl3d.core.skin.Skin;
 	import gl3d.core.skin.SkinAnimation;
 	import gl3d.core.skin.Track;
@@ -18,7 +15,6 @@ package gl3d.parser.fbx
 	import gl3d.ctrl.Ctrl;
 	import gl3d.meshs.Meshs;
 	import gl3d.util.Converter;
-	import gl3d.util.Utils;
 	/**
 	 * @author lizhi
 	 */
@@ -189,7 +185,11 @@ package gl3d.parser.fbx
 					}
 					if (prim) {
 						if(prim.drawable==null){
-							prim.drawable = Meshs.createDrawable(Vector.<uint>(prim.getIndexes()), Vector.<Number>(converter.convertedVec3s(prim.getVertices())), null, null);
+							prim.drawable = Meshs.createDrawable(
+								Vector.<uint>(prim.getIndexes()), 
+								Vector.<Number>(converter.convertedVec3s(prim.getVertices())),
+								/*Vector.<Number>(prim.getUVs())*/null
+								);
 						}
 						prim.nodes.push(o.obj);
 						(o.obj as Node3D).drawable = prim.drawable;
@@ -200,7 +200,8 @@ package gl3d.parser.fbx
 						if(material){
 							var tex:Object = getChild(material, "Texture") ;
 							if (tex) {
-								var texPath:String=FbxTools.toString(FbxTools.get(tex, "FileName").props[0]);
+								var texPath:String = FbxTools.toString(FbxTools.get(tex, "FileName").props[0]);
+								trace(texPath);
 							}
 							var materialObj:Object = { };
 							for each(var p:Object in FbxTools.getAll(material, "Properties70.P").concat(FbxTools.getAll(material, "Properties60.Property"))) {
@@ -239,7 +240,7 @@ package gl3d.parser.fbx
 				o.obj.matrix = getMatrix(o.m);
 				if (o.obj.drawable && o.m.GeometricTranslation) {
 					var gt:Vector3D = o.m.GeometricTranslation;
-					var drawable:Drawable3D = o.obj.drawable as Drawable3D;
+					var drawable:Drawable = o.obj.drawable as Drawable;
 					var pos:Vector.<Number> = drawable.pos.data;
 					var gtv:Array = converter.convertedVec3s([gt.x,gt.y,gt.z]) as Array;
 					for (var i:int = 0; i < pos.length; i += 3 ) {
@@ -258,32 +259,9 @@ package gl3d.parser.fbx
 			// build skins
 			for each( o in objects ) {
 				if( o.isJoint ) continue;
-				// /!\ currently, childs of joints will work but will not cloned
-				//if( o.parent.isJoint )
-					//o.obj.follow = scene.getObjectByName(o.parent.joint.name);
 				var skin:Skin = (o.obj as Node3D).skin;
 				if( skin == null ) continue;
 				createSkin(o,hgeom);
-				// remove the corresponding Geometry-Model and copy its material
-				/*for( o2 in objects ) {
-					if( o2.obj == null || o2 == o || !o2.obj.isMesh() ) continue;
-					var m = o2.obj.toMesh();
-					if( m.primitive != skinData.primitive ) continue;
-
-					var mt = Std.instance(m, h3d.scene.MultiMaterial);
-					skin.materials = mt == null ? [m.material] : mt.materials;
-					skin.material = skin.materials[0];
-					m.remove();
-					// ignore key frames for this object
-					defaultModelMatrixes.get(m.name).wasRemoved = o.model.getId();
-				}
-				// set skin after materials
-				if( skinData.boundJoints.length > maxBonesPerSkin ) {
-					var model = Std.instance(skinData.primitive, h3d.prim.FBXModel);
-					var idx = model.geom.getIndexes();
-					skinData.split(maxBonesPerSkin, [for( i in idx.idx) idx.vidx[i]], model.multiMaterial ? model.geom.getMaterialByTriangle() : null);
-				}
-				skin.setSkinData(skinData);*/
 			}
 			if (isHasJoint(hier.root)) {
 				(hier.root.obj as Node3D).skin = new Skin;
@@ -349,7 +327,7 @@ package gl3d.parser.fbx
 			}
 			
 			for (var primID:String in prim2skinData) {
-				var drawable:Drawable3D = (hgeom[primID] as FbxGeometry).drawable;
+				var drawable:Drawable = (hgeom[primID] as FbxGeometry).drawable;
 				var skinData:Object = prim2skinData[primID];
 				var weightVec:Vector.<Number> = new Vector.<Number>(drawable.pos.data.length / 3 * skin.maxWeight);
 				var jointVec:Vector.<Number> = new Vector.<Number>(weightVec.length);
@@ -362,8 +340,8 @@ package gl3d.parser.fbx
 						}
 					}
 				}
-				drawable.weights = new VertexBufferSet(weightVec,skin.maxWeight);
-				drawable.joints = new VertexBufferSet(jointVec,skin.maxWeight);
+				drawable.weight = new VertexBufferSet(weightVec,skin.maxWeight);
+				drawable.joint = new VertexBufferSet(jointVec,skin.maxWeight);
 			}
 			
 			for (i = 0; i < transPoss.length;i++ ) {
@@ -420,10 +398,6 @@ package gl3d.parser.fbx
 
 		public function getChild( node : Object, nodeName : String, opt : Boolean=false ):Object {
 			var c:Array = getChilds(node, nodeName);
-			//if( c.length > 1 )
-			//	throw node.getName() + " has " + c.length + " " + nodeName + " childs ";
-			//if( c.length == 0 && !opt )
-			//	throw "Missing " + node.getName() + " " + nodeName + " child";
 			return c[0];
 		}
 
@@ -503,13 +477,13 @@ package gl3d.parser.fbx
 						var sv:Vector3D=null;
 						var rv:Vector3D=null;
 						var tv:Vector3D=null;
-						if (s) {
+						if (s&&s[0][i]!=null&&s[1][i]!=null&&s[2][i]!=null) {
 							sv=new Vector3D(s[0][i], s[1][i], s[2][i]);
 						}
-						if (r) {
+						if (r&&r[0][i]!=null&& r[1][i]!=null&& r[2][i]!=null) {
 							rv=new Vector3D(r[0][i], r[1][i], r[2][i]);
 						}
-						if(t){
+						if(t&&t[0][i]!=null&& t[1][i]!=null&& t[2][i]!=null){
 							tv=new Vector3D(t[0][i], t[1][i], t[2][i]);
 						}
 						

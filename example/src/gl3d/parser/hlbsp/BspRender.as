@@ -3,7 +3,7 @@ package gl3d.parser.hlbsp
 	import flash.display.BitmapData;
 	import flash.geom.Vector3D;
 	import flash.utils.Dictionary;
-	import gl3d.core.Drawable3D;
+	import gl3d.core.Drawable;
 	import gl3d.core.IndexBufferSet;
 	import gl3d.core.Material;
 	import gl3d.core.Node3D;
@@ -108,9 +108,9 @@ package gl3d.parser.hlbsp
 					}
 				}
 			}
-			var drawable:Drawable3D = Meshs.createDrawable(null, Vector.<Number>(vertices), Vector.<Number>(texCoords),Vector.<Number>(normals),null);
+			var drawable:Drawable = Meshs.createDrawable(null, Vector.<Number>(vertices), Vector.<Number>(texCoords),Vector.<Number>(normals),null);
 			target.drawable = drawable;
-			drawable.lightmapUV = new VertexBufferSet(Vector.<Number>(lightmapCoords), 2);
+			drawable.uv2 = new VertexBufferSet(Vector.<Number>(lightmapCoords), 2);
 			target.material = new Material;
 			target.material.shader = new LightMapGLShader;
 		}

@@ -141,16 +141,16 @@ package gl3d.core.shaders
 			if(v.used)shader.buffSets[v.index] = material.node.drawable.targetPosition;
 		}
 		public function bindUV2Buff(shader:GLShader,material:Material):void {
-			if(v.used)shader.buffSets[v.index] = material.node.drawable.lightmapUV;
+			if(v.used)shader.buffSets[v.index] = material.node.drawable.uv2;
 		}
 		public function bindJointsBuff(shader:GLShader,material:Material):void {
-			if(v.used)shader.buffSets[v.index] = material.node.drawable.joints;
+			if(v.used)shader.buffSets[v.index] = material.node.drawable.joint;
 		}
 		/*public function bindQuatJointsBuff(shader:GLShader,material:Material):void {
 			if(v.used)shader.buffSets[v.index] = material.node.drawable.quatJoints;
 		}*/
 		public function bindWeightsBuff(shader:GLShader,material:Material):void {
-			if(v.used)shader.buffSets[v.index] = material.node.drawable.weights;
+			if(v.used)shader.buffSets[v.index] = material.node.drawable.weight;
 		}
 		/*public function bindCpuSkinPosBuff(shader:GLShader,material:Material):void {
 			if(v.used)shader.buffSets[v.index] = material.node.drawable.pos.cpuSkinPos;

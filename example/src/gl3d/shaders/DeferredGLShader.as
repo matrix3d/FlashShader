@@ -3,7 +3,7 @@ package gl3d.shaders
 	import as3Shader.AS3Shader;
 	import flash.display3D.Context3DProgramType;
 	import gl3d.core.Camera3D;
-	import gl3d.core.Drawable3D;
+	import gl3d.core.Drawable;
 	import gl3d.core.renders.GL;
 	import gl3d.core.shaders.GLAS3Shader;
 	import gl3d.core.Material;
@@ -27,7 +27,7 @@ package gl3d.shaders
 		override public function preUpdate(material:Material):void {
 			super.preUpdate(material);
 			textureSets[0] = material.diffTexture;
-			var drawable:Drawable3D = material.node.drawable;
+			var drawable:Drawable = material.node.drawable;
 			buffSets[0] = drawable.pos;
 			buffSets[1] = drawable.uv;
 			//buffSets[2] = drawable.norm;
@@ -41,7 +41,7 @@ package gl3d.shaders
 				var view:View3D = material.view;
 				var camera:Camera3D = material.camera;
 				var node:Node3D = material.node;
-				var drawable:Drawable3D = material.node.drawable;
+				var drawable:Drawable = material.node.drawable;
 			
 				context.setProgramConstantsFromMatrix(Context3DProgramType.VERTEX, 0, node.world, true);
 				context.setProgramConstantsFromMatrix(Context3DProgramType.VERTEX, 4, camera.view, true);

@@ -1,13 +1,13 @@
 package gl3d.parser.fbx{
 	import flash.geom.Vector3D;
-	import gl3d.core.Drawable3D;
+	import gl3d.core.Drawable;
 
 	public class FbxGeometry {
 
 		private var root : Object;
 		private var vertices:Array;
 		private var polygons:Array;
-		public var drawable:Drawable3D;
+		public var drawable:Drawable;
 		public var nodes:Array = [];
 		public function FbxGeometry( root:Object,vertices:Array=null,polygons:Array=null) {
 			this.polygons = polygons;
@@ -98,16 +98,18 @@ package gl3d.parser.fbx{
 
 		public function getUVs():Array {
 			var uvs:Array = [];
-			/*for each(var v:Object in FbxTools.getAll(root,"LayerElementUV") ) {
-				var index = v.get("UVIndex", true);
-				var values = v.get("UV").getFloats();
-				var index = if( index == null ) {
-					// ByVertice/Direct (Maya sometimes...)
-					[for( i in getPolygons() ) if( i < 0 ) -i - 1 else i];
-				} else index.getInts();
+			for each(var v:Object in FbxTools.getAll(root,"LayerElementUV") ) {
+				var index:Array = FbxTools.getInts(FbxTools.get(v,"UVIndex", true));
+				var values:Array = FbxTools.getFloats(FbxTools.get(v,"UV"));
+				if ( index == null ) {
+					index = [];
+					for each(var i:int in getPolygons()) {
+						index.push(i<0?(-i-1):i);
+					}
+				}
 				uvs.push({ values : values, index : index });
-			}*/
-			return uvs;
+			}
+			return null;
 		}
 
 	}

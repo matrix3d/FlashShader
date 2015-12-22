@@ -1,7 +1,7 @@
 package gl3d.parser.dae 
 {
 	import flash.geom.Matrix3D;
-	import gl3d.core.Drawable3D;
+	import gl3d.core.Drawable;
 	import gl3d.core.skin.Joint;
 	import gl3d.core.Material;
 	import gl3d.core.Node3D;
@@ -200,9 +200,9 @@ package gl3d.parser.dae
 					skin.joints = joints;
 					for each(var childNode:Node3D in skinNode.children) {
 						childNode.skin = skin;
-						var drawable:Drawable3D = childNode.drawable;
-						drawable.joints=new  VertexBufferSet(Vector.<Number>(js),maxWeight);
-						drawable.weights=new  VertexBufferSet(Vector.<Number>(ws),maxWeight);
+						var drawable:Drawable = childNode.drawable;
+						drawable.joint=new  VertexBufferSet(Vector.<Number>(js),maxWeight);
+						drawable.weight=new  VertexBufferSet(Vector.<Number>(ws),maxWeight);
 					}
 				}else {
 					trace("error:maxWeight=",maxWeight);

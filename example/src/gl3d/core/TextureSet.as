@@ -38,6 +38,9 @@ package gl3d.core {
 			this.isRect = isRect;
 			this.data = data;
 			updateATF(null, false);
+			if (data is String) {
+				ready = false;
+			}
 		}
 		
 		private function getNextPow2(v:int):int {
