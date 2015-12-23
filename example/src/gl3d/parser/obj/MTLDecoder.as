@@ -34,8 +34,6 @@ package gl3d.parser.obj
 					case "map_Kd":
 						var mapkd:String = data[1];
 						currentMtl[1] = mapkd;
-						mapkd = mapkd.slice(mapkd.lastIndexOf("\\") + 1, mapkd.lastIndexOf("."));
-						currentMtl[2] = mapkd;
 						break;
 					case "Kd":
 						currentMtl[3] = [parseFloat(data[1]), parseFloat(data[2]), parseFloat(data[3])];

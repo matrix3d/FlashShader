@@ -1,6 +1,7 @@
 package 
 {
 	import com.bit101.components.CheckBox;
+	import com.bit101.components.ComboBox;
 	import com.bit101.components.HUISlider;
 	import com.bit101.components.PushButton;
 	import com.bit101.components.VBox;
@@ -44,6 +45,9 @@ package
 		private var timeUI:HUISlider;
 		private var pauseUI:CheckBox;
 		private var anim:SkinAnimation;
+		private var mtl:String;
+		private var rotUI:HUISlider;
+		private var fmtUI:ComboBox;
 		public function ModelViewer() 
 		{
 		}
@@ -57,15 +61,17 @@ package
 			for each(v in Utils.getParameters()) {
 				load(v);
 			}
-			//load("C:/Users/aaaa/Desktop/test2.fbx");
+			load("C:/Users/aaaa/Desktop/test2.fbx");
 			//load("C:/Users/aaaa/Desktop/aoying gongji.FBX");
 			//load("C:/Users/aaaa/Desktop/Beta.fbx");
 			//load("C:/Users/aaaa/Desktop/Betau3d.fbx");
 			//load("C:/Users/aaaa/Desktop/Beta@running.fbx");
 			//load("C:/Users/aaaa/Desktop/runningmax.fbx");
 			//load("C:/Users/aaaa/Desktop/running.fbx");
-			//load("C:/Users/aaaa/Desktop/2.fbx");
 			//load("../src/assets/test4.FBX");
+			//load("../src/assets/miku.mtl");
+			//load("../src/assets/miku.obj");
+			//load("../src/assets/astroBoy_walk_Max.dae");
 			//load("../src/assets/miku.pmx");
 			//load("../src/assets/melt.vmd");
 		}
@@ -102,13 +108,30 @@ package
 			var btn:PushButton = new PushButton(vbox,0,0,"browse");
 			btn.addEventListener(MouseEvent.CLICK, btn_click);
 			scaleUI = new HUISlider(vbox, 0, 0, "scale", onScale);
-			scaleUI.setSliderParams(0.01, 10, .001);
+			scaleUI.setSliderParams(0.01, 10, 0);
 			pauseUI = new CheckBox(vbox, 0, 0, "pause", onPause);
 			timeUI = new HUISlider(vbox, 0, 0, "time", onTime);
-			timeUI.setSliderParams(0, 1, .01);
+			timeUI.setSliderParams(0, 1, 0);
+			rotUI = new HUISlider(vbox, 0, 0, "rotY", onRot);
+			rotUI.setSliderParams(0, 360,0);
+			rotUI.tick = 1;
+			var formats:Array = ["json","amf"];
+			fmtUI = new ComboBox(vbox, 0, 0, formats[0], formats);
+			fmtUI.selectedIndex = 0;
+			new PushButton(vbox, 0, 0, "export", onExp);
+			
 			
 			addChild(stats);
 			stats.y = vbox.y + vbox.height + 5;
+		}
+		
+		private function onExp(e:Event):void 
+		{
+			if (node) {
+				var obj:Object = Utils.exportNode(node);
+				trace(JSON.stringify(obj,null,4));
+				trace(fmtUI.selectedItem);
+			}
 		}
 		
 		private function onPause(e:Event):void 
@@ -126,7 +149,12 @@ package
 				node.scaleZ = scaleUI.value;
 			}
 		}
-		
+		private function onRot(e:Event):void 
+		{
+			if (node) {
+				node.rotationY = rotUI.value;
+			}
+		}
 		private function onTime(e:Event):void 
 		{
 			if (anim) {
@@ -172,8 +200,11 @@ package
 					anim = mmd.bind(vmd);
 					break;
 				case "obj":
-					var obj:OBJParser = new OBJParser(byte +"", false);
+					var obj:OBJParser = new OBJParser(byte +"",true,mtl);
 					curnode = obj.target;
+					break;
+				case "mtl":
+					mtl = byte+"";
 					break;
 				case "md5mesh":
 					md5mesh = new MD5MeshParser(byte+"");

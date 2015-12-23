@@ -4,6 +4,7 @@ package gl3d.parser.fbx
 	import flash.geom.Vector3D;
 	import flash.utils.ByteArray;
 	import gl3d.core.Drawable;
+	import gl3d.core.DrawableSource;
 	import gl3d.core.Material;
 	import gl3d.core.Node3D;
 	import gl3d.core.skin.Joint;
@@ -15,6 +16,7 @@ package gl3d.parser.fbx
 	import gl3d.ctrl.Ctrl;
 	import gl3d.meshs.Meshs;
 	import gl3d.util.Converter;
+	import gl3d.util.MatLoadMsg;
 	/**
 	 * @author lizhi
 	 */
@@ -184,13 +186,17 @@ package gl3d.parser.fbx
 						}
 					}
 					if (prim) {
-						if(prim.drawable==null){
-							prim.drawable = Meshs.createDrawable(
-								Vector.<uint>(prim.getIndexes()), 
-								Vector.<Number>(converter.convertedVec3s(prim.getVertices())),
-								/*Vector.<Number>(prim.getUVs())*/null
-								);
+						if (prim.drawable == null) {
+							prim.drawable = new Drawable;
+							prim.drawable.source = new DrawableSource;
+							prim.drawable.source.index = prim.index;
+							prim.drawable.source.pos = converter.convertedVec3s(prim.vertices) as Array;
+							if (prim.uvindex) {
+								prim.drawable.source.uv = prim.uv;
+								prim.drawable.source.uvIndex = prim.uvindex;
+							}
 						}
+						
 						prim.nodes.push(o.obj);
 						(o.obj as Node3D).drawable = prim.drawable;
 						(o.obj as Node3D).material = new Material;
@@ -198,11 +204,6 @@ package gl3d.parser.fbx
 						var material:Object = getChild(o.model, "Material");
 						
 						if(material){
-							var tex:Object = getChild(material, "Texture") ;
-							if (tex) {
-								var texPath:String = FbxTools.toString(FbxTools.get(tex, "FileName").props[0]);
-								trace(texPath);
-							}
 							var materialObj:Object = { };
 							for each(var p:Object in FbxTools.getAll(material, "Properties70.P").concat(FbxTools.getAll(material, "Properties60.Property"))) {
 								name = FbxTools.toString(p.props[0]);
@@ -219,6 +220,12 @@ package gl3d.parser.fbx
 							}
 							if (materialObj.AmbientColor) {
 								(o.obj as Node3D).material.ambient.setTo(materialObj.AmbientColor.x,materialObj.AmbientColor.y,materialObj.AmbientColor.z);
+							}
+							
+							var tex:Object = getChild(material, "Texture") ;
+							if (tex) {
+								var texPath:String = FbxTools.toString(FbxTools.get(tex, "FileName").props[0]);
+								new MatLoadMsg(texPath, (o.obj as Node3D).material);
 							}
 						}
 					}
@@ -241,7 +248,7 @@ package gl3d.parser.fbx
 				if (o.obj.drawable && o.m.GeometricTranslation) {
 					var gt:Vector3D = o.m.GeometricTranslation;
 					var drawable:Drawable = o.obj.drawable as Drawable;
-					var pos:Vector.<Number> = drawable.pos.data;
+					var pos:Array = drawable.source.pos;
 					var gtv:Array = converter.convertedVec3s([gt.x,gt.y,gt.z]) as Array;
 					for (var i:int = 0; i < pos.length; i += 3 ) {
 						pos[i] += gtv[0];
@@ -329,8 +336,8 @@ package gl3d.parser.fbx
 			for (var primID:String in prim2skinData) {
 				var drawable:Drawable = (hgeom[primID] as FbxGeometry).drawable;
 				var skinData:Object = prim2skinData[primID];
-				var weightVec:Vector.<Number> = new Vector.<Number>(drawable.pos.data.length / 3 * skin.maxWeight);
-				var jointVec:Vector.<Number> = new Vector.<Number>(weightVec.length);
+				var weightVec:Array = [];// new Vector.<Number>(drawable.pos.data.length / 3 * skin.maxWeight);
+				var jointVec:Array = [];// Vector.<Number> = new Vector.<Number>(weightVec.length);
 				for (var index:String in skinData.wj) {
 					for (var i:int = 0; i < skinData.wj[index].length; i++ ) {
 						for (var j:int = 0; j < skinData.wj[index].length;j++ ) {
@@ -338,10 +345,14 @@ package gl3d.parser.fbx
 							weightVec[ii] = skinData.wj[index][j][0];
 							jointVec[ii] = skinData.wj[index][j][1];
 						}
+						for (; j < skin.maxWeight;j++ ) {
+							ii = int(index) * skin.maxWeight + j;
+							weightVec[ii] = jointVec[ii] = 0;
+						}
 					}
 				}
-				drawable.weight = new VertexBufferSet(weightVec,skin.maxWeight);
-				drawable.joint = new VertexBufferSet(jointVec,skin.maxWeight);
+				drawable.source.weight = weightVec;//new VertexBufferSet(weightVec,skin.maxWeight);
+				drawable.source.joint = jointVec;//new VertexBufferSet(jointVec,skin.maxWeight);
 			}
 			
 			for (i = 0; i < transPoss.length;i++ ) {

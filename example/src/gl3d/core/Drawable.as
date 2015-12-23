@@ -19,17 +19,15 @@ package gl3d.core {
 		private var _targetPosition:VertexBufferSet;
 		public var uv2:VertexBufferSet;
 		
-		public var joint:VertexBufferSet;
-		public var weight:VertexBufferSet;
+		private var _joint:VertexBufferSet;
+		private var _weight:VertexBufferSet;
 		
 		private var _index:IndexBufferSet;
 		public var source:DrawableSource;
-		/*public var id2index:Object = { };
-		public var oldIndex2NewIndexs:Array = [];*/
 		
 		private var _unpackedDrawable:Drawable;
 		public var oldi2newis:Object;
-		public var smooting:Boolean = false;
+		public var smooting:Boolean = true;
 		public function Drawable() 
 		{
 			
@@ -140,17 +138,24 @@ package gl3d.core {
 		public function get index():IndexBufferSet 
 		{
 			if (_index == null && source && source.index) {
-				if(source.uvIndex==null){
-					_index = new IndexBufferSet(Vector.<uint>(source.index));
-				}else {
+				if (source.uvIndex != null) {
 					var maxI:int = 0;
 					oldi2newis = { };
 					var oldh2newi:Object = { };
 					var sIndex:Array = [];
 					var face:Array = null;
 					var sPos:Array = [];
+					if (source.joint) {
+						var sjoint:Array = [];
+						var maxWeight:int = 3 * source.joint.length / source.pos.length;
+					}
+					if (source.weight) {
+						var sweight:Array = [];
+					}
+					
 					var sUV:Array = [];
-					for (var i:int = 0, len:int = source.index.length; i < len; i++) {
+					var len:int = source.index.length;
+					for (var i:int = 0; i < len; i++) {
 						face = null;
 						for (var j:int = 0, len2:int = source.index[i].length; j < len2 ; j++ ) {
 							if (face == null) {
@@ -168,6 +173,13 @@ package gl3d.core {
 							if (newi==null) {
 								newi = maxI++;
 								sPos.push(source.pos[oldI * 3], source.pos[oldI * 3 + 1], source.pos[oldI * 3 + 2]);
+								if (sjoint && sweight) {
+									for (var k:int = 0; k < maxWeight;k++ ) {
+										sjoint.push(source.joint[oldI * maxWeight+k]);
+										sweight.push(source.weight[oldI * maxWeight+k]);
+									}
+									
+								}
 								sUV.push(source.uv[oldUVI * 2], source.uv[oldUVI * 2 + 1]);
 								if(smooting){
 									oldh2newi[hash] = newi;
@@ -181,17 +193,25 @@ package gl3d.core {
 							face.push(newi);
 						}
 					}
-					var sIndex2:Array = [];
-					for each(face in sIndex) {
-						len = face.length;
-						for (i = 2; i < len;i++ ) {
-							sIndex2.push(face[0],face[i-1],face[i]);
-						}
-					}
+					
 					_pos = new VertexBufferSet(Vector.<Number>(sPos), 3);
+					if (sjoint) {
+						_joint = new VertexBufferSet(Vector.<Number>(sjoint), maxWeight);
+					}
+					if (sweight) {
+						_weight = new VertexBufferSet(Vector.<Number>(sweight), maxWeight);
+					}
 					_uv = new VertexBufferSet(Vector.<Number>(sUV), 2);
-					_index = new IndexBufferSet(Vector.<uint>(sIndex2));
 				}
+				
+				var sIndex2:Array = [];
+				for each(face in sIndex||source.index) {
+					len = face.length;
+					for (i = 2; i < len;i++ ) {
+						sIndex2.push(face[0],face[i-1],face[i]);
+					}
+				}
+				_index = new IndexBufferSet(Vector.<uint>(sIndex2));
 			}
 			if (_index==null) {
 				_index = Meshs.computeIndex(this);
@@ -208,6 +228,40 @@ package gl3d.core {
 		{
 			if (_unpackedDrawable == null)_unpackedDrawable = Meshs.unpack(this);
 			return _unpackedDrawable;
+		}
+		
+		public function get joint():VertexBufferSet 
+		{
+			if (_joint == null && source && source.joint) {
+				if (source.index&&source.uvIndex) {
+					index;
+				}else{
+					_joint = new VertexBufferSet(Vector.<Number>(source.joint), source.joint.length/(source.pos.length/3));
+				}
+			}
+			return _joint;
+		}
+		
+		public function set joint(value:VertexBufferSet):void 
+		{
+			_joint = value;
+		}
+		
+		public function get weight():VertexBufferSet 
+		{
+			if (_weight == null && source && source.weight) {
+				if (source.index&&source.uvIndex) {
+					index;
+				}else{
+					_weight = new VertexBufferSet(Vector.<Number>(source.weight), source.weight.length/(source.pos.length/3));
+				}
+			}
+			return _weight;
+		}
+		
+		public function set weight(value:VertexBufferSet):void 
+		{
+			_weight = value;
 		}
 	}
 

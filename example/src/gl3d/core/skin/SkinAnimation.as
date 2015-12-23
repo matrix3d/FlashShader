@@ -48,7 +48,7 @@ package gl3d.core.skin
 			}
 			q1.fromMatrix(m1);
 			q2.fromMatrix(m2);
-			//q1.lerpTo(q2, p);
+			q1.lerpTo(q2, p);
 			
 			return q1.toMatrix(target);
 		}

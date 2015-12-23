@@ -25,6 +25,21 @@ package
 		
 		override public function initNode():void 
 		{
+			var mtl:String=
+			<![CDATA[
+# Blender MTL File: 'None'
+# Material Count: 1
+
+newmtl Material
+Ns 96.078431
+Ka 0.000000 0.000000 0.000000
+Kd 0.640000 0.640000 0.640000
+Ks 0.500000 0.500000 0.500000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd C:\Users\aaaa\Documents\GitHub\FlashShader\example\src\assets\leaf.png
+			]]>;
 			var obj:String =
 			<![CDATA[
 # Blender v2.73 (sub 0) OBJ File: ''
@@ -52,9 +67,9 @@ f 2/1 6/2 7/3 3/4
 f 3/1 7/2 8/3 4/4
 f 5/1 1/2 4/3 8/4
 			]]>;
-			var objp:OBJParser = new OBJParser(obj,true);
+			var objp:OBJParser = new OBJParser(obj,true,mtl);
 			view.scene.addChild(objp.target);
-			objp.target.children[0].material.diffTexture = texture;
+			//objp.target.children[0].material.diffTexture = texture;
 		}
 	}
 

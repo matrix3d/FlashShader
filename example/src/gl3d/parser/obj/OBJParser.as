@@ -10,6 +10,7 @@ package gl3d.parser.obj
 	import gl3d.meshs.Meshs;
 	import gl3d.parser.obj.MTLDecoder;
 	import gl3d.parser.obj.OBJDecoder;
+	import gl3d.util.MatLoadMsg;
 	/**
 	 * ...
 	 * @author lizhi
@@ -26,7 +27,7 @@ package gl3d.parser.obj
 		private var maxIndexUV:int;
 		private var face:Array;
 		private var faceUV:Array;
-		public function OBJParser(txt:String,alwaysSmoothing:Boolean=false,mtltxt:String=null,basePath:String="") 
+		public function OBJParser(txt:String,alwaysSmoothing:Boolean=false,mtltxt:String=null) 
 		{
 			this.alwaysSmoothing = alwaysSmoothing;
 			var t:int = getTimer();
@@ -52,6 +53,9 @@ package gl3d.parser.obj
 								node.material.color.x = mtl[3][0];
 								node.material.color.y = mtl[3][1];
 								node.material.color.z = mtl[3][2];
+							}
+							if (mtl&&mtl[1]) {
+								new MatLoadMsg(mtl[1],node.material);
 							}
 						}
 						oldindex2newindex = { };

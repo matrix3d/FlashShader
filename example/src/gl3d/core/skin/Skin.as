@@ -32,7 +32,6 @@ package gl3d.core.skin
 		public static function optimize(node:Node3D):void {
 			var jid2newjid:Object = { };
 			var joints:Vector.<Joint> = new Vector.<Joint>;
-			//var invBindMatrixs:Vector.<Matrix3D> = new Vector.<Matrix3D>;
 			var drawable:Drawable = node.drawable;
 			var js:Vector.<Number> = drawable.joint.data;
 			var ws:Vector.<Number> = drawable.weight.data;
@@ -50,7 +49,6 @@ package gl3d.core.skin
 						if (jid2newjid[jid] == null) {
 							jid2newjid[jid] = newjid;
 							joints[newjid] = node.skin.joints[jid];
-							//invBindMatrixs[newjid] = node.skin.invBindMatrixs[jid];
 							newjid++;
 						}
 						count++;
@@ -64,15 +62,8 @@ package gl3d.core.skin
 			for each(jid in js) {
 				newjs.push(int(jid2newjid[jid]));
 			}
-			
-			node.drawable = new Drawable;
-			node.drawable.index = drawable.index;
-			node.drawable.uv = drawable.uv;
-			node.drawable.pos = drawable.pos;
 			node.drawable.joint = new VertexBufferSet(newjs, newMaxWeight);
-			node.drawable.weight = drawable.weight;
 			var news:Skin = new Skin;
-			//news.invBindMatrixs = invBindMatrixs;
 			news.joints = joints;
 			news.maxWeight = newMaxWeight;
 			node.skin = news;
