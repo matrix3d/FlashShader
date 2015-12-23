@@ -5,6 +5,7 @@ package gl3d.util
 	import flash.geom.Vector3D;
 	import flash.utils.ByteArray;
 	import flash.utils.Dictionary;
+	import gl3d.core.Drawable;
 	import gl3d.core.Node3D;
 	import gl3d.core.skin.Joint;
 	import gl3d.core.skin.SkinAnimation;
@@ -23,7 +24,7 @@ package gl3d.util
 		}
 		
 		public static function getParameters():Object {
-			/*var p:Object = { };
+			var p:Object = { };
 			if (ExternalInterface.available) {
 				var search:String = decodeURI(ExternalInterface.call("function(){return window.location.search}"));
 				if (search.length > 0) {
@@ -34,8 +35,7 @@ package gl3d.util
 					}
 				}
 			}
-			return p;*/
-			return null;
+			return p;
 		}
 		
 		public static function randomSphere(vector:Vector3D=null,rotation:Vector3D=null):Vector3D {
@@ -146,38 +146,6 @@ package gl3d.util
 				traceNode(c, depth + 1);
 			}
 		}
-		
-		public static function exportNode(node:Node3D,geoms:Dictionary=null):Object {
-			geoms = geoms||new Dictionary;
-			var nodeObj:Object = { };
-			if (node.name) {
-				nodeObj.name = node.name;
-				if (node is Joint) {
-					node.type = "JOINT";
-				}
-				if (node.skin) {
-					
-				}
-				if (node.drawable) {
-					
-				}
-				if (node.controllers) {
-					for each(var controller:Ctrl in node.controllers) {
-						if (controller is SkinAnimation) {
-							
-						}
-					}
-				}
-			}
-			if (node.children.length) {
-				nodeObj.children = [];
-				for each(var child:Node3D in node.children) {
-					nodeObj.children.push(exportNode(child, geoms));
-				}
-			}
-			return {root:nodeObj,geoms:[]};
-		}
-		
 	}
 
 }

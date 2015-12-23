@@ -25,8 +25,6 @@ package gl3d.core.skin
 		public var animtime:Number = 0;
 		public var playing:Boolean = true;
 		private var q:Quaternion = new Quaternion;
-		private static var raw1:Vector.<Number> = new Vector.<Number>(16);
-		private static var raw2:Vector.<Number> = new Vector.<Number>(16);
 		static private var q1:Quaternion= new Quaternion;
 		static private var q2:Quaternion = new Quaternion;
 		public function SkinAnimation() 

@@ -12,11 +12,14 @@ package
 	import flash.events.MouseEvent;
 	import flash.events.SecurityErrorEvent;
 	import flash.external.ExternalInterface;
+	import flash.geom.Matrix3D;
 	import flash.net.FileReference;
 	import flash.net.URLLoader;
 	import flash.net.URLLoaderDataFormat;
 	import flash.net.URLRequest;
+	import flash.system.System;
 	import flash.utils.ByteArray;
+	import flash.utils.CompressionAlgorithm;
 	import flash.utils.Dictionary;
 	import gl3d.core.Node3D;
 	import gl3d.core.skin.SkinAnimation;
@@ -28,6 +31,7 @@ package
 	import gl3d.parser.mmd.MMD;
 	import gl3d.parser.mmd.VMD;
 	import gl3d.parser.obj.OBJParser;
+	import gl3d.util.NodeIO;
 	import gl3d.util.Utils;
 	/**
 	 * ...
@@ -61,7 +65,7 @@ package
 			for each(v in Utils.getParameters()) {
 				load(v);
 			}
-			load("C:/Users/aaaa/Desktop/test2.fbx");
+			//load("C:/Users/aaaa/Desktop/test2.fbx");
 			//load("C:/Users/aaaa/Desktop/aoying gongji.FBX");
 			//load("C:/Users/aaaa/Desktop/Beta.fbx");
 			//load("C:/Users/aaaa/Desktop/Betau3d.fbx");
@@ -128,9 +132,27 @@ package
 		private function onExp(e:Event):void 
 		{
 			if (node) {
-				var obj:Object = Utils.exportNode(node);
-				trace(JSON.stringify(obj,null,4));
-				trace(fmtUI.selectedItem);
+				var io:NodeIO = new NodeIO;
+				var bak:Matrix3D = node.matrix;
+				node.matrix = new Matrix3D;
+				var obj:Object = io.exportNode(node);
+				node.matrix = bak;
+				var out:Object;
+				switch(fmtUI.selectedItem) {
+					case "json":
+						out = JSON.stringify(obj);
+						break;
+					case "amf":
+						var byte:ByteArray = new ByteArray;
+						byte.writeObject(obj);
+						byte.compress(CompressionAlgorithm.LZMA);
+						out = byte;
+						break;
+				}
+				if (out) {
+					var file:FileReference = new FileReference;
+					file.save(out, "mesh." + fmtUI.selectedItem);
+				}
 			}
 		}
 		
@@ -240,8 +262,6 @@ package
 				node.scaleZ = defScale;
 				view.scene.addChild(node);
 			}
-			
-			//Utils.traceNode(node);
 		}
 		
 	}
