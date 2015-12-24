@@ -21,12 +21,6 @@ package gl3d.parser.obj
 		public var target:Node3D = new Node3D;
 		private var alwaysSmoothing:Boolean;
 		private var mtldecode:MTLDecoder;
-		private var oldindex2newindex:Object;
-		private var oldindex2newindexUV:Object;
-		private var maxIndex:int;
-		private var maxIndexUV:int;
-		private var face:Array;
-		private var faceUV:Array;
 		public function OBJParser(txt:String,alwaysSmoothing:Boolean=false,mtltxt:String=null) 
 		{
 			this.alwaysSmoothing = alwaysSmoothing;
@@ -48,76 +42,57 @@ package gl3d.parser.obj
 						node.drawable = drawable;
 						node.material = new Material;
 						if (mtldecode&&g.mtl) {
-							var mtl:Array = mtldecode.getmtl(g.mtl);
-							if (mtl&&mtl[3]) {
-								node.material.color.x = mtl[3][0];
-								node.material.color.y = mtl[3][1];
-								node.material.color.z = mtl[3][2];
-							}
-							if (mtl&&mtl[1]) {
-								new MatLoadMsg(mtl[1],node.material);
+							var mtl:Object = mtldecode.getmtl(g.mtl);
+							if(mtl){
+								if (mtl.Kd) {
+									node.material.color.x = mtl.Kd[0];
+									node.material.color.y = mtl.Kd[1];
+									node.material.color.z = mtl.Kd[2];
+								}
+								if (mtl.Ka) {
+									node.material.ambient.x = mtl.Ka[0];
+									node.material.ambient.y = mtl.Ka[1];
+									node.material.ambient.z = mtl.Ka[2];
+								}
+								if (mtl.map_Kd) {
+									new MatLoadMsg(mtl.map_Kd,node.material);
+								}
 							}
 						}
-						oldindex2newindex = { };
-						oldindex2newindexUV = { };
-						maxIndex = 0;
-						maxIndexUV = 0;
+						var newPos:Array= drawable.source.pos = [];
+						var oldPos:Array = decoder.vs;
+						for (var i:int = 0, len:int = oldPos.length;i<len; i += 3) {
+							newPos.push(oldPos[i]);
+							newPos.push(oldPos[i+1]);
+							newPos.push(-oldPos[i+2]);
+						}
+						decoder.vs;
+						drawable.source.uv = decoder.vts;
+						drawable.source.index = [];
+						var haveUV:Boolean = false;
+						if (g.f && g.f[0]  &&g.f[0][1]!=null) {
+							var uvI:Array= drawable.source.uvIndex = [];
+							haveUV = true;
+						}
 						for each(var f:Array in g.f) {
-							face = null;
-							faceUV = null;
-							for (var i:int = 0, len:int = f.length; i < len;i++ ) {
-								addVertex(drawable, f[i]);
+							var face:Array = [];
+							drawable.source.index.push(face);
+							if(haveUV){
+								var faceUV:Array = [];
+								uvI.push(faceUV);
+							}
+							for (i = 0, len = f.length; i < len;i++ ) {
+								face.push(f[i][0]);
+								if (haveUV) {
+									faceUV.push(f[i][1]);
+								}
 							}
 						}
+						Drawable.optimizeSource(drawable.source);
 					}
 				}
 			}
 			trace("obj parser time: " + (getTimer() - t) + " ms");
-		}
-		
-		private function addVertex(drawable:Drawable,f:Array):void 
-		{
-			
-			var v:Object = f[0];
-			var vt:Object = f[1];
-			var vn:Object = f[2];
-			var source:DrawableSource = drawable.source;
-			if (v != null) {
-				if (source.pos==null) {
-					source.pos = [];
-					source.index = [];
-				}
-				if (face==null) {
-					face = [];
-					source.index.push(face);
-				}
-				var newindex:Object = oldindex2newindex[v];
-				if (newindex == null) {
-					var vi:int = v as int;
-					source.pos.push(decoder.vs[vi * 3], decoder.vs[vi * 3 + 1], -decoder.vs[vi * 3 + 2]);
-					newindex = maxIndex++;
-					oldindex2newindex[v] = newindex;
-				}
-				face.push(newindex);
-			}
-			if (vt != null) {
-				if (source.uv==null) {
-					source.uv = [];
-					source.uvIndex = [];
-				}
-				if (faceUV==null) {
-					faceUV = [];
-					source.uvIndex.push(faceUV);
-				}
-				var newindexUV:Object = oldindex2newindexUV[vt];
-				if (newindexUV == null) {
-					var vti:int = vt as int;
-					source.uv.push(decoder.vts[vti * 3], decoder.vts[vti * 3 + 1]);
-					newindexUV = maxIndexUV++;
-					oldindex2newindexUV[v] = newindexUV;
-				}
-				faceUV.push(newindexUV);
-			}
 		}
 	}
 }

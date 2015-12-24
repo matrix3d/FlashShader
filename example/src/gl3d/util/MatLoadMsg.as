@@ -37,8 +37,10 @@ package gl3d.util
 		private function loader_complete(e:Event):void 
 		{
 			var bmd:BitmapData = (loader.content as Bitmap).bitmapData;
-			mat.diffTexture = new TextureSet(bmd);
-			mat.invalid = true;
+			if(mat){
+				mat.diffTexture = new TextureSet(bmd);
+				mat.invalid = true;
+			}
 		}
 	}
 

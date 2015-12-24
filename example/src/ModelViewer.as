@@ -124,7 +124,6 @@ package
 			fmtUI.selectedIndex = 0;
 			new PushButton(vbox, 0, 0, "export", onExp);
 			
-			
 			addChild(stats);
 			stats.y = vbox.y + vbox.height + 5;
 		}

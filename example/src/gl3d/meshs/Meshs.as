@@ -269,7 +269,7 @@ package gl3d.meshs
 		}
 		public static function computeNormal(drawable:Drawable):VertexBufferSet
 		{
-			if (drawable.source&&drawable.smooting) {
+			if (drawable.source&&drawable.source.uvIndex&&drawable.smooting) {
 				return computeNormal2(drawable);
 			}
 			var norm:Vector.<Number> = new Vector.<Number>(drawable.pos.data.length);

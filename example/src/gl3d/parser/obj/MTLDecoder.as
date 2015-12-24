@@ -15,7 +15,7 @@ package gl3d.parser.obj
 		//d
 		//illum
 		public var mtls:Array = [];
-		public var currentMtl:Array;
+		public var currentMtl:Object;
 		public function MTLDecoder(txt:String) 
 		{
 			txt = txt.replace(/#.*/g, "");
@@ -25,25 +25,37 @@ package gl3d.parser.obj
 				if (data[0]=="") {
 					data.shift();
 				}
+				var value:Object = null;
 				switch(data[0]) {
 					case "newmtl":
-						currentMtl = [];
+						currentMtl = {};
 						mtls.push(currentMtl);
-						currentMtl[0]=data[1];
+						value = data[1];
 						break;
 					case "map_Kd":
-						var mapkd:String = data[1];
-						currentMtl[1] = mapkd;
+						value = data[1];
 						break;
+					case "Ka":
 					case "Kd":
-						currentMtl[3] = [parseFloat(data[1]), parseFloat(data[2]), parseFloat(data[3])];
+					case "Ks":
+						value = [parseFloat(data[1]), parseFloat(data[2]), parseFloat(data[3])];
+						break;
+					case "Ni":
+					case "d":
+						value = parseFloat(data[1]);
+						break;
+					default:
+						value = data[1];
+				}
+				if (value) {
+					currentMtl[data[0]] = value;
 				}
 			}
 		}
 		
-		public function getmtl(name:String):Array {
-			for each(var mtl:Array in mtls) {
-				if (mtl[0]==name) {
+		public function getmtl(name:String):Object {
+			for each(var mtl:Object in mtls) {
+				if (mtl.newmtl==name) {
 					return mtl;
 				}
 			}

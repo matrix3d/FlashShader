@@ -263,6 +263,109 @@ package gl3d.core {
 		{
 			_weight = value;
 		}
+		
+		/**
+		 * 优化source，
+		 * 1 根据index把没有用到的 pos，joint等删除，生成新的pos，和index
+		 * 2 根据uvindex把没有用到的uv，删除，生成新的uvindex，uv
+		 * @param	source
+		 */
+		public static function optimizeSource(source:DrawableSource):void {
+			optimzeSourceIndex(source,false);
+			if (source.uvIndex) {
+				optimzeSourceIndex(source,true);
+			}
+		}
+		
+		private static function optimzeSourceIndex(source:DrawableSource,isUV:Boolean):void {
+			var index:Array = isUV?source.uvIndex:source.index;
+			var o2n:Object = { };
+			var newis:Array = [];
+			if (isUV) {
+				if (source.uv) {
+					var uv:Array = source.uv;
+					var newUV:Array = [];
+					source.uv = newUV;
+				}
+				if (source.uv2) {
+					var uv2:Array = source.uv2;
+					var newUV2:Array = [];
+					source.uv2 = newUV2;
+				}
+				source.uvIndex = newis;
+			}else {
+				if (source.pos) {
+					var pos:Array = source.pos;
+					var newPos:Array = [];
+					source.pos = newPos;
+				}
+				if (source.joint) {
+					var maxWeight:int = source.joint.length * 3 / pos.length;
+					var joint:Array = source.joint;
+					var newJoint:Array = [];
+					source.joint = newJoint;
+				}
+				if (source.weight) {
+					var weight:Array = source.weight;
+					var newWeight:Array = [];
+					source.weight = newWeight;
+				}
+				if (source.color) {
+					var color:Array = source.color;
+					var newColor:Array = [];
+					source.color = newColor;
+				}
+				if (source.alpha) {
+					var alpha:Array = source.alpha;
+					var newAlpha:Array = [];
+					source.alpha = newAlpha;
+				}
+				if(source.uvIndex==null){
+					if (source.uv) {
+						uv = source.uv;
+						newUV = [];
+						source.uv = newUV;
+					}
+					if (source.uv2) {
+						uv2 = source.uv2;
+						newUV2 = [];
+						source.uv2 = newUV2;
+					}
+				}
+				source.index = newis;
+			}
+			var max:int = 0;
+			for each(var f:Array in index) {
+				var newf:Array = [];
+				newis.push(newf);
+				for each(var i:int in f){
+					var newi:Object = o2n[i];
+					if (newi==null) {
+						newi = max++;
+						o2n[i] = newi;
+						if (newPos) {
+							newPos.push(pos[3 * i], pos[3 * i + 1], pos[3 * i + 2]);
+						}
+						if (uv) {
+							newUV.push(uv[2 * i], uv[2 * i + 1]);
+						}
+						if (newColor) {
+							newColor.push(color[3 * i], color[3 * i + 1], color[3 * i + 2]);
+						}
+						if (newAlpha) {
+							newAlpha.push(alpha[i]);
+						}
+						if (newJoint&&newWeight) {
+							for (var j:int = 0; j < maxWeight;j++ ) {
+								newJoint.push(joint[maxWeight * i + j]);
+								newWeight.push(weight[maxWeight * i + j]);
+							}
+						}
+					}
+					newf.push(newi);
+				}
+			}
+		}
 	}
 
 }

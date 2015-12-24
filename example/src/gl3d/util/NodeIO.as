@@ -27,6 +27,10 @@ package gl3d.util
 			
 		}
 		
+		public function importNode(obj:Object):Node3D {
+			return null;
+		}
+		
 		public function exportNode(node:Node3D):Object {
 			
 			var hierarchy:Object = exportHierarchy(node);
@@ -107,12 +111,13 @@ package gl3d.util
 			}
 			if (node.name) {
 				nodeObj.name = node.name;
-				if (node is Joint) {
-					nodeObj.isJoint = true;
-					nodeObj.invBindMatrix = (node as Joint).invBindMatrix.rawData;
-				}
 			}
-			nodeObj.matrix = node.matrix.rawData;
+			if (node is Joint) {
+				nodeObj.isJoint = true;
+				nodeObj.invBindMatrix = (node as Joint).invBindMatrix.rawData;
+			}else{
+				nodeObj.matrix = node.matrix.rawData;
+			}
 			if (node.children.length) {
 				nodeObj.children = [];
 				for each(var child:Node3D in node.children) {

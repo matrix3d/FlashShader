@@ -7,11 +7,10 @@ package gl3d.parser.fbx{
 		private var root : Object;
 		public var vertices:Array;
 		private var polygons:Array;
-		public var drawable:Drawable;
+		public var drawables:Array;
 		public var nodes:Array = [];
-		public var index:Array;
 		public var uv:Array;
-		public var uvindex:Array;
+		public var objs:Array = [];
 		public function FbxGeometry( root:Object,vertices:Array=null,polygons:Array=null) {
 			this.root = root;
 			this.polygons=polygons = polygons||FbxTools.getInts(FbxTools.get(root, "PolygonVertexIndex"));
@@ -25,20 +24,44 @@ package gl3d.parser.fbx{
 				break;
 			}
 			
+			var matOs:Object = FbxTools.get(root, "LayerElementMaterial", true);
+			if (matOs!=null) {
+				var mats:Array = FbxTools.getInts(FbxTools.get(matOs, "Materials"));
+			}
+			/*index = [];
+			if(uvi){
+				uvindex = [];
+			}*/
 			var prev:int = 0;
 			var p:Array = polygons;
-			var out:Array = [];
-			if(uvi)
-			uvindex = [];
+			
+			var indexA:Array;
+			var uvindex:Array;
+			var tcounter:int = 0;
 			for (var i:int = 0; i < p.length;i++ ){
 				var index:int = p[i];
 				if (index < 0){
 					var start:int = prev;
 					var total:int = i - prev + 1;
+					if (mats&&tcounter<mats.length) {
+						var mid:int = mats[tcounter];
+					}else {
+						mid = 0;
+					}
+					var obj:Array = objs[mid];
+					if (obj==null) {
+						obj = objs[mid] = [[]];
+						if (uvi) {
+							obj[1] = [];
+						}
+					}
+					indexA = obj[0];
+					uvindex = obj[1];
+					tcounter += total - 2;
 					prev = i + 1;
 					p[i] ^= -1;
 					var f:Array = [];
-					out.push(f);
+					indexA.push(f);
 					if(uvi){
 						var uvf:Array = [];
 						uvindex.push(uvf);
@@ -51,7 +74,6 @@ package gl3d.parser.fbx{
 					}
 				}
 			}
-			this.index = out;
 		}
 
 		/*public function getRoot() :Object{

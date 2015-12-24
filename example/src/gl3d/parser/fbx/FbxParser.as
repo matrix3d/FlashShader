@@ -47,8 +47,7 @@ package gl3d.parser.fbx
 				childs = decoder.childs;
 			}
 			
-			converter = new Converter(null,new Vector3D(1,1,-1));
-			
+			converter = new Converter(null, new Vector3D(1, 1, -1));
 			root = { name : "Root", props : [FbxProp.PInt(0), FbxProp.PString("Root"), FbxProp.PString("Root")], childs :childs };
 			for each(var obj:Object in root.childs) {
 				init(obj);
@@ -186,52 +185,64 @@ package gl3d.parser.fbx
 						}
 					}
 					if (prim) {
-						if (prim.drawable == null) {
-							prim.drawable = new Drawable;
-							prim.drawable.source = new DrawableSource;
-							prim.drawable.source.index = prim.index;
-							prim.drawable.source.pos = converter.convertedVec3s(prim.vertices) as Array;
-							if (prim.uvindex) {
-								prim.drawable.source.uv = prim.uv;
-								prim.drawable.source.uvIndex = prim.uvindex;
-							}
-						}
-						
-						prim.nodes.push(o.obj);
-						(o.obj as Node3D).drawable = prim.drawable;
-						(o.obj as Node3D).material = new Material;
-						(o.obj as Node3D).type = "MESH";
-						var material:Object = getChild(o.model, "Material");
-						
-						if(material){
-							var materialObj:Object = { };
-							for each(var p:Object in FbxTools.getAll(material, "Properties70.P").concat(FbxTools.getAll(material, "Properties60.Property"))) {
-								name = FbxTools.toString(p.props[0]);
-								switch( name) {
-								case "AmbientColor":
-								case "DiffuseColor":
-									var l:int = p.props.length;
-									materialObj[name] = new Vector3D(FbxTools.toFloat(p.props[l-3]), FbxTools.toFloat(p.props[l-2]), FbxTools.toFloat(p.props[l-1]));
-									break;
+						if (prim.drawables == null) {
+							prim.drawables = [];
+							var posData:Array = null;
+							for (var i:int = 0; i < prim.objs.length;i++ ) {
+								var drawable:Drawable = new Drawable;
+								prim.drawables.push(drawable);
+								drawable.source = new DrawableSource;
+								drawable.source.index = prim.objs[i][0];
+								if (posData==null) {
+									posData = converter.convertedVec3s(prim.vertices) as Array;
 								}
-							}
-							if (materialObj.DiffuseColor) {
-								(o.obj as Node3D).material.color.setTo(materialObj.DiffuseColor.x,materialObj.DiffuseColor.y,materialObj.DiffuseColor.z);
-							}
-							if (materialObj.AmbientColor) {
-								(o.obj as Node3D).material.ambient.setTo(materialObj.AmbientColor.x,materialObj.AmbientColor.y,materialObj.AmbientColor.z);
+								drawable.source.pos = posData;
+								if (prim.objs[i][1]) {
+									drawable.source.uv = prim.uv;
+									drawable.source.uvIndex = prim.objs[i][1];
+								}
+								var submesh:Node3D = new Node3D;// o.obj as Node3D;
+								(o.obj as Node3D).addChild(submesh);
+								prim.nodes.push(submesh);
+								submesh.drawable = drawable;
+								submesh.material = new Material;
+								var material:Object = getChilds(o.model, "Material")[i];
+								
+								if(material){
+									var materialObj:Object = { };
+									for each(var p:Object in FbxTools.getAll(material, "Properties70.P").concat(FbxTools.getAll(material, "Properties60.Property"))) {
+										name = FbxTools.toString(p.props[0]);
+										switch( name) {
+										case "AmbientColor":
+										case "DiffuseColor":
+											var l:int = p.props.length;
+											materialObj[name] = new Vector3D(FbxTools.toFloat(p.props[l-3]), FbxTools.toFloat(p.props[l-2]), FbxTools.toFloat(p.props[l-1]));
+											break;
+										}
+									}
+									if (materialObj.DiffuseColor) {
+										submesh.material.color.setTo(materialObj.DiffuseColor.x,materialObj.DiffuseColor.y,materialObj.DiffuseColor.z);
+									}
+									if (materialObj.AmbientColor) {
+										submesh.material.ambient.setTo(materialObj.AmbientColor.x,materialObj.AmbientColor.y,materialObj.AmbientColor.z);
+									}
+									
+									var tex:Object = getChild(material, "Texture") ;
+									if (tex) {
+										var texPath:String = FbxTools.toString(FbxTools.get(tex, "FileName").props[0]);
+										new MatLoadMsg(texPath, submesh.material);
+									}
+								}
+								//break;
 							}
 							
-							var tex:Object = getChild(material, "Texture") ;
-							if (tex) {
-								var texPath:String = FbxTools.toString(FbxTools.get(tex, "FileName").props[0]);
-								new MatLoadMsg(texPath, (o.obj as Node3D).material);
-							}
 						}
+						
+						
+						
 					}
 				} else if ( o.isJoint ) {
 					o.obj = new Joint(name);
-					(o.obj as Node3D).type = "JOINT";
 					//(o.obj as Node3D).drawable = Meshs.cube(10,10,10);
 					//(o.obj as Node3D).material = new Material;
 					//continue;
@@ -240,40 +251,40 @@ package gl3d.parser.fbx
 					var hasJoint:Boolean = isHasJoint(o);
 					if( hasJoint ){
 						(o.obj as Node3D).skin = new Skin;
-						(o.obj as Node3D).type = "SKIN";
 					}
 				}
 				o.m = getFbxMatrixes(o.model);
 				o.obj.matrix = getMatrix(o.m);
-				if (o.obj.drawable && o.m.GeometricTranslation) {
+				if (o.isMesh && o.m.GeometricTranslation) {
 					var gt:Vector3D = o.m.GeometricTranslation;
-					var drawable:Drawable = o.obj.drawable as Drawable;
-					var pos:Array = drawable.source.pos;
-					var gtv:Array = converter.convertedVec3s([gt.x,gt.y,gt.z]) as Array;
-					for (var i:int = 0; i < pos.length; i += 3 ) {
-						pos[i] += gtv[0];
-						pos[i+1] += gtv[1];
-						pos[i+2] += gtv[2];
+					var gtv:Array = converter.convertedVec3s([gt.x, gt.y, gt.z]) as Array;
+					for each(submesh in (o.obj as Node3D).children) {
+						submesh.matrix.appendTranslation(gtv[0], gtv[1], gtv[2]);
+						submesh.updateTransforms();
 					}
 				}
 			}
 			// rebuild scene hierarchy
 			for each( o in objects ) {
 				p = o.parent;
-				if(o.obj)
-				p.obj.addChild(o.obj);
+				if(o.obj){
+					p.obj.addChild(o.obj);
+				}
 			}
 			// build skins
 			for each( o in objects ) {
 				if( o.isJoint ) continue;
 				var skin:Skin = (o.obj as Node3D).skin;
 				if( skin == null ) continue;
-				createSkin(o,hgeom);
+				createSkin(o, hgeom);
+				if (!o.isMesh) {
+					o.obj.skin = null;
+				}
 			}
 			if (isHasJoint(hier.root)) {
 				(hier.root.obj as Node3D).skin = new Skin;
-				(hier.root.obj as Node3D).type = "SKIN";
 				createSkin(hier.root, hgeom);
+				hier.root.obj.skin = null;
 			}
 
 			return scene.children.length == 1 ? scene.children[0] : scene;
@@ -334,25 +345,32 @@ package gl3d.parser.fbx
 			}
 			
 			for (var primID:String in prim2skinData) {
-				var drawable:Drawable = (hgeom[primID] as FbxGeometry).drawable;
-				var skinData:Object = prim2skinData[primID];
-				var weightVec:Array = [];// new Vector.<Number>(drawable.pos.data.length / 3 * skin.maxWeight);
-				var jointVec:Array = [];// Vector.<Number> = new Vector.<Number>(weightVec.length);
-				for (var index:String in skinData.wj) {
-					for (var i:int = 0; i < skinData.wj[index].length; i++ ) {
-						for (var j:int = 0; j < skinData.wj[index].length;j++ ) {
-							var ii:int = int(index) * skin.maxWeight + j;
-							weightVec[ii] = skinData.wj[index][j][0];
-							jointVec[ii] = skinData.wj[index][j][1];
-						}
-						for (; j < skin.maxWeight;j++ ) {
-							ii = int(index) * skin.maxWeight + j;
-							weightVec[ii] = jointVec[ii] = 0;
+				var drawables:Array = (hgeom[primID] as FbxGeometry).drawables;
+				var weightVec:Array = null;// new Vector.<Number>(drawable.pos.data.length / 3 * skin.maxWeight);
+				var jointVec:Array = null;// Vector.<Number> = new Vector.<Number>(weightVec.length);
+				for each(var drawable:Drawable in drawables) {
+					if (weightVec == null) {
+						weightVec = [];
+						jointVec = [];
+						var skinData:Object = prim2skinData[primID];
+						for (var index:String in skinData.wj) {
+							for (var i:int = 0; i < skinData.wj[index].length; i++ ) {
+								for (var j:int = 0; j < skinData.wj[index].length;j++ ) {
+									var ii:int = int(index) * skin.maxWeight + j;
+									weightVec[ii] = skinData.wj[index][j][0];
+									jointVec[ii] = skinData.wj[index][j][1];
+								}
+								for (; j < skin.maxWeight;j++ ) {
+									ii = int(index) * skin.maxWeight + j;
+									weightVec[ii] = jointVec[ii] = 0;
+								}
+							}
 						}
 					}
+					drawable.source.weight = weightVec;//new VertexBufferSet(weightVec,skin.maxWeight);
+					drawable.source.joint = jointVec;//new VertexBufferSet(jointVec,skin.maxWeight);
+					Drawable.optimizeSource(drawable.source);
 				}
-				drawable.source.weight = weightVec;//new VertexBufferSet(weightVec,skin.maxWeight);
-				drawable.source.joint = jointVec;//new VertexBufferSet(jointVec,skin.maxWeight);
 			}
 			
 			for (i = 0; i < transPoss.length;i++ ) {
