@@ -88,6 +88,11 @@ package gl3d.core {
 		{
 			return renderer.gl3d.enableErrorChecking;
 		}
+		
+		public function set enableErrorChecking(v:Boolean):void 
+		{
+			renderer.gl3d.enableErrorChecking=v;
+		}
 	}
 
 }

@@ -39,6 +39,12 @@ package gl3d.parser.object
 					dobj.index = vec2arr(d.index.data);
 					dobj.pos = vec2arr(d.pos.data);
 					dobj.uv = vec2arr(d.uv.data);
+					if (d.joint) {
+						dobj.joint = vec2arr(d.joint.data);
+					}
+					if (d.weight) {
+						dobj.weight = vec2arr(d.weight.data);
+					}
 				}
 			}
 			var skins2:Array = [];

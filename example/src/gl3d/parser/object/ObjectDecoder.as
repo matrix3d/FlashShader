@@ -59,6 +59,12 @@ package gl3d.parser.object
 					if (geom.uv) {
 						drawable.uv = new VertexBufferSet(Vector.<Number>(geom.uv), 2);
 					}
+					if (geom.joint) {
+						drawable.joint = new VertexBufferSet(Vector.<Number>(geom.joint), 3*geom.joint.length/geom.pos.length);
+					}
+					if (geom.weight) {
+						drawable.weight = new VertexBufferSet(Vector.<Number>(geom.weight), 3*geom.weight.length/geom.pos.length);
+					}
 				}
 				geoms.push(drawable);
 			}

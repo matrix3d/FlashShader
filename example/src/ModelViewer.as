@@ -107,6 +107,8 @@ package
 		{
 			var loader:URLLoader = e.currentTarget as URLLoader;
 			tryAdd(loader2url[loader], loader.data as ByteArray);
+			
+			//view.enableErrorChecking = true;
 		}
 		
 		override public function initUI():void 
