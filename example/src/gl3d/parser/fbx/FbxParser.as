@@ -212,6 +212,7 @@ package gl3d.parser.fbx
 									var materialObj:Object = { };
 									for each(var p:Object in FbxTools.getAll(material, "Properties70.P").concat(FbxTools.getAll(material, "Properties60.Property"))) {
 										name = FbxTools.toString(p.props[0]);
+										//trace(name);
 										switch( name) {
 										case "AmbientColor":
 										case "DiffuseColor":

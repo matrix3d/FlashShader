@@ -16,8 +16,8 @@ package gl3d.core.skin
 		public var maxWeight:int;
 		public var joints:Vector.<Joint> = new Vector.<Joint>;
 		public var iks:Vector.<Joint> = new Vector.<Joint>;
-		public var useQuat:Boolean = true;
-		public var useCpu:Boolean = false;
+		public var useQuat:Boolean = false;
+		public var useCpu:Boolean = true;
 		public function Skin() 
 		{
 			
@@ -29,39 +29,51 @@ package gl3d.core.skin
 		 * @param	node
 		 */
 		public static function optimize(node:Node3D):void {
+			if (node.drawable.source) {
+				optimize2(node);
+				return;
+			}
+			
+		}
+		
+		static private function optimize2(node:Node3D):void 
+		{
 			var jid2newjid:Object = { };
 			var joints:Vector.<Joint> = new Vector.<Joint>;
 			var drawable:Drawable = node.drawable;
-			var js:Vector.<Number> = drawable.joint.data;
-			var ws:Vector.<Number> = drawable.weight.data;
-			var ins:Vector.<uint> = drawable.index.data;
+			var js:Array = drawable.source.joint;
+			var ws:Array = drawable.source.weight;
+			var ins:Array = drawable.source.index;
 			var maxWeight:int = node.skin.maxWeight;
 			var newMaxWeight:int = 0;
 			var newjid:int = 0;
 			for (var i:int = 0,len:int=ins.length; i < len;i++ ) {
-				var count:int = 0;
-				for (var j:int = 0; j < maxWeight;j++ ) {
-					var ii:int = ins[i] * maxWeight + j;
-					var jid:int = js[ii];
-					var w:Number = ws[ii];
-					if (w != 0) {
-						if (jid2newjid[jid] == null) {
-							jid2newjid[jid] = newjid;
-							joints[newjid] = node.skin.joints[jid];
-							newjid++;
+				var f:Array = ins[i];
+				for (var k:int = 0,len2:int=f.length; k < len2;k++ ) {
+					var count:int = 0;
+					for (var j:int = 0; j < maxWeight;j++ ) {
+						var ii:int = f[k] * maxWeight + j;
+						var jid:int = js[ii];
+						var w:Number = ws[ii];
+						if (w != 0) {
+							if (jid2newjid[jid] == null) {
+								jid2newjid[jid] = newjid;
+								joints[newjid] = node.skin.joints[jid];
+								newjid++;
+							}
+							count++;
 						}
-						count++;
 					}
+					if (newMaxWeight < count) newMaxWeight = count;
 				}
-				if (newMaxWeight < count) newMaxWeight = count;
 			}
 			
 			newMaxWeight = maxWeight;
-			var newjs:Vector.<Number> = new Vector.<Number>;
+			var newjs:Array = [];
 			for each(jid in js) {
 				newjs.push(int(jid2newjid[jid]));
 			}
-			node.drawable.joint = new VertexBufferSet(newjs, newMaxWeight);
+			node.drawable.source.joint = newjs;
 			var news:Skin = new Skin;
 			news.joints = joints;
 			news.maxWeight = newMaxWeight;

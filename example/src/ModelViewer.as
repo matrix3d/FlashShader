@@ -31,7 +31,8 @@ package
 	import gl3d.parser.mmd.MMD;
 	import gl3d.parser.mmd.VMD;
 	import gl3d.parser.obj.OBJParser;
-	import gl3d.util.NodeIO;
+	import gl3d.parser.object.ObjectDecoder;
+	import gl3d.parser.object.ObjectEncoder;
 	import gl3d.util.Utils;
 	/**
 	 * ...
@@ -66,6 +67,8 @@ package
 				load(v);
 			}
 			//load("C:/Users/aaaa/Desktop/test2.fbx");
+			//load("C:/Users/aaaa/Desktop/mesh.amf");
+			//load("C:/Users/aaaa/Desktop/mesh.json");
 			//load("C:/Users/aaaa/Desktop/aoying gongji.FBX");
 			//load("C:/Users/aaaa/Desktop/Beta.fbx");
 			//load("C:/Users/aaaa/Desktop/Betau3d.fbx");
@@ -131,7 +134,7 @@ package
 		private function onExp(e:Event):void 
 		{
 			if (node) {
-				var io:NodeIO = new NodeIO;
+				var io:ObjectEncoder = new ObjectEncoder;
 				var bak:Matrix3D = node.matrix;
 				node.matrix = new Matrix3D;
 				var obj:Object = io.exportNode(node);
@@ -249,6 +252,17 @@ package
 					curnode = fbx.rootNode;
 					defScale = 0.01;
 					break;
+				case "json":
+					var object:Object = JSON.parse(byte+"");
+					break;
+				case "amf":
+					byte.uncompress(CompressionAlgorithm.LZMA);
+					object = byte.readObject();
+					break;
+			}
+			if (object) {
+				var objectd:ObjectDecoder = new ObjectDecoder(object);
+				curnode = objectd.target;
 			}
 			if (curnode) {
 				scaleUI.value = defScale;

@@ -178,7 +178,6 @@ package gl3d.core {
 										sjoint.push(source.joint[oldI * maxWeight+k]);
 										sweight.push(source.weight[oldI * maxWeight+k]);
 									}
-									
 								}
 								sUV.push(source.uv[oldUVI * 2], source.uv[oldUVI * 2 + 1]);
 								if(smooting){

@@ -92,10 +92,9 @@ package gl3d.core.skin
 				
 				for (var i:int = 0; i < target.skin.joints.length;i++ ) {
 					var joint:Joint = target.skin.joints[i];
-					var invBindMatrix:Matrix3D = joint.invBindMatrix//target.skin.invBindMatrixs[i];
 					var matrix:Matrix3D = target.skin.skinFrame.matrixs[i];
 					matrix.copyFrom(target.matrix);
-					matrix.append(invBindMatrix);
+					matrix.append(joint.invBindMatrix);
 					matrix.append(joint.world);
 					matrix.append(world2local);
 					

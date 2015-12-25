@@ -1,4 +1,4 @@
-package gl3d.util 
+package gl3d.parser.object 
 {
 	import flash.geom.Matrix3D;
 	import flash.utils.Dictionary;
@@ -15,24 +15,19 @@ package gl3d.util
 	 * ...
 	 * @author lizhi
 	 */
-	public class NodeIO 
+	public class ObjectEncoder 
 	{
 		private var geoms:Array = [];
 		private var skins:Array = [];
 		private var anims:Array = [];
 		private var id:int = 0;
 		private var node2id:Dictionary = new Dictionary;
-		public function NodeIO() 
+		public function ObjectEncoder() 
 		{
 			
 		}
 		
-		public function importNode(obj:Object):Node3D {
-			return null;
-		}
-		
 		public function exportNode(node:Node3D):Object {
-			
 			var hierarchy:Object = exportHierarchy(node);
 			var geoms2:Array = [];
 			for each(var d:Drawable in geoms) {
@@ -68,7 +63,7 @@ package gl3d.util
 					tObj.target = node2id[t.target];
 					tObj.frame = [];
 					for each(var f:TrackFrame in t.frames) {
-						tObj.frame.push({matrix:f.matrix.rawData,time:f.time});
+						tObj.frame.push({matrix:vec2arr(f.matrix.rawData),time:f.time});
 					}
 					animObj.track.push(tObj);
 				}
@@ -76,7 +71,7 @@ package gl3d.util
 			return {"magic":"m4",geom:geoms2,skin:skins2,anim:anims2,hierarchy:hierarchy};
 		}
 		
-		public function exportHierarchy(node:Node3D):Object {
+		private function exportHierarchy(node:Node3D):Object {
 			var nodeObj:Object = { };
 			nodeObj.id = id++;
 			node2id[node] = nodeObj.id;
@@ -114,9 +109,9 @@ package gl3d.util
 			}
 			if (node is Joint) {
 				nodeObj.isJoint = true;
-				nodeObj.invBindMatrix = (node as Joint).invBindMatrix.rawData;
+				nodeObj.invBindMatrix = vec2arr((node as Joint).invBindMatrix.rawData);
 			}else{
-				nodeObj.matrix = node.matrix.rawData;
+				nodeObj.matrix = vec2arr(node.matrix.rawData);
 			}
 			if (node.children.length) {
 				nodeObj.children = [];
