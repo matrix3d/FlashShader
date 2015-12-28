@@ -28,12 +28,12 @@ package gl3d.parser.object
 		public function ObjectDecoder(obj:Object) 
 		{
 			var magic:String = obj.magic;
-			if (magic=="m4") {
-				parserM4(obj);
+			if (magic=="m5") {
+				parserM5(obj);
 			}
 		}
 		
-		private function parserM4(obj:Object):void 
+		private function parserM5(obj:Object):void 
 		{
 			for each(var geom:Object in obj.geom) {
 				var drawable:Drawable = new Drawable;
@@ -129,6 +129,8 @@ package gl3d.parser.object
 				node.skin = skins[obj.skin];
 				if(node.drawable&&node.drawable.source){
 					node.skin.maxWeight = node.drawable.source.joint.length * 3 / node.drawable.source.pos.length;
+				}else if (node.drawable) {
+					node.skin.maxWeight = node.drawable.joint.data.length * 3 / node.drawable.pos.data.length;
 				}
 			}
 			if (obj.anim!=null) {
@@ -144,6 +146,8 @@ package gl3d.parser.object
 				var invBindMatrix:Array = obj.invBindMatrix as Array;
 				if (invBindMatrix) {
 					joint.invBindMatrix.rawData = Vector.<Number>(invBindMatrix);
+					//joint.matrix.copyFrom(joint.invBindMatrix);
+					//joint.matrix.invert();
 				}
 			}
 			node.name = obj.name;

@@ -158,8 +158,14 @@ package gl3d.parser.fbx
 			if (read.position != end_offset){
 				throw "scope length not reached, something is wrong";
 			}
-
-			return {name:elem_id,props:elem_props_data, childs:elem_subtree};
+			var out:Object = { name:elem_id, props:elem_props_data };
+			if (elem_props_data.length) {
+				out.props = elem_props_data;
+			}
+			if (elem_subtree.length) {
+				out.childs = elem_subtree;
+			}
+			return out;
 		}
 		
 	}

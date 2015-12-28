@@ -80,6 +80,7 @@ package gl3d.core.skin
 			
 			for each(var target:Node3D in targets){
 				var world2local:Matrix3D = target.world2local;
+				if (target.skin == null) continue;
 				if (target.skin.skinFrame == null) target.skin.skinFrame = new SkinFrame;
 				target.skin.skinFrame.quaternions.length = target.skin.skinFrame.matrixs.length * 8;
 				updateIK(target.skin.iks,target);

@@ -22,8 +22,10 @@ package gl3d.parser.object
 		private var anims:Array = [];
 		private var id:int = 0;
 		private var node2id:Dictionary = new Dictionary;
-		public function ObjectEncoder() 
+		private var useSource:Boolean;
+		public function ObjectEncoder(useSource:Boolean=true) 
 		{
+			this.useSource = useSource;
 			
 		}
 		
@@ -31,7 +33,7 @@ package gl3d.parser.object
 			var hierarchy:Object = exportHierarchy(node);
 			var geoms2:Array = [];
 			for each(var d:Drawable in geoms) {
-				if(d.source){
+				if(d.source&&useSource){
 					geoms2.push({source:d.source});
 				}else {
 					var dobj:Object = { };
@@ -74,7 +76,7 @@ package gl3d.parser.object
 					animObj.track.push(tObj);
 				}
 			}
-			return {"magic":"m4",geom:geoms2,skin:skins2,anim:anims2,hierarchy:hierarchy};
+			return {"magic":"m5",geom:geoms2,skin:skins2,anim:anims2,hierarchy:hierarchy};
 		}
 		
 		private function exportHierarchy(node:Node3D):Object {
@@ -116,9 +118,10 @@ package gl3d.parser.object
 			if (node is Joint) {
 				nodeObj.isJoint = true;
 				nodeObj.invBindMatrix = vec2arr((node as Joint).invBindMatrix.rawData);
-			}else{
-				nodeObj.matrix = vec2arr(node.matrix.rawData);
 			}
+			//else{
+				nodeObj.matrix = vec2arr(node.matrix.rawData);
+			//}
 			if (node.children.length) {
 				nodeObj.children = [];
 				for each(var child:Node3D in node.children) {

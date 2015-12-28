@@ -300,6 +300,9 @@ package gl3d.core {
 				}
 				if (source.joint) {
 					var maxWeight:int = source.joint.length * 3 / pos.length;
+					if (maxWeight == 0) {
+						trace(source.joint.length, pos.length);
+					}
 					var joint:Array = source.joint;
 					var newJoint:Array = [];
 					source.joint = newJoint;
