@@ -116,7 +116,7 @@ package gl3d.parser.object
 			var nodeObj:Object = { };
 			nodeObj.id = id++;
 			node2id[node] = nodeObj.id;
-			node2name[node] = node.name;
+			node2name[node] = getNameDepth(node);
 			if (node.drawable) {
 				var i:int = geoms.indexOf(node.drawable);
 				if (i==-1) {
@@ -154,9 +154,8 @@ package gl3d.parser.object
 					}
 				}
 			}
-			if (node.name) {
-				nodeObj.name = node.name;
-			}
+			nodeObj.name = getNameDepth(node);
+			
 			if (node is Joint) {
 				nodeObj.isJoint = true;
 				nodeObj.invBindMatrix = vec2arr((node as Joint).invBindMatrix.rawData);
@@ -171,6 +170,16 @@ package gl3d.parser.object
 				}
 			}
 			return nodeObj;
+		}
+		
+		private function getNameDepth(node:Node3D,addname:String=""):String {
+			if (node.name) {
+				return node.name+addname;
+			}
+			if (node.parent) {
+				return getNameDepth(node.parent,"."+ node.parent.children.indexOf(node)+addname);
+			}
+			return "root"+addname;
 		}
 		
 		private function vec2arr(vec:Object):Array {
