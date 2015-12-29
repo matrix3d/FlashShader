@@ -24,6 +24,7 @@ package
 			var c:Class;
 			var bmd:BitmapData = (new c as Bitmap).bitmapData;
 			material.diffTexture = new TextureSet(bmd);
+			material.lightAble = false;
 			material.isDistanceField = true;
 			node.material = material;
 			node.drawable = Meshs.cube(30,30,0)

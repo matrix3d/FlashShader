@@ -192,7 +192,7 @@ package gl3d.meshs
 			var newDrawable:Drawable = new Drawable;
 			var idata:Vector.<uint> = drawable.index.data;
 			newDrawable.index = new IndexBufferSet(new Vector.<uint>());
-			var vbnames:Array = ["pos","uv","norm","joints","weights"];
+			var vbnames:Array = ["pos","uv","norm","joint","weight"];
 			for (var i:int = 0; i < idata.length; i += 3 ) {
 				newDrawable.index.data.push(i,i+1,i+2);
 				for each(var name:String in vbnames) {

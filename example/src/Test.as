@@ -3,15 +3,26 @@ package
 	import flash.display.Bitmap;
 	import flash.display.BitmapData;
 	import flash.display.Sprite;
+	import flash.events.Event;
+	import flash.events.IOErrorEvent;
+	import flash.events.SecurityErrorEvent;
+	import flash.external.ExternalInterface;
 	import flash.geom.Matrix3D;
 	import flash.geom.Orientation3D;
+	import flash.net.URLLoader;
+	import flash.net.URLRequest;
+	import flash.system.Security;
+	import flash.system.System;
+	import flash.utils.ByteArray;
 	import gl3d.core.Drawable;
 	import gl3d.core.DrawableSource;
 	import gl3d.core.Material;
 	import gl3d.core.Node3D;
 	import gl3d.core.TextureSet;
+	import gl3d.parser.fbx.FbxBinDecoder;
 	import gl3d.parser.obj.OBJParser;
 	import gl3d.util.Utils;
+	import mx.utils.LoaderUtil;
 	/**
 	 * ...
 	 * @author lizhi
@@ -21,55 +32,35 @@ package
 		
 		public function Test() 
 		{
+			try{
+			Security.allowDomain("*");
+			}catch (err2:Error) {
+				
+			}
+			var urlloader:URLLoader = new URLLoader;
+			urlloader.addEventListener(IOErrorEvent.IO_ERROR, urlloader_Error);
+			urlloader.addEventListener(SecurityErrorEvent.SECURITY_ERROR, urlloader_Error);
+			try{
+				urlloader.load(new URLRequest("C://Users/aaaa/Desktop/test2.fbx"));
+				//urlloader.load(new URLRequest("http://matrix3d.github.io/"));
+			}catch (err:Error) {
+				if (ExternalInterface.available) {
+					ExternalInterface.call("alert","error:"+err.name);
+				}
+			}
+			
+		}
+		
+		private function urlloader_Error(e:Event):void 
+		{
+			if (ExternalInterface.available) {
+				ExternalInterface.call("alert",e.type);
+			}
 		}
 		
 		override public function initNode():void 
 		{
-			var mtl:String=
-			<![CDATA[
-# Blender MTL File: 'None'
-# Material Count: 1
 
-newmtl Material
-Ns 96.078431
-Ka 0.000000 0.000000 0.000000
-Kd 0.640000 0.640000 0.640000
-Ks 0.500000 0.500000 0.500000
-Ni 1.000000
-d 1.000000
-illum 2
-map_Kd C:\Users\aaaa\Documents\GitHub\FlashShader\example\src\assets\leaf.png
-			]]>;
-			var obj:String =
-			<![CDATA[
-# Blender v2.73 (sub 0) OBJ File: ''
-# www.blender.org
-mtllib untitled.mtl
-o Cube
-v 1.000000 -1.000000 -1.000000
-v 1.000000 -1.000000 1.000000
-v -1.000000 -1.000000 1.000000
-v -1.000000 -1.000000 -1.000000
-v 1.000000 1.000000 -0.999999
-v 0.999999 1.000000 1.000001
-v -1.000000 1.000000 1.000000
-v -1.000000 1.000000 -1.000000
-vt 0.000000 0.000000
-vt 1.000000 0.000000
-vt 1.000000 1.000000
-vt 0.000000 1.000000
-usemtl Material
-s off
-f 1/1 2/2 3/3 4/4
-f 5/1 8/2 7/3 6/4
-f 1/1 5/2 6/3 2/4
-f 2/1 6/2 7/3 3/4
-f 3/1 7/2 8/3 4/4
-f 5/1 1/2 4/3 8/4
-			]]>;
-			var objp:OBJParser = new OBJParser(obj,true,mtl);
-			view.scene.addChild(objp.target);
-			//objp.target.children[0].material.diffTexture = texture;
 		}
 	}
 

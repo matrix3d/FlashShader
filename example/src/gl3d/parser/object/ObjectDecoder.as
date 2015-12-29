@@ -9,11 +9,13 @@ package gl3d.parser.object
 	import gl3d.core.skin.Joint;
 	import gl3d.core.skin.Skin;
 	import gl3d.core.skin.SkinAnimation;
+	import gl3d.core.skin.SkinAnimationCtrl;
 	import gl3d.core.skin.Track;
 	import gl3d.core.skin.TrackFrame;
 	import gl3d.core.VertexBufferSet;
 	import gl3d.ctrl.Ctrl;
 	import gl3d.meshs.Meshs;
+	import gl3d.util.MatLoadMsg;
 	/**
 	 * ...
 	 * @author lizhi
@@ -21,12 +23,15 @@ package gl3d.parser.object
 	public class ObjectDecoder 
 	{
 		public var target:Node3D;
-		private var id2node:Object = { };
+		private var name2node:Object = { };
 		private var geoms:Array = [];
-		private var anims:Array = [];
+		public var anims:Array = [];
 		private var skins:Array = [];
+		private var mats:Array = [];
+		private var obj:Object;
 		public function ObjectDecoder(obj:Object) 
 		{
+			this.obj = obj;
 			var magic:String = obj.magic;
 			if (magic=="m5") {
 				parserM5(obj);
@@ -72,45 +77,40 @@ package gl3d.parser.object
 				var nskin:Skin = new Skin;
 				skins.push(nskin);
 			}
+			for each(var mat:Object in obj.mat) {
+				var nmat:Material = new Material;
+				nmat.color.x = mat.d[0];
+				nmat.color.y = mat.d[1];
+				nmat.color.z = mat.d[2];
+				nmat.ambient.x = mat.a[0];
+				nmat.ambient.y = mat.a[1];
+				nmat.ambient.z = mat.a[2];
+				if (mat.dmap!=null) {
+					new MatLoadMsg(mat.dmap, nmat);
+				}
+				mats.push(nmat);
+			}
 			for each(var anim:Object in obj.anim) {
-				var nanim:SkinAnimation = new SkinAnimation;
-				anims.push(nanim);
+				var nanimc:SkinAnimationCtrl = new SkinAnimationCtrl;
+				anims.push(nanimc);
 			}
 			var hierarchy:Object = obj.hierarchy;
 			if (hierarchy) {
 				target = importHierarchy(hierarchy);
 			}
-			for (var i:int = 0; i < obj.skin.length; i++ ) {
-				skin = obj.skin[i];
-				nskin = skins[i];
-				for each(var jid:int in skin.joint) {
-					nskin.joints.push(id2node[jid]);
-				}
-			}
-			for (i = 0; i < obj.anim.length; i++ ) {
-				anim = obj.anim[i];
-				nanim = anims[i];
-				var mtime:Number = 0;
-				nanim.targets = new Vector.<Node3D>;
-				for each(var nid:int in anim.target) {
-					nanim.targets.push(id2node[nid]);
-				}
-				for each(var tobj:Object in anim.track) {
-					var track:Track = new Track;
-					nanim.tracks.push(track);
-					track.target = id2node[tobj.target];
-					for each(var fObj:Object in tobj.frame) {
-						var f:TrackFrame = new TrackFrame;
-						track.frames.push(f);
-						f.matrix = new Matrix3D;
-						f.matrix.rawData = Vector.<Number>(fObj.matrix);
-						f.time = fObj.time;
-						if (mtime < f.time) {
-							mtime = f.time;
-						}
+			
+			if(obj.skin){
+				for (var i:int = 0; i < obj.skin.length; i++ ) {
+					skin = obj.skin[i];
+					nskin = skins[i];
+					for each(var jname:String in skin.joint) {
+						nskin.joints.push(name2node[jname]);
 					}
 				}
-				nanim.maxTime = mtime;
+			}
+			
+			if (obj.anim) {
+				bindAnim(this);
 			}
 		}
 		
@@ -125,6 +125,9 @@ package gl3d.parser.object
 				node.drawable = geoms[obj.geom];
 				node.material = new Material;
 			}
+			if (obj.mat!=null) {
+				node.material = mats[obj.mat]
+			}
 			if (obj.skin!=null) {
 				node.skin = skins[obj.skin];
 				if(node.drawable&&node.drawable.source){
@@ -135,9 +138,12 @@ package gl3d.parser.object
 			}
 			if (obj.anim!=null) {
 				node.controllers = new Vector.<Ctrl>;
-				node.controllers.push(anims[obj.anim]);
+				var animc:SkinAnimationCtrl = anims[obj.anim];
+				if (animc==null) {
+					animc = anims[obj.anim] = new SkinAnimationCtrl;
+				}
+				node.controllers.push(animc);
 			}
-			id2node[obj.id] = node;
 			var matrix:Array = obj.matrix as Array;
 			if(matrix){
 				node.matrix.rawData = Vector.<Number>(matrix);
@@ -151,12 +157,44 @@ package gl3d.parser.object
 				}
 			}
 			node.name = obj.name;
+			name2node[node.name] = node;
 			for each(var c:Object in obj.children) {
 				node.addChild(importHierarchy(c));
 			}
 			return node;
 		}
 		
+		public function bindAnim(objd:ObjectDecoder):void {
+			for (var i:int = 0; i < objd.obj.anim.length; i++ ) {
+				var nanimc:SkinAnimationCtrl = anims[i];
+				for (var j:int = 0; j < objd.obj.anim[i].length;j++ ) {
+					var nanim:SkinAnimation = new SkinAnimation;
+					nanimc.add(nanim);
+					var anim:Object = objd.obj.anim[i][j];
+					var mtime:Number = 0;
+					nanim.targets = new Vector.<Node3D>;
+					for each(var nname:String in anim.target) {
+						nanim.targets.push(name2node[nname]);
+					}
+					for each(var tobj:Object in anim.track) {
+						var track:Track = new Track;
+						nanim.tracks.push(track);
+						track.target = name2node[tobj.target];
+						for each(var fObj:Object in tobj.frame) {
+							var f:TrackFrame = new TrackFrame;
+							track.frames.push(f);
+							f.matrix = new Matrix3D;
+							f.matrix.rawData = Vector.<Number>(fObj.matrix);
+							f.time = fObj.time;
+							if (mtime < f.time) {
+								mtime = f.time;
+							}
+						}
+					}
+					nanim.maxTime = mtime;
+				}
+			}
+		}
 	}
 
 }

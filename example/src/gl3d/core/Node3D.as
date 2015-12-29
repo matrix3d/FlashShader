@@ -67,7 +67,9 @@ package gl3d.core
 			{
 				for each (var c:Ctrl in controllers)
 				{
-					c.update(view.time);
+					if(c){
+						c.update(view.time);
+					}
 				}
 			}
 			if (material || this.material)
@@ -171,7 +173,7 @@ package gl3d.core
 			return out;
 		}
 		
-		public function get rotationX():Number
+		/*public function get rotationX():Number
 		{
 			return getRotation(true, _temp0).x;
 		}
@@ -202,7 +204,7 @@ package gl3d.core
 		{
 			getRotation(true, _temp0);
 			setRotation(_temp0.x, _temp0.y, val);
-		}
+		}*/
 		
 		public function get world():Matrix3D
 		{

@@ -10,12 +10,12 @@ package gl3d.parser.fbx
 	public class FbxBinDecoder 
 	{
 		private const _BLOCK_SENTINEL_LENGTH:int = 13;
-		private var useFbxPropClass:Boolean;
+		//private var useFbxPropClass:Boolean;
 		public var childs:Array;
 		public var isBin:Boolean = false;
-		public function FbxBinDecoder(byte:ByteArray,useFbxPropClass:Boolean=true) 
+		public function FbxBinDecoder(byte:ByteArray/*,useFbxPropClass:Boolean=true*/) 
 		{
-			this.useFbxPropClass = useFbxPropClass;
+			//this.useFbxPropClass = useFbxPropClass;
 			byte.endian = Endian.LITTLE_ENDIAN;
 			if (byte.readUTFBytes(18) == "Kaydara FBX Binary") {
 				isBin = true;
@@ -55,12 +55,12 @@ package gl3d.parser.fbx
 			data.endian = Endian.LITTLE_ENDIAN;
 			var data_array:Array = [];
 			for (var i:int = 0; i < length;i++ ) {
-				data_array.push(read_data_dict_value(data, t));
+				data_array.push(read_data_dict(data, t));
 			}
 			return data_array;
 		}
 		
-		private function read_data_dict_value(r:ByteArray, t:String):Object {
+		private function read_data_dict(r:ByteArray, t:String):Object {
 			switch(t) {
 				case "Y":
 					return r.readShort();
@@ -97,7 +97,7 @@ package gl3d.parser.fbx
 			return null;
 		}
 		
-		private function read_data_dict(r:ByteArray, t:String):Object {
+		/*private function read_data_dict(r:ByteArray, t:String):Object {
 			if (!useFbxPropClass) return read_data_dict_value(r, t);
 			switch(t) {
 				case "Y":
@@ -122,7 +122,7 @@ package gl3d.parser.fbx
 					return FbxProp.PFloats(read_data_dict_value(r,t) as Array);	
 			}
 			return null;
-		}
+		}*/
 		
 		private function read_elem(read:ByteArray):Object{
 			// [0] the offset at which this block ends

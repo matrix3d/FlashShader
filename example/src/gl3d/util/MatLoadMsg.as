@@ -17,8 +17,10 @@ package gl3d.util
 		private var mat:Material;
 		private var loader:Loader;
 		private var url:String;
+		private var sourceURL:String;
 		public function MatLoadMsg(url:String,mat:Material) 
 		{
+			sourceURL = url;
 			url = url.substring( url.lastIndexOf("\\") + 1, url.lastIndexOf(".")) + ".png";
 			this.url = url;
 			trace(url);
@@ -39,6 +41,7 @@ package gl3d.util
 			var bmd:BitmapData = (loader.content as Bitmap).bitmapData;
 			if(mat){
 				mat.diffTexture = new TextureSet(bmd);
+				mat.diffTexture.name = sourceURL;
 				mat.invalid = true;
 			}
 		}

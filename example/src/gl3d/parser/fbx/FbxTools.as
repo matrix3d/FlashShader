@@ -1,5 +1,4 @@
 package gl3d.parser.fbx {
-	import gl3d.parser.fbx.FbxProp;
 	public class FbxTools {
 		static public function get(n : *,path : String,opt : Boolean = false) : * {
 			var parts : Array = path.split(".");
@@ -62,181 +61,26 @@ package gl3d.parser.fbx {
 			return cur;
 		}
 		
-		static public function getInts(n : *) : Array {
-			if(n.props.length != 1) throw n.name + " has " + String(n.props) + " props";
-			{
-				var _g : gl3d.parser.fbx.FbxProp = n.props[0];
-				switch(_g.index) {
-				case 4:
-				{
-					var v : Array = _g.params[0];
-					return v;
-				}
-				break;
-				default:
-				throw n.name + " has " + String(n.props) + " props";
-				break;
-				}
-			};
+		static public function getInts(n : * ) : Array {
+			return n.props[0];
+		}
+		
+		static public function getFloats(n : * ) : Array {
+			return n.props[0];
+		}
+		
+		static public function getId(n : * ) : String {
+			return String(n.props[0]);
+		}
+		
+		static public function getName(n : * ) : String {
+			var n1:String = String(n.props[n.props.length - 2]);
+			if(n1)return n1.split("::").pop();
 			return null;
 		}
 		
-		static public function props2array(n:*):Array {
-			var arr:Array = [];
-			for each(var p:Object in n.props) {
-				arr.push(p.params[0]);
-			}
-			return arr;
-		}
-		
-		static public function getFloats(n : *) : Array {
-			if(n.props.length != 1) throw n.name + " has " + String(n.props) + " props";
-			{
-				var _g : gl3d.parser.fbx.FbxProp = n.props[0];
-				switch(_g.index) {
-				case 5:
-				{
-					var v : Array = _g.params[0];
-					return v;
-				}
-				break;
-				case 4:
-				{
-					var i : Array = _g.params[0];
-					{
-						var fl : Array = new Array();
-						{
-							var _g1 : int = 0;
-							while(_g1 < i.length) {
-								var x : int = i[_g1];
-								++_g1;
-								fl.push(x);
-							}
-						};
-						n.props[0] = gl3d.parser.fbx.FbxProp.PFloats(fl);
-						return fl;
-					}
-				}
-				break;
-				default:
-				throw n.name + " has " + String(n.props) + " props";
-				break;
-				}
-			};
-			return null;
-		}
-		
-		static public function hasProp(n : *,p : gl3d.parser.fbx.FbxProp) : Boolean {
-			{
-				var _g : int = 0;
-				var _g1 : Array = n.props;
-				while(_g < _g1.length) {
-					var p2 : gl3d.parser.fbx.FbxProp = _g1[_g];
-					++_g;
-					if(FbxTextDecoder.enumEq(p,p2)) return true;
-				}
-			};
-			return false;
-		}
-		
-		static public function toFloat(n : gl3d.parser.fbx.FbxProp) : Number {
-			if(n == null) throw "null prop";
-			switch(n.index) {
-			case 0:
-			{
-				var v : int = n.params[0];
-				return v * 1.0;
-			}
-			break;
-			case 1:
-			{
-				var v1 : Number = n.params[0];
-				return v1;
-			}
-			break;
-			default:
-			throw "Invalid prop " + String(n);
-			break;
-			};
-			return 0.;
-		}
-		
-		static public function toString(n : gl3d.parser.fbx.FbxProp) : String {
-			if(n == null) throw "null prop";
-			switch(n.index) {
-			case 2:
-			{
-				var v : String = n.params[0];
-				return v;
-			}
-			break;
-			default:
-			throw "Invalid prop " + String(n);
-			break;
-			};
-			return null;
-		}
-		
-		static public function getId(n : *) : String {
-			//if(n.props.length != 3) throw n.name + " is not an object";
-			//{
-				var _g : gl3d.parser.fbx.FbxProp = n.props[0];
-				if(_g){
-				switch(_g.index) {
-				case 0:
-				case 1:
-				case 2:
-				{
-					return String(_g.params[0]);
-				}
-				break;
-				default:
-				throw n.name + " is not an object " + String(n.props);
-				break;
-				}
-				}
-			//};
-			return "";
-		}
-		
-		static public function getName(n : *) : String {
-			//if(n.props.length != 3) throw n.name + " is not an object";
-			//{
-				var _g : gl3d.parser.fbx.FbxProp = n.props[n.props.length-2];
-				switch(_g.index) {
-				case 2:
-				{
-					var n1 : String = _g.params[0];
-					return n1.split("::").pop();
-				}
-				break;
-				default:
-				throw n.name + " is not an object";
-				break;
-				}
-			//};
-			return null;
-		}
-		
-		static public function getType(n : *) : String {
-			//if(n.props.length != 3) throw n.name + " is not an object";
-			//{
-				var _g : gl3d.parser.fbx.FbxProp = n.props[n.props.length-1];
-				if(_g){
-				switch(_g.index) {
-				case 2:
-				{
-					var n1 : String = _g.params[0];
-					return n1;
-				}
-				break;
-				default:
-				throw n.name + " is not an object";
-				break;
-				}
-				}
-			//};
-			return null;
+		static public function getType(n : * ) : String {
+			return String(n.props[n.props.length-1]);
 		}
 		
 	}

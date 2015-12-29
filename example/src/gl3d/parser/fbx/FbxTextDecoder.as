@@ -1,5 +1,4 @@
 package gl3d.parser.fbx {
-	import gl3d.parser.fbx.FbxProp;
 	import gl3d.parser.fbx.FbxToken;
 	public class FbxTextDecoder {
 		public var childs:Array;
@@ -62,25 +61,25 @@ package gl3d.parser.fbx {
 					case 3:
 					{
 						var s : String = t.params[0];
-						props.push(gl3d.parser.fbx.FbxProp.PFloat(parseFloat(s)));
+						props.push(parseFloat(s));
 					}
 					break;
 					case 2:
 					{
 						var s1 : String = t.params[0];
-						props.push(gl3d.parser.fbx.FbxProp.PInt(parseInt(s1)));
+						props.push(parseInt(s1));
 					}
 					break;
 					case 4:
 					{
-						var s2 : String = t.params[0];
-						props.push(gl3d.parser.fbx.FbxProp.PString(s2));
+						var s2 : String = String(t.params[0]);
+						props.push(s2);
 					}
 					break;
 					case 0:
 					{
-						var s3 : String = t.params[0];
-						props.push(gl3d.parser.fbx.FbxProp.PIdent(s3));
+						var s3 : String = String(t.params[0]);
+						props.push(s3);
 					}
 					break;
 					case 6:case 7:case 1:
@@ -137,7 +136,7 @@ package gl3d.parser.fbx {
 								break;
 								}
 							};
-							props.push(((floats == null)?gl3d.parser.fbx.FbxProp.PInts(ints):gl3d.parser.fbx.FbxProp.PFloats(floats)));
+							props.push(((floats == null)?ints:floats));
 							this.except(gl3d.parser.fbx.FbxToken.TBraceClose);
 							throw "__break__";
 						}

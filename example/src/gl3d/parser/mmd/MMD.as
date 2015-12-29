@@ -14,6 +14,7 @@ package gl3d.parser.mmd
 	import gl3d.core.Node3D;
 	import gl3d.core.skin.Skin;
 	import gl3d.core.skin.SkinAnimation;
+	import gl3d.core.skin.SkinAnimationCtrl;
 	import gl3d.core.skin.Track;
 	import gl3d.core.skin.TrackFrame;
 	import gl3d.core.VertexBufferSet;
@@ -33,6 +34,7 @@ package gl3d.parser.mmd
 		public var name2bone:Object = { };
 		public var name2matrix:Object = {};
 		private var q:Quaternion = new Quaternion;
+		public var animc:SkinAnimationCtrl;
 		public function MMD(pmxBuff:ByteArray) 
 		{
 			pmx = new PMX(pmxBuff);
@@ -150,8 +152,12 @@ package gl3d.parser.mmd
 		public function bind(vmd:VMD):SkinAnimation {
 			var anim:SkinAnimation = new SkinAnimation;
 			anim.targets = skinNodes;
-			node.controllers = new Vector.<Ctrl>;
-			node.controllers.push(anim);
+			if (animc == null) {
+				animc = new SkinAnimationCtrl;
+				node.controllers = new Vector.<Ctrl>;
+				node.controllers.push(animc);
+			}
+			animc.add(anim);
 			anim.maxTime = 0;
 			var name2track:Object = { };
 			for each(var key:Object in vmd.boneKeys) {

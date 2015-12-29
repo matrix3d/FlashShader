@@ -2,9 +2,12 @@ package
 {
 	import com.bit101.components.CheckBox;
 	import com.bit101.components.ComboBox;
+	import com.bit101.components.HBox;
 	import com.bit101.components.HUISlider;
+	import com.bit101.components.Label;
 	import com.bit101.components.PushButton;
 	import com.bit101.components.VBox;
+	import com.bit101.components.Window;
 	import flash.display.Loader;
 	import flash.display.Sprite;
 	import flash.events.Event;
@@ -23,6 +26,7 @@ package
 	import flash.utils.Dictionary;
 	import gl3d.core.Node3D;
 	import gl3d.core.skin.SkinAnimation;
+	import gl3d.core.skin.SkinAnimationCtrl;
 	import gl3d.core.View3D;
 	import gl3d.parser.dae.ColladaDecoder;
 	import gl3d.parser.fbx.FbxParser;
@@ -49,10 +53,16 @@ package
 		private var scaleUI:HUISlider;
 		private var timeUI:HUISlider;
 		private var pauseUI:CheckBox;
-		private var anim:SkinAnimation;
+		private var anim:SkinAnimationCtrl;
 		private var mtl:String;
 		private var rotUI:HUISlider;
 		private var fmtUI:ComboBox;
+		private var isBrowseAnim:Boolean;
+		private var fbx:FbxParser;
+		private var expWin:Window;
+		private var expMeshUI:CheckBox;
+		private var expAnimUI:CheckBox;
+		private var objectd:ObjectDecoder;
 		public function ModelViewer() 
 		{
 		}
@@ -66,7 +76,12 @@ package
 			for each(v in Utils.getParameters()) {
 				load(v);
 			}
-			//load("C:/Users/aaaa/Desktop/test2.fbx");
+			try{
+			//load("test2.fbx");
+			load("C:/Users/aaaa/Desktop/test2.fbx");
+			//load("C:/Users/aaaa/Desktop/卡攻击.fbx");
+			//load("C:/Users/aaaa/Desktop/大理宝石商人.fbx");
+			//load("C:/Users/aaaa/Desktop/黄蓉动画.fbx");
 			//load("C:/Users/aaaa/Desktop/mesh.amf");
 			//load("C:/Users/aaaa/Desktop/mesh.json");
 			//load("C:/Users/aaaa/Desktop/aoying gongji.FBX");
@@ -81,6 +96,7 @@ package
 			//load("../src/assets/astroBoy_walk_Max.dae");
 			//load("../src/assets/miku.pmx");
 			//load("../src/assets/melt.vmd");
+			}catch(err:Error){}
 		}
 		
 		private function load(v:String):void {
@@ -108,14 +124,14 @@ package
 			var loader:URLLoader = e.currentTarget as URLLoader;
 			tryAdd(loader2url[loader], loader.data as ByteArray);
 			
-			//view.enableErrorChecking = true;
+			view.enableErrorChecking = true;
 		}
 		
 		override public function initUI():void 
 		{
 			var vbox:VBox = new VBox(this, 5, 5);
-			var btn:PushButton = new PushButton(vbox,0,0,"browse");
-			btn.addEventListener(MouseEvent.CLICK, btn_click);
+			new PushButton(vbox,0,0,"browse",onBrowse);
+			new PushButton(vbox,0,0,"browse anim",onBrowseAnim);
 			scaleUI = new HUISlider(vbox, 0, 0, "scale", onScale);
 			scaleUI.setSliderParams(0.01, 10, 0);
 			pauseUI = new CheckBox(vbox, 0, 0, "pause", onPause);
@@ -124,9 +140,6 @@ package
 			rotUI = new HUISlider(vbox, 0, 0, "rotY", onRot);
 			rotUI.setSliderParams(0, 360,0);
 			rotUI.tick = 1;
-			var formats:Array = ["json","amf"];
-			fmtUI = new ComboBox(vbox, 0, 0, formats[0], formats);
-			fmtUI.selectedIndex = 0;
 			new PushButton(vbox, 0, 0, "export", onExp);
 			
 			addChild(stats);
@@ -135,11 +148,35 @@ package
 		
 		private function onExp(e:Event):void 
 		{
+			if(expWin==null){
+				expWin = new Window;
+				expWin.hasCloseButton = true;
+				var vbox:VBox = new VBox(expWin.content, 5, 5);
+				var hbox:HBox = new HBox(vbox);
+				var formats:Array = ["json", "amf"];
+				new Label(hbox, 0, 0, "format");
+				fmtUI = new ComboBox(hbox, 0, 0, formats[0], formats);
+				fmtUI.selectedIndex = 0;
+				expMeshUI = new CheckBox(vbox, 0, 0, "mesh");
+				expMeshUI.selected = true;
+				expAnimUI = new CheckBox(vbox, 0, 0, "anim");
+				expAnimUI.selected = true;
+				new PushButton(vbox, 0, 0, "do export", onDoExp);
+				expWin.setSize(vbox.width + 20, vbox.height + 50);
+				expWin.addEventListener(Event.CLOSE, expWin_close);
+				expWin.x = stage.stageWidth / 2 - expWin.width / 2;
+				expWin.y = stage.stageHeight / 2 - expWin.height / 2;
+			}
+			addChild(expWin);
+		}
+		
+		private function onDoExp(e:Event):void 
+		{
 			if (node) {
 				var io:ObjectEncoder = new ObjectEncoder;
 				var bak:Matrix3D = node.matrix;
 				node.matrix = new Matrix3D;
-				var obj:Object = io.exportNode(node);
+				var obj:Object = io.exportNode(node,expMeshUI.selected,expAnimUI.selected);
 				node.matrix = bak;
 				var out:Object;
 				switch(fmtUI.selectedItem) {
@@ -157,6 +194,13 @@ package
 					var file:FileReference = new FileReference;
 					file.save(out, "mesh." + fmtUI.selectedItem);
 				}
+			}
+		}
+		
+		private function expWin_close(e:Event):void 
+		{
+			if (expWin&&expWin.parent) {
+				expWin.parent.removeChild(expWin);
 			}
 		}
 		
@@ -178,17 +222,30 @@ package
 		private function onRot(e:Event):void 
 		{
 			if (node) {
-				node.rotationY = rotUI.value;
+				node.setRotation(0,rotUI.value ,0);
+				//node.rotationY = rotUI.value;
 			}
 		}
 		private function onTime(e:Event):void 
 		{
-			if (anim) {
-				anim.time = anim.maxTime * timeUI.value*1000;
+			if (anim&&anim.anim) {
+				anim.time = anim.anim.maxTime * timeUI.value*1000;
 			}
 		}
 		
-		private function btn_click(e:MouseEvent):void 
+		private function onBrowse(e:MouseEvent):void 
+		{
+			isBrowseAnim = false;
+			browse();
+		}
+		
+		private function onBrowseAnim(e:MouseEvent):void 
+		{
+			isBrowseAnim = true;
+			browse();
+		}
+		
+		private function browse():void 
 		{
 			file = new FileReference;
 			file.addEventListener(Event.SELECT, file_select);
@@ -217,13 +274,16 @@ package
 					var curnode:Node3D = mmd.node;
 					defScale = .1;
 					if (vmd) {
-						anim = mmd.bind(vmd);
+						mmd.bind(vmd);
+						anim = mmd.animc;
 					}
 					break;
 				case "vmd":
 					vmd = new VMD(byte);
-					if(mmd)
-					anim = mmd.bind(vmd);
+					if(mmd){
+						mmd.bind(vmd);
+						anim = mmd.animc;
+					}
 					break;
 				case "obj":
 					var obj:OBJParser = new OBJParser(byte +"",true,mtl);
@@ -239,19 +299,26 @@ package
 				case "md5anim":
 					if (md5mesh) {
 						var md5a:MD5AnimParser = new MD5AnimParser(byte+"", md5mesh);
-						anim = md5a.anim;
+						anim = md5mesh.animc;
 					}
 					break;
 				case "dae":
 				case "collada":
 					var dae:ColladaDecoder = new ColladaDecoder(byte+"");
 					curnode = dae.scenes[0];
-					anim = dae.anim;
+					anim = dae.animc;
 					break;
 				case "fbx":
-					var fbx:FbxParser = new FbxParser(byte);
-					anim = fbx.anim3d;
-					curnode = fbx.rootNode;
+					if(isBrowseAnim){
+						if (fbx) {
+							var afbx:FbxParser = new FbxParser(byte, false, false);
+							fbx.loadAnimation(afbx);
+						}
+					}else {
+						fbx = new FbxParser(byte);
+						anim = fbx.animc;
+						curnode = fbx.rootNode;
+					}
 					defScale = 0.01;
 					break;
 				case "json":
@@ -263,8 +330,16 @@ package
 					break;
 			}
 			if (object) {
-				var objectd:ObjectDecoder = new ObjectDecoder(object);
-				curnode = objectd.target;
+				if (isBrowseAnim) {
+					if (objectd) {
+						var aobjectd:ObjectDecoder = new ObjectDecoder(object);
+						objectd.bindAnim(aobjectd);
+					}
+				}else{
+					objectd = new ObjectDecoder(object);
+					anim = objectd.anims[0];
+					curnode = objectd.target;
+				}
 			}
 			if (curnode) {
 				scaleUI.value = defScale;
@@ -278,7 +353,6 @@ package
 				view.scene.addChild(node);
 			}
 		}
-		
 	}
 
 }

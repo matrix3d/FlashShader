@@ -7,6 +7,7 @@ package gl3d.parser.dae
 	import gl3d.core.Node3D;
 	import gl3d.core.skin.Skin;
 	import gl3d.core.skin.SkinAnimation;
+	import gl3d.core.skin.SkinAnimationCtrl;
 	import gl3d.core.skin.SkinFrame;
 	import gl3d.core.skin.Track;
 	import gl3d.core.skin.TrackFrame;
@@ -34,7 +35,7 @@ package gl3d.parser.dae
 		private var sid2node:Object = { };
 		private var id2node:Object = { };
 		private var skinNodes:Vector.<Node3D> = new Vector.<Node3D>;
-		public var anim:SkinAnimation;
+		public var animc:SkinAnimationCtrl;
 		private var converter:Converter;
 		private var controllerTasks:Array = [];
 		public function ColladaDecoder(txt:String) 
@@ -285,7 +286,7 @@ package gl3d.parser.dae
 		}
 		
 		private function buildAnimation():void {
-			anim = new SkinAnimation;
+			var anim:SkinAnimation = new SkinAnimation;
 			for each(var animname:String in animationIDs) {
 				var animXML:XML = animations[animname];
 				if (animXML.animation.length()) {
@@ -337,7 +338,9 @@ package gl3d.parser.dae
 			}
 			for each(var skinnode:Node3D in skinNodes) {
 				skinnode.controllers = new Vector.<Ctrl>;
-				skinnode.controllers.push(anim);
+				animc = new SkinAnimationCtrl;
+				skinnode.controllers.push(animc);
+				animc.add(anim);
 				anim.targets = skinnode.children;
 			}
 			//a.debugTrace();

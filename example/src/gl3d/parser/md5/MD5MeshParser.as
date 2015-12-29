@@ -7,6 +7,7 @@ package gl3d.parser.md5
 	import gl3d.core.math.Quaternion;
 	import gl3d.core.Node3D;
 	import gl3d.core.skin.Skin;
+	import gl3d.core.skin.SkinAnimationCtrl;
 	import gl3d.core.VertexBufferSet;
 	import gl3d.meshs.Meshs;
 	import gl3d.parser.md5.MD5MeshDecoder;
@@ -21,6 +22,7 @@ package gl3d.parser.md5
 		public var target:Node3D = new Node3D;
 		public var jointRoot:Node3D;
 		public var skinNodes:Vector.<Node3D> = new Vector.<Node3D>;
+		public var animc:SkinAnimationCtrl;
 		public function MD5MeshParser(txt:String) 
 		{
 			var converter:Converter=new Converter("ZtoY");

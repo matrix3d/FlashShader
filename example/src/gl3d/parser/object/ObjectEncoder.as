@@ -3,11 +3,13 @@ package gl3d.parser.object
 	import flash.geom.Matrix3D;
 	import flash.utils.Dictionary;
 	import gl3d.core.Drawable;
+	import gl3d.core.Material;
 	import gl3d.core.math.Quaternion;
 	import gl3d.core.Node3D;
 	import gl3d.core.skin.Joint;
 	import gl3d.core.skin.Skin;
 	import gl3d.core.skin.SkinAnimation;
+	import gl3d.core.skin.SkinAnimationCtrl;
 	import gl3d.core.skin.Track;
 	import gl3d.core.skin.TrackFrame;
 	import gl3d.ctrl.Ctrl;
@@ -20,8 +22,10 @@ package gl3d.parser.object
 		private var geoms:Array = [];
 		private var skins:Array = [];
 		private var anims:Array = [];
+		private var mats:Array = [];
 		private var id:int = 0;
 		private var node2id:Dictionary = new Dictionary;
+		private var node2name:Dictionary = new Dictionary;
 		private var useSource:Boolean;
 		public function ObjectEncoder(useSource:Boolean=true) 
 		{
@@ -29,60 +33,90 @@ package gl3d.parser.object
 			
 		}
 		
-		public function exportNode(node:Node3D):Object {
+		public function exportNode(node:Node3D, isExpMesh:Boolean, isExpAnim:Boolean):Object {
 			var hierarchy:Object = exportHierarchy(node);
-			var geoms2:Array = [];
-			for each(var d:Drawable in geoms) {
-				if(d.source&&useSource){
-					geoms2.push({source:d.source});
-				}else {
-					var dobj:Object = { };
-					geoms2.push(dobj);
-					dobj.index = vec2arr(d.index.data);
-					dobj.pos = vec2arr(d.pos.data);
-					dobj.uv = vec2arr(d.uv.data);
-					if (d.joint) {
-						dobj.joint = vec2arr(d.joint.data);
+			if(isExpMesh){	
+				var geoms2:Array = [];
+				for each(var d:Drawable in geoms) {
+					if(d.source&&useSource){
+						geoms2.push({source:d.source});
+					}else {
+						var dobj:Object = { };
+						geoms2.push(dobj);
+						dobj.index = vec2arr(d.index.data);
+						dobj.pos = vec2arr(d.pos.data);
+						dobj.uv = vec2arr(d.uv.data);
+						if (d.joint) {
+							dobj.joint = vec2arr(d.joint.data);
+						}
+						if (d.weight) {
+							dobj.weight = vec2arr(d.weight.data);
+						}
 					}
-					if (d.weight) {
-						dobj.weight = vec2arr(d.weight.data);
+				}
+				var skins2:Array = [];
+				for each(var skin:Skin in skins) {
+					var joint:Array = [];
+					for each(var j:Node3D in skin.joints) {
+						joint.push(node2name[j]);
+					}
+					skins2.push({joint:joint});
+				}
+				var mats2:Array = [];
+				for each(var mat:Material in mats) {
+					var matobj:Object = { };
+					mats2.push(matobj);
+					matobj.d = [mat.color.x, mat.color.y, mat.color.z];
+					matobj.a = [mat.ambient.x, mat.ambient.y, mat.ambient.z];
+					if(mat.diffTexture){
+						matobj.dmap = mat.diffTexture.name;
 					}
 				}
 			}
-			var skins2:Array = [];
-			for each(var skin:Skin in skins) {
-				var joint:Array = [];
-				for each(var j:Node3D in skin.joints) {
-					joint.push(node2id[j]);
-				}
-				skins2.push({joint:joint});
-			}
-			var anims2:Array = [];
-			for each(var anim:SkinAnimation in anims) {
-				var animObj:Object = { };
-				anims2.push(animObj);
-				animObj.target = [];
-				for each(var tg:Node3D in anim.targets) {
-					animObj.target.push(node2id[tg]);
-				}
-				animObj.track = [];
-				for each(var t:Track in anim.tracks) {
-					var tObj:Object = { };
-					tObj.target = node2id[t.target];
-					tObj.frame = [];
-					for each(var f:TrackFrame in t.frames) {
-						tObj.frame.push({matrix:vec2arr(f.matrix.rawData),time:f.time});
+			if(isExpAnim){
+				var anims2:Array = [];
+				for each(var animc:SkinAnimationCtrl in anims) {
+					var animarr:Array = [];
+					anims2.push(animarr);
+					for each(var anim:SkinAnimation in animc.anims){
+						var animObj:Object = { };
+						animObj.name = anim.name;
+						animarr.push(animObj);
+						animObj.target = [];
+						for each(var tg:Node3D in anim.targets) {
+							animObj.target.push(node2name[tg]);
+						}
+						animObj.track = [];
+						for each(var t:Track in anim.tracks) {
+							var tObj:Object = { };
+							tObj.target = node2name[t.target];
+							tObj.frame = [];
+							for each(var f:TrackFrame in t.frames) {
+								tObj.frame.push({matrix:vec2arr(f.matrix.rawData),time:f.time});
+							}
+							animObj.track.push(tObj);
+						}
 					}
-					animObj.track.push(tObj);
 				}
 			}
-			return {"magic":"m5",geom:geoms2,skin:skins2,anim:anims2,hierarchy:hierarchy};
+			var out:Object = { "magic":"m5"};
+			if (isExpMesh) {
+				out.geom = geoms2;
+				out.skin = skins2;
+				out.mat = mats2;
+				out.hierarchy = hierarchy;
+			}
+			if (isExpAnim) {
+				out.anim = anims2;
+			}
+			return out;
 		}
 		
 		private function exportHierarchy(node:Node3D):Object {
 			var nodeObj:Object = { };
 			nodeObj.id = id++;
 			node2id[node] = nodeObj.id;
+			node2name[node] = node.name;
 			if (node.drawable) {
 				var i:int = geoms.indexOf(node.drawable);
 				if (i==-1) {
@@ -99,14 +133,22 @@ package gl3d.parser.object
 				}
 				nodeObj.skin = i;
 			}
+			if (node.material) {
+				i = mats.indexOf(node.material);
+				if (i==-1) {
+					i = mats.length;
+					mats.push(node.material);
+				}
+				nodeObj.mat = i;
+			}
 			if (node.controllers) {
 				for each(var controller:Ctrl in node.controllers) {
-					if (controller is SkinAnimation) {
-						var anim:SkinAnimation = controller as SkinAnimation;
-						i = anims.indexOf(anim);
+					if (controller is SkinAnimationCtrl) {
+						var animc:SkinAnimationCtrl = controller as SkinAnimationCtrl;
+						i = anims.indexOf(animc);
 						if (i==-1) {
 							i = anims.length;
-							anims.push(anim);
+							anims.push(animc);
 						}
 						nodeObj.anim = i;
 					}

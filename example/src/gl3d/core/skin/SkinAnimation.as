@@ -14,19 +14,16 @@ package gl3d.core.skin
 	 * ...
 	 * @author lizhi
 	 */
-	public class SkinAnimation extends Ctrl implements IAnimation
+	public class SkinAnimation
 	{
 		public var tracks:Vector.<Track> = new Vector.<Track>;
 		public var bindShapeMatrix:Matrix3D;
 		public var targets:Vector.<Node3D>;
 		public var maxTime:Number = 0;
-		public var startTime:Number = 0;
-		public var time:Number = 0;
-		public var animtime:Number = 0;
-		public var playing:Boolean = true;
 		private var q:Quaternion = new Quaternion;
 		static private var q1:Quaternion= new Quaternion;
 		static private var q2:Quaternion = new Quaternion;
+		public var name:String;
 		public function SkinAnimation() 
 		{
 			
@@ -51,15 +48,8 @@ package gl3d.core.skin
 			return q1.toMatrix(target);
 		}
 		
-		override public function update(time:int):void 
+		public function update(t:Number):void 
 		{
-			if(playing){
-				this.time = time;
-			}
-			var t:Number = ((this.time-startTime) / 1000) % maxTime;
-			if (isNaN(t)) {
-				t = 0;
-			}
 			for each(var track:Track in tracks) {
 				var last:TrackFrame = null;
 				var f:TrackFrame = null;

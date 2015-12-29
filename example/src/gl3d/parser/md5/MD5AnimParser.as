@@ -4,6 +4,7 @@ package gl3d.parser.md5
 	import gl3d.core.math.Quaternion;
 	import gl3d.core.skin.Skin;
 	import gl3d.core.skin.SkinAnimation;
+	import gl3d.core.skin.SkinAnimationCtrl;
 	import gl3d.core.skin.Track;
 	import gl3d.core.skin.TrackFrame;
 	import gl3d.ctrl.Ctrl;
@@ -18,11 +19,16 @@ package gl3d.parser.md5
 		public var anim:SkinAnimation
 		public function MD5AnimParser(txt:String,md5:MD5MeshParser) 
 		{
+			
 			var converter:Converter=new Converter("ZtoY");
 			var decoder:MD5AnimDecoder = new MD5AnimDecoder(txt);
 			anim = new SkinAnimation();
-			md5.target.controllers = new Vector.<Ctrl>;
-			md5.target.controllers.push(anim);
+			if (md5.animc==null) {
+				md5.target.controllers = new Vector.<Ctrl>;
+				md5.animc = new SkinAnimationCtrl;
+				md5.target.controllers.push(md5.animc);
+			}
+			md5.animc.add(anim);
 			anim.maxTime = decoder.components.length / decoder.frameRate;
 			anim.targets = md5.skinNodes;
 			var q:Quaternion = new Quaternion;

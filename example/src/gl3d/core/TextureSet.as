@@ -17,6 +17,7 @@ package gl3d.core {
 	 */
 	public class TextureSet 
 	{
+		public var name:String;
 		public var invalid:Boolean = true;
 		public var data:Object;
 		public var texture:TextureBase;
