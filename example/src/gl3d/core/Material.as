@@ -21,6 +21,7 @@ package gl3d.core {
 		public var gpuSkin:Boolean = false;
 		
 		public var lightAble:Boolean = true;
+		private var lastNumLight:int = -1;
 		public var ambientAble:Boolean = true;
 		public var specularAble:Boolean = true;
 		public var ambient:Vector3D =new Vector3D(.1, .1, .1, .1);
@@ -74,6 +75,10 @@ package gl3d.core {
 				if (gpuSkin!=hasSkin) {
 					invalid = true;
 					gpuSkin = hasSkin;
+				}
+				if (lightAble&&lastNumLight!=view.renderer.lights.length) {
+					invalid = true;
+					lastNumLight = view.renderer.lights.length;
 				}
 				if (invalid) {
 					shader.invalid = true;

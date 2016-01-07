@@ -101,11 +101,12 @@ package gl3d.core.renders
 				view.invalid = false;
 				gl3d.clear((view.background>>16&0xff)/0xff,(view.background>>8&0xff)/0xff,(view.background&0xff)/0xff);
 				collects.length = 0;
+				lights.length = 0;
 				gl3d.drawTriangleCounter = 0;
 				gl3d.drawCounter = 0;
 				collect(scene);
 				sort();
-				for each(var light:Light in view.lights) {
+				for each(var light:Light in lights) {
 					if (light.shadowMapEnabled) {
 						for each(var node:Node3D in collects) {
 							node.update(view);

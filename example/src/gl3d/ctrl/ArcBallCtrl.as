@@ -64,7 +64,7 @@ package gl3d.ctrl
 		
 		private function stage_mouseWheel(e:MouseEvent):void 
 		{
-			distance-= e.delta;
+			distance-= e.delta / 100 * distance;
 		}
 		
 		private function stage_mouseDown(e:Event):void

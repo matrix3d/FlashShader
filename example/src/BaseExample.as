@@ -79,6 +79,7 @@ package
 		public var _post:String;
 		public var gamepad:Gamepad=new Gamepad;
 		public var fc:FirstPersonCtrl;
+		public var lights:Array = [];
 		public function BaseExample() 
 		{
 			if (Multitouch.supportsTouchEvents&&Multitouch.maxTouchPoints) {
@@ -91,7 +92,7 @@ package
 				//console.textfield = debug;
 			}
 			view = new View3D(0);
-			view.antiAlias = 0;
+			view.antiAlias = 2;
 			addChild(view);
 			view.camera.z = -10;
 			
@@ -172,7 +173,8 @@ package
 			//post = "blur";
 			//post = "bend";
 			//post = "red";
-			post = "fxaa";
+			//post = "fxaa";
+			//post = "fxaa2x";
 		}
 		
 		public function createNormalMap():TextureSet {
@@ -182,7 +184,9 @@ package
 		}
 		
 		public function initLight():void {
-			view.lights[0].z = -450;
+			lights.push(new Light);
+			view.scene.addChild(lights[0]);
+			lights[0].z = -450;
 			//view.lights[0].color.setTo(.5, .5, .5);
 			//view.lights[1] = new Light;
 			//view.lights[1].z = 450;
@@ -239,7 +243,7 @@ package
 			aui.bind(material, "alpha", AttribSeter.TYPE_NUM, new Point(.1, 1));
 			aui.bind(material, "wireframeAble", AttribSeter.TYPE_BOOL);
 			aui.bind(this, "useTexture", AttribSeter.TYPE_BOOL);
-			aui.bind(this, "post", AttribSeter.TYPE_LIST_STR, null, ["null", "blur", "water", "bend", "heart", "flower", "sinwater", "hdr", "shape","asciiart","red","fxaa"]);
+			aui.bind(this, "post", AttribSeter.TYPE_LIST_STR, null, ["null", "blur", "water", "bend", "heart", "flower", "sinwater", "hdr", "shape","asciiart","red","fxaa","fxaa2x"]);
 			
 			if(Multitouch.supportsTouchEvents&&Multitouch.maxTouchPoints)
 			addChild(gamepad);
@@ -320,6 +324,10 @@ package
 					view.posts.push(new PostEffect(new PostGLShader(null,new BlurShader(blurSize,false))));
 					break;
 				case "fxaa":
+					view.posts.push(new PostEffect(new PostGLShader(null,new FxaaShader)));
+					break;
+				case "fxaa2x":
+					view.posts.push(new PostEffect(new PostGLShader(null,new FxaaShader)));
 					view.posts.push(new PostEffect(new PostGLShader(null,new FxaaShader)));
 					break;
 				case "water":

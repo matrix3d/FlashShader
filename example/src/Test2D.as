@@ -6,7 +6,8 @@ package
 	import gl3d.core.InstanceMaterial;
 	import gl3d.core.Node3D;
 	import gl3d.meshs.Meshs;
-	import gl3d.parser.DAEParser;
+	import gl3d.parser.dae.ColladaDecoder;
+	import gl3d.parser.dae.ColladaParser;
 	/**
 	 * ...
 	 * @author lizhi
@@ -27,7 +28,7 @@ package
 			view.scene.addChild(map2d);
 			var cubed:Drawable = Meshs.cube(100,100,100);
 			var c:int = 10;
-			view.antiAlias = 0;
+			view.antiAlias = 16;
 			cube = new Node3D;
 			cube.material = material;
 			map2d.addChild(cube);
@@ -44,15 +45,14 @@ package
 			
 			[Embed(source = "assets/astroBoy_walk_Max.dae", mimeType = "application/octet-stream")]var testdae:Class;
 			var b:ByteArray = new testdae as ByteArray;
-			var p:DAEParser = new DAEParser;
-			p.load(null, b);
-			p.root.setRotation(180,0,0);
-			p.root.scaleX = p.root.scaleY = p.root.scaleZ = 30;
-			map2d.addChild(p.root);
+			var p:ColladaDecoder = new ColladaDecoder(b+"");
+			p.scenes[0].setRotation(-90,0,0);
+			p.scenes[0].scaleX = p.scenes[0].scaleY = p.scenes[0].scaleZ = 30;
+			map2d.addChild(p.scenes[0]);
 			
 			c = 20;
 			while (c-->0) {
-				clone = p.root.clone();
+				clone = p.scenes[0].clone();
 				clone.x = (Math.random()-.5)*400;
 				clone.y = (Math.random() - .5) * 400;
 				map2d.addChild(clone);

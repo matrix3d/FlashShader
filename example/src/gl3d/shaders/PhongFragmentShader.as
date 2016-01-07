@@ -51,8 +51,8 @@ package gl3d.shaders
 			}
 			var diffColor:Var = getDiffColor();
 			if (material.lightAble) {
-				for (var i:int = 0; i < material.view.lights.length; i++ ) {
-					var light:Light = material.view.lights[i];
+				for (var i:int = 0; i < material.view.renderer.lights.length; i++ ) {
+					var light:Light = material.view.renderer.lights[i];
 					var curPhongColor:Var;
 					if (light.lightType==Light.AMBIENT) {
 						curPhongColor = uniformLightColor(i);
