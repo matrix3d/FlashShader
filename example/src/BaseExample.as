@@ -37,6 +37,7 @@ package
 	import gl3d.post.PostEffect;
 	import gl3d.shaders.posts.AsciiArtShader;
 	import gl3d.shaders.posts.FlowerShader;
+	import gl3d.shaders.posts.FxaaShader;
 	import gl3d.shaders.posts.HdrShader;
 	import gl3d.shaders.posts.HeartShader;
 	import gl3d.shaders.posts.PostGLShader;
@@ -90,6 +91,7 @@ package
 				//console.textfield = debug;
 			}
 			view = new View3D(0);
+			view.antiAlias = 0;
 			addChild(view);
 			view.camera.z = -10;
 			
@@ -123,8 +125,8 @@ package
 			
 			//atf
 			//[Embed(source = "assets/leaf_apple.atf", mimeType = "application/octet-stream")]var leafc:Class;
-			[Embed(source = "assets/new_leaf.atf", mimeType = "application/octet-stream")]var leafc:Class;
-			texture = new TextureSet((new leafc as ByteArray),false,false,false,false);
+			//[Embed(source = "assets/new_leaf.atf", mimeType = "application/octet-stream")]var leafc:Class;
+			//texture = new TextureSet((new leafc as ByteArray),false,false,false,false);
 			
 			
 			//[Embed(source = "assets/leaf.png")]var leafp:Class;
@@ -134,6 +136,8 @@ package
 			material.culling =  Context3DTriangleFace.NONE;
 			//material.blendModel = BlendMode.ADD;
 			material.normalMapAble = false;
+			material.color.setTo(1, 1, 1);
+			material.ambient.setTo(.5, .5, .5);
 			material.specularPower = 10;
 			material.specularAble = true;
 			material.lightAble = true;
@@ -168,6 +172,7 @@ package
 			//post = "blur";
 			//post = "bend";
 			//post = "red";
+			post = "fxaa";
 		}
 		
 		public function createNormalMap():TextureSet {
@@ -178,6 +183,7 @@ package
 		
 		public function initLight():void {
 			view.lights[0].z = -450;
+			//view.lights[0].color.setTo(.5, .5, .5);
 			//view.lights[1] = new Light;
 			//view.lights[1].z = 450;
 			//view.lights[1].color = new <Number>[1,0,0,1];
@@ -202,7 +208,8 @@ package
 			
 			teapot = new Node3D;
 			teapot.material = material;
-			teapot.drawable = Meshs.cube();
+			teapot.drawable = //Teapot.teapot();
+			Meshs.unpack(Meshs.sphere(5,5));
 			view.scene.addChild(teapot);
 			teapot.scaleX = teapot.scaleY = teapot.scaleZ = 1;
 			view.background = 0//xffffff;
@@ -222,7 +229,7 @@ package
 		}
 		
 		public function initUI():void {
-			//addChild(aui);
+			addChild(aui);
 			aui.bind(material, "specularPower", AttribSeter.TYPE_NUM, new Point(1, 100));
 			aui.bind(material, "toonAble", AttribSeter.TYPE_BOOL);
 			aui.bind(view, "antiAlias", AttribSeter.TYPE_NUM, new Point(0, 16));
@@ -232,7 +239,7 @@ package
 			aui.bind(material, "alpha", AttribSeter.TYPE_NUM, new Point(.1, 1));
 			aui.bind(material, "wireframeAble", AttribSeter.TYPE_BOOL);
 			aui.bind(this, "useTexture", AttribSeter.TYPE_BOOL);
-			aui.bind(this, "post", AttribSeter.TYPE_LIST_STR, null, ["null", "blur", "water", "bend", "heart", "flower", "sinwater", "hdr", "shape","asciiart","red"]);
+			aui.bind(this, "post", AttribSeter.TYPE_LIST_STR, null, ["null", "blur", "water", "bend", "heart", "flower", "sinwater", "hdr", "shape","asciiart","red","fxaa"]);
 			
 			if(Multitouch.supportsTouchEvents&&Multitouch.maxTouchPoints)
 			addChild(gamepad);
@@ -265,8 +272,8 @@ package
 		public function enterFrame(e:Event):void
 		{
 			if (teapot) {
-				teapot.matrix.appendRotation(1, Vector3D.Y_AXIS);
-				teapot.updateTransforms(true);
+				//teapot.matrix.appendRotation(1, Vector3D.Y_AXIS);
+				//teapot.updateTransforms(true);
 				//teapot.rotationX+=.01;
 				//var r:Vector3D = teapot.getRotation();
 				//teapot.matrix.appendRotation(1, Vector3D.Y_AXIS);// .setRotation(r.x, r.y + 1, r.z);// += .01;
@@ -311,6 +318,9 @@ package
 					var blurSize:Number = 2;
 					view.posts.push(new PostEffect(new PostGLShader(null,new BlurShader(blurSize))));
 					view.posts.push(new PostEffect(new PostGLShader(null,new BlurShader(blurSize,false))));
+					break;
+				case "fxaa":
+					view.posts.push(new PostEffect(new PostGLShader(null,new FxaaShader)));
 					break;
 				case "water":
 					view.posts.push(new PostEffect(new PostGLShader(null, new TileableWaterCausticShader), 0));

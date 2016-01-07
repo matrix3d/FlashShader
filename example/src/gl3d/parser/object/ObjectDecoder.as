@@ -123,7 +123,6 @@ package gl3d.parser.object
 			}
 			if (obj.geom!=null) {
 				node.drawable = geoms[obj.geom];
-				node.material = new Material;
 			}
 			if (obj.mat!=null) {
 				node.material = mats[obj.mat]
