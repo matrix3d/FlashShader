@@ -42,6 +42,7 @@ package gl3d.shaders
 		public var targetPositionVarying:Var = varying();
 		public var reflected:Var = varying();
 		public var modelPosVarying:Var = varying();
+		public var opVarying:Var = varying();
 		public function PhongVertexShader(material:Material) 
 		{
 			super(Context3DProgramType.VERTEX);
@@ -105,7 +106,8 @@ package gl3d.shaders
 			
 			var worldPos:Var = m44(pos, model);
 			var viewPos:Var = m44(worldPos, view);
-			m44(viewPos, perspective,op);
+			var opVar:Var = m44(viewPos, perspective);
+			op = opVar;
 			
 			if (material.lightAble||material.reflectTexture) {
 				var worldNorm:Var = nrm(m33(norm, model));
@@ -156,14 +158,21 @@ package gl3d.shaders
 			}
 			
 			var needModelPos:Boolean = false;
-			for each(var light:Light in material.view.renderer.lights) {
-				if (light.lightType==Light.POINT||light.lightType==Light.SPOT) {
-					needModelPos = true;
+			if(material.lightAble){
+				for each(var light:Light in material.view.renderer.lights) {
+					if (light.lightType==Light.POINT||light.lightType==Light.SPOT) {
+						needModelPos = true;
+					}
+				}
+			}
+			if(material.fogAble){
+				if (material.view.fog.mode!=Fog.FOG_NONE||needModelPos) {
+					mov(worldPos, modelPosVarying);
 				}
 			}
 			
-			if (material.view.fog.mode!=Fog.FOG_NONE||needModelPos) {
-				mov(worldPos, modelPosVarying);
+			if (material.writeDepth) {
+				mov(opVar, opVarying);
 			}
 		}
 		

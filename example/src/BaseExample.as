@@ -199,6 +199,7 @@ package
 			//skybox
 			skybox = new Node3D;
 			skybox.material = new Material(new SkyBoxGLShader);
+			skybox.material.castShadow = false;
 			skybox.material.diffTexture = skyBoxTexture
 			skybox.material.specularPower = 10;
 			skybox.material.color.setTo(.5,.5,.5);

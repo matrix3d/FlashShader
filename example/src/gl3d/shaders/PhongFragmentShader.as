@@ -44,65 +44,71 @@ package gl3d.shaders
 		}
 		
 		override public function build():void {
-			if (material.wireframeAble) {
-				var tp:Var = mov(vs.targetPositionVarying);
-				var a3:Var = smoothstep(0, fwidth(tp), tp);
-				var wireframeColor:Var = mul(sub( 1 , min(min(a3.x, a3.y), a3.z).xxx ) , this.wireframeColor);
-			}
-			var diffColor:Var = getDiffColor();
-			if (material.lightAble) {
-				for (var i:int = 0; i < material.view.renderer.lights.length; i++ ) {
-					var light:Light = material.view.renderer.lights[i];
-					var curPhongColor:Var;
-					if (light.lightType==Light.AMBIENT) {
-						curPhongColor = uniformLightColor(i);
-					}else {
-						curPhongColor = getPhongColor(i);
-						if (light.lightType == Light.POINT||light.lightType==Light.SPOT) {
-							curPhongColor = mul(curPhongColor, getDistanceColor(i));
+			if(!material.writeDepth){
+				if (material.wireframeAble) {
+					var tp:Var = mov(vs.targetPositionVarying);
+					var a3:Var = smoothstep(0, fwidth(tp), tp);
+					var wireframeColor:Var = mul(sub( 1 , min(min(a3.x, a3.y), a3.z).xxx ) , this.wireframeColor);
+				}
+				var diffColor:Var = getDiffColor();
+				if (material.lightAble) {
+					for (var i:int = 0; i < material.view.renderer.lights.length; i++ ) {
+						var light:Light = material.view.renderer.lights[i];
+						var curPhongColor:Var;
+						if (light.lightType==Light.AMBIENT) {
+							curPhongColor = uniformLightColor(i);
+						}else {
+							curPhongColor = getPhongColor(i);
+							if (light.lightType == Light.POINT||light.lightType==Light.SPOT) {
+								curPhongColor = mul(curPhongColor, getDistanceColor(i));
+							}
+							if (light.lightType==Light.SPOT) {
+								curPhongColor = mul(curPhongColor, getSmoothColor(i));
+							}
 						}
-						if (light.lightType==Light.SPOT) {
-							curPhongColor = mul(curPhongColor, getSmoothColor(i));
+						if (phongColor == null) {
+							var phongColor:Var = curPhongColor;
+						}else {
+							phongColor = add(phongColor, curPhongColor);
 						}
 					}
-					if (phongColor == null) {
-						var phongColor:Var = curPhongColor;
-					}else {
-						phongColor = add(phongColor, curPhongColor);
+					if (material.toonAble) {
+						phongColor = div(floor(add(.5,mul(material.toonStep, phongColor))),material.toonStep);
 					}
-				}
-				if (material.toonAble) {
-					phongColor = div(floor(add(.5,mul(material.toonStep, phongColor))),material.toonStep);
-				}
-				mov(diffColor.w, phongColor.w);
-				if (wireframeColor) {
-					add(wireframeColor,mul(phongColor, diffColor),diffColor);
+					mov(diffColor.w, phongColor.w);
+					if (wireframeColor) {
+						add(wireframeColor,mul(phongColor, diffColor),diffColor);
+					}else {
+						mul(phongColor, diffColor, diffColor);
+					}
 				}else {
-					mul(phongColor, diffColor, diffColor);
+					if (wireframeColor) {
+						add(diffColor, wireframeColor, diffColor);
+					}
 				}
+				if (material.reflectTexture) {
+					var refc:Var = tex(vs.reflected, reflectSampler, null,material.reflectTexture.flags);
+					mul(diffColor.xyz,refc.xyz,diffColor.xyz);
+				}
+				if(material.fogAble){
+					var fog:Fog = material.view.fog;
+					if (fog.mode != Fog.FOG_NONE) {
+						var d:Var = distance(uniformCameraPos(), vs.modelPosVarying, 3);
+						if (fog.mode == Fog.FOG_EXP) {
+							var f:Var = rcp(exp(mul(d, fog.density)));
+						}else if (fog.mode==Fog.FOG_EXP2) {
+							f = rcp(exp(pow(mul(d, fog.density),2)));
+						}else if (fog.mode==Fog.FOG_LINEAR) {
+							f = sat(div(sub(fog.end , d) , sub(fog.end , fog.start)));
+						}
+						
+						mix(material.view.fog.fogColor,diffColor.xyz,f,diffColor.xyz);
+					}
+				}
+				oc = diffColor;
 			}else {
-				if (wireframeColor) {
-					add(diffColor, wireframeColor, diffColor);
-				}
+				oc = div(vs.opVarying.z,vs.opVarying.w);
 			}
-			if (material.reflectTexture) {
-				var refc:Var = tex(vs.reflected, reflectSampler, null,material.reflectTexture.flags);
-				mul(diffColor.xyz,refc.xyz,diffColor.xyz);
-			}
-			var fog:Fog = material.view.fog;
-			if (fog.mode != Fog.FOG_NONE) {
-				var d:Var = distance(uniformCameraPos(), vs.modelPosVarying, 3);
-				if (fog.mode == Fog.FOG_EXP) {
-					var f:Var = rcp(exp(mul(d, fog.density)));
-				}else if (fog.mode==Fog.FOG_EXP2) {
-					f = rcp(exp(pow(mul(d, fog.density),2)));
-				}else if (fog.mode==Fog.FOG_LINEAR) {
-					f = sat(div(sub(fog.end , d) , sub(fog.end , fog.start)));
-				}
-				
-				mix(material.view.fog.fogColor,diffColor.xyz,f,diffColor.xyz);
-			}
-			mov(diffColor, oc);
 		}
 		
 		public function getDiffColor():Var {

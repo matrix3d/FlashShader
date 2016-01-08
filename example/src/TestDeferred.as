@@ -20,9 +20,9 @@ package
 		override public function initNode():void 
 		{
 			super.initNode();
-			var ds:DeferredGLShader = new DeferredGLShader;
-			teapot.material.shader = ds;
-			ds.diff = new TextureSet;
+			//var ds:DeferredGLShader = new DeferredGLShader;
+			//teapot.material.shader = ds;
+			//ds.diff = new TextureSet;
 			//t1.needFormat = Context3DTextureFormat.RGBA_HALF_FLOAT;
 			
 			var quat:Quat = new Quat;

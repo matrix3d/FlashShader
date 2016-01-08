@@ -9,6 +9,7 @@ package gl3d.core.renders
 	import flash.geom.Matrix;
 	import flash.utils.Dictionary;
 	import gl3d.core.Light;
+	import gl3d.core.Material;
 	import gl3d.core.Node3D;
 	import flash.display3D.Context3DProfile;
 	import flash.display3D.Context3DRenderMode;
@@ -27,6 +28,7 @@ package gl3d.core.renders
 	{
 		public var renderTarget:TextureSet;
 		public var stage3d:Stage3D;
+		private var depthMaterial:Material;
 		public function Stage3DRender(view:View3D) 
 		{
 			super(view);
@@ -78,28 +80,7 @@ package gl3d.core.renders
 					stage3d.y = view.y;
 					gl3d.configureBackBuffer(view.stage3dWidth, view.stage3dHeight, view.antiAlias);
 				}
-				if (view.posts.length) {
-					var len:int = view.posts.length>1?2:1;
-					for (var i:int = 0; i < len; i++ ) {
-						if (view.invalid||view.postRTTs[i].texture==null) {
-							view.postRTTs[i].update(view);
-							view.postRTTs[i].texture = gl3d.createRectangleTexture(view.stage3dWidth, view.stage3dHeight,Context3DTextureFormat.BGRA, true);
-							view.postRTTs[i].invalid = false;
-						}
-					}
-					renderTarget = view.postRTTs[0];
-					//gl3d.setRenderToTexture(view.postRTTs[0].texture, true, view.antiAlias);
-				}else {
-					renderTarget = null;
-					//gl3d.setRenderToBackBuffer();
-				}
-				if (renderTarget) {
-					gl3d.setRenderToTexture(renderTarget.texture, true, view.antiAlias);
-				}else {
-					gl3d.setRenderToBackBuffer();
-				}
 				view.invalid = false;
-				gl3d.clear((view.background>>16&0xff)/0xff,(view.background>>8&0xff)/0xff,(view.background&0xff)/0xff);
 				collects.length = 0;
 				lights.length = 0;
 				gl3d.drawTriangleCounter = 0;
@@ -108,12 +89,43 @@ package gl3d.core.renders
 				sort();
 				for each(var light:Light in lights) {
 					if (light.shadowMapEnabled) {
+						if (light.shadowMap.texture == null) {
+							light.shadowMap.update(view);
+							light.shadowMap.texture = gl3d.createTexture(light.shadowMapSize, light.shadowMapSize, Context3DTextureFormat.RGBA_HALF_FLOAT, true);
+						}
+						gl3d.setRenderToTexture(light.shadowMap.texture, true);
+						gl3d.clear(1,1,1);
+						if (depthMaterial==null) {
+							depthMaterial = new Material;
+							depthMaterial.writeDepth = true;
+						}
+						depthMaterial.materialCamera = light.shadowCamera;
 						for each(var node:Node3D in collects) {
-							node.update(view);
+							if (node.material && node.material.castShadow) {
+								node.update(view,depthMaterial);
+							}
 						}
 					}
 				}
 				
+				if (view.posts.length) {
+					var len:int = view.posts.length>1?2:1;
+					for (var i:int = 0; i < len; i++ ) {
+						if (view.invalid||view.postRTTs[i].texture==null) {
+							view.postRTTs[i].update(view);
+							view.postRTTs[i].texture = gl3d.createRectangleTexture(view.stage3dWidth, view.stage3dHeight,Context3DTextureFormat.BGRA, true);
+						}
+					}
+					renderTarget = view.postRTTs[0];
+				}else {
+					renderTarget = null;
+				}
+				if (renderTarget) {
+					gl3d.setRenderToTexture(renderTarget.texture, true, view.antiAlias);
+				}else {
+					gl3d.setRenderToBackBuffer();
+				}
+				gl3d.clear((view.background>>16&0xff)/0xff,(view.background>>8&0xff)/0xff,(view.background&0xff)/0xff);
 				for each(node in collects) {
 					node.update(view);
 				}

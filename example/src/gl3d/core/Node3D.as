@@ -283,6 +283,10 @@ package gl3d.core
 			}
 			return node;
 		}
+		
+		public function dispose():void {
+			
+		}
 	}
 
 }

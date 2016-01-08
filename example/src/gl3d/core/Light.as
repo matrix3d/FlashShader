@@ -13,7 +13,9 @@ package gl3d.core {
 		public var lightType:int;
 		public var color:Vector3D = new Vector3D(1, 1, 1, 1);
 		public var shadowMapEnabled:Boolean = false;
-		public var shadowMapSize:int = 1024;
+		public var shadowMapSize:int = 512;
+		public var shadowMap:TextureSet = new TextureSet;
+		private var _shadowCamera:Camera3D = new Camera3D;
 		public var distance:Number = 10;
 		public var innerConeAngle:Number = Math.PI / 6;
 		public var outerConeAngle:Number = Math.PI / 3;
@@ -23,6 +25,21 @@ package gl3d.core {
 			super(name);
 		}
 		
+		override public function dispose():void 
+		{
+			super.dispose();
+			if (shadowMap&&shadowMap.texture) {
+				shadowMap.texture.dispose();
+			}
+		}
+		
+		public function get shadowCamera():Camera3D 
+		{
+			_shadowCamera.matrix.pointAt(new Vector3D(x, y, z), Vector3D.Z_AXIS, new Vector3D(0, -1, 0));
+			_shadowCamera.updateTransforms();
+			_shadowCamera.perspective.orthoLH(10, 10, -5, 5);
+			return _shadowCamera;
+		}
 	}
 
 }

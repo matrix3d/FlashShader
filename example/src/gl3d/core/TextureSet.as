@@ -207,7 +207,7 @@ package gl3d.core {
 				}else if (data is ByteArray) {
 					updateATF(context);
 				}else {
-					trace(this,"error")
+					//trace(this,"error")
 				}
 				invalid = false;
 				this.context = context;

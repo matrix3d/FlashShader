@@ -2,6 +2,7 @@ package
 {
 	import com.bit101.components.PushButton;
 	import flash.events.Event;
+	import gl3d.core.Camera3D;
 	import gl3d.core.Light;
 	import gl3d.core.Material;
 	import gl3d.core.Node3D;
@@ -13,7 +14,8 @@ package
 		public var lightNum:int = 5;
 		
 		public var button:PushButton;
-		
+		private var quats:Array = [];
+		private var c2d:Camera3D=new Camera3D;
 		override public function initUI():void
 		{
 			button = new PushButton(this, 10, 10, "Reset", onReset);
@@ -24,8 +26,21 @@ package
 			addSky();
 			var node:Node3D = new Node3D;
 			node.material = new Material;
-			node.drawable = Meshs.sphere()
+			node.drawable = Meshs.sphere();
 			view.scene.addChild(node);
+			
+			var plane:Node3D = new Node3D;
+			plane.material = new Material;
+			plane.drawable = Meshs.plane(3);
+			plane.setRotation(90, 0, 0);
+			plane.y = -1.5;
+			view.scene.addChild(plane);
+		}
+		
+		override protected function stage_resize(e:Event = null):void 
+		{
+			super.stage_resize(e);
+			c2d.perspective.orthoOffCenterLH( 0, stage.stageWidth, -stage.stageHeight ,0, -1000, 1000);
 		}
 		
 		override public function initLight():void
@@ -38,14 +53,37 @@ package
 				{
 					light.parent.removeChild(light);
 				}
+				light.dispose();
+			}
+			while (quats.length)
+			{
+				var quat:Node3D = quats.pop();
+				if (quat.parent)
+				{
+					quat.parent.removeChild(quat);
+				}
 			}
 			var i:int;
 			lightNum = 3 + 3 * Math.random();
 			for (i = 0; i < lightNum; i += 1)
 			{
 				light = new RotLight();
+				light.shadowMapEnabled = true;
 				lights.push(light);
 				view.scene.addChild(light);
+				
+				var size:int = 100;
+				quat = new Node3D;
+				quat.material = new Material;
+				quat.material.materialCamera = c2d;
+				quat.material.lightAble = false;
+				quat.drawable = Meshs.plane(size);
+				quat.x = size + i * ((size*2)+1);
+				quat.y = -size;
+				quat.material.castShadow = false;
+				view.scene.addChild(quat);
+				
+				quat.material.diffTexture = light.shadowMap;
 			}
 		}
 		
@@ -69,6 +107,7 @@ import flash.geom.Vector3D;
 import gl3d.core.Light;
 import gl3d.core.Material;
 import gl3d.meshs.Meshs;
+import gl3d.meshs.Teapot;
 
 class RotLight extends Light {
 	public var axis:Vector3D;
@@ -94,6 +133,7 @@ class RotLight extends Light {
 		
 		color.setTo(Math.random(), Math.random(), Math.random());
 		material = new Material;
+		material.lightAble = true;
 		material.color.copyFrom(color);
 		drawable = Meshs.sphere();
 		scaleX = scaleY = scaleZ = .1;

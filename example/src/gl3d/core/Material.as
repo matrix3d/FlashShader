@@ -21,6 +21,8 @@ package gl3d.core {
 		public var gpuSkin:Boolean = false;
 		
 		public var lightAble:Boolean = true;
+		public var fogAble:Boolean = true;
+		private var _writeDepth:Boolean = false;
 		private var lastNumLight:int = -1;
 		public var ambientAble:Boolean = true;
 		public var specularAble:Boolean = true;
@@ -28,11 +30,12 @@ package gl3d.core {
 		public var specularPower:Number = 50;
 		private var _toonAble:Boolean = false;
 		public var toonStep:Number = 2;
-		public var castShadow:Boolean = false;
+		public var castShadow:Boolean = true;
 		public var alphaThreshold:Number = 0;
 		
 		public var view:View3D;
 		public var camera:Camera3D;
+		public var materialCamera:Camera3D;
 		public var node:Node3D;
 		//
 		public var diffTexture:TextureSet;
@@ -60,17 +63,10 @@ package gl3d.core {
 		
 		public function draw(node:Node3D,view:View3D):void {
 			this.view = view;
-			this.camera = view.camera;
+			this.camera = materialCamera||view.camera;
 			this.node = node;
 			if (node.drawable&&shader) {
 				var context:GL = view.renderer.gl3d;
-				/*if (wireframeAble) {
-					if (node.drawable.unpackedDrawable==null) {
-						node.drawable.unpackedDrawable = Meshs.unpack(node.drawable);
-					}
-					node.drawable.unpackedDrawable.update(context);
-				}*/
-				//node.drawable.update(context);
 				var hasSkin:Boolean = node.skin && node.skin.skinFrame&&!node.skin.useCpu;
 				if (gpuSkin!=hasSkin) {
 					invalid = true;
@@ -84,7 +80,6 @@ package gl3d.core {
 					shader.invalid = true;
 					invalid = false;
 				}
-				//shader.preUpdate(this);
 				shader.update(this);
 			}
 		}
@@ -154,6 +149,20 @@ package gl3d.core {
 		public function set alpha(value:Number):void 
 		{
 			color.w=value;
+		}
+		
+		public function get writeDepth():Boolean 
+		{
+			return _writeDepth;
+		}
+		
+		public function set writeDepth(value:Boolean):void 
+		{
+			_writeDepth = value;
+			if (value) {
+				lightAble = false;
+				fogAble = false;
+			}
 		}
 	}
 }
