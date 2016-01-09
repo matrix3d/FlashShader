@@ -34,7 +34,7 @@ package gl3d.meshs
 			return createDrawable(ins, vs, uv, null);
 		}
 		
-		public static function sphere(w:Number = 20, h:Number = 20):Drawable {
+		public static function sphere(w:Number = 20, h:Number = 20,size:Number=1):Drawable {
 			var ins:Vector.<uint> = new Vector.<uint>;
 			var vs:Vector.<Number> = new Vector.<Number>;
 			var uv:Vector.<Number> = new Vector.<Number>;
@@ -42,7 +42,7 @@ package gl3d.meshs
 				var roti:Number = Math.PI / h * i -Math.PI/2;
 				for (var j:int = 0; j <= w;j++ ) {
 					var rotj:Number = Math.PI * 2 / w*j;
-					vs.push(Math.cos(rotj)*Math.cos(roti), Math.sin(roti), Math.sin(rotj)*Math.cos(roti));
+					vs.push(Math.cos(rotj)*Math.cos(roti)*size, Math.sin(roti)*size, Math.sin(rotj)*Math.cos(roti)*size);
 					uv.push(j / w, i / h);
 					var ni:int = vs.length/3 - 1;
 					if (i>0&&j>0) {

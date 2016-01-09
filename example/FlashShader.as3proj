@@ -56,6 +56,7 @@
   <libraryPaths>
     <element path="lib\MinimalComps_0_9_10.swc" />
     <element path="lib\daedalus-lib.swc" />
+    <element path="lib\AwayPhysics.swc" />
   </libraryPaths>
   <!-- External Libraries -->
   <externalLibraryPaths>

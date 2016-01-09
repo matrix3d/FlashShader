@@ -187,6 +187,7 @@ package
 			lights.push(new Light);
 			view.scene.addChild(lights[0]);
 			lights[0].z = -450;
+			lights[0].y = 450;
 			//view.lights[0].color.setTo(.5, .5, .5);
 			//view.lights[1] = new Light;
 			//view.lights[1].z = 450;
@@ -234,7 +235,7 @@ package
 		}
 		
 		public function initUI():void {
-			addChild(aui);
+			//addChild(aui);
 			aui.bind(material, "specularPower", AttribSeter.TYPE_NUM, new Point(1, 100));
 			aui.bind(material, "toonAble", AttribSeter.TYPE_BOOL);
 			aui.bind(view, "antiAlias", AttribSeter.TYPE_NUM, new Point(0, 16));

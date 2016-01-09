@@ -78,7 +78,7 @@ package
 			}
 			try{
 			//load("test2.fbx");
-			load("C:/Users/aaaa/Desktop/test2.fbx");
+			//load("C:/Users/aaaa/Desktop/test2.fbx");
 			//load("C:/Users/aaaa/Desktop/卡攻击.fbx");
 			//load("C:/Users/aaaa/Desktop/大理宝石商人.fbx");
 			//load("C:/Users/aaaa/Desktop/黄蓉动画.fbx");
