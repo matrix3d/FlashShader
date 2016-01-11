@@ -5,14 +5,19 @@ package {
 	import awayphysics.dynamics.vehicle.*;
 	import awayphysics.debug.AWPDebugDraw;
 	import awayphysics.GL3DObject;
+	import flash.display.Bitmap;
+	import flash.display.BitmapData;
+	import flash.utils.ByteArray;
 	import gl3d.core.Drawable;
 	import gl3d.core.Material;
 	import gl3d.core.Node3D;
+	import gl3d.core.TextureSet;
 	import gl3d.ctrl.Ctrl;
 	import gl3d.ctrl.FirstPersonCtrl;
 	import gl3d.ctrl.FollowCtrl;
 	import gl3d.meshs.Meshs;
 	import gl3d.meshs.ShapeBuilder;
+	import gl3d.shaders.TerrainPhongGLShader;
 	import org.recast4j.detour.Node;
 
 	import flash.display.Sprite;
@@ -50,12 +55,50 @@ package {
 			onSceneResourceComplete();
 			onCarResourceComplete();
 		}
+		
+		private function getTerrainTexture(c:Class):TextureSet {
+			var bmd:BitmapData =  (new c as Bitmap).bitmapData;
+			return new TextureSet(bmd);
+		}
 
 		private function onSceneResourceComplete() : void {
 			// create triangle mesh shape
+			
+			[Embed(source = "assets/unityterraintexture/Cliff (Layered Rock).jpg")]var c0:Class;
+			[Embed(source = "assets/unityterraintexture/GoodDirt.jpg")]var c1:Class;
+			[Embed(source = "assets/unityterraintexture/Grass (Hill).jpg")]var c2:Class;
+			[Embed(source = "assets/unityterraintexture/Grass&Rock.jpg")]var c3:Class;
+			
+			var bmd:BitmapData = new BitmapData(128, 128, false, 0xff0000);
+			bmd.perlinNoise(3, 3, 10, 1, false, false);
+			var byte:ByteArray = bmd.getPixels(bmd.rect);
+			for (var i:int = 0; i < byte.length;i+=4 ) {
+				var a:uint = byte[i];
+				var r:uint = byte[i+1];
+				var g:uint = byte[i+2];
+				var b:uint = byte[i + 3];
+				var rgb:uint = r + g + b;
+				if (rgb > 0xff) {
+					b = 0;
+				}
+				rgb = r + g;
+				if (rgb > 0xff) {
+					g = 0;
+				}
+				byte[i + 1] = r;
+				byte[i + 2] = g;
+				byte[i + 3] = b
+			}
+			byte.position = 0;
+			bmd.setPixels(bmd.rect, byte);
+			var texture:TextureSet=new TextureSet(bmd);
+			
 			var node:Node3D = new Node3D;
 			node.drawable = Meshs.terrain(64, new Vector3D(100000, 100000, 100000));
 			node.material = new Material;
+			node.material.diffTexture = texture;
+			node.material.terrainTextureSets = [getTerrainTexture(c0), getTerrainTexture(c1), getTerrainTexture(c2), getTerrainTexture(c3)];
+			node.material.shader = new TerrainPhongGLShader();
 			physicsRoot.addChild(node);
 			
 			var sceneShape : AWPBvhTriangleMeshShape = new AWPBvhTriangleMeshShape(node.drawable.index.data,node.drawable.pos.data);
@@ -71,7 +114,7 @@ package {
 			var numx : int = 10;
 			var numy : int = 5;
 			var numz : int = 1;
-			for (var i : int = 0; i < numx; i++ ) {
+			for (i = 0; i < numx; i++ ) {
 				for (var j : int = 0; j < numz; j++ ) {
 					for (var k : int = 0; k < numy; k++ ) {
 						// create boxes

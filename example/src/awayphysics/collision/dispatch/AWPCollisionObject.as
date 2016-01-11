@@ -97,7 +97,7 @@ package awayphysics.collision.dispatch {
 			vec = AWPMath.radians2degreesV3D(m_worldTransform.rotation);
 			m_skin.rotateTo(vec.x,vec.y,vec.z);
 			m_skin.position = m_worldTransform.position;*/
-			m_skin.matrix = m_worldTransform.transform;
+			m_skin.matrix = m_worldTransform;
 		}
 
 		/**

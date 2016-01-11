@@ -130,7 +130,7 @@ package gl3d.meshs
 			var uv:Vector.<Number> = new Vector.<Number>;
             var bmd:BitmapData =tempbmd|| new BitmapData(w, w,true,0);
 			if(sbmd==null){
-				bmd.perlinNoise(35, 35, 3, 0, true, true);
+				bmd.perlinNoise(10, 10, 3, 0, true, true);
 			}else {
 				bmd.draw(sbmd, new Matrix(w/sbmd.width,0,0,w/sbmd.height),null,null,null,true);
 			}

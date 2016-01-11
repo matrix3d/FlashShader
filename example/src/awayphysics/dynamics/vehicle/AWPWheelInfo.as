@@ -74,7 +74,7 @@ package awayphysics.dynamics.vehicle {
 			var rot:Vector3D = AWPMath.radians2degreesV3D(m_worldTransform.rotation);
 			m_skin.rotateTo(rot.x,rot.y,rot.z);
 			m_skin.position = m_worldTransform.position;*/
-			m_skin.matrix = m_worldTransform.transform;
+			m_skin.matrix = m_worldTransform;
 		}
 
 		public function get chassisConnectionPointCS() : Vector3D {
