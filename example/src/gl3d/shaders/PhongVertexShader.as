@@ -35,7 +35,8 @@ package gl3d.shaders
 		//public var joint2:Var //= buff();
 		
 		public var eyeDirectionVarying:Var = varying();
-		public var posLightVaryings:Vector.<Var>=new Vector.<Var>;
+		public var posLightVaryings:Vector.<Var> = new Vector.<Var>;
+		public var shadowLightPoss:Vector.<Var> = new Vector.<Var>;
 		public var normVarying:Var = varying();
 		public var tangentVarying:Var = varying();
 		public var uvVarying:Var = varying();
@@ -119,7 +120,9 @@ package gl3d.shaders
 					}
 					mov(eyeDirection, eyeDirectionVarying);
 				}
+				shadowLightPoss.length = material.view.renderer.lights.length;
 				for (i = 0; i < material.view.renderer.lights.length; i++ ) {
+					var light:Light = material.view.renderer.lights[i];
 					var lightPos:Var = uniformLightPos(i);
 					if (material.normalMapAble) {
 						var posLight:Var = nrm(m33(sub(m44(mov(lightPos),view), viewPos),world2local));
@@ -129,6 +132,12 @@ package gl3d.shaders
 					var posLightVarying:Var = varying();
 					posLightVaryings.push(posLightVarying);
 					mov(posLight, posLightVarying);
+					
+					if (light.shadowMapEnabled) {
+						var shadowLightPosVarying:Var = varying();
+						shadowLightPoss[i] = shadowLightPosVarying;
+						mov(uniformLightShadowCameraWorld(i),shadowLightPosVarying);
+					}
 				}
 				
 				if (material.normalMapAble) {
@@ -159,7 +168,7 @@ package gl3d.shaders
 			
 			var needModelPos:Boolean = false;
 			if(material.lightAble){
-				for each(var light:Light in material.view.renderer.lights) {
+				for each(light in material.view.renderer.lights) {
 					if (light.lightType==Light.POINT||light.lightType==Light.SPOT) {
 						needModelPos = true;
 					}

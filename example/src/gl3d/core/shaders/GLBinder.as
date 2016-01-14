@@ -43,6 +43,11 @@ package gl3d.core.shaders
 				material.view.renderer.gl3d.setProgramConstantsFromVector3D(as3shader.programType, v.index,pos);
 			}
 		}
+		public function bindLightShadowCameraWorld(shader:GLShader, material:Material):void {
+			if (v.used) {
+				material.view.renderer.gl3d.setProgramConstantsFromMatrix(as3shader.programType, v.index,material.view.renderer.lights[index].shadowCamera.world,true);
+			}
+		}
 		public function bindCameraPosUniform(shader:GLShader, material:Material):void {
 			if (v.used) {
 				var pos:Vector3D = material.camera.world.position;
@@ -113,7 +118,9 @@ package gl3d.core.shaders
 		public function bindTerrainsSampler(shader:GLShader, material:Material):void {
 			if (v.used) shader.textureSets[v.index] = material.terrainTextureSets[index];
 		}
-		
+		public function bindShadowmapsSampler(shader:GLShader, material:Material):void {
+			if (v.used) shader.textureSets[v.index] = material.view.renderer.lights[index].shadowMap;
+		}
 		//buffs
 		public function bindPosBuff(shader:GLShader,material:Material):void {
 			if (v.used) {

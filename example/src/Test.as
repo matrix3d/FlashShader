@@ -9,11 +9,13 @@ package
 	import flash.external.ExternalInterface;
 	import flash.geom.Matrix3D;
 	import flash.geom.Orientation3D;
+	import flash.net.FileReference;
 	import flash.net.URLLoader;
 	import flash.net.URLRequest;
 	import flash.system.Security;
 	import flash.system.System;
 	import flash.utils.ByteArray;
+	import flash.utils.CompressionAlgorithm;
 	import gl3d.core.Drawable;
 	import gl3d.core.DrawableSource;
 	import gl3d.core.Material;
@@ -27,40 +29,16 @@ package
 	 * ...
 	 * @author lizhi
 	 */
-	public class Test extends BaseExample
+	public class Test extends Sprite
 	{
 		
 		public function Test() 
 		{
-			try{
-			Security.allowDomain("*");
-			}catch (err2:Error) {
-				
-			}
-			var urlloader:URLLoader = new URLLoader;
-			urlloader.addEventListener(IOErrorEvent.IO_ERROR, urlloader_Error);
-			urlloader.addEventListener(SecurityErrorEvent.SECURITY_ERROR, urlloader_Error);
-			try{
-				urlloader.load(new URLRequest("C://Users/aaaa/Desktop/test2.fbx"));
-				//urlloader.load(new URLRequest("http://matrix3d.github.io/"));
-			}catch (err:Error) {
-				if (ExternalInterface.available) {
-					ExternalInterface.call("alert","error:"+err.name);
-				}
-			}
-			
-		}
-		
-		private function urlloader_Error(e:Event):void 
-		{
-			if (ExternalInterface.available) {
-				ExternalInterface.call("alert",e.type);
-			}
-		}
-		
-		override public function initNode():void 
-		{
-
+			var s:Sprite = new Sprite;
+			s.graphics.beginFill(0);
+			s.graphics.drawRect(100, 100, 100, 100);
+			s.x = 100;
+			trace(s.hitTestPoint(150, 150));
 		}
 	}
 

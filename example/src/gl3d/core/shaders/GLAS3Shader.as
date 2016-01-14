@@ -60,6 +60,7 @@ package gl3d.core.shaders
 			binds.push(binder.bindWorld2localUniform);
 			return u;
 		}
+		
 		public function uniformLightPos(index:int):Var {
 			var name:String = "ulightpos"+index;
 			if (getNamedVar(name)) return getNamedVar(name);
@@ -69,6 +70,17 @@ package gl3d.core.shaders
 			binds.push(binder.bindLightPosUniform);
 			return u;
 		}
+		
+		public function uniformLightShadowCameraWorld(index:int):Var {
+			var name:String = "ulightCameraWorld"+index;
+			if (getNamedVar(name)) return getNamedVar(name);
+			var u:Var = uniform();
+			setNamedVar(name, u);
+			var binder:GLBinder = new GLBinder(this, u,index);
+			binds.push(binder.bindLightShadowCameraWorld);
+			return u;
+		}
+		
 		public function uniformCameraPos():Var {
 			var name:String = "ucamerapos";
 			if (getNamedVar(name)) return getNamedVar(name);
@@ -215,7 +227,15 @@ package gl3d.core.shaders
 			binds.push(binder.bindTerrainsSampler);
 			return samp;
 		}
-		
+		public function samplerShadowmaps(index:int):Var {
+			var name:String = "sshadowmap"+index;
+			if (getNamedVar(name)) return getNamedVar(name);
+			var samp:Var = sampler();
+			setNamedVar(name, samp);
+			var binder:GLBinder = new GLBinder(this,samp,index);
+			binds.push(binder.bindShadowmapsSampler);
+			return samp;
+		}
 		//buffs
 		public function buffPos():Var {
 			var name:String = "bpos";
