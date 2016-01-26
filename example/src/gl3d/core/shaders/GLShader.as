@@ -1,6 +1,7 @@
 package gl3d.core.shaders 
 {
 	import as3Shader.AGALCodeCreator;
+	import as3Shader.Var;
 	import com.adobe.utils.AGALMiniAssembler;
 	import flash.display3D.Context3D;
 	import flash.display3D.Context3DProgramType;
@@ -33,7 +34,7 @@ package gl3d.core.shaders
 		public var programSet:ProgramSet;
 		public var textureSets:Array=[];
 		public var buffSets:Array;
-		public var debug:Boolean = false;
+		public var debug:Boolean = true;
 		public static var PROGRAM_POOL:Object = { };
 		public function GLShader() 
 		{
@@ -93,21 +94,28 @@ package gl3d.core.shaders
 			
 			if (debug&&vs&&fs) {
 				trace(this);
-				vs.creator = new AGALCodeCreator();
-				var code:String = vs.code as String;
-				trace(code);
-				//trace(vs);
-				vs.creator = new GLCodeCreator();
-				//trace(vs.code);
-				fs.creator = new AGALCodeCreator();
-				code = fs.code as String;
-				trace(code);
-				//trace(fs);
-				fs.creator = new GLCodeCreator();
-				//trace(fs.code);
+				doDebug(vs);
+				doDebug(fs);
 				trace();
 			}
 			return ps[ps.length-1];
+		}
+		
+		public function doDebug(gl:GLAS3Shader):void {
+			gl.creator = new AGALCodeCreator();
+			var code:String = gl.code as String;
+			trace(code);
+			trace("consts index",gl.constMemLen);
+			trace("consts",gl.constPoolVec);
+			for (var name:String in gl.namedVars) {
+				var v:Var = gl.namedVars[name];
+				if(v.used)
+				trace(v.index, name);
+			}
+			//trace(vs);
+			gl.creator = new GLCodeCreator();
+			trace(gl.code);
+			trace();
 		}
 		
 		public function getVertexShader(material:Material):GLAS3Shader {

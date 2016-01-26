@@ -2,9 +2,11 @@ package
 {
 	import flash.display.Bitmap;
 	import flash.display.BitmapData;
+	import flash.display.PNGEncoderOptions;
 	import flash.display.Sprite;
 	import flash.events.Event;
 	import flash.events.IOErrorEvent;
+	import flash.events.MouseEvent;
 	import flash.events.SecurityErrorEvent;
 	import flash.external.ExternalInterface;
 	import flash.geom.Matrix3D;
@@ -31,14 +33,19 @@ package
 	 */
 	public class Test extends Sprite
 	{
+		private var s:Sprite;
 		
 		public function Test() 
 		{
-			var s:Sprite = new Sprite;
-			s.graphics.beginFill(0);
-			s.graphics.drawRect(100, 100, 100, 100);
-			s.x = 100;
-			trace(s.hitTestPoint(150, 150));
+			var a:uint = 0xff000000;
+			var b:uint = 0xffffff;
+			var c:uint = a | b;
+			trace(uint(c >> 24));
+		}
+		
+		private function s_mouseMove(e:MouseEvent):void 
+		{
+			trace(e.localX, e.localY);
 		}
 	}
 

@@ -11,7 +11,7 @@ package gl3d.core.shaders
 	 */
 	public class GLAS3Shader extends AS3Shader
 	{
-		private var namedVars:Object = { };
+		public var namedVars:Object = { };
 		private var binds:Vector.<Function> = new Vector.<Function>;
 		public function GLAS3Shader(programType:String=Context3DProgramType.VERTEX,creator:Creator=null) 
 		{

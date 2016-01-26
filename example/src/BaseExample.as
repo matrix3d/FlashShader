@@ -131,7 +131,7 @@ package
 			
 			
 			//[Embed(source = "assets/leaf.png")]var leafp:Class;
-			//texture = new TextureSet((new leafp as Bitmap).bitmapData, false, false, true, false);
+			texture = new TextureSet(bmd, false, false, true, false);
 			
 			normalMapTexture = createNormalMap();
 			material.culling =  Context3DTriangleFace.NONE;

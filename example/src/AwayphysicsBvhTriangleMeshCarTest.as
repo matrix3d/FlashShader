@@ -177,6 +177,7 @@ package {
 		private function createWheelNode(r:Number):GL3DObject {
 			var node:Node3D = new Node3D;
 			node.material = new Material;
+			node.material.diffTexture = texture;
 			node.material.color.setTo(.1, .1, .1);
 			var sb:ShapeBuilder = ShapeBuilder.Torus(r/2, r/2);
 			var wp:Node3D = new Node3D;
