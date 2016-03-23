@@ -72,7 +72,7 @@ package gl3d.shaders
 							var shadowLightDepth:Var = tex(shadowLightXY, samplerShadowmaps(i));
 							var curDepth:Var = div(shadowLightPos.z, shadowLightPos.w);
 							//curPhongColor = mul(curPhongColor, sub(0, sne(shadowLightDepth, curDepth)).xxxx);
-							curPhongColor = mul(curPhongColor,shadowLightXY);//mul(curPhongColor, sub(0, sne(shadowLightDepth, curDepth)).xxxx);
+							curPhongColor = mul(curPhongColor,slt(curDepth,shadowLightDepth));//mul(curPhongColor, sub(0, sne(shadowLightDepth, curDepth)).xxxx);
 							debug("shadowend");
 						}
 						if (phongColor == null) {

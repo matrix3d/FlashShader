@@ -64,7 +64,7 @@ package
 				}
 			}
 			var i:int;
-			lightNum = 3 + 3 * Math.random();
+			lightNum =  2 + 2 * Math.random();
 			for (i = 0; i < lightNum; i += 1)
 			{
 				light = new RotLight();
