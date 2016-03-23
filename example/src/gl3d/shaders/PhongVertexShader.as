@@ -133,10 +133,10 @@ package gl3d.shaders
 					posLightVaryings.push(posLightVarying);
 					mov(posLight, posLightVarying);
 					
-					if (light.shadowMapEnabled) {
+					if (light.shadowMapEnabled&&material.receiveShadows) {
 						var shadowLightPosVarying:Var = varying();
 						shadowLightPoss[i] = shadowLightPosVarying;
-						mov(uniformLightShadowCameraWorld(i),shadowLightPosVarying);
+						mov(m44(worldPos,uniformLightShadowCameraWorld(i)),shadowLightPosVarying);
 					}
 				}
 				

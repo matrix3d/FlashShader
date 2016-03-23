@@ -38,7 +38,6 @@ package gl3d.shaders
 			reflectSampler = samplerReflect();
 			wireframeColor = uniformWireframeColor();
 			diffColor = uniformMaterialColor();
-			//lightColor = uniformLightColor(0);
 			specular = uniformSpecular();
 			ambientColor = uniformAmbient();
 		}
@@ -66,12 +65,15 @@ package gl3d.shaders
 								curPhongColor = mul(curPhongColor, getSmoothColor(i));
 							}
 						}
-						if (light.shadowMapEnabled) {
+						if (light.shadowMapEnabled && material.receiveShadows) {
+							debug("shadowstart");
 							var shadowLightPos:Var = vs.shadowLightPoss[i];
 							var shadowLightXY:Var = add(mul(div(shadowLightPos.xy, shadowLightPos.w), [.5, -.5]), .5);
 							var shadowLightDepth:Var = tex(shadowLightXY, samplerShadowmaps(i));
 							var curDepth:Var = div(shadowLightPos.z, shadowLightPos.w);
-							curPhongColor = mul(curPhongColor, sub(0,sne(shadowLightDepth,curDepth)).xxxx);
+							//curPhongColor = mul(curPhongColor, sub(0, sne(shadowLightDepth, curDepth)).xxxx);
+							curPhongColor = mul(curPhongColor,shadowLightXY);//mul(curPhongColor, sub(0, sne(shadowLightDepth, curDepth)).xxxx);
+							debug("shadowend");
 						}
 						if (phongColor == null) {
 							var phongColor:Var = curPhongColor;

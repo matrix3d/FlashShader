@@ -19,6 +19,7 @@ package gl3d.core {
 	 */
 	public class View3D extends Sprite
 	{
+		public var _enableErrorChecking:Boolean = false;
 		public var scene:Node3D = new Node3D("scene");
 		public var camera:Camera3D = new Camera3D;
 		public var renderer:Render;
@@ -86,11 +87,13 @@ package gl3d.core {
 		}
 		public function get enableErrorChecking():Boolean 
 		{
-			return renderer.gl3d.enableErrorChecking;
+			return _enableErrorChecking;
 		}
 		
 		public function set enableErrorChecking(v:Boolean):void 
 		{
+			_enableErrorChecking = v;
+			if(renderer.gl3d)
 			renderer.gl3d.enableErrorChecking=v;
 		}
 	}

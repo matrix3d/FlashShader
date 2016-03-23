@@ -93,6 +93,7 @@ package
 			}
 			view = new View3D(0);
 			view.antiAlias = 2;
+			//view.enableErrorChecking = true;
 			addChild(view);
 			view.camera.z = -10;
 			
@@ -131,7 +132,7 @@ package
 			
 			
 			//[Embed(source = "assets/leaf.png")]var leafp:Class;
-			texture = new TextureSet(bmd, false, false, true, false);
+			//texture = new TextureSet(bmd, false, false, true, false);
 			
 			normalMapTexture = createNormalMap();
 			material.culling =  Context3DTriangleFace.NONE;

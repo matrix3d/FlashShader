@@ -335,13 +335,7 @@ package as3Shader {
 		}
 		
 		public function f(op:String, a:Object = null, b:Object = null, t:Var = null, flag:Array = null, numParam:int = 3 ,component:String=null):Var {
-			if(numParam>1)
-			var c:Var = t || createTempVar();
-			if (component) {
-				c = c.c(component);
-			}
 			var line:Array = [op];
-			if (c) line.push(c);
 			if (a != null) {
 				var av:Var=object2Var(a)
 				line.push(av);
@@ -354,6 +348,13 @@ package as3Shader {
 				return np.doop(op,av,bv);
 				//throw "can not all the a,b type const"
 			}
+			if(numParam>1){
+				var c:Var = t || createTempVar();
+			}
+			if (component) {
+				c = c.c(component);
+			}
+			if (c) line.splice(1,0,c);
 			/*if (c==null) {
 				throw "no target"
 			}*/

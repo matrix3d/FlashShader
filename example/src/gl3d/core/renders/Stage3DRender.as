@@ -57,6 +57,7 @@ package gl3d.core.renders
 		private function stage_context3dCreate(e:Event):void 
 		{
 			gl3d = new GL(stage3d.context3D);
+			gl3d.enableErrorChecking = view.enableErrorChecking;
 			view.profile = stage3d.context3D.profile;
 			view.driverInfo = gl3d.driverInfo;
 			if (view.profile==Context3DProfile.STANDARD||view.profile==Context3DProfile.STANDARD_CONSTRAINED) {
