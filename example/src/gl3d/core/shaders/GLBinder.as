@@ -66,6 +66,15 @@ package gl3d.core.shaders
 				material.view.renderer.gl3d.setProgramConstantsFromXYZW(as3shader.programType, v.index,material.view.stage3dWidth,material.view.stage3dWidth,1/material.view.stage3dWidth,1/material.view.stage3dHeight);
 			}
 		}
+		public function bindUVMulAddUniform(shader:GLShader, material:Material):void {
+			if (v.used) {
+				material.view.renderer.gl3d.setProgramConstantsFromXYZW(as3shader.programType, v.index, 
+				material.uvMuler?material.uvMuler[0]:1,
+				material.uvMuler?material.uvMuler[1]:1,
+				material.uvAdder?material.uvAdder[0]:0,
+				material.uvAdder?material.uvAdder[1]:0)
+			}
+		}
 		public function bindJointsQuatUniform(shader:GLShader, material:Material):void {
 			if (v.used) material.view.renderer.gl3d.setProgramConstantsFromVector(as3shader.programType, v.index,material.node.skin.skinFrame.quaternions);
 		}

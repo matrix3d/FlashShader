@@ -108,6 +108,17 @@ package gl3d.core.shaders
 			binds.push(binder.bindPixelSizeUniform);
 			return u;
 		}
+		
+		public function uniformUVMulAdder():Var {
+			var name:String = "uvmuladd";
+			if (getNamedVar(name)) return getNamedVar(name);
+			var u:Var = uniform();
+			setNamedVar(name, u);
+			var binder:GLBinder = new GLBinder(this, u);
+			binds.push(binder.bindUVMulAddUniform);
+			return u;
+		}
+		
 		public function uniformJointsQuat(numJoints:int):Var {
 			var name:String = "ujointsquat";
 			if (getNamedVar(name)) return getNamedVar(name);

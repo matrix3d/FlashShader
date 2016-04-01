@@ -159,8 +159,15 @@ package gl3d.shaders
 				}
 			}
 			
-			if (material.diffTexture||material.normalMapAble) {
-				mov(uv, uvVarying);
+			if (material.diffTexture || material.normalMapAble) {
+				var uv2:Var = uv;
+				if (material.uvMuler){
+					uv2 = mul(uniformUVMulAdder().xy, uv2);
+				}
+				if (material.uvAdder){
+					uv2 = add(uniformUVMulAdder().zw, uv2);
+				}
+				mov(uv2, uvVarying);
 			}
 			if (material.wireframeAble) {
 				mov(targetPosition,targetPositionVarying);

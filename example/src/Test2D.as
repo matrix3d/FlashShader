@@ -63,9 +63,7 @@ package
 		{
 			//super.initCtrl();
 		}
-		override public function initLight():void {
-			view.lights[0].z = -450;
-		}
+		
 		
 		override public function enterFrame(e:Event):void 
 		{

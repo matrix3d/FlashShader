@@ -44,7 +44,9 @@ package gl3d.core {
 		public var lightmapTexture:TextureSet;
 		public var reflectTexture:TextureSet;
 		public var terrainTextureSets:Array = [];
-		public var color:Vector3D =new Vector3D(1, 1, 1, 1);
+		public var color:Vector3D = new Vector3D(1, 1, 1, 1);
+		public var uvMuler:Array;
+		public var uvAdder:Array;
 		private var _wireframeAble:Boolean = false;
 		public var isDistanceField:Boolean = false;
 		public var wireframeColor:Vector3D =new Vector3D(.5, 0, .5, 0);

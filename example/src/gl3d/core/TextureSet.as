@@ -27,11 +27,15 @@ package gl3d.core {
 		private var optimizeForRenderToTexture:Boolean;
 		public var mipmap:Boolean;
 		private var async:Boolean;
+		private var filter:String;
+		public var width:int;
+		public var height:int;
 		public var ready:Boolean = true;
 		public var isDXT1:Boolean;
 		public var isDXT5:Boolean;
-		public function TextureSet(data:Object=null,isRect:Boolean=false, optimizeForRenderToTexture:Boolean=false,mipmap:Boolean=true,async:Boolean=true) 
+		public function TextureSet(data:Object = null, isRect:Boolean = false, optimizeForRenderToTexture:Boolean = false, mipmap:Boolean = true, async:Boolean = true, filter:String="anisotropic16x") 
 		{
+			this.filter = filter;
 			this.async = async;
 			this.mipmap = mipmap;
 			this.optimizeForRenderToTexture = optimizeForRenderToTexture;
@@ -61,6 +65,8 @@ package gl3d.core {
 		}
 		
 		public function updateBMDTexture(w:int, h:int, bmd:BitmapData, texture:TextureBase, side:uint = 0):void {
+			width = w;
+			height = h;
 			var temp:BitmapData;
 			var level:int = 0;
 			if (w!=bmd.width||h!=bmd.height) {
@@ -174,8 +180,8 @@ package gl3d.core {
 					case 1:
 						isCube = true;
 				}
-				var width:int = int(Math.pow(2, data.readUnsignedByte()));
-				var height:int = int(Math.pow(2, data.readUnsignedByte()));
+				width = int(Math.pow(2, data.readUnsignedByte()));
+				height = int(Math.pow(2, data.readUnsignedByte()));
 				var numTextures:int = data.readUnsignedByte();
 				//mipmap = numTextures > 1;
 				
@@ -231,7 +237,9 @@ package gl3d.core {
 			}else if (isDXT5) {
 				arr.push("dxt5");
 			}
-			arr.push("anisotropic16x");
+			if(filter){
+				arr.push(filter);
+			}
 			return arr;
 		}
 		
