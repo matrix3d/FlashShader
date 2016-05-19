@@ -23,7 +23,7 @@ package gl3d.core {
 		public var scene:Node3D = new Node3D("scene");
 		public var camera:Camera3D = new Camera3D;
 		public var renderer:Render;
-		//public var lights:Vector.<Light> = new <Light>[new Light];
+		public var lights:Vector.<Light> = new <Light>[];
 		public var fog:Fog = new Fog;
 		public var ctrls:Vector.<Ctrl> = new Vector.<Ctrl>;
 		public var posts:Vector.<PostEffect> = new Vector.<PostEffect>;

@@ -34,7 +34,7 @@ package gl3d.meshs
 			return createDrawable(ins, vs, uv, null);
 		}
 		
-		public static function sphere(w:Number = 20, h:Number = 20,size:Number=1):Drawable {
+		public static function sphere(w:Number = 20, h:Number = 20,size:Number=.5):Drawable {
 			var ins:Vector.<uint> = new Vector.<uint>;
 			var vs:Vector.<Number> = new Vector.<Number>;
 			var uv:Vector.<Number> = new Vector.<Number>;

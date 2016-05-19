@@ -50,9 +50,9 @@ package gl3d.shaders
 					var wireframeColor:Var = mul(sub( 1 , min(min(a3.x, a3.y), a3.z).xxx ) , this.wireframeColor);
 				}
 				var diffColor:Var = getDiffColor();
-				if (material.lightAble) {
-					for (var i:int = 0; i < material.view.renderer.lights.length; i++ ) {
-						var light:Light = material.view.renderer.lights[i];
+				if (material.lightAble&&material.view.lights.length) {
+					for (var i:int = 0; i < material.view.lights.length; i++ ) {
+						var light:Light = material.view.lights[i];
 						var curPhongColor:Var;
 						if (light.lightType==Light.AMBIENT) {
 							curPhongColor = uniformLightColor(i);

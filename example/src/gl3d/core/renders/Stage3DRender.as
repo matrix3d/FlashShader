@@ -83,12 +83,12 @@ package gl3d.core.renders
 				}
 				view.invalid = false;
 				collects.length = 0;
-				lights.length = 0;
+				view.lights.length = 0;
 				gl3d.drawTriangleCounter = 0;
 				gl3d.drawCounter = 0;
 				collect(scene);
 				sort();
-				for each(var light:Light in lights) {
+				for each(var light:Light in view.lights) {
 					if (light.shadowMapEnabled) {
 						if (light.shadowMap.texture == null) {
 							light.shadowMap.update(view);

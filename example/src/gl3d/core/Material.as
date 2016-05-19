@@ -75,9 +75,9 @@ package gl3d.core {
 					invalid = true;
 					gpuSkin = hasSkin;
 				}
-				if (lightAble&&lastNumLight!=view.renderer.lights.length) {
+				if (lightAble&&lastNumLight!=view.lights.length) {
 					invalid = true;
-					lastNumLight = view.renderer.lights.length;
+					lastNumLight = view.lights.length;
 				}
 				if (invalid) {
 					shader.invalid = true;

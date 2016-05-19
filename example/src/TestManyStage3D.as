@@ -32,7 +32,7 @@ package
 			view1.scene.addChild(n1);
 			view1.camera.perspective.perspectiveFieldOfViewLH(Math.PI / 4, view1.stage3dWidth/ view1.stage3dHeight, .1, 4000);
 			view1.camera.z = -10;
-			view1.lights[0].z = -1000;
+			//view1.lights[0].z = -1000;
 			view1.scene.addChild(n1);
 			
 			view2 = new View3D(1);
@@ -41,7 +41,7 @@ package
 			addChild(view2);
 			view2.camera.z = -10;
 			view2.camera.perspective.perspectiveFieldOfViewLH(Math.PI / 4, view1.stage3dWidth/ view1.stage3dHeight, .1, 4000);
-			view2.lights[0].z = -10;
+			//view2.lights[0].z = -10;
 			n2 = new Node3D;
 			n2.drawable = Teapot.teapot();
 			n2.material = new Material;

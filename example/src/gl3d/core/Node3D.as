@@ -221,6 +221,14 @@ package gl3d.core
 			return _world;
 		}
 		
+		public function set world(value:Matrix3D):void
+		{
+			_matrix.copyFrom(value);
+			if(parent)
+			_matrix.append(parent.world2local);
+			matrix = _matrix;
+		}
+		
 		public function get world2local():Matrix3D
 		{
 			if (dirty || dirtyInv)

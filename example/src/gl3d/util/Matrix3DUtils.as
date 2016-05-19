@@ -449,9 +449,6 @@ package gl3d.util
 		
 		public static function interpolateTo(src:Matrix3D, dest:Matrix3D, percent:Number):void
 		{
-			var sx:* = NaN;
-			var sy:* = NaN;
-			var sz:* = NaN;
 			src.copyRawDataTo(_raw);
 			_right.x = _raw[0];
 			_right.y = _raw[1];
@@ -465,9 +462,9 @@ package gl3d.util
 			_scaleSrc.x = _right.length;
 			_scaleSrc.y = _up.length;
 			_scaleSrc.z = _dir.length;
-			sx = 1 / _scaleSrc.x;
-			sy = 1 / _scaleSrc.y;
-			sz = 1 / _scaleSrc.z;
+			var sx:Number = 1 / _scaleSrc.x;
+			var sy:Number = 1 / _scaleSrc.y;
+			var sz:Number = 1 / _scaleSrc.z;
 			_raw[0] = _raw[0] * sx;
 			_raw[1] = _raw[1] * sx;
 			_raw[2] = _raw[2] * sx;

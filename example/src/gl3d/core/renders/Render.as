@@ -16,7 +16,7 @@ package gl3d.core.renders
 		public var view:View3D;
 		public var agalVersion:int;
 		public var collects:Vector.<Node3D> = new Vector.<Node3D>;
-		public var lights:Vector.<Light> = new Vector.<Light>;
+		//public var lights:Vector.<Light> = new Vector.<Light>;
 		public function Render(view:View3D) 
 		{
 			this.view = view;
@@ -34,7 +34,7 @@ package gl3d.core.renders
 		public function collect(node:Node3D):void {
 			collects.push(node);
 			if (node is Light) {
-				lights.push(node);
+				view.lights.push(node);
 			}
 			for each(var c:Node3D in node.children) {
 				collect(c);

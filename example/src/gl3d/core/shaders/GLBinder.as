@@ -38,14 +38,14 @@ package gl3d.core.shaders
 		
 		public function bindLightPosUniform(shader:GLShader, material:Material):void {
 			if (v.used) {
-				var pos:Vector3D = material.view.renderer.lights[index].world.position;
+				var pos:Vector3D = material.view.lights[index].world.position;
 				pos.w = 1;
 				material.view.renderer.gl3d.setProgramConstantsFromVector3D(as3shader.programType, v.index,pos);
 			}
 		}
 		public function bindLightShadowCameraWorld(shader:GLShader, material:Material):void {
 			if (v.used) {
-				material.view.renderer.gl3d.setProgramConstantsFromMatrix(as3shader.programType, v.index,material.view.renderer.lights[index].shadowCamera.world,true);
+				material.view.renderer.gl3d.setProgramConstantsFromMatrix(as3shader.programType, v.index,material.view.lights[index].shadowCamera.world,true);
 			}
 		}
 		public function bindCameraPosUniform(shader:GLShader, material:Material):void {
@@ -91,10 +91,10 @@ package gl3d.core.shaders
 			if (v.used) material.view.renderer.gl3d.setProgramConstantsFromVector3D(as3shader.programType, v.index,material.color);
 		}
 		public function bindLightColorUniform(shader:GLShader, material:Material):void {
-			if (v.used) material.view.renderer.gl3d.setProgramConstantsFromVector3D(as3shader.programType, v.index,material.view.renderer.lights[index].color);
+			if (v.used) material.view.renderer.gl3d.setProgramConstantsFromVector3D(as3shader.programType, v.index,material.view.lights[index].color);
 		}
 		public function bindLightColorVar(shader:GLShader, material:Material):void {
-			var light:Light = material.view.renderer.lights[index];
+			var light:Light = material.view.lights[index];
 			var factor1:Number = 1/ (Math.cos(light.innerConeAngle/2)- Math.cos(light.outerConeAngle/2));
 			var factor2:Number = 1- Math.cos(light.innerConeAngle/2)* factor1;
 			if (v.used) material.view.renderer.gl3d.setProgramConstantsFromXYZW(as3shader.programType,v.index, light.distance,factor1,factor2);
@@ -128,7 +128,7 @@ package gl3d.core.shaders
 			if (v.used) shader.textureSets[v.index] = material.terrainTextureSets[index];
 		}
 		public function bindShadowmapsSampler(shader:GLShader, material:Material):void {
-			if (v.used) shader.textureSets[v.index] = material.view.renderer.lights[index].shadowMap;
+			if (v.used) shader.textureSets[v.index] = material.view.lights[index].shadowMap;
 		}
 		//buffs
 		public function bindPosBuff(shader:GLShader,material:Material):void {

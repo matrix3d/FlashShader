@@ -28,13 +28,15 @@ package gl3d.core {
 		public var mipmap:Boolean;
 		private var async:Boolean;
 		private var filter:String;
+		private var repeat:Boolean;
 		public var width:int;
 		public var height:int;
 		public var ready:Boolean = true;
 		public var isDXT1:Boolean;
 		public var isDXT5:Boolean;
-		public function TextureSet(data:Object = null, isRect:Boolean = false, optimizeForRenderToTexture:Boolean = false, mipmap:Boolean = true, async:Boolean = true, filter:String="anisotropic16x") 
+		public function TextureSet(data:Object = null, isRect:Boolean = false,repeat:Boolean=true, optimizeForRenderToTexture:Boolean = false, mipmap:Boolean = true, async:Boolean = true, filter:String="anisotropic16x") 
 		{
+			this.repeat = repeat;
 			this.filter = filter;
 			this.async = async;
 			this.mipmap = mipmap;
@@ -229,7 +231,8 @@ package gl3d.core {
 			if (mipmap) arr.push("miplinear");
 			if (isCube) {
 				arr.push("cube");
-			}else {
+			}
+			if(repeat&&!isCube&&!isRect){
 				arr.push("repeat");
 			}
 			if (isDXT1) {

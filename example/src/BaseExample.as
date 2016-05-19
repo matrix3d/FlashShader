@@ -93,7 +93,7 @@ package
 			}
 			view = new View3D(0);
 			view.antiAlias = 2;
-			//view.enableErrorChecking = true;
+			view.enableErrorChecking = true;
 			addChild(view);
 			view.camera.z = -10;
 			
@@ -120,7 +120,7 @@ package
 			/*for each(var bmd2:BitmapData in bmds) {
 				Utils.createXorMap(bmd2);
 			}*/
-			skyBoxTexture = new TextureSet(bmds, false, true,true);
+			skyBoxTexture = new TextureSet(bmds, false,false, false,true);
 			
 			bmd = new BitmapData(128, 128, false, 0xff0000);
 			bmd.perlinNoise(30, 30, 2, 1, true, true);
@@ -128,11 +128,12 @@ package
 			//atf
 			//[Embed(source = "assets/leaf_apple.atf", mimeType = "application/octet-stream")]var leafc:Class;
 			//[Embed(source = "assets/new_leaf.atf", mimeType = "application/octet-stream")]var leafc:Class;
-			//texture = new TextureSet((new leafc as ByteArray),false,false,false,false);
+			[Embed(source = "tex.bin", mimeType = "application/octet-stream")]var texc:Class;
+			texture = new TextureSet((new texc as ByteArray),false,false,false,false);
 			
 			
 			//[Embed(source = "assets/leaf.png")]var leafp:Class;
-			//texture = new TextureSet(bmd, false, false, true, false);
+			//texture = new TextureSet(bmd,true,false, false, false, false);
 			
 			normalMapTexture = createNormalMap();
 			material.culling =  Context3DTriangleFace.NONE;

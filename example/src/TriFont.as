@@ -45,7 +45,7 @@ package
 			addSky();
 			var tf:TextField = new TextField;
 			tf.defaultTextFormat = new TextFormat("宋体", 100,null,true);
-			tf.text = loaderInfo.parameters["text"] || (Math.random()*0xffffffff).toString(32);
+			tf.text = loaderInfo.parameters["text"] || "齉龘饕餮";
 			tf.autoSize = "left";
 			var bmd:BitmapData = new BitmapData(tf.width, tf.height, false, 0xffffff);
 			bmd.draw(tf);
@@ -116,6 +116,8 @@ package
 			bmd.perlinNoise(4, 10, 2, 1, true, true);
 			
 			node.material.reflectTexture = skyBoxTexture;// new TextureSet([bmd, bmd, bmd, bmd, bmd, bmd]);
+			node.drawable = Meshs.unpack(node.drawable);
+			node.material.wireframeAble = true;
 			
 			/*var screenMesh:Sprite = new Sprite();
 			addChild(screenMesh);
@@ -132,8 +134,8 @@ package
 		
 		override public function enterFrame(e:Event):void 
 		{
-			node.matrix.appendRotation(1, Vector3D.Y_AXIS);
-			node.updateTransforms();
+			//node.matrix.appendRotation(1, Vector3D.Y_AXIS);
+			//node.updateTransforms();
 			super.enterFrame(e);
 		}
 		

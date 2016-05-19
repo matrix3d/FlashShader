@@ -120,9 +120,9 @@ package gl3d.shaders
 					}
 					mov(eyeDirection, eyeDirectionVarying);
 				}
-				shadowLightPoss.length = material.view.renderer.lights.length;
-				for (i = 0; i < material.view.renderer.lights.length; i++ ) {
-					var light:Light = material.view.renderer.lights[i];
+				shadowLightPoss.length = material.view.lights.length;
+				for (i = 0; i < material.view.lights.length; i++ ) {
+					var light:Light = material.view.lights[i];
 					var lightPos:Var = uniformLightPos(i);
 					if (material.normalMapAble) {
 						var posLight:Var = nrm(m33(sub(m44(mov(lightPos),view), viewPos),world2local));
@@ -175,7 +175,7 @@ package gl3d.shaders
 			
 			var needModelPos:Boolean = false;
 			if(material.lightAble){
-				for each(light in material.view.renderer.lights) {
+				for each(light in material.view.lights) {
 					if (light.lightType==Light.POINT||light.lightType==Light.SPOT) {
 						needModelPos = true;
 					}

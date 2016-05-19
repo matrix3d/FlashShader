@@ -18,7 +18,6 @@ package {
 	import gl3d.meshs.Meshs;
 	import gl3d.meshs.ShapeBuilder;
 	import gl3d.shaders.TerrainPhongGLShader;
-	import org.recast4j.detour.Node;
 
 	import flash.display.Sprite;
 	import flash.events.Event;
