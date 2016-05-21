@@ -11,6 +11,7 @@ package gl3d.core {
 	import flash.utils.ByteArray;
 	import flash.utils.Endian;
 	import gl3d.core.renders.GL;
+	import gl3d.util.MathUtil;
 	/**
 	 * ...
 	 * @author lizhi
@@ -19,6 +20,7 @@ package gl3d.core {
 	{
 		public var name:String;
 		public var invalid:Boolean = true;
+		public var needUpload:Boolean = true;
 		public var data:Object;
 		public var texture:TextureBase;
 		private var context:GL;
@@ -50,19 +52,15 @@ package gl3d.core {
 			}
 		}
 		
-		private function getNextPow2(v:int):int {
-			var r:int = 1;
-			while (r < v) {
-				r *= 2;
-			}
-			return r;
-		}
-		
 		public function updateRect(context:GL):void {
 			var bmd:BitmapData = data as BitmapData;
 			if (bmd) {
+				if(texture==null)
 				texture = context.createRectangleTexture(bmd.width, bmd.height , Context3DTextureFormat.BGRA, optimizeForRenderToTexture);
-				uploadFromBitmapData(texture, bmd, 0);
+				if(needUpload){
+					uploadFromBitmapData(texture, bmd, 0);
+					needUpload = false;
+				}
 			}
 		}
 		
@@ -113,24 +111,30 @@ package gl3d.core {
 		public function updateBMD(context:GL):void {
 			var bmd:BitmapData = data as BitmapData;
 			if (data) {
-				var w:int = getNextPow2(bmd.width);
-				var h:int = getNextPow2(bmd.height);
-				texture =context.createTexture(w, h, Context3DTextureFormat.BGRA,optimizeForRenderToTexture);
-				updateBMDTexture(w,h,bmd,texture);
+				var w:int = MathUtil.getNextPow2(bmd.width);
+				var h:int = MathUtil.getNextPow2(bmd.height);
+				if(texture==null)
+				texture = context.createTexture(w, h, Context3DTextureFormat.BGRA, optimizeForRenderToTexture);
+				if(needUpload){
+					updateBMDTexture(w, h, bmd, texture);
+					needUpload = false;
+				}
 			}
 		}
 		
 		public function updateBMDs(context:GL):void {
 			var datas:Array = data as Array;
 			if (datas) {
-				
 				var ct:CubeTexture = texture as CubeTexture;
-				for (var s:int = 0; s < 6;s++ ) {
-					var level:int = 0;
-					var bmd:BitmapData = datas[s];
-					var w:int = getNextPow2(Math.max(bmd.width,bmd.height));
-					if(texture==null)texture = context.createCubeTexture(w, Context3DTextureFormat.BGRA, optimizeForRenderToTexture);
-					updateBMDTexture(w, w, bmd, texture, s);
+				if(needUpload){
+					for (var s:int = 0; s < 6;s++ ) {
+						var level:int = 0;
+						var bmd:BitmapData = datas[s];
+						var w:int = MathUtil.getNextPow2(Math.max(bmd.width,bmd.height));
+						if(texture==null)texture = context.createCubeTexture(w, Context3DTextureFormat.BGRA, optimizeForRenderToTexture);
+						updateBMDTexture(w, w, bmd, texture, s);
+					}
+					needUpload = false;
 				}
 			}
 		}
@@ -187,16 +191,20 @@ package gl3d.core {
 				var numTextures:int = data.readUnsignedByte();
 				//mipmap = numTextures > 1;
 				
-				if(createTexture){
-					texture = isCube?context.createCubeTexture(width,format,optimizeForRenderToTexture,0):context.createTexture(width, height, format, optimizeForRenderToTexture,0);
-					if (isCube)
-					(texture as CubeTexture).uploadCompressedTextureFromByteArray(atf, 0, async);
-					else
-					(texture as Texture).uploadCompressedTextureFromByteArray(atf, 0, async);
-					
-					ready = !async;
-					if(async)
-					(texture as Texture).addEventListener(Event.TEXTURE_READY, function():void { ready = true } );
+				if (createTexture){
+					if (texture == null )
+					texture = isCube?context.createCubeTexture(width, format, optimizeForRenderToTexture, 0):context.createTexture(width, height, format, optimizeForRenderToTexture, 0);
+					if(needUpload){
+						if (isCube)
+						(texture as CubeTexture).uploadCompressedTextureFromByteArray(atf, 0, async);
+						else
+						(texture as Texture).uploadCompressedTextureFromByteArray(atf, 0, async);
+						
+						ready = !async;
+						if(async)
+						(texture as Texture).addEventListener(Event.TEXTURE_READY, function():void { ready = true } );
+						needUpload = false;
+					}
 				}
 			}
 		}
@@ -205,20 +213,22 @@ package gl3d.core {
 			var context:GL = view.renderer.gl3d;
 			if (invalid||this.context!=context) {
 				if (texture != null) texture.dispose();
-				if (isRect) {
-					updateRect(context);
-				}else if (data is Array) {
-					updateBMDs(context);
-				}else if (data is BitmapData) {
-					//data = new BitmapData(1, 1, true, 0x80ffffff);
-					updateBMD(context);
-				}else if (data is ByteArray) {
-					updateATF(context);
-				}else {
-					//trace(this,"error")
-				}
+				texture = null;
+				needUpload = true;
 				invalid = false;
 				this.context = context;
+			}
+			if (isRect) {
+				updateRect(context);
+			}else if (data is Array) {
+				updateBMDs(context);
+			}else if (data is BitmapData) {
+				//data = new BitmapData(1, 1, true, 0x80ffffff);
+				updateBMD(context);
+			}else if (data is ByteArray) {
+				updateATF(context);
+			}else {
+				//trace(this,"error")
 			}
 		}
 		

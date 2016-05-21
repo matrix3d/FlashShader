@@ -10,6 +10,7 @@ package gl3d.core {
 	{
 		public var data:Vector.<uint>;
 		private var invalid:Boolean = true;
+		public var needUpload:Boolean = true;
 		private var context:GL;
 		public var buff:IndexBuffer3D;
 		public function IndexBufferSet(data:Vector.<uint>) 
@@ -23,9 +24,13 @@ package gl3d.core {
 			if (invalid||this.context!=context) {
 				var num:int = data.length;
 				buff = context.createIndexBuffer(num);
-				buff.uploadFromVector(data, 0, num);
 				invalid = false;
+				needUpload = true;
 				this.context = context;
+			}
+			if(needUpload){
+				needUpload = false;
+				buff.uploadFromVector(data, 0, data.length);
 			}
 		}
 		public function dispose():void {

@@ -173,21 +173,6 @@ package gl3d.meshs
 			return drawable;
 		}
 		
-		public static function createDrawable2(index:Vector.<uint>,pos:Vector.<Number>,uvIndex:Vector.<uint>=null,uv:Vector.<Number>=null,norm:Vector.<Number>=null,tangent:Vector.<Number>=null):Drawable {
-			var drawable:Drawable = new Drawable;
-			if(index)
-			drawable.index = new IndexBufferSet(index);
-			if(pos)
-			drawable.pos = new VertexBufferSet(pos,3);
-			if(uv)
-			drawable.uv = new VertexBufferSet(uv, 2);
-			if(norm)
-			drawable.norm = new VertexBufferSet(norm, 3);
-			if(tangent)
-			drawable.tangent = new VertexBufferSet(tangent, 3);
-			return drawable;
-		}
-		
 		public static function unpack(drawable:Drawable):Drawable {
 			var newDrawable:Drawable = new Drawable;
 			var idata:Vector.<uint> = drawable.index.data;

@@ -12,6 +12,7 @@ package gl3d.core {
 		public var data:Vector.<Number>;
 		private var buff:VertexBuffer3D;
 		public var invalid:Boolean = true;
+		public var needUpload:Boolean = true;
 		private var context:GL;
 		public static var FORMATS:Array = [null, "float1", "float2", "float3", "float4"];
 		//public var subBuffs:Array;
@@ -31,10 +32,14 @@ package gl3d.core {
 				if(data){
 					var num:int = data.length / data32PerVertex;
 					buff = context.createVertexBuffer(num, data32PerVertex);
-					buff.uploadFromVector(data, 0, num);
 					invalid = false;
 					this.context = context;
 				}
+				needUpload = true;
+			}
+			if (data&&needUpload){
+				needUpload = false;
+				buff.uploadFromVector(data, 0, data.length / data32PerVertex);
 			}
 		}
 		
