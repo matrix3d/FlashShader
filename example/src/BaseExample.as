@@ -128,8 +128,7 @@ package
 			//atf
 			//[Embed(source = "assets/leaf_apple.atf", mimeType = "application/octet-stream")]var leafc:Class;
 			//[Embed(source = "assets/new_leaf.atf", mimeType = "application/octet-stream")]var leafc:Class;
-			[Embed(source = "tex.bin", mimeType = "application/octet-stream")]var texc:Class;
-			texture = new TextureSet((new texc as ByteArray),false,false,false,false);
+			//texture = new TextureSet((new texc as ByteArray),false,false,false,false);
 			
 			
 			//[Embed(source = "assets/leaf.png")]var leafp:Class;
@@ -188,8 +187,8 @@ package
 		public function initLight():void {
 			lights.push(new Light);
 			view.scene.addChild(lights[0]);
-			lights[0].z = -450;
-			lights[0].y = 450;
+			lights[0].z = -4500;
+			lights[0].y = 4500;
 			//view.lights[0].color.setTo(.5, .5, .5);
 			//view.lights[1] = new Light;
 			//view.lights[1].z = 450;

@@ -115,7 +115,7 @@ package gl3d.core {
 				var h:int = MathUtil.getNextPow2(bmd.height);
 				if(texture==null)
 				texture = context.createTexture(w, h, Context3DTextureFormat.BGRA, optimizeForRenderToTexture);
-				if(needUpload){
+				if (needUpload){
 					updateBMDTexture(w, h, bmd, texture);
 					needUpload = false;
 				}

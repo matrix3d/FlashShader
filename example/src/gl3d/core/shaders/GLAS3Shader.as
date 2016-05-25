@@ -108,7 +108,15 @@ package gl3d.core.shaders
 			binds.push(binder.bindPixelSizeUniform);
 			return u;
 		}
-		
+		public function uniformTextureSize():Var {
+			var name:String = "utexturesize";
+			if (getNamedVar(name)) return getNamedVar(name);
+			var u:Var = uniform();
+			setNamedVar(name, u);
+			var binder:GLBinder = new GLBinder(this, u);
+			binds.push(binder.bindTextureSizeUniform);
+			return u;
+		}
 		public function uniformUVMulAdder():Var {
 			var name:String = "uvmuladd";
 			if (getNamedVar(name)) return getNamedVar(name);

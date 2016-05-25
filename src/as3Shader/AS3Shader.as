@@ -5,7 +5,7 @@ package as3Shader {
 	import flash.utils.Dictionary;
 	import as3Shader.Var;
 	/**
-	 * ...
+	 * http://help.adobe.com/en_US/as3/dev/WSd6a006f2eb1dc31e-310b95831324724ec56-8000.html
 	 * @author lizhi
 	 */
 	public class AS3Shader 

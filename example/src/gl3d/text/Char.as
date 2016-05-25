@@ -1,5 +1,7 @@
 package gl3d.text 
 {
+	import flash.geom.Rectangle;
+	import flash.text.TextLineMetrics;
 	/**
 	 * ...
 	 * @author lizhi
@@ -7,10 +9,16 @@ package gl3d.text
 	public class Char 
 	{
 		public var txt:String;
-		public var width:Number;
+		public var bound:Rectangle;
+		public var linem:TextLineMetrics;
 		public var tx:int;
 		public var ty:int;
 		public var index:int;
+		public var u0:Number;
+		public var v0:Number;
+		public var u1:Number;
+		public var v1:Number;
+		public var dirty:Boolean = true;
 		public function Char(txt:String) 
 		{
 			this.txt = txt;

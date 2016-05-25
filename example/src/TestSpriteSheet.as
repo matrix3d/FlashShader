@@ -51,7 +51,7 @@ package
 			shadowNode.drawable = cube.drawable;
 			view.scene.addChild(shadowNode);
 			
-			[Embed(source = "assets/idle.dat__", mimeType = "application/octet-stream")]var c:Class;
+			[Embed(source = "assets/fight.dat", mimeType = "application/octet-stream")]var c:Class;
 			var b:ByteArray = new c as ByteArray;
 			b.inflate();
 			obj = b.readObject();

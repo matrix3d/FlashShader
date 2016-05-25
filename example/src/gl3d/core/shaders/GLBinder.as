@@ -66,6 +66,11 @@ package gl3d.core.shaders
 				material.view.renderer.gl3d.setProgramConstantsFromXYZW(as3shader.programType, v.index,material.view.stage3dWidth,material.view.stage3dWidth,1/material.view.stage3dWidth,1/material.view.stage3dHeight);
 			}
 		}
+		public function bindTextureSizeUniform(shader:GLShader, material:Material):void {
+			if (v.used) {
+				material.view.renderer.gl3d.setProgramConstantsFromXYZW(as3shader.programType, v.index,material.diffTexture.width,material.diffTexture.height);
+			}
+		}
 		public function bindUVMulAddUniform(shader:GLShader, material:Material):void {
 			if (v.used) {
 				material.view.renderer.gl3d.setProgramConstantsFromXYZW(as3shader.programType, v.index, 

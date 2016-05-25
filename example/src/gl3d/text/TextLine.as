@@ -9,11 +9,11 @@ package gl3d.text
 	{
 		private var _text:String;
 		private var _color:uint = 0;
-		private var _border:Boolean = false;
-		private var _borderColor:uint = 0;
 		public var chars:Array;
-		public function TextLine() 
+		public var textDirty:Boolean = true;
+		public function TextLine(text:String=null) 
 		{
+			this.text = text;
 		}
 		
 		public function get text():String 
@@ -23,11 +23,14 @@ package gl3d.text
 		
 		public function set text(value:String):void 
 		{
+			textDirty = true;
 			_text = value;
-			var tl:int = _text.length;
-			chars = [];
-			for (var i:int = 0; i < tl;i++ ){
-				chars.push(_text.charAt(i));
+			if(_text){
+				var tl:int = _text.length;
+				chars = [];
+				for (var i:int = 0; i < tl;i++ ){
+					chars.push(_text.charAt(i));
+				}
 			}
 		}
 		
@@ -40,27 +43,6 @@ package gl3d.text
 		{
 			_color = value;
 		}
-		
-		public function get border():Boolean 
-		{
-			return _border;
-		}
-		
-		public function set border(value:Boolean):void 
-		{
-			_border = value;
-		}
-		
-		public function get borderColor():uint 
-		{
-			return _borderColor;
-		}
-		
-		public function set borderColor(value:uint):void 
-		{
-			_borderColor = value;
-		}
-		
 	}
 
 }

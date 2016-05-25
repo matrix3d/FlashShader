@@ -19,13 +19,6 @@ package gl3d.util
 			}
 			return r;
 		}
-		public static function getNextSqrtPow2(v:int):int {
-			var r:int = 1;
-			while ((r*r) < v) {
-				r *= 2;
-			}
-			return r;
-		}
 	}
 
 }
