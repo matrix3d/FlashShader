@@ -73,17 +73,17 @@ package gl3d.text
 				var indexd:Vector.<uint> = da.index.data;
 				for (var i:int = 0; i < pow2num;i++ ){
 					indexd[i * 6] = i * 4;
-					indexd[i * 6+1] = i * 4+1;
-					indexd[i * 6+2] = i * 4+2;
+					indexd[i * 6+1] = i * 4+2;
+					indexd[i * 6+2] = i * 4+1;
 					indexd[i * 6+3] = i * 4;
-					indexd[i * 6+4] = i * 4+2;
-					indexd[i * 6 + 5] = i * 4 + 3;
+					indexd[i * 6+4] = i * 4+3;
+					indexd[i * 6 + 5] = i * 4 + 2;
 				}
 			}
 			this.material.diffTexture = charSet.tset;
 			//update
-			da.pos.needUpload = true;
-			da.uv.needUpload = true;
+			da.pos.dataInvalid = true;
+			da.uv.dataInvalid = true;
 			var posd:Vector.<Number> = da.pos.data;
 			var uvd:Vector.<Number> = da.uv.data;
 			var k:int = 0;
@@ -134,6 +134,7 @@ package gl3d.text
 				}
 			}
 			drawable = da;
+			drawable.index.numTriangles = num*2;
 			super.update(view, material);
 		}
 		

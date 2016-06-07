@@ -37,7 +37,7 @@ package
 		override protected function stage_resize(e:Event = null):void 
 		{
 			super.stage_resize(e);
-			c2d.perspective.orthoOffCenterLH( 0, stage.stageWidth, 0, stage.stageHeight, -1000, 1000);
+			c2d.perspective.orthoOffCenterRH( 0, stage.stageWidth, stage.stageHeight,0, -1000, 1000);
 		}
 		override public function initNode():void 
 		{
@@ -45,13 +45,15 @@ package
 			cube.y = .5;
 			cube.drawable = Teapot.teapot();
 			cube.material = new Material;
-			view.scene.addChild(cube);
+			//view.scene.addChild(cube);
 			shadowNode = new Node3D;
 			shadowNode.material = cube.material;
 			shadowNode.drawable = cube.drawable;
-			view.scene.addChild(shadowNode);
+			//view.scene.addChild(shadowNode);
 			
-			[Embed(source = "assets/fight.dat", mimeType = "application/octet-stream")]var c:Class;
+			//[Embed(source = "assets/fight.dat", mimeType = "application/octet-stream")]
+			[Embed(source = "assets/idle.dat", mimeType = "application/octet-stream")]
+			var c:Class;
 			var b:ByteArray = new c as ByteArray;
 			b.inflate();
 			obj = b.readObject();
@@ -59,6 +61,7 @@ package
 			view.background = 0x999999;
 			quat = new Node3D;
 			quat.material = new Material;
+			//quat.material.isIntVertexScreen = true;
 			quat.material.uvMuler = [.5, .5];
 			quat.material.uvAdder = [.5, .5];
 			quat.material.materialCamera = c2d;
@@ -68,12 +71,12 @@ package
 			view.scene.addChild(node);
 			node.addChild(quat);
 			
-			quat.material.diffTexture = new TextureSet(bmd, false,true, false, false,true,null);
+			quat.material.diffTexture = new TextureSet(bmd, false,false, false, false,true,null);
 			quat.material.blendModel = BlendMode.LAYER;
 			var r:Number = 1;
 			var vs:Vector.<Number> = Vector.<Number>([0, 0, 0, r, 0, 0, 0, r, 0, r, r, 0]);
-			var uv:Vector.<Number> = Vector.<Number>([0, 1, 1, 1, 0, 0, 1, 0]);
-			var ins:Vector.<uint>=Vector.<uint>([0, 1, 2, 1, 3, 2]);
+			var uv:Vector.<Number> = Vector.<Number>([0, 0, 1, 0, 0, 1, 1, 1]);
+			var ins:Vector.<uint>=Vector.<uint>([0, 2, 1, 1, 2, 3]);
 			quat.drawable = Meshs.createDrawable(ins, vs, uv);
 			
 			//quatShadowNode.drawable = quat.drawable;
@@ -85,13 +88,19 @@ package
 		
 		override public function enterFrame(e:Event):void 
 		{
+			var ts:Array = [];
+			for each(var t:Object in obj.ts){
+				if (t.n.indexOf("4")==0){
+					ts.push(t);
+				}
+			}
 			node.x = mouseX;
-			node.y = stage.stageHeight - mouseY;
+			node.y = mouseY;
 			if(quat){
-				if (int(p)>=(obj.ts.length)){
+				if (int(p)>=(ts.length)){
 					p = 0;
 				}
-				var t:Object = obj.ts[int(p)];
+				t = ts[int(p)];
 				p += .1;
 				quat.scaleX = t.w;
 				quat.scaleY = t.h;
@@ -100,7 +109,7 @@ package
 				quat.material.uvAdder[0] = t.x / obj.info.tw;
 				quat.material.uvAdder[1] = t.y / obj.info.th;
 				quat.x = t.fx - obj.info.w / 2;
-				quat.y = -t.h -t.fy + obj.info.h / 2;
+				quat.y = t.fy - obj.info.h / 2;
 			}
 			
 			//cube.y = (mouseY / stage.stageWidth - .5)*10

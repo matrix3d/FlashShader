@@ -24,7 +24,8 @@ package gl3d.util
 		public var fps:int = 0;
 		public var lastTime:int = -10000;
 		public var maxMem:int = 0;
-		public function Stats(view:View3D) 
+		private var fpss:Array = [];
+		public function Stats(view:View3D=null) 
 		{
 			this.view = view;
 			
@@ -64,12 +65,20 @@ package gl3d.util
 			var time:int = getTimer();
 			if (time-1000>lastTime) {
 				fps = fpsCounter;
-				if (fps > 0) fps--;
+				if (fps > 0) {
+					fps--;
+				}
+				fpss.unshift(fps);
+				if (fpss.length>200){
+					fpss.length = 200;
+				}
 				fpsCounter = 0;
 				lastTime = time;
 			}
 			fpsCounter++;
-			
+			if (stage == null) {
+				return;
+			}
 			var text:String = "";
 			if (view&&view.driverInfo) {
 				text += "num : " + view.renderer.collects.length;
@@ -77,6 +86,7 @@ package gl3d.util
 				text += "\ntri : " + view.renderer.gl3d.drawTriangleCounter;
 				text += "\nani : " + view.antiAlias;
 				text += "\nenc : " + view.enableErrorChecking;
+				text += "\nwh  : " + view.stage3dWidth + "," + view.stage3dHeight;
 				var info:String =view.driverInfo;
 				var indexS:int = info.indexOf(" ");
 				if (indexS!=-1) {
@@ -86,17 +96,32 @@ package gl3d.util
 				text += "\npro : " + view.profile;
 			}
 			text += "\nfps : " + fps + " / " ;
-			if (stage!=null) {
-				text +=  stage.frameRate;
-			}
+			var frameRate:int = 60;
+			frameRate = stage.frameRate;
+			text +=  frameRate;
 			var mem:int = System.totalMemoryNumber / 1024 / 1024;
 			if (mem > maxMem) maxMem = mem;
 			text += "\nmem : " + mem+" / "+maxMem;
 			tf.text = text;
 			
+			var fpsGrapHeight:Number = 10;
 			graphics.clear();
 			graphics.beginFill(0xffffff, .7);
-			graphics.drawRect(0, 0, tf.width, tf.height);
+			var w:Number = tf.width;
+			var h:Number = tf.height;
+			graphics.drawRect(0, 0, w, h+fpsGrapHeight);
+			graphics.endFill();
+			graphics.lineStyle(0);
+			var len:int = Math.min(w, fpss.length);
+			for (var i:int = 0; i < len;i++ ){
+				var x:Number = i;
+				var y:Number = Math.round(h + fpsGrapHeight * (1 - fpss[i] / frameRate));
+				if (i == 0){
+					graphics.moveTo(x, y);
+				}else{
+					graphics.lineTo(x, y);
+				}
+			}
 		}
 		
 	}

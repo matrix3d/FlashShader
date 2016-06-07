@@ -20,7 +20,7 @@ package gl3d.core {
 	{
 		public var name:String;
 		public var invalid:Boolean = true;
-		public var needUpload:Boolean = true;
+		public var dataInvalid:Boolean = true;
 		public var data:Object;
 		public var texture:TextureBase;
 		private var context:GL;
@@ -57,9 +57,9 @@ package gl3d.core {
 			if (bmd) {
 				if(texture==null)
 				texture = context.createRectangleTexture(bmd.width, bmd.height , Context3DTextureFormat.BGRA, optimizeForRenderToTexture);
-				if(needUpload){
+				if(dataInvalid){
 					uploadFromBitmapData(texture, bmd, 0);
-					needUpload = false;
+					dataInvalid = false;
 				}
 			}
 		}
@@ -115,9 +115,9 @@ package gl3d.core {
 				var h:int = MathUtil.getNextPow2(bmd.height);
 				if(texture==null)
 				texture = context.createTexture(w, h, Context3DTextureFormat.BGRA, optimizeForRenderToTexture);
-				if (needUpload){
+				if (dataInvalid){
 					updateBMDTexture(w, h, bmd, texture);
-					needUpload = false;
+					dataInvalid = false;
 				}
 			}
 		}
@@ -126,7 +126,7 @@ package gl3d.core {
 			var datas:Array = data as Array;
 			if (datas) {
 				var ct:CubeTexture = texture as CubeTexture;
-				if(needUpload){
+				if(dataInvalid){
 					for (var s:int = 0; s < 6;s++ ) {
 						var level:int = 0;
 						var bmd:BitmapData = datas[s];
@@ -134,7 +134,7 @@ package gl3d.core {
 						if(texture==null)texture = context.createCubeTexture(w, Context3DTextureFormat.BGRA, optimizeForRenderToTexture);
 						updateBMDTexture(w, w, bmd, texture, s);
 					}
-					needUpload = false;
+					dataInvalid = false;
 				}
 			}
 		}
@@ -194,7 +194,7 @@ package gl3d.core {
 				if (createTexture){
 					if (texture == null )
 					texture = isCube?context.createCubeTexture(width, format, optimizeForRenderToTexture, 0):context.createTexture(width, height, format, optimizeForRenderToTexture, 0);
-					if(needUpload){
+					if(dataInvalid){
 						if (isCube)
 						(texture as CubeTexture).uploadCompressedTextureFromByteArray(atf, 0, async);
 						else
@@ -203,7 +203,7 @@ package gl3d.core {
 						ready = !async;
 						if(async)
 						(texture as Texture).addEventListener(Event.TEXTURE_READY, function():void { ready = true } );
-						needUpload = false;
+						dataInvalid = false;
 					}
 				}
 			}
@@ -214,7 +214,7 @@ package gl3d.core {
 			if (invalid||this.context!=context) {
 				if (texture != null) texture.dispose();
 				texture = null;
-				needUpload = true;
+				dataInvalid = true;
 				invalid = false;
 				this.context = context;
 			}

@@ -30,7 +30,7 @@ package gl3d.core
 		public var copyfrom:Node3D;
 		private var dirty:Boolean = true;
 		private var dirtyInv:Boolean = true;
-		
+		public var visible:Boolean = true;
 		private static var _temp0:Vector3D = new Vector3D();
 		
 		private static var _temp1:Vector3D = new Vector3D();
@@ -63,22 +63,24 @@ package gl3d.core
 		
 		public function update(view:View3D, material:Material = null):void
 		{
-			if (controllers)
-			{
-				for each (var c:Ctrl in controllers)
+			if(visible){
+				if (controllers)
 				{
-					if(c){
-						c.update(view.time);
+					for each (var c:Ctrl in controllers)
+					{
+						if(c){
+							c.update(view.time);
+						}
 					}
 				}
-			}
-			if (material || this.material)
-			{
-				(material || this.material).draw(this, view);
-			}
-			for each (var child:Node3D in renderChildren)
-			{
-				child.update(view, material);
+				if (material || this.material)
+				{
+					(material || this.material).draw(this, view);
+				}
+				for each (var child:Node3D in renderChildren)
+				{
+					child.update(view, material);
+				}
 			}
 		}
 		

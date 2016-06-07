@@ -30,6 +30,8 @@ package gl3d.core.renders
 		public var drawTriangleCounter:int = 0;
 		public var drawCounter:int = 0;
 		private var tempvec4:Vector.<Number> = new Vector.<Number>(4);
+		private var currentTextures:Object = { };
+		private var currentVBufs:Object = { };
 		public function GL(context:Context3D) 
 		{
 			this.context = context;
@@ -81,10 +83,10 @@ package gl3d.core.renders
 		}
 		public function beginDraw():void {
 			while (nowBuffMaxIndex < lastBuffMaxIndex ) {
-				context.setVertexBufferAt(++nowBuffMaxIndex, null);
+				setVertexBufferAtInternal(++nowBuffMaxIndex, null);
 			}
 			while (nowTexMaxIndex < lastTexMaxIndex ) {
-				context.setTextureAt(++nowTexMaxIndex, null);
+				setTextureInternal(++nowTexMaxIndex, null);
 			}
 			lastBuffMaxIndex = nowBuffMaxIndex;
 			lastTexMaxIndex = nowTexMaxIndex;
@@ -151,12 +153,24 @@ package gl3d.core.renders
 			context.setStencilReferenceValue(referenceValue, readMask, writeMask);
 		}
 		public function setTextureAt(sampler : int, texture : TextureBase) : void {
-			context.setTextureAt(sampler, texture);
+			setTextureInternal(sampler, texture);
 			if (nowTexMaxIndex < sampler) nowTexMaxIndex = sampler;
 		}
+		private  function setTextureInternal(sampler : int, texture : TextureBase):void{
+			if (currentTextures[sampler] != texture) {
+				currentTextures[sampler] = texture;
+				context.setTextureAt(sampler, texture);
+			}
+		}
 		public function setVertexBufferAt(index : int, buffer : VertexBuffer3D, bufferOffset : int = 0, format : String="float4") : void {
-			context.setVertexBufferAt(index, buffer, bufferOffset, format);
+			setVertexBufferAtInternal(index, buffer, bufferOffset, format);
 			if (nowBuffMaxIndex < index) nowBuffMaxIndex = index;
+		}
+		private  function setVertexBufferAtInternal(sampler:int, buffer : VertexBuffer3D, bufferOffset : int = 0, format : String=null):void{
+			if (currentVBufs[sampler] != buffer) {
+				currentVBufs[sampler] = buffer;
+				context.setVertexBufferAt(sampler, buffer,bufferOffset,format);
+			}
 		}
 		
 		public function get driverInfo():String 

@@ -34,7 +34,7 @@ package
 			text = new Text(null, 12);
 			text.border = true;
 			var line:TextLine;
-			for (var i:int = 0; i < 1000;i++ ){
+			for (var i:int = 0; i < 100;i++ ){
 				line = new TextLine;
 				addText((stage.stageWidth*Math.random()),(stage.stageHeight * Math.random()));
 			}
@@ -59,7 +59,7 @@ package
 		}
 		
 		private function addText(x:Number, y:Number):void{
-			var line:TextLine = new TextLine(String.fromCharCode(0x4E00 + int(Math.random() * (0x9FFF - 0x4E00))));
+			var line:TextLine = new TextLine(String.fromCharCode(0x4E00 + int(Math.random() * (0x9FFF - 0x4E00)))+"1.2345");
 			line.x = x;
 			line.y = y;
 			text.addChild(line);
@@ -85,7 +85,7 @@ package
 			view.scene.addChild(lights[0]);
 			lights[0].x = stage.stageWidth/2;
 			lights[0].y = stage.stageHeight/2;
-			lights[0].z = 4005;
+			lights[0].z = 100;
 		}
 	}
 

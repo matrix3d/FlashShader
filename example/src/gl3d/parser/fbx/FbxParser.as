@@ -194,7 +194,8 @@ package gl3d.parser.fbx
 						if (prim.drawables == null) {
 							prim.drawables = [];
 							var posData:Array = null;
-							for (var i:int = 0; i < prim.objs.length;i++ ) {
+							for (var i:int = 0; i < prim.objs.length; i++ ) {
+								if (prim.objs[i] == null) continue;
 								var drawable:Drawable = new Drawable;
 								prim.drawables.push(drawable);
 								drawable.source = new DrawableSource;

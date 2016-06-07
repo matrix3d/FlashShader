@@ -69,7 +69,7 @@ package gl3d.text
 						char.dirty = true;
 					}
 				}else{
-					
+					tset.dataInvalid = true;
 				}
 				newChars = [];
 				
@@ -90,7 +90,6 @@ package gl3d.text
 						char.u1 = (char.tx * size+char.linem.x+char.linem.width) / tsize;
 						char.v1 = (char.ty + 1) * size / tsize;
 						txtIndex++;
-						tset.needUpload = true;
 					}
 				}
 			}
