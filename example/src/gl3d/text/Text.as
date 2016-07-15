@@ -16,6 +16,7 @@ package gl3d.text
 	import gl3d.core.DrawableSource;
 	import gl3d.core.IndexBufferSet;
 	import gl3d.core.Material;
+	import gl3d.core.MaterialBase;
 	import gl3d.core.Node3D;
 	import gl3d.core.TextureSet;
 	import gl3d.core.VertexBufferSet;
@@ -47,7 +48,7 @@ package gl3d.text
 			material.passCompareMode = Context3DCompareMode.ALWAYS;
 		}
 		
-		override public function update(view:View3D, material:Material = null):void 
+		override public function update(view:View3D, material:MaterialBase = null):void 
 		{
 			var num:int = 0;
 			var charCount:int = 0;

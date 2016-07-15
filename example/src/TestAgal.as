@@ -29,7 +29,7 @@ package
 			view1.scene.addChild(n1);
 			view1.camera.perspective.perspectiveFieldOfViewLH(Math.PI / 4, view1.stage3dWidth/ view1.stage3dHeight, .1, 4000);
 			view1.camera.z = -10;
-			view1.lights[0].z = -1000;
+			//view1.lights[0].z = -1000;
 			view1.scene.addChild(n1);
 		}
 		

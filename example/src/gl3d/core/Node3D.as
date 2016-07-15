@@ -21,7 +21,7 @@ package gl3d.core
 		public var children:Vector.<Node3D> = new Vector.<Node3D>;
 		public var renderChildren:Vector.<Node3D> = new Vector.<Node3D>;
 		public var drawable:Drawable;
-		public var material:Material;
+		public var material:MaterialBase;
 		public var name:String;
 		public var picking:Picking = new AS3Picking;
 		public var controllers:Vector.<Ctrl>;
@@ -61,9 +61,9 @@ package gl3d.core
 			n.updateTransforms(true);
 		}
 		
-		public function update(view:View3D, material:Material = null):void
+		public function update(view:View3D, material:MaterialBase = null):void
 		{
-			if(visible){
+			//if(visible){
 				if (controllers)
 				{
 					for each (var c:Ctrl in controllers)
@@ -81,7 +81,7 @@ package gl3d.core
 				{
 					child.update(view, material);
 				}
-			}
+			//}
 		}
 		
 		public function get x():Number

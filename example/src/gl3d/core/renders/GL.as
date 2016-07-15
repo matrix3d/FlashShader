@@ -10,6 +10,7 @@ package gl3d.core.renders
 	import flash.display3D.textures.Texture;
 	import flash.display3D.textures.TextureBase;
 	import flash.display3D.VertexBuffer3D;
+	import flash.display3D.textures.VideoTexture;
 	import flash.geom.Matrix3D;
 	import flash.geom.Rectangle;
 	import flash.geom.Vector3D;
@@ -60,6 +61,11 @@ package gl3d.core.renders
 		public function createTexture(width : int, height : int, format : String, optimizeForRenderToTexture : Boolean, streamingLevels : int = 0) : Texture {
 			return context.createTexture(width, height, format, optimizeForRenderToTexture/*, streamingLevels*/);
 		}
+		
+		public function createVideoTexture() :VideoTexture {
+			return context.createVideoTexture();
+		}
+		
 		public function createVertexBuffer(numVertices : int, data32PerVertex : int) : VertexBuffer3D {
 			return context.createVertexBuffer(numVertices, data32PerVertex);
 		}

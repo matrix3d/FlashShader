@@ -8,6 +8,7 @@ package gl3d.text
 	 */
 	public class Char 
 	{
+		public var id:int;
 		public var txt:String;
 		public var bound:Rectangle;
 		public var linem:TextLineMetrics;

@@ -6,6 +6,7 @@ package gl3d.text
 	import flash.text.TextFieldAutoSize;
 	import flash.text.TextFormat;
 	import gl3d.core.TextureSet;
+	import org.villekoskela.utils.RectanglePacker;
 	/**
 	 * ...
 	 * @author lizhi
@@ -21,7 +22,10 @@ package gl3d.text
 		public var bmd:BitmapData;
 		private var helpMatr:Matrix = new Matrix;
 		private var tf:TextField = new TextField;
-		private var tsize:int=-1;
+		private var tsize:int =-1;
+		private var tsizew:int = 1;
+		private var tsizeh:int = 1;
+		private var rp:RectanglePacker;
 		public function CharSet(font:String=null,fontSize:int=12) 
 		{
 			tf.textColor = 0xffffff;
@@ -46,6 +50,7 @@ package gl3d.text
 					for each(var txt:String in newChar){
 						if (chars[txt]==null){
 							chars[txt] = new Char(txt);
+							chars[txt].id = numChar;
 							numChar++;
 							needUpdate = true;
 						}
@@ -73,24 +78,43 @@ package gl3d.text
 				}
 				newChars = [];
 				
-				for each(char in chars){
-					if (char.dirty){
-						char.dirty = false;
-						tf.text = char.txt;
-						char.tx = txtIndex % sqrtPow2num;
-						char.ty = int(txtIndex / sqrtPow2num);
-						char.index = txtIndex;
-						char.bound = tf.getCharBoundaries(0);
-						char.linem = tf.getLineMetrics(0);
-						helpMatr.tx = size * char.tx;
-						helpMatr.ty = size * char.ty;
-						bmd.draw(tf, helpMatr);
-						char.u0 = (char.tx * size+char.linem.x) / tsize;
-						char.v0 = char.ty * size / tsize;
-						char.u1 = (char.tx * size+char.linem.x+char.linem.width) / tsize;
-						char.v1 = (char.ty + 1) * size / tsize;
-						txtIndex++;
+				while(true){
+					if (rp==null){
+						rp = new RectanglePacker(tsizew, tsizeh);
+						var gdirty:Boolean = true;
+					}else{
+						gdirty = false;
 					}
+					for each(char in chars){
+						if (char.dirty||gdirty){
+							char.dirty = false;
+							tf.text = char.txt;
+							char.tx = txtIndex % sqrtPow2num;
+							char.ty = int(txtIndex / sqrtPow2num);
+							char.index = txtIndex;
+							char.bound = tf.getCharBoundaries(0);
+							char.linem = tf.getLineMetrics(0);
+							helpMatr.tx = size * char.tx;
+							helpMatr.ty = size * char.ty;
+							rp.insertRectangle(tf.width, tf.height, char.id);
+							bmd.draw(tf, helpMatr);
+							char.u0 = (char.tx * size+char.linem.x) / tsize;
+							char.v0 = char.ty * size / tsize;
+							char.u1 = (char.tx * size+char.linem.x+char.linem.width) / tsize;
+							char.v1 = (char.ty + 1) * size / tsize;
+							txtIndex++;
+						}
+					}
+					rp.packRectangles();
+					if (rp.rectangleCount==numChar){
+						break;
+					}
+					if (tsizeh==tsizew){
+						tsizew *= 2;
+					}else{
+						tsizeh *= 2;
+					}
+					rp = null;
 				}
 			}
 		}

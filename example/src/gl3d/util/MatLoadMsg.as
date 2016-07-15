@@ -7,6 +7,7 @@ package gl3d.util
 	import flash.events.IOErrorEvent;
 	import flash.net.URLRequest;
 	import gl3d.core.Material;
+	import gl3d.core.MaterialBase;
 	import gl3d.core.TextureSet;
 	/**
 	 * ...
@@ -14,11 +15,11 @@ package gl3d.util
 	 */
 	public class MatLoadMsg 
 	{
-		private var mat:Material;
+		private var mat:MaterialBase;
 		private var loader:Loader;
 		private var url:String;
 		private var sourceURL:String;
-		public function MatLoadMsg(url:String,mat:Material) 
+		public function MatLoadMsg(url:String,mat:MaterialBase) 
 		{
 			sourceURL = url;
 			url = url.substring( url.lastIndexOf("\\") + 1, url.lastIndexOf(".")) + ".png";

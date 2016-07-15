@@ -6,8 +6,10 @@ package gl3d.core {
 	import flash.display3D.textures.RectangleTexture;
 	import flash.display3D.textures.Texture;
 	import flash.display3D.textures.TextureBase;
+	import flash.display3D.textures.VideoTexture;
 	import flash.events.Event;
 	import flash.geom.Matrix;
+	import flash.media.Camera;
 	import flash.utils.ByteArray;
 	import flash.utils.Endian;
 	import gl3d.core.renders.GL;
@@ -26,6 +28,7 @@ package gl3d.core {
 		private var context:GL;
 		public var isRect:Boolean;
 		public var isCube:Boolean=false;
+		public var isCamera:Boolean=false;
 		private var optimizeForRenderToTexture:Boolean;
 		public var mipmap:Boolean;
 		private var async:Boolean;
@@ -48,6 +51,10 @@ package gl3d.core {
 			this.data = data;
 			updateATF(null, false);
 			if (data is String) {
+				ready = false;
+			}
+			if (data is Camera){
+				isCamera = true;
 				ready = false;
 			}
 		}
@@ -139,6 +146,23 @@ package gl3d.core {
 			}
 		}
 		
+		public function updateVideo(context:GL):void {
+			var camera:Camera = data as Camera;
+			if (camera&&Context3D.supportsVideoTexture){
+				if (texture == null){
+					texture = context.createVideoTexture();
+					var vt:VideoTexture = texture as VideoTexture;
+					vt.attachCamera(camera);
+					vt.addEventListener(Event.TEXTURE_READY, vt_textureReady);
+				}
+			}
+		}
+		
+		private function vt_textureReady(e:Event):void 
+		{
+			ready = true;
+		}
+		
 		public function updateATF(context:GL,createTexture:Boolean=true):void {
 			var atf:ByteArray = data as ByteArray;
 			if (atf) {
@@ -227,8 +251,10 @@ package gl3d.core {
 				updateBMD(context);
 			}else if (data is ByteArray) {
 				updateATF(context);
-			}else {
-				//trace(this,"error")
+			}else if(data is Camera){
+				updateVideo(context);
+			}else{
+				
 			}
 		}
 		
@@ -238,11 +264,11 @@ package gl3d.core {
 		
 		public function get flags():Array {
 			var arr:Array = [];
-			if (mipmap) arr.push("miplinear");
+			if (mipmap&&!isCamera) arr.push("miplinear");
 			if (isCube) {
 				arr.push("cube");
 			}
-			if(repeat&&!isCube&&!isRect){
+			if(repeat&&!isCube&&!isRect&&!isCamera){
 				arr.push("repeat");
 			}
 			if (isDXT1) {

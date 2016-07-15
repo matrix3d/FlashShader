@@ -2,9 +2,11 @@ package gl3d.particle
 {
 	import flash.display.BlendMode;
 	import flash.display3D.Context3DCompareMode;
+	import flash.display3D.Context3DTriangleFace;
 	import flash.geom.Vector3D;
 	import gl3d.core.Drawable;
 	import gl3d.core.Material;
+	import gl3d.core.MaterialBase;
 	import gl3d.core.Node3D;
 	import gl3d.core.TextureSet;
 	import gl3d.core.View3D;
@@ -25,14 +27,14 @@ package gl3d.particle
 		public var stretchedLength:Number = 10;//拉伸长度
 		public var isVertexColor:Boolean = false;//顶点色
 		
-		public var count:int = 160;
+		public var count:int = 10000;
 		public var timeLife:ParticleValue=new ParticleValue([1000],[2000]);
 		public var isAddRandomLifeTime:Boolean = true;//是否增加随机生命周期
 		
 		public var loop:Number = 0;
-		public var shapeID:int = 3;
+		public var shapeID:int = 2;
 		
-		public var pos:ParticleValue = new ParticleValue([-2,-2,-2],[2,2,2]);;
+		public var pos:ParticleValue = new ParticleValue([-20,-20,-20],[20,20,20]);;
 		public var scale:ParticleValue=new ParticleValue([0],[1]);
 		public var velocity:ParticleValue=new ParticleValue([0],[0]);
 		public var rotation:ParticleValue;
@@ -42,7 +44,7 @@ package gl3d.particle
 		{
 		}
 		
-		override public function update(view:View3D,material:Material=null):void 
+		override public function update(view:View3D,material:MaterialBase=null):void 
 		{
 			if (invalid) {
 				if(isBillboard){
@@ -54,7 +56,7 @@ package gl3d.particle
 					}else if (shapeID==1) {
 						shape = Teapot.teapot(2);
 					}else if (shapeID==2) {
-						shape = Meshs.plane();
+						shape = Meshs.plane(.1);
 					}else {
 						shape = Meshs.sphere(10, 10);
 					}
@@ -63,8 +65,9 @@ package gl3d.particle
 				}
 				this.material = new Material;
 				this.material.blendModel = BlendMode.ADD;
+				this.material.culling = Context3DTriangleFace.NONE;
 				this.material.depthMask = false;
-				this.material.shader = new ParticleGLShader;
+				(this.material as Material).shader = new ParticleGLShader;
 				invalid = false;
 			}
 			super.update(view);

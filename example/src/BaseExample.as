@@ -8,6 +8,7 @@ package
 	import flash.display.StageAlign;
 	import flash.display.StageDisplayState;
 	import flash.display.StageScaleMode;
+	import flash.display3D.Context3D;
 	import flash.display3D.Context3DCompareMode;
 	import flash.display3D.Context3DTriangleFace;
 	import flash.events.Event;
@@ -15,6 +16,9 @@ package
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
 	import flash.geom.Vector3D;
+	import flash.media.Camera;
+	import flash.media.StageVideo;
+	import flash.media.Video;
 	import flash.system.Capabilities;
 	import flash.text.TextField;
 	import flash.ui.Multitouch;
@@ -92,6 +96,7 @@ package
 				//console.textfield = debug;
 			}
 			view = new View3D(0);
+			//view.scene.visible = false;
 			view.antiAlias = 2;
 			view.enableErrorChecking = true;
 			addChild(view);
@@ -133,6 +138,11 @@ package
 			
 			//[Embed(source = "assets/leaf.png")]var leafp:Class;
 			//texture = new TextureSet(bmd,true,false, false, false, false);
+			
+			var camera:Camera = Camera.getCamera();
+			if (Context3D.supportsVideoTexture&& camera){
+				texture = new TextureSet(camera);
+			}
 			
 			normalMapTexture = createNormalMap();
 			material.culling =  Context3DTriangleFace.NONE;
@@ -200,18 +210,19 @@ package
 		public function addSky():void {
 			//skybox
 			skybox = new Node3D;
-			skybox.material = new Material(new SkyBoxGLShader);
-			skybox.material.castShadow = false;
-			skybox.material.diffTexture = skyBoxTexture
-			skybox.material.specularPower = 10;
-			skybox.material.color.setTo(.5,.5,.5);
-			skybox.material.culling = Context3DTriangleFace.BACK;
+			var m:Material = new Material(new SkyBoxGLShader);
+			skybox.material = m;
+			m.castShadow = false;
+			m.diffTexture = skyBoxTexture
+			m.specularPower = 10;
+			m.color.setTo(.5,.5,.5);
+			m.culling = Context3DTriangleFace.BACK;
 			skybox.drawable = Meshs.cube(2000,2000,2000);
 			view.scene.addChild(skybox);
 		}
 		
 		public function initNode():void {
-			addSky();
+			//addSky();
 			
 			teapot = new Node3D;
 			teapot.material = material;

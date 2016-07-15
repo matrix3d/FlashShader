@@ -30,10 +30,11 @@ package
 			addSky();
 			
 			curve = new Node3D();
-			curve.material = new Material;
-			curve.material.shader = new CurveShader;
-			curve.material.culling = Context3DTriangleFace.NONE;
-			curve.material.blendModel = BlendMode.LAYER;
+			var m:Material=new Material;
+			curve.material = m;
+			m.shader = new CurveShader;
+			m.culling = Context3DTriangleFace.NONE;
+			m.blendModel = BlendMode.LAYER;
 			curve.drawable = Meshs.createDrawable(new <uint>[0,1,2],new <Number>[0,0,0,0,0,0,0,0,0],new <Number>[0,0,.5,0,1,1]);
 			
 			view.scene.addChild(curve);

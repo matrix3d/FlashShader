@@ -258,84 +258,85 @@ package gl3d.core.shaders
 		//buffs
 		public function buffPos():Var {
 			var name:String = "bpos";
-			if (getNamedVar(name)) return getNamedVar(name);
-			var buff:Var = buff();
-			setNamedVar(name, buff);
-			var binder:GLBinder = new GLBinder(this,buff);
+			var b:Var = getNamedVar(name);
+			if (b) return b;
+			b = buff();
+			setNamedVar(name, b);
+			var binder:GLBinder = new GLBinder(this,b);
 			binds.push(binder.bindPosBuff);
-			return buff;
+			return b;
 		}
 		public function buffNorm():Var {
 			var name:String = "bnorm";
 			if (getNamedVar(name)) return getNamedVar(name);
-			var buff:Var = buff();
-			setNamedVar(name, buff);
-			var binder:GLBinder = new GLBinder(this,buff);
+			var b:Var = buff();
+			setNamedVar(name, b);
+			var binder:GLBinder = new GLBinder(this,b);
 			binds.push(binder.bindNormBuff);
-			return buff;
+			return b;
 		}
 		public function buffTangent():Var {
 			var name:String = "btangent";
 			if (getNamedVar(name)) return getNamedVar(name);
-			var buff:Var = buff();
-			setNamedVar(name, buff);
-			var binder:GLBinder = new GLBinder(this,buff);
+			var b:Var = buff();
+			setNamedVar(name, b);
+			var binder:GLBinder = new GLBinder(this,b);
 			binds.push(binder.bindTangentBuff);
-			return buff;
+			return b;
 		}
 		public function buffUV():Var {
 			var name:String = "buv";
 			if (getNamedVar(name)) return getNamedVar(name);
-			var buff:Var = buff();
-			setNamedVar(name, buff);
-			var binder:GLBinder = new GLBinder(this,buff);
+			var b:Var = buff();
+			setNamedVar(name, b);
+			var binder:GLBinder = new GLBinder(this,b);
 			binds.push(binder.bindUVBuff);
-			return buff;
+			return b;
 		}
 		public function buffRandom():Var {
 			var name:String = "brandom";
 			if (getNamedVar(name)) return getNamedVar(name);
-			var buff:Var = buff();
-			setNamedVar(name, buff);
-			var binder:GLBinder = new GLBinder(this,buff);
+			var b:Var = buff();
+			setNamedVar(name, b);
+			var binder:GLBinder = new GLBinder(this,b);
 			binds.push(binder.bindRandomBuff);
-			return buff;
+			return b;
 		}
 		public function buffSphereRandom():Var {
 			var name:String = "bsrandom";
 			if (getNamedVar(name)) return getNamedVar(name);
-			var buff:Var = buff();
-			setNamedVar(name, buff);
-			var binder:GLBinder = new GLBinder(this,buff);
+			var b:Var = buff();
+			setNamedVar(name, b);
+			var binder:GLBinder = new GLBinder(this,b);
 			binds.push(binder.bindSphereRandomBuff);
-			return buff;
+			return b;
 		}
 		public function buffTargetPosition():Var {
 			var name:String = "btp";
 			if (getNamedVar(name)) return getNamedVar(name);
-			var buff:Var = buff();
-			setNamedVar(name, buff);
-			var binder:GLBinder = new GLBinder(this,buff);
+			var b:Var = buff();
+			setNamedVar(name, b);
+			var binder:GLBinder = new GLBinder(this,b);
 			binds.push(binder.bindTargetPositionBuff);
-			return buff;
+			return b;
 		}
 		public function buffUV2():Var {
 			var name:String = "buv2";
 			if (getNamedVar(name)) return getNamedVar(name);
-			var buff:Var = buff();
-			setNamedVar(name, buff);
-			var binder:GLBinder = new GLBinder(this,buff);
+			var b:Var = buff();
+			setNamedVar(name, b);
+			var binder:GLBinder = new GLBinder(this,b);
 			binds.push(binder.bindUV2Buff);
-			return buff;
+			return b;
 		}
 		public function buffJoints():Var {
 			var name:String = "bjoints";
 			if (getNamedVar(name)) return getNamedVar(name);
-			var buff:Var = buff();
-			setNamedVar(name, buff);
-			var binder:GLBinder = new GLBinder(this,buff);
+			var b:Var = buff();
+			setNamedVar(name, b);
+			var binder:GLBinder = new GLBinder(this,b);
 			binds.push(binder.bindJointsBuff);
-			return buff;
+			return b;
 		}
 		/*public function buffQuatJoints():Var {
 			var name:String = "bqjoints";
@@ -349,11 +350,11 @@ package gl3d.core.shaders
 		public function buffWeights():Var {
 			var name:String = "bweights";
 			if (getNamedVar(name)) return getNamedVar(name);
-			var buff:Var = buff();
-			setNamedVar(name, buff);
-			var binder:GLBinder = new GLBinder(this,buff);
+			var b:Var = buff();
+			setNamedVar(name, b);
+			var binder:GLBinder = new GLBinder(this,b);
 			binds.push(binder.bindWeightsBuff);
-			return buff;
+			return b;
 		}
 		/*public function buffCpuSkinPos():Var {
 			var name:String = "bcpuskinpos";

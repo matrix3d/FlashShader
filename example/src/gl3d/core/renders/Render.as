@@ -32,12 +32,14 @@ package gl3d.core.renders
 		}
 		
 		public function collect(node:Node3D):void {
-			collects.push(node);
-			if (node is Light) {
-				view.lights.push(node);
-			}
-			for each(var c:Node3D in node.children) {
-				collect(c);
+			if(node.visible){
+				collects.push(node);
+				if (node is Light) {
+					view.lights.push(node);
+				}
+				for each(var c:Node3D in node.children) {
+					collect(c);
+				}
 			}
 		}
 		
