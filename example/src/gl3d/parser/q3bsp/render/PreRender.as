@@ -79,7 +79,7 @@ package gl3d.parser.q3bsp.render
 					var node:Node3D = new Node3D;
 					node.drawable = d;
 					node.material = new Material;
-					node.material.shader = new LightMapGLShader;
+					(node.material as Material).shader = new LightMapGLShader;
 					node.material.diffTexture = diffTexture
 					node.material.lightmapTexture = lightmapTexture
 					target.addChild(node);

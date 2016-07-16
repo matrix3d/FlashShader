@@ -1,7 +1,5 @@
 package  
 {
-	import com.bit101.components.PushButton;
-	import editor.TerrainEditor;
 	import flash.display.Bitmap;
 	import flash.display.BitmapData;
 	import flash.display.Stage;
@@ -34,60 +32,23 @@ package
 		private var terrain:Node3D;
 		private var player:Node3D;
 		private var targetCube:Node3D;
-		private var gameModeBtn:PushButton;
 		private var pix:Vector3D = new Vector3D;
 		private var moving:Boolean = true;
 		private var isClick:Boolean = false;
 		private var players:Array = [];
 		private var p:ColladaDecoder;
 		private var materialInstance:InstanceMaterial = new InstanceMaterial;
-		private var te:TerrainEditor = new TerrainEditor;
 		private var tempbmd:BitmapData ;
 		public function TestTerrain() 
 		{
-			addChild(te);
-			te.addEventListener(TerrainEditor.CHANGE, te_change);
-			te.y = 30;
-		}
-		
-		private function te_change(e:Event):void 
-		{
-			if (tempbmd==null) {
-				tempbmd= new BitmapData(128, 128, true, 0);
-			}
-			terrain.drawable.pos.data = 
-			Meshs.terrainData(128, new Vector3D(350, 350, 350), te.heightBitmapData, tempbmd);
-			terrain.drawable.pos.invalid = true;
-			terrain.drawable.norm.dispose();
-			terrain.drawable.norm = null;// .dispose();
-			//Meshs.computeNormal(terrain.drawable);
-			terrain.picking = new TerrainPicking(terrain);
-		}
-		
-		override public function initUI():void 
-		{
-			super.initUI();
-			gameModeBtn = new PushButton(this, 125, 5, "game mode", gameModeBtnClick);
-			gameModeBtn.toggle = true;
-			gameModeBtn.selected = false;
-			
-			
-			//new Log;
-			//addChild(Log.instance);
-		}
-		
-		private function gameModeBtnClick(e:Event):void 
-		{
-			initCtrl();
 		}
 		
 		override public function initCtrl():void 
 		{
-			if (gameModeBtn.selected) {
 				view.ctrls=Vector.<Ctrl>([new FollowCtrl(player,view.camera)]);
-			}else {
-				view.ctrls=Vector.<Ctrl>([new FirstPersonCtrl(view.camera,stage)]);
-			}
+	//}else {
+			//	view.ctrls=Vector.<Ctrl>([new FirstPersonCtrl(view.camera,stage)]);
+			//}
 			
 		}
 		
@@ -136,14 +97,16 @@ package
 			material.normalMapAble = false;
 			material.diffTexture = texture;
 			material.terrainTextureSets = [getTerrainTexture(c0), getTerrainTexture(c1), getTerrainTexture(c2), getTerrainTexture(c3)];
-			te.setTextures(material.terrainTextureSets);
+//			te.setTextures(material.terrainTextureSets);
 			material.shader = new TerrainPhongGLShader();
 			material.reflectTexture = null;
 			
 			terrain = new Node3D;
 			terrain.material = material;
 			
-			terrain.drawable = Meshs.terrain(128,new Vector3D(350,350,350),te.heightBitmapData);
+			bmd = new BitmapData(128, 128);
+			bmd.perlinNoise(30,30,5,1000*Math.random(),true,true)
+			terrain.drawable = Meshs.terrain(128,new Vector3D(350,350,350),bmd);
 			view.scene.addChild(terrain);
 			terrain.picking = new TerrainPicking(terrain);
 			
@@ -197,7 +160,7 @@ package
 				view.camera.computePickRayDirectionMouse(mouseX, mouseY, stage.stageWidth, stage.stageHeight, rayOrigin, rayDirection);
 				
 				if (terrain.rayMeshTest(rayOrigin, rayDirection, pix)) {
-					te.draw(pix.x/350+.5, pix.z/350+.5);
+//					te.draw(pix.x/350+.5, pix.z/350+.5);
 				}
 			}
 		}

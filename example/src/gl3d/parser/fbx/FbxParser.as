@@ -332,7 +332,7 @@ package gl3d.parser.fbx
 						if (weightss.length) {
 							var weights:Array = FbxTools.getFloats(weightss[0]);
 							var indexes:Array = FbxTools.getInts(FbxTools.get(subDef, "Indexes"));
-							var joint:Node3D = o.obj as Node3D;
+							var joint:Joint = o.obj as Joint;
 							var jid:int = skin.joints.indexOf(joint);
 							if (jid == -1) {
 								jid = skin.joints.length;

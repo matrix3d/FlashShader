@@ -112,7 +112,7 @@ package gl3d.parser.hlbsp
 			target.drawable = drawable;
 			drawable.uv2 = new VertexBufferSet(Vector.<Number>(lightmapCoords), 2);
 			target.material = new Material;
-			target.material.shader = new LightMapGLShader;
+			(target.material as Material).shader = new LightMapGLShader;
 		}
 		
 		/**

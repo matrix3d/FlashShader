@@ -1,6 +1,5 @@
 package 
 {
-	import com.bit101.components.Style;
 	import flash.display.Bitmap;
 	import flash.display.BitmapData;
 	import flash.display.BlendMode;
@@ -56,7 +55,6 @@ package
 	import gl3d.shaders.SkyBoxGLShader;
 	import gl3d.util.Stats;
 	import gl3d.util.Utils;
-	import ui.AttribSeter;
 	import ui.Gamepad;
 	/**
 	 * ...
@@ -68,7 +66,6 @@ package
 		public var speed:Number = .03;
 		public var movementFunc:Function;
 		public var view:View3D;
-		public var aui:AttribSeter = new AttribSeter;
 		private var _useTexture:Boolean = true;
 		protected var texture:TextureSet;
 		private var normalMapTexture:TextureSet;
@@ -143,8 +140,6 @@ package
 			if (Context3D.supportsVideoTexture&& camera){
 				texture = new TextureSet(camera);
 			}
-			
-			normalMapTexture = createNormalMap();
 			material.culling =  Context3DTriangleFace.NONE;
 			//material.blendModel = BlendMode.ADD;
 			material.normalMapAble = false;
@@ -188,12 +183,6 @@ package
 			//post = "fxaa2x";
 		}
 		
-		public function createNormalMap():TextureSet {
-			var bmd:BitmapData = new BitmapData(512, 512, false, 0);
-			bmd.perlinNoise(100, 100, 4, 1, true, true);
-			return new TextureSet(Utils.createNormalMap(bmd));
-		}
-		
 		public function initLight():void {
 			lights.push(new Light);
 			view.scene.addChild(lights[0]);
@@ -222,7 +211,7 @@ package
 		}
 		
 		public function initNode():void {
-			//addSky();
+			addSky();
 			
 			teapot = new Node3D;
 			teapot.material = material;
@@ -247,18 +236,6 @@ package
 		}
 		
 		public function initUI():void {
-			//addChild(aui);
-			aui.bind(material, "specularPower", AttribSeter.TYPE_NUM, new Point(1, 100));
-			aui.bind(material, "toonAble", AttribSeter.TYPE_BOOL);
-			aui.bind(view, "antiAlias", AttribSeter.TYPE_NUM, new Point(0, 16));
-			//aui.bind(view.light, "color", AttribSeter.TYPE_VEC_COLOR);
-			aui.bind(material, "ambient", AttribSeter.TYPE_VEC_COLOR);
-			aui.bind(material, "color", AttribSeter.TYPE_VEC_COLOR);
-			aui.bind(material, "alpha", AttribSeter.TYPE_NUM, new Point(.1, 1));
-			aui.bind(material, "wireframeAble", AttribSeter.TYPE_BOOL);
-			aui.bind(this, "useTexture", AttribSeter.TYPE_BOOL);
-			aui.bind(this, "post", AttribSeter.TYPE_LIST_STR, null, ["null", "blur", "water", "bend", "heart", "flower", "sinwater", "hdr", "shape","asciiart","red","fxaa","fxaa2x"]);
-			
 			if(Multitouch.supportsTouchEvents&&Multitouch.maxTouchPoints)
 			addChild(gamepad);
 			gamepad.x = 200;
@@ -299,8 +276,6 @@ package
 			}
 			view.updateCtrl();
 			view.render(getTimer());
-			
-			aui.update();
 			if (gamepad) {
 				if(fc)fc.inputSpeed = gamepad.speed;
 				if(ac)ac.inputSpeed = gamepad.speed;

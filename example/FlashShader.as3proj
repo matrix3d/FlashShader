@@ -12,6 +12,7 @@
     <movie minorVersion="0" />
     <movie platform="Flash Player" />
     <movie background="#FFFFFF" />
+    <movie preferredSDK="AIR 22.0.0;22.0.0;" />
   </output>
   <!-- Other classes to be compiled into your SWF -->
   <classpaths>
@@ -44,7 +45,7 @@
     <option linkReport="" />
     <option loadExterns="" />
     <option staticLinkRSL="True" />
-    <option additional="-swf-version=28" />
+    <option additional="-swf-version=33" />
     <option compilerConstants="" />
     <option minorVersion="" />
   </build>
@@ -54,9 +55,9 @@
   </includeLibraries>
   <!-- SWC Libraries -->
   <libraryPaths>
-    <element path="lib\MinimalComps_0_9_10.swc" />
     <element path="lib\daedalus-lib.swc" />
     <element path="lib\AwayPhysics.swc" />
+    <element path="lib\RectanglePacker.swc" />
   </libraryPaths>
   <!-- External Libraries -->
   <externalLibraryPaths>
@@ -76,7 +77,7 @@
   </library>
   <!-- Class files to compile (other referenced classes will automatically be included) -->
   <compileTargets>
-    <compile path="src\ModelViewer.as" />
+    <compile path="src\AwayphysicsBvhTriangleMeshCarTest.as" />
   </compileTargets>
   <!-- Paths to exclude from the Project Explorer tree -->
   <hiddenPaths>

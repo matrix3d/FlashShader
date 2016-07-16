@@ -97,7 +97,7 @@ package {
 			node.material = new Material;
 			node.material.diffTexture = texture;
 			node.material.terrainTextureSets = [getTerrainTexture(c0), getTerrainTexture(c1), getTerrainTexture(c2), getTerrainTexture(c3)];
-			node.material.shader = new TerrainPhongGLShader();
+			(node.material as Material).shader = new TerrainPhongGLShader();
 			physicsRoot.addChild(node);
 			
 			var sceneShape : AWPBvhTriangleMeshShape = new AWPBvhTriangleMeshShape(node.drawable.index.data,node.drawable.pos.data);

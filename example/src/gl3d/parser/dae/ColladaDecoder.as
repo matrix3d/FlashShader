@@ -146,6 +146,11 @@ package gl3d.parser.dae
 				var weightsXML:XML = childXML.vertex_weights[0];
 				var vcount:Array = str2Floats(weightsXML.vcount.text());
 				var v:Array = str2Floats(weightsXML.v.text());
+				
+				/**********asc2 bug******/
+				(weightsXML.input.(@semantic == "WEIGHT").@source)
+				/*****************/
+				
 				var weights:Array = str2Floats(childXML.source.(@id==((weightsXML.input.(@semantic == "WEIGHT").@source).toString().substr(1))).float_array.text());
 				var invBindMatrixs:Array = str2Matrixs(childXML.source.(@id == ((childXML.joints.input.(@semantic == "INV_BIND_MATRIX").@source).toString().substr(1))).float_array.text());
 				for each(var ibm:Matrix3D in invBindMatrixs) {
@@ -302,7 +307,7 @@ package gl3d.parser.dae
 					can.output = str2Floats(animXML.source.(@id == ((samplerXML.input.(@semantic == "OUTPUT").@source).toString().substr(1))).float_array.text());
 					var targetLine:String = channelXML.@target;
 					var result:Object=null;
-					if ((result = /(.+)\/(.+)\((\d+)\)\((\d+)\)/.exec(targetLine))) {
+					if ((result = /(.+)\/(.+)\((\d+)\)\((\d+)\)/.exec(targetLine))!=null) {
 						if (result[2]=="transform") {
 							can.index = parseInt(result[4]) + parseInt(result[3])*4;
 							if (can.index != 15) {

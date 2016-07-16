@@ -78,10 +78,10 @@ package gl3d.shaders
 				for (var i:int = 0; i < material.node.skin.maxWeight; i++ ) {
 					var c:String = xyzw.charAt(i % 4);
 					if (material.node.skin.useQuat) {
-						var joint:Var = this.joint.c(c)/*:this.joint2.c(c)*/;
+						joint = joint.c(c)/*:this.joint2.c(c)*/;
 						var value:Var = mul(weight.c(c)/*:weight2.c(c)*/, q44(pos, joints.c(joint),joints.c(joint,1)));
 					}else {
-						joint = this.joint.c(c)/*:this.joint2.c(c)*/;
+						joint = joint.c(c)/*:this.joint2.c(c)*/;
 						value = mul(/*i<4?*/weight.c(c)/*:weight2.c(c)*/, m44(pos, joints.c(joint)));
 					}
 					
