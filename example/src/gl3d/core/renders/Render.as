@@ -17,6 +17,7 @@ package gl3d.core.renders
 		public var agalVersion:int;
 		public var collects:Vector.<Node3D> = new Vector.<Node3D>;
 		//public var lights:Vector.<Light> = new Vector.<Light>;
+		private var _visible:Boolean = true;
 		public function Render(view:View3D) 
 		{
 			this.view = view;
@@ -45,6 +46,15 @@ package gl3d.core.renders
 		
 		public function sort():void {
 			//collects.sort(sortFun);
+		}
+		public function get visible():Boolean 
+		{
+			return _visible;
+		}
+		
+		public function set visible(value:Boolean):void 
+		{
+			_visible = value;
 		}
 	}
 

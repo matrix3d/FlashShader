@@ -38,6 +38,7 @@ package gl3d.core.renders
 		{
 			super.init();
 			stage3d = view.stage.stage3Ds[view.id];
+			stage3d.visible = visible;
 			stage3d.addEventListener(Event.CONTEXT3D_CREATE, stage_context3dCreate);
 			stage3d.addEventListener(ErrorEvent.ERROR, stage3Ds_error);
 			//stage.stage3Ds[0].requestContext3D(Context3DRenderMode.AUTO, Context3DProfile.STANDARD);
@@ -67,8 +68,19 @@ package gl3d.core.renders
 			}
 		}
 		
+		override public function set visible(value:Boolean):void 
+		{
+			super.visible = value;
+			if(stage3d){
+				stage3d.visible = value;
+			}
+		}
+		
 		override public function render(camera:Camera3D, scene:Node3D):void 
 		{
+			if (!visible) {
+				return;
+			}
 			super.render(camera, scene);
 			
 			if (gl3d) {

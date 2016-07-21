@@ -93,7 +93,8 @@ package
 				//console.textfield = debug;
 			}
 			view = new View3D(0);
-			//view.scene.visible = false;
+			//view.renderer.visible = false;
+			//view.visible = false;
 			view.antiAlias = 2;
 			view.enableErrorChecking = true;
 			addChild(view);
