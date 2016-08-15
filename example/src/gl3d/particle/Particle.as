@@ -39,7 +39,7 @@ package gl3d.particle
 		public var velocity:ParticleValue=new ParticleValue([0],[0]);
 		public var rotation:ParticleValue;
 		public var uv:ParticleValue;
-		public var color:ParticleValue=new ParticleValue([1,0,0,1],[0,1,0,1]);
+		public var color:ParticleValue=new ParticleValue([1,0,0,2],[0,1,0,0]);
 		public function Particle() 
 		{
 		}

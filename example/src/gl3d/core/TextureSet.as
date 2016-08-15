@@ -1,12 +1,13 @@
 package gl3d.core {
 	import flash.display.BitmapData;
 	import flash.display3D.Context3D;
+	import flash.display3D.Context3DTextureFilter;
 	import flash.display3D.Context3DTextureFormat;
 	import flash.display3D.textures.CubeTexture;
 	import flash.display3D.textures.RectangleTexture;
 	import flash.display3D.textures.Texture;
 	import flash.display3D.textures.TextureBase;
-	import flash.display3D.textures.VideoTexture;
+	//import flash.display3D.textures.VideoTexture;
 	import flash.events.Event;
 	import flash.geom.Matrix;
 	import flash.media.Camera;
@@ -39,7 +40,7 @@ package gl3d.core {
 		public var ready:Boolean = true;
 		public var isDXT1:Boolean;
 		public var isDXT5:Boolean;
-		public function TextureSet(data:Object = null, isRect:Boolean = false,repeat:Boolean=true, optimizeForRenderToTexture:Boolean = false, mipmap:Boolean = true, async:Boolean = true, filter:String="anisotropic16x") 
+		public function TextureSet(data:Object = null, isRect:Boolean = false,repeat:Boolean=true, optimizeForRenderToTexture:Boolean = false, mipmap:Boolean = true, async:Boolean = true, filter:String="linear") 
 		{
 			this.repeat = repeat;
 			this.filter = filter;
@@ -118,10 +119,11 @@ package gl3d.core {
 		public function updateBMD(context:GL):void {
 			var bmd:BitmapData = data as BitmapData;
 			if (data) {
-				var w:int = MathUtil.getNextPow2(bmd.width);
-				var h:int = MathUtil.getNextPow2(bmd.height);
-				if(texture==null)
-				texture = context.createTexture(w, h, Context3DTextureFormat.BGRA, optimizeForRenderToTexture);
+				if(texture==null){
+					var w:int = MathUtil.getNextPow2(bmd.width);
+					var h:int = MathUtil.getNextPow2(bmd.height);
+					texture = context.createTexture(w, h, Context3DTextureFormat.BGRA, optimizeForRenderToTexture);
+				}
 				if (dataInvalid){
 					updateBMDTexture(w, h, bmd, texture);
 					dataInvalid = false;
@@ -150,8 +152,8 @@ package gl3d.core {
 			var camera:Camera = data as Camera;
 			if (camera&&Context3D.supportsVideoTexture){
 				if (texture == null){
-					texture = context.createVideoTexture();
-					var vt:VideoTexture = texture as VideoTexture;
+					texture = context.createVideoTexture() as TextureBase;
+					var vt:Object/*VideoTexture*/ = texture/* as VideoTexture*/;
 					vt.attachCamera(camera);
 					vt.addEventListener(Event.TEXTURE_READY, vt_textureReady);
 				}
@@ -276,7 +278,7 @@ package gl3d.core {
 			}else if (isDXT5) {
 				arr.push("dxt5");
 			}
-			if(filter){
+			if (filter){
 				arr.push(filter);
 			}
 			return arr;

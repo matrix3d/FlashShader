@@ -94,6 +94,7 @@ package gl3d.util
 				}
 				text += "\ndri : " + info;
 				text += "\npro : " + view.profile;
+				text += "\nalv : " + view.renderer.agalVersion;
 			}
 			text += "\nfps : " + fps + " / " ;
 			var frameRate:int = 60;

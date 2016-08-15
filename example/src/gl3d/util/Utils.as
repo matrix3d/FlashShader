@@ -10,7 +10,6 @@ package gl3d.util
 	import gl3d.core.skin.Joint;
 	import gl3d.core.skin.SkinAnimation;
 	import gl3d.ctrl.Ctrl;
-	import ui.Color;
 	/**
 	 * ...
 	 * @author lizhi

@@ -50,6 +50,9 @@ package gl3d.core
 			}
 			children.push(n);
 			n.parent = this;
+			if (n==this){
+				throw "error"
+			}
 			n.updateTransforms(true);
 		}
 		

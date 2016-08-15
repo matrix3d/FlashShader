@@ -102,8 +102,8 @@ package gl3d.core.renders
 				sort();
 				for each(var light:Light in view.lights) {
 					if (light.shadowMapEnabled) {
+						light.shadowMap.update(view);
 						if (light.shadowMap.texture == null) {
-							light.shadowMap.update(view);
 							light.shadowMap.texture = gl3d.createTexture(light.shadowMapSize, light.shadowMapSize, Context3DTextureFormat.RGBA_HALF_FLOAT, true);
 						}
 						gl3d.setRenderToTexture(light.shadowMap.texture, true);
@@ -124,8 +124,8 @@ package gl3d.core.renders
 				if (view.posts.length) {
 					var len:int = view.posts.length>1?2:1;
 					for (var i:int = 0; i < len; i++ ) {
-						if (view.invalid||view.postRTTs[i].texture==null) {
-							view.postRTTs[i].update(view);
+						view.postRTTs[i].update(view);
+						if (view.postRTTs[i].texture==null) {
 							view.postRTTs[i].texture = gl3d.createRectangleTexture(view.stage3dWidth, view.stage3dHeight,Context3DTextureFormat.BGRA, true);
 						}
 					}
