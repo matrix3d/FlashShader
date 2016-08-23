@@ -132,6 +132,13 @@ package gl3d.core.shaders
 				programSet = getProgram(material);
 				invalid = false;
 			}
+			if (programSet) {
+				programSet.update(material.view.renderer.gl3d);
+				material.view.renderer.gl3d.setProgram(programSet.program);
+				material.view.renderer.gl3d.setDepthTest(material.depthMask, material.passCompareMode);
+				material.view.renderer.gl3d.setBlendFactors(material.sourceFactor, material.destinationFactor);
+				material.view.renderer.gl3d.setCulling(material.culling);
+			}
 			if(vs&&fs){
 				vs.bind(this,material);
 				fs.bind(this, material);
@@ -171,11 +178,6 @@ package gl3d.core.shaders
 			}
 			
 			if (programSet) {
-				programSet.update(material.view.renderer.gl3d);
-				material.view.renderer.gl3d.setProgram(programSet.program);
-				material.view.renderer.gl3d.setDepthTest(material.depthMask, material.passCompareMode);
-				material.view.renderer.gl3d.setBlendFactors(material.sourceFactor, material.destinationFactor);
-				material.view.renderer.gl3d.setCulling(material.culling);
 				material.view.renderer.gl3d.drawTriangles(material.node.drawable.index,0,material.node.drawable.index.numTriangles);
 			}
 		}

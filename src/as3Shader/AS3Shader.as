@@ -68,7 +68,8 @@ package as3Shader {
 			//find
 			for (var i:int = 0; i < lines.length;i++ ) {
 				var line:Array = lines[i];
-				for (var j:int = 1,len:int=line.length; j <len ;j++ ) {
+				var len:int = line.length;
+				for (var j:int = 1; j <len ;j++ ) {
 					var v:Var = line[j];
 					addVar(v, i, startEnds, ttypePool, tempConsts);
 					if (v.component is Var) {
@@ -97,7 +98,8 @@ package as3Shader {
 			}
 			
 			//optimize temp
-			for (i = 1,len=startEnds.length; i <len ;i++ ) {
+			len = startEnds.length;
+			for (i = 1; i <len ;i++ ) {
 				var startEnd:Array = startEnds[i];
 				if(startEnd){
 					var start:int = startEnd[0];
