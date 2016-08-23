@@ -9,7 +9,6 @@ package gl3d.util
 	import flash.text.TextField;
 	import flash.text.TextFieldAutoSize;
 	import flash.text.TextFormat;
-	import flash.ui.ContextMenuItem;
 	import flash.utils.getTimer;
 	import gl3d.core.View3D;
 	/**
@@ -37,13 +36,6 @@ package gl3d.util
 			tf.autoSize = TextFieldAutoSize.LEFT;
 			addEventListener(MouseEvent.MOUSE_DOWN, mouseDown);
 			
-		}
-		
-		private function antiAliasItem_select(e:Event):void 
-		{
-			var antiAliasItem:ContextMenuItem = e.currentTarget as ContextMenuItem;
-			var v:int = int(antiAliasItem.caption.replace("antiAlias", ""));
-			view.antiAlias = v;
 		}
 
 		private function mouseDown(e:MouseEvent):void 

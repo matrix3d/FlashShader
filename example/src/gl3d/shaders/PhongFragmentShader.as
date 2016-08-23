@@ -151,7 +151,7 @@ package gl3d.shaders
 					diffColor = sub(1, alpha);
 				}
 			}
-			return diffColor;
+			return material.gray?diffColor.xxxw:diffColor;
 		}
 		
 		private function local2tangent(tangent:Var, biTangent:Var, normal:Var, value:Var):Var {

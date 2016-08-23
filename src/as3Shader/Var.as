@@ -73,9 +73,17 @@ package as3Shader {
 			return [type, index] + "";
 		}
 		
+		CONFIG::js_only{
+		override public function getProperty(name:*):* 
+		{
+			return c(name.localName);
+		}
+		}
+		CONFIG::as_only{
 		override flash_proxy function getProperty(name:*):* 
 		{
 			return c(name.localName);
+		}
 		}
 	}
 

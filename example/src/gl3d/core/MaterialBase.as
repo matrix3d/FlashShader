@@ -36,6 +36,7 @@ package gl3d.core
 		public var reflectTexture:TextureSet;
 		public var terrainTextureSets:Array = [];
 		public var color:Vector3D = new Vector3D(1, 1, 1, 1);
+		public var gray:Boolean = false;
 		public var uvMuler:Array;
 		public var uvAdder:Array;
 		private var _wireframeAble:Boolean = false;
