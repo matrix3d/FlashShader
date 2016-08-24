@@ -10,25 +10,39 @@ package gl3d.core {
 	 */
 	public class ProgramSet 
 	{
-		public var vcode:ByteArray;
-		public var fcode:ByteArray;
+		public var vcode:Object;
+		public var fcode:Object;
 		private var invalid:Boolean = true;
 		private var context:GL;
 		public var program:Program3D;
-		public function ProgramSet(vcode:ByteArray,fcode:ByteArray) 
+		public function ProgramSet(vcode:Object,fcode:Object) 
 		{
 			this.fcode = fcode;
 			this.vcode = vcode;
 		}
 		
+		/**
+		 * @flexjsignorecoercion flash.utils.ByteArray
+		 * @flexjsignorecoercion String
+		 */
 		public function update(context:GL):void 
 		{
 			if (invalid||this.context!=context) {
 				program = context.createProgram();
-				try{
-				program.upload(vcode, fcode);
-				}catch(err:Error){
+				//try{
+				if (vcode is String){
+					var vbyte:ByteArray = new ByteArray;
+					vbyte.writeUTFBytes(vcode as String);
+					var fbyte:ByteArray = new ByteArray;
+					fbyte.writeUTFBytes(fcode as String);
+				}else{
+					vbyte = vcode as ByteArray;
+					fbyte = fcode as ByteArray;
 				}
+				program.upload(vbyte,fbyte);
+				//}catch (err:Error){
+					
+				//}
 				invalid = false;
 				this.context = context;
 			}

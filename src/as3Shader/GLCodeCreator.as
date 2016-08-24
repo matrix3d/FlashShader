@@ -122,7 +122,10 @@ package as3Shader
 				}
 			}
 			txt = uniformTxt+varyingTxt+attributeTxt + txt;
-			data = txt+"}";
+			data = txt + "}";
+			if (shader.programType==Context3DProgramType.FRAGMENT) {
+				data = "precision mediump float;\n" + data;
+			}
 		}
 		
 		private function var2type(v:Var):String {
