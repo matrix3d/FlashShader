@@ -10,42 +10,64 @@ package as3Shader
 	public class GLCodeCreator extends Creator
 	{
 		private var programTypeName:String;
-		private static var simpleOps1:Object = {mul:"*",m44:"*",m33:"*",m34:"*",add:"+",sub:"-",div:"/" };
-		private static var simpleOps2:Object = { mov:["",""],neg:["-",""] ,rcp:["1/",""],sat:["clamp(",",0,1)"]};
-		private static var simpleOps3:Object = {  
-			//rcp
-			//min
-			//max
-			frc:"fract",
-			sqt:"sqrt",
-			rsq:"inversesqrt",
-			//pow
-			//log
-			//exp
-			nrm:"normalize",
-			//sin
-			//cos
-			crs:"cross",
-			dp3:"dot",
-			dp4:"dot",
-			//abs
-			//neg
-			//sat:"clamp(v,0,1)",
-			//ddx
-			//ddy
-			//ted
-			//kil*/
-			tex:"texture2D",
-			sge:"greaterThanEqual",
-			slt:"lessThan",
-			sgn:"greaterThan",
-			seq:"equal",
-			sne:"notEqual"
-		};
+		private static var simpleOps1:Object //= {mul:"*", m44:"*", m33:"*", m34:"*", add:"+", sub:"-", div:"/" };
+		private static var simpleOps2:Object //= {mov:["", ""], neg:["-", ""] , rcp:["1/", ""], sat:["clamp(", ",0,1)"]};
+		private static var simpleOps3:Object// = {  
+			////rcp
+			////min
+			////max
+			//frc:"fract",
+			//sqt:"sqrt",
+			//rsq:"inversesqrt",
+			////pow
+			////log
+			////exp
+			//nrm:"normalize",
+			////sin
+			////cos
+			//crs:"cross",
+			//dp3:"dot",
+			//dp4:"dot",
+			////abs
+			////neg
+			////sat:"clamp(v,0,1)",
+			////ddx
+			////ddy
+			////ted
+			////kil*/
+			//tex:"texture2D",
+			//sge:"greaterThanEqual",
+			//slt:"lessThan",
+			//sgn:"greaterThan",
+			//seq:"equal",
+			//sne:"notEqual"
+		//};
 		private var initedvar:Object = { };
 		public function GLCodeCreator() 
 		{
-			
+			if (simpleOps1 == null){
+				simpleOps1 = {};
+				simpleOps1["mul"] = "*";
+				simpleOps1["m44"] = "*";
+				simpleOps1["m33"] = "*";
+				simpleOps1["m34"] = "*";
+				simpleOps1["add"] = "+";
+				simpleOps1["sub"] = "-";
+				simpleOps1["div"] = "/";
+				simpleOps2 = {};
+				simpleOps2["mov"] = ["", ""];
+				simpleOps2["neg"] = ["-", ""];
+				simpleOps2["rcp"] = ["1/", ""];
+				simpleOps2["sat"] = ["clamp(", ",0,1)"];
+				simpleOps3 = {};
+				simpleOps3["frc"] = "fract";
+				simpleOps3["sqt"] = "sqrt";
+				simpleOps3["rsq"] = "inversesqrt";
+				simpleOps3["nrm"] = "normalize";
+				simpleOps3["crs"] = "cross";
+				simpleOps3["dp3"] = "dot";
+				simpleOps3["dp4"] = "dot";
+			}
 		}
 		
 		override public function creat(shader:AS3Shader):void 

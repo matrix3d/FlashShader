@@ -2,7 +2,6 @@ package gl3d.core.shaders
 {
 	import as3Shader.AGALCodeCreator;
 	import as3Shader.Var;
-	import com.adobe.utils.AGALMiniAssembler;
 	import flash.display3D.Context3D;
 	import flash.display3D.Context3DProgramType;
 	import flash.geom.Vector3D;
