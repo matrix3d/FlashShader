@@ -12,15 +12,26 @@ package gl3d.core.shaders
 	public class GLAS3Shader extends AS3Shader
 	{
 		public var namedVars:Object = { };
-		private var binds:Vector.<Function> = new Vector.<Function>;
+		private var binds:Vector.<Array> = new Vector.<Array>;
+		private var usedbinds:Vector.<Function>;
 		public function GLAS3Shader(programType:String=Context3DProgramType.VERTEX,creator:Creator=null) 
 		{
 			super(programType, creator);
 		}
 		
 		public function bind(shader:GLShader,material:Material,isLastSameMaterial:Boolean):void {
-			for each(var binder:Function in binds) {
-				binder(shader,material,isLastSameMaterial);
+			if (usedbinds==null){
+				usedbinds = new Vector.<Function>;
+				for each(var binderArr:Array in binds) {
+					var b:GLBinder = binderArr[0];
+					if(b.v.used){
+						var f:Function = binderArr[1];
+						usedbinds.push(f);
+					}
+				}
+			}
+			for each(f in usedbinds) {
+				f(shader,material,isLastSameMaterial);
 			}
 		}
 		//uniform
@@ -30,7 +41,7 @@ package gl3d.core.shaders
 			var u:Var = matrix();
 			setNamedVar(name, u);
 			var binder:GLBinder = new GLBinder(this, u);
-			binds.push(binder.bindModelUniform);
+			binds.push([binder,binder.bindModelUniform]);
 			return u;
 		}
 		public function uniformView():Var {
@@ -39,7 +50,7 @@ package gl3d.core.shaders
 			var u:Var = matrix();
 			setNamedVar(name, u);
 			var binder:GLBinder = new GLBinder(this, u);
-			binds.push(binder.bindViewUniform);
+			binds.push([binder,binder.bindViewUniform]);
 			return u;
 		}
 		public function uniformPerspective():Var {
@@ -48,7 +59,7 @@ package gl3d.core.shaders
 			var u:Var = matrix();
 			setNamedVar(name, u);
 			var binder:GLBinder = new GLBinder(this, u);
-			binds.push(binder.bindPerspectiveUniform);
+			binds.push([binder,binder.bindPerspectiveUniform]);
 			return u;
 		}
 		public function uniformWorld2Local():Var {
@@ -57,7 +68,7 @@ package gl3d.core.shaders
 			var u:Var = matrix();
 			setNamedVar(name, u);
 			var binder:GLBinder = new GLBinder(this, u);
-			binds.push(binder.bindWorld2localUniform);
+			binds.push([binder,binder.bindWorld2localUniform]);
 			return u;
 		}
 		
@@ -67,7 +78,7 @@ package gl3d.core.shaders
 			var u:Var = uniform();
 			setNamedVar(name, u);
 			var binder:GLBinder = new GLBinder(this, u,index);
-			binds.push(binder.bindLightPosUniform);
+			binds.push([binder,binder.bindLightPosUniform]);
 			return u;
 		}
 		
@@ -77,7 +88,7 @@ package gl3d.core.shaders
 			var u:Var = uniform();
 			setNamedVar(name, u);
 			var binder:GLBinder = new GLBinder(this, u,index);
-			binds.push(binder.bindLightShadowCameraWorld);
+			binds.push([binder,binder.bindLightShadowCameraWorld]);
 			return u;
 		}
 		
@@ -87,7 +98,7 @@ package gl3d.core.shaders
 			var u:Var = uniform();
 			setNamedVar(name, u);
 			var binder:GLBinder = new GLBinder(this, u);
-			binds.push(binder.bindCameraPosUniform);
+			binds.push([binder,binder.bindCameraPosUniform]);
 			return u;
 		}
 		public function uniformTime():Var {
@@ -96,7 +107,7 @@ package gl3d.core.shaders
 			var u:Var = uniform();
 			setNamedVar(name, u);
 			var binder:GLBinder = new GLBinder(this, u);
-			binds.push(binder.bindTimeUniform);
+			binds.push([binder,binder.bindTimeUniform]);
 			return u;
 		}
 		public function uniformPixelSize():Var {
@@ -105,7 +116,7 @@ package gl3d.core.shaders
 			var u:Var = uniform();
 			setNamedVar(name, u);
 			var binder:GLBinder = new GLBinder(this, u);
-			binds.push(binder.bindPixelSizeUniform);
+			binds.push([binder,binder.bindPixelSizeUniform]);
 			return u;
 		}
 		public function uniformTextureSize():Var {
@@ -114,7 +125,7 @@ package gl3d.core.shaders
 			var u:Var = uniform();
 			setNamedVar(name, u);
 			var binder:GLBinder = new GLBinder(this, u);
-			binds.push(binder.bindTextureSizeUniform);
+			binds.push([binder,binder.bindTextureSizeUniform]);
 			return u;
 		}
 		public function uniformUVMulAdder():Var {
@@ -123,7 +134,7 @@ package gl3d.core.shaders
 			var u:Var = uniform();
 			setNamedVar(name, u);
 			var binder:GLBinder = new GLBinder(this, u);
-			binds.push(binder.bindUVMulAddUniform);
+			binds.push([binder,binder.bindUVMulAddUniform]);
 			return u;
 		}
 		
@@ -133,7 +144,7 @@ package gl3d.core.shaders
 			var u:Var = floatArray(numJoints*2);
 			setNamedVar(name, u);
 			var binder:GLBinder = new GLBinder(this, u);
-			binds.push(binder.bindJointsQuatUniform);
+			binds.push([binder,binder.bindJointsQuatUniform]);
 			return u;
 		}
 		public function uniformJointsMatrix(numJoints:int):Var {
@@ -142,7 +153,7 @@ package gl3d.core.shaders
 			var u:Var = matrixArray(numJoints);
 			setNamedVar(name, u);
 			var binder:GLBinder = new GLBinder(this, u);
-			binds.push(binder.bindJointsMatrixUniform);
+			binds.push([binder,binder.bindJointsMatrixUniform]);
 			return u;
 		}
 		public function uniformMaterialColor():Var {
@@ -151,7 +162,7 @@ package gl3d.core.shaders
 			var u:Var = uniform();
 			setNamedVar(name, u);
 			var binder:GLBinder = new GLBinder(this, u);
-			binds.push(binder.bindMaterialColorUniform);
+			binds.push([binder,binder.bindMaterialColorUniform]);
 			return u;
 		}
 		public function uniformLightColor(index:int):Var {
@@ -160,7 +171,7 @@ package gl3d.core.shaders
 			var u:Var = uniform();
 			setNamedVar(name, u);
 			var binder:GLBinder = new GLBinder(this, u,index);
-			binds.push(binder.bindLightColorUniform);
+			binds.push([binder,binder.bindLightColorUniform]);
 			return u;
 		}
 		public function uniformLightVar(index:int):Var {
@@ -169,7 +180,7 @@ package gl3d.core.shaders
 			var u:Var = uniform();
 			setNamedVar(name, u);
 			var binder:GLBinder = new GLBinder(this, u,index);
-			binds.push(binder.bindLightColorVar);
+			binds.push([binder,binder.bindLightColorVar]);
 			return u;
 		}
 		public function uniformAmbient():Var {
@@ -178,7 +189,7 @@ package gl3d.core.shaders
 			var u:Var = uniform();
 			setNamedVar(name, u);
 			var binder:GLBinder = new GLBinder(this, u);
-			binds.push(binder.bindAmbientUniform);
+			binds.push([binder,binder.bindAmbientUniform]);
 			return u;
 		}
 		public function uniformSpecular():Var {
@@ -187,7 +198,7 @@ package gl3d.core.shaders
 			var u:Var = uniform();
 			setNamedVar(name, u);
 			var binder:GLBinder = new GLBinder(this, u);
-			binds.push(binder.bindSpecularUniform);
+			binds.push([binder,binder.bindSpecularUniform]);
 			return u;
 		}
 		public function uniformWireframeColor():Var {
@@ -196,7 +207,7 @@ package gl3d.core.shaders
 			var u:Var = uniform()
 			setNamedVar(name, u);
 			var binder:GLBinder = new GLBinder(this, u);
-			binds.push(binder.bindWireframeColorUniform);
+			binds.push([binder,binder.bindWireframeColorUniform]);
 			return u;
 		}
 		
@@ -207,7 +218,7 @@ package gl3d.core.shaders
 			var samp:Var = sampler();
 			setNamedVar(name, samp);
 			var binder:GLBinder = new GLBinder(this,samp);
-			binds.push(binder.bindDiffSampler);
+			binds.push([binder,binder.bindDiffSampler]);
 			return samp;
 		}
 		public function samplerNormalmap():Var {
@@ -216,7 +227,7 @@ package gl3d.core.shaders
 			var samp:Var = sampler();
 			setNamedVar(name, samp);
 			var binder:GLBinder = new GLBinder(this,samp);
-			binds.push(binder.bindNormalmapSampler);
+			binds.push([binder,binder.bindNormalmapSampler]);
 			return samp;
 		}
 		public function samplerLightmap():Var {
@@ -225,7 +236,7 @@ package gl3d.core.shaders
 			var samp:Var = sampler();
 			setNamedVar(name, samp);
 			var binder:GLBinder = new GLBinder(this,samp);
-			binds.push(binder.bindLightmapSampler);
+			binds.push([binder,binder.bindLightmapSampler]);
 			return samp;
 		}
 		public function samplerReflect():Var {
@@ -234,7 +245,7 @@ package gl3d.core.shaders
 			var samp:Var = sampler();
 			setNamedVar(name, samp);
 			var binder:GLBinder = new GLBinder(this,samp);
-			binds.push(binder.bindReflectSampler);
+			binds.push([binder,binder.bindReflectSampler]);
 			return samp;
 		}
 		public function samplerTerrains(index:int):Var {
@@ -243,7 +254,7 @@ package gl3d.core.shaders
 			var samp:Var = sampler();
 			setNamedVar(name, samp);
 			var binder:GLBinder = new GLBinder(this,samp,index);
-			binds.push(binder.bindTerrainsSampler);
+			binds.push([binder,binder.bindTerrainsSampler]);
 			return samp;
 		}
 		public function samplerShadowmaps(index:int):Var {
@@ -252,7 +263,7 @@ package gl3d.core.shaders
 			var samp:Var = sampler();
 			setNamedVar(name, samp);
 			var binder:GLBinder = new GLBinder(this,samp,index);
-			binds.push(binder.bindShadowmapsSampler);
+			binds.push([binder,binder.bindShadowmapsSampler]);
 			return samp;
 		}
 		//buffs
@@ -263,7 +274,7 @@ package gl3d.core.shaders
 			b = buff();
 			setNamedVar(name, b);
 			var binder:GLBinder = new GLBinder(this,b);
-			binds.push(binder.bindPosBuff);
+			binds.push([binder,binder.bindPosBuff]);
 			return b;
 		}
 		public function buffNorm():Var {
@@ -272,7 +283,7 @@ package gl3d.core.shaders
 			var b:Var = buff();
 			setNamedVar(name, b);
 			var binder:GLBinder = new GLBinder(this,b);
-			binds.push(binder.bindNormBuff);
+			binds.push([binder,binder.bindNormBuff]);
 			return b;
 		}
 		public function buffTangent():Var {
@@ -281,7 +292,7 @@ package gl3d.core.shaders
 			var b:Var = buff();
 			setNamedVar(name, b);
 			var binder:GLBinder = new GLBinder(this,b);
-			binds.push(binder.bindTangentBuff);
+			binds.push([binder,binder.bindTangentBuff]);
 			return b;
 		}
 		public function buffUV():Var {
@@ -290,7 +301,7 @@ package gl3d.core.shaders
 			var b:Var = buff();
 			setNamedVar(name, b);
 			var binder:GLBinder = new GLBinder(this,b);
-			binds.push(binder.bindUVBuff);
+			binds.push([binder,binder.bindUVBuff]);
 			return b;
 		}
 		public function buffRandom():Var {
@@ -299,7 +310,7 @@ package gl3d.core.shaders
 			var b:Var = buff();
 			setNamedVar(name, b);
 			var binder:GLBinder = new GLBinder(this,b);
-			binds.push(binder.bindRandomBuff);
+			binds.push([binder,binder.bindRandomBuff]);
 			return b;
 		}
 		public function buffSphereRandom():Var {
@@ -308,7 +319,7 @@ package gl3d.core.shaders
 			var b:Var = buff();
 			setNamedVar(name, b);
 			var binder:GLBinder = new GLBinder(this,b);
-			binds.push(binder.bindSphereRandomBuff);
+			binds.push([binder,binder.bindSphereRandomBuff]);
 			return b;
 		}
 		public function buffTargetPosition():Var {
@@ -317,7 +328,7 @@ package gl3d.core.shaders
 			var b:Var = buff();
 			setNamedVar(name, b);
 			var binder:GLBinder = new GLBinder(this,b);
-			binds.push(binder.bindTargetPositionBuff);
+			binds.push([binder,binder.bindTargetPositionBuff]);
 			return b;
 		}
 		public function buffUV2():Var {
@@ -326,7 +337,7 @@ package gl3d.core.shaders
 			var b:Var = buff();
 			setNamedVar(name, b);
 			var binder:GLBinder = new GLBinder(this,b);
-			binds.push(binder.bindUV2Buff);
+			binds.push([binder,binder.bindUV2Buff]);
 			return b;
 		}
 		public function buffJoints():Var {
@@ -335,7 +346,7 @@ package gl3d.core.shaders
 			var b:Var = buff();
 			setNamedVar(name, b);
 			var binder:GLBinder = new GLBinder(this,b);
-			binds.push(binder.bindJointsBuff);
+			binds.push([binder,binder.bindJointsBuff]);
 			return b;
 		}
 		/*public function buffQuatJoints():Var {
@@ -353,7 +364,7 @@ package gl3d.core.shaders
 			var b:Var = buff();
 			setNamedVar(name, b);
 			var binder:GLBinder = new GLBinder(this,b);
-			binds.push(binder.bindWeightsBuff);
+			binds.push([binder,binder.bindWeightsBuff]);
 			return b;
 		}
 		/*public function buffCpuSkinPos():Var {
