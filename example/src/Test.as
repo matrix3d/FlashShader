@@ -1,76 +1,70 @@
 package 
 {
-	import flash.display.Loader;
+	import flash.display.Bitmap;
+	import flash.display.BitmapData;
 	import flash.display.Sprite;
-	import flash.display.StageAlign;
-	import flash.display.StageScaleMode;
-	import flash.events.Event;
-	import flash.events.MouseEvent;
-	import flash.net.URLRequest;
-	import flash.utils.ByteArray;
-	import flash.utils.Proxy;
-	import flash.utils.getTimer;
+	import flash.geom.Vector3D;
+	import gl3d.core.InstanceMaterial;
 	import gl3d.core.Light;
 	import gl3d.core.Material;
+	import gl3d.core.Node3D;
 	import gl3d.core.View3D;
-	import gl3d.core.shaders.GLAS3Shader;
-	import gl3d.shaders.PhongGLShader;
+	import gl3d.ctrl.ArcBallCtrl;
+	import gl3d.meshs.Meshs;
+	import flash.events.Event;
+	import gl3d.meshs.Teapot;
+	import gl3d.util.Stats;
 	/**
 	 * ...
 	 * @author lizhi
 	 */
 	public class Test extends Sprite
 	{
-		private var loader:Loader;
+		private var view:View3D;
+		private var n1:Node3D;
 		public function Test() 
 		{
-			stage.align = StageAlign.TOP_LEFT;
-			stage.scaleMode = StageScaleMode.NO_SCALE;
+			view = new View3D(0);
+			view.stage3dWidth = 800;
+			view.stage3dHeight = 600;
+			addChild(view);
+			addEventListener(Event.ENTER_FRAME, enterFrame);
 			
-			[Embed(source = "tex.bin", mimeType = "application/octet-stream")]var c:Class;
-			var b:ByteArray = new c as ByteArray;
-			loader = new Loader;
-			addChild(loader);
-			loader.loadBytes(b);
-			loader.contentLoaderInfo.addEventListener(Event.COMPLETE, loader_complete);
-			stage.addEventListener(MouseEvent.CLICK, stage_click);
+			var light:Light = new Light;
+			view.scene.addChild(light);
+			light.z = -4500;
+			light.y = 4500;
+			
+			n1 = new Node3D;
+			n1.drawable = Meshs.cube(.1, .1, .1);
+			n1.material = new Material;
+			n1.material.lightAble = true;
+			for (var i:int = 0; i < 3000;i++ ){
+				var n2:Node3D = n1.clone();
+				//n2.material = new InstanceMaterial();
+				n2.x=3*(Math.random()-.5)
+				n2.y=3*(Math.random()-.5)
+				n2.z=3*(Math.random()-.5)
+				view.scene.addChild(n2);
+			}
+			view.camera.perspective.perspectiveFieldOfViewLH(Math.PI / 4, view.stage3dWidth/ view.stage3dHeight, .1, 4000);
+			view.camera.z = -10;
+			view.scene.addChild(n1);
+			
+			addChild(new Stats(view));
+			var ct:ArcBallCtrl = new ArcBallCtrl(view.camera, stage);
+			view.ctrls.push(ct);
 		}
 		
-		private function loader_complete(e:Event):void 
+		private function enterFrame(e:Event):void 
 		{
-			trace(1);
-			graphics.lineStyle(10);
-			graphics.drawRect(0, 0, loader.content.width, loader.content.height);
+			/*n1.matrix.appendRotation(1, Vector3D.X_AXIS);
+			n1.matrix.appendRotation(2, Vector3D.Y_AXIS);
+			n1.updateTransforms();*/
+			view.updateCtrl();
+			view.render();
 		}
 		
-		private function stage_click(e:MouseEvent):void 
-		{
-			var t:int = getTimer();
-			var pg:PhongGLShader= new PhongGLShader();
-			var m:Material = new Material(pg);
-			m.view = new View3D;
-			//m.view.lights.push(new Light);
-			var vs:GLAS3Shader=pg.vs = pg.getVertexShader(m);
-			var fs:GLAS3Shader = pg.getFragmentShader(m);
-			vs.code;
-			fs.code;
-			trace(getTimer() - t);
-			
-		}
 	}
 
-}
-import flash.utils.Proxy;
-import flash.utils.flash_proxy;
-
-dynamic class MyVar extends Proxy{
-	override flash_proxy function getProperty(name:*):* 
-	{
-		trace(1);
-		return null;
-	}
-	
-	public function ddd():void{
-		
-	}
 }

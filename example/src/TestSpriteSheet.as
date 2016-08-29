@@ -61,6 +61,7 @@ package
 			view.background = 0x999999;
 			quat = new Node3D;
 			quat.material = new Material;
+			quat.material.gray = true;
 			//quat.material.isIntVertexScreen = true;
 			quat.material.uvMuler = [.5, .5];
 			quat.material.uvAdder = [.5, .5];

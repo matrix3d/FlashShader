@@ -139,8 +139,9 @@ package
 			
 			var camera:Camera = Camera.getCamera();
 			if (Context3D.supportsVideoTexture&& camera){
-				texture = new TextureSet(camera);
+				//texture = new TextureSet(camera);
 			}
+			texture //= new TextureSet(bmd);
 			material.culling =  Context3DTriangleFace.NONE;
 			//material.blendModel = BlendMode.ADD;
 			material.normalMapAble = false;
@@ -212,10 +213,10 @@ package
 		}
 		
 		public function initNode():void {
-			addSky();
-			
+			//addSky();
 			teapot = new Node3D;
 			teapot.material = material;
+			material.gray = true;
 			teapot.drawable = //Teapot.teapot();
 			Meshs.unpack(Meshs.sphere(5,5));
 			view.scene.addChild(teapot);

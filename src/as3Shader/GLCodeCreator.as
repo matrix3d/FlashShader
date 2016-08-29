@@ -93,7 +93,7 @@ package as3Shader
 				var line:Array = lines[i];
 				var op:String = line[0];
 				var v1var:Var = line[1] as Var;
-				var v1:String = var2String(v1var);
+				var v1:String = var2String(v1var,false);
 				if (initedvar[v1]==null) {
 					initedvar[v1] = true;
 					if (v1var.type == Var.TYPE_T) {
@@ -105,7 +105,7 @@ package as3Shader
 				var ps:Array = [];
 				for (var j:int = 2; j < line.length;j++ ) {
 					var v:Var = line[j];
-					var vtxt:String = var2String(v.root,false);
+					var vtxt:String = var2String(v,false);
 					var vtype:String = var2type(v);
 					ps.push(vtxt);
 					if (initedvar[vtxt] == null) {

@@ -46,6 +46,8 @@ import gl3d.core.Material;
 import gl3d.core.renders.GL;
 import gl3d.shaders.AGALShader;
 
+
+
 class AGALShader1 extends AGALShader {
 	public function AGALShader1() 
 	{

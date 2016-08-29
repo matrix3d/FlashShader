@@ -19,6 +19,7 @@ package gl3d.core.renders
 	import gl3d.core.renders.GL;
 	import gl3d.core.TextureSet;
 	import gl3d.core.View3D;
+	import gl3d.core.shaders.GLShader;
 	import gl3d.post.PostEffect;
 	/**
 	 * ...
@@ -139,6 +140,7 @@ package gl3d.core.renders
 					gl3d.setRenderToBackBuffer();
 				}
 				gl3d.clear((view.background>>16&0xff)/0xff,(view.background>>8&0xff)/0xff,(view.background&0xff)/0xff);
+				GLShader.LastMaterial = null;
 				for each(node in collects) {
 					node.update(view);
 				}

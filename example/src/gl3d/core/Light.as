@@ -19,7 +19,7 @@ package gl3d.core {
 		public var distance:Number = 10;
 		public var innerConeAngle:Number = Math.PI / 6;
 		public var outerConeAngle:Number = Math.PI / 3;
-		public function Light(lightType:int=DISTANT,name:String="light") 
+		public function Light(lightType:int=1,name:String="light") 
 		{
 			this.lightType = lightType;
 			super(name);

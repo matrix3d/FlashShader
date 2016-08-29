@@ -18,9 +18,9 @@ package gl3d.core.shaders
 			super(programType, creator);
 		}
 		
-		public function bind(shader:GLShader,material:Material):void {
+		public function bind(shader:GLShader,material:Material,isLastSameMaterial:Boolean):void {
 			for each(var binder:Function in binds) {
-				binder(shader,material);
+				binder(shader,material,isLastSameMaterial);
 			}
 		}
 		//uniform

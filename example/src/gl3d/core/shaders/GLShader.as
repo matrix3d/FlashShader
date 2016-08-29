@@ -36,6 +36,7 @@ package gl3d.core.shaders
 		public var buffSets:Array;
 		public var debug:Boolean = true;
 		public static var PROGRAM_POOL:Object = { };
+		public static var LastMaterial:Material;
 		public function GLShader() 
 		{
 			textureSets = [];
@@ -139,23 +140,27 @@ package gl3d.core.shaders
 		
 		public function update(material:Material):void 
 		{
+			var isLastSameMaterial:Boolean = LastMaterial == material;
 			if (invalid) {
 				programSet = getProgram(material);
 				invalid = false;
 			}
 			if (programSet) {
 				programSet.update(material.view.renderer.gl3d);
-				material.view.renderer.gl3d.setProgram(programSet.program);
-				material.view.renderer.gl3d.setDepthTest(material.depthMask, material.passCompareMode);
-				material.view.renderer.gl3d.setBlendFactors(material.sourceFactor, material.destinationFactor);
-				material.view.renderer.gl3d.setCulling(material.culling);
+				if(!isLastSameMaterial){
+					material.view.renderer.gl3d.setProgram(programSet.program);
+					material.view.renderer.gl3d.setDepthTest(material.depthMask, material.passCompareMode);
+					material.view.renderer.gl3d.setBlendFactors(material.sourceFactor, material.destinationFactor);
+					material.view.renderer.gl3d.setCulling(material.culling);
+				}
 			}
 			if(vs&&fs){
-				vs.bind(this,material);
-				fs.bind(this, material);
-				
-				material.view.renderer.gl3d.setProgramConstantsFromVector(Context3DProgramType.VERTEX, vs.constMemLen, vs.constPoolVec);
-				material.view.renderer.gl3d.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, fs.constMemLen, fs.constPoolVec);
+				vs.bind(this,material,isLastSameMaterial);
+				fs.bind(this, material,isLastSameMaterial);
+				if(!isLastSameMaterial){
+					material.view.renderer.gl3d.setProgramConstantsFromVector(Context3DProgramType.VERTEX, vs.constMemLen, vs.constPoolVec);
+					material.view.renderer.gl3d.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, fs.constMemLen, fs.constPoolVec);
+				}
 			}
 			var allTexReady:Boolean = true;
 			if(textureSets)
@@ -191,6 +196,7 @@ package gl3d.core.shaders
 			if (programSet) {
 				material.view.renderer.gl3d.drawTriangles(material.node.drawable.index,0,material.node.drawable.index.numTriangles);
 			}
+			LastMaterial = material;
 		}
 	}
 
