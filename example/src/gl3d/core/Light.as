@@ -14,7 +14,7 @@ package gl3d.core {
 		public var color:Vector3D = new Vector3D(1, 1, 1, 1);
 		public var shadowMapEnabled:Boolean = false;
 		public var shadowMapSize:int = 512;
-		public var shadowMap:TextureSet = new TextureSet;
+		public var shadowMap:TextureSet = new TextureSet(null,false,false,true,false,false);
 		private var _shadowCamera:Camera3D = new Camera3D;
 		public var distance:Number = 10;
 		public var innerConeAngle:Number = Math.PI / 6;
