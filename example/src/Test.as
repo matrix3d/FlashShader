@@ -39,7 +39,7 @@ package
 			n1.drawable = Meshs.cube(.1, .1, .1);
 			n1.material = new Material;
 			n1.material.lightAble = true;
-			for (var i:int = 0; i < 3000;i++ ){
+			for (var i:int = 0; i < 1000;i++ ){
 				var n2:Node3D = n1.clone();
 				//n2.material = new InstanceMaterial();
 				n2.x=3*(Math.random()-.5)

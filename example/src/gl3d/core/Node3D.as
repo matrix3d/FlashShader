@@ -7,6 +7,7 @@ package gl3d.core
 	import gl3d.pick.AS3Picking;
 	import gl3d.pick.Picking;
 	import gl3d.util.Matrix3DUtils;
+	import gl3d.util.Utils;
 	
 	/**
 	 * ...
@@ -66,6 +67,7 @@ package gl3d.core
 		
 		public function update(view:View3D, material:MaterialBase = null):void
 		{
+			//trace(name,Utils.getID(this),(this.material&&this.material.diffTexture)?Utils.getID(this.material.diffTexture.texture):null);
 			//if(visible){
 				if (controllers)
 				{

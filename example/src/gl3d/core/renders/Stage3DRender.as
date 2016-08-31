@@ -21,6 +21,7 @@ package gl3d.core.renders
 	import gl3d.core.View3D;
 	import gl3d.core.shaders.GLShader;
 	import gl3d.post.PostEffect;
+	import gl3d.util.Utils;
 	/**
 	 * ...
 	 * @author lizhi
@@ -43,7 +44,11 @@ package gl3d.core.renders
 			stage3d.addEventListener(Event.CONTEXT3D_CREATE, stage_context3dCreate);
 			stage3d.addEventListener(ErrorEvent.ERROR, stage3Ds_error);
 			//stage.stage3Ds[0].requestContext3D(Context3DRenderMode.AUTO, Context3DProfile.STANDARD);
-			var pfs:Vector.<String> = new <String>[Context3DProfile.STANDARD,Context3DProfile.STANDARD_CONSTRAINED,Context3DProfile.BASELINE_EXTENDED,Context3DProfile.BASELINE,Context3DProfile.BASELINE_CONSTRAINED];
+			var pfs:Vector.<String> = new <String>[Context3DProfile.BASELINE_EXTENDED,Context3DProfile.BASELINE,Context3DProfile.BASELINE_CONSTRAINED];
+			if (agalVersion == 2){
+				pfs.unshift(Context3DProfile.STANDARD_CONSTRAINED);
+				pfs.unshift(Context3DProfile.STANDARD)
+			}
 			for (var i:int = pfs.length - 1; i >= 0;i-- ) {
 				if (pfs[i]==null) {
 					pfs.splice(i, 1);
@@ -93,8 +98,8 @@ package gl3d.core.renders
 					stage3d.x = view.x;
 					stage3d.y = view.y;
 					gl3d.configureBackBuffer(view.stage3dWidth, view.stage3dHeight, view.antiAlias);
+					view.invalid = false;
 				}
-				view.invalid = false;
 				collects.length = 0;
 				view.lights.length = 0;
 				gl3d.drawTriangleCounter = 0;
@@ -105,8 +110,10 @@ package gl3d.core.renders
 					if (light.shadowMapEnabled) {
 						light.shadowMap.update(view);
 						if (light.shadowMap.texture == null) {
+							light.shadowMap.name = light.name+"_shadowmap";
 							light.shadowMap.texture = gl3d.createTexture(light.shadowMapSize, light.shadowMapSize, Context3DTextureFormat.RGBA_HALF_FLOAT, true);
 						}
+						//trace("rtt",Utils.getID(light.shadowMap.texture));
 						gl3d.setRenderToTexture(light.shadowMap.texture, true);
 						gl3d.clear(1,1,1);
 						if (depthMaterial==null) {
@@ -140,7 +147,6 @@ package gl3d.core.renders
 					gl3d.setRenderToBackBuffer();
 				}
 				gl3d.clear((view.background>>16&0xff)/0xff,(view.background>>8&0xff)/0xff,(view.background&0xff)/0xff);
-				GLShader.LastMaterial = null;
 				for each(node in collects) {
 					node.update(view);
 				}

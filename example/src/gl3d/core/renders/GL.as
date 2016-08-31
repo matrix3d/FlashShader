@@ -3,6 +3,7 @@ package gl3d.core.renders
 	import flash.display.BitmapData;
 	import flash.display3D.Context3D;
 	import flash.display3D.Context3DCompareMode;
+	import flash.display3D.Context3DTextureFormat;
 	import flash.display3D.IndexBuffer3D;
 	import flash.display3D.Program3D;
 	import flash.display3D.textures.CubeTexture;
@@ -10,6 +11,8 @@ package gl3d.core.renders
 	import flash.display3D.textures.Texture;
 	import flash.display3D.textures.TextureBase;
 	import flash.display3D.VertexBuffer3D;
+	import gl3d.core.shaders.GLShader;
+	import gl3d.util.Utils;
 	//import flash.display3D.textures.VideoTexture;
 	import flash.geom.Matrix3D;
 	import flash.geom.Rectangle;
@@ -39,6 +42,10 @@ package gl3d.core.renders
 		}
 		
 		public function clear(red : Number = 0, green : Number = 0, blue : Number = 0, alpha : Number = 1, depth : Number = 1, stencil : uint = 0, mask : uint = 0xFFFFFFFF) : void {
+			beginDraw();
+			GLShader.LastMaterial = null;
+			currentTextures = {};
+			currentVBufs = {};
 			context.clear(red, green, blue, alpha, depth, stencil, mask);
 		}
 		public function configureBackBuffer(width : int, height : int, antiAlias : int, enableDepthAndStencil : Boolean = true, wantsBestResolution : Boolean = false) : void {
@@ -59,7 +66,7 @@ package gl3d.core.renders
 		}
 
 		public function createTexture(width : int, height : int, format : String, optimizeForRenderToTexture : Boolean, streamingLevels : int = 0) : Texture {
-			return context.createTexture(width, height, format, optimizeForRenderToTexture/*, streamingLevels*/);
+			return context.createTexture(width, height, format||Context3DTextureFormat.BGRA, optimizeForRenderToTexture/*, streamingLevels*/);
 		}
 		
 		public function createVideoTexture() :Object/*VideoTexture*/ {
@@ -163,6 +170,9 @@ package gl3d.core.renders
 			if (nowTexMaxIndex < sampler) nowTexMaxIndex = sampler;
 		}
 		private  function setTextureInternal(sampler : int, texture : TextureBase):void{
+			/*if (texture){
+				trace(sampler, Utils.getID(texture));
+			}*/
 			if (currentTextures[sampler] != texture) {
 				currentTextures[sampler] = texture;
 				context.setTextureAt(sampler, texture);

@@ -97,6 +97,7 @@ package
 			//view.visible = false;
 			view.antiAlias = 2;
 			view.enableErrorChecking = true;
+			//view.renderer.agalVersion = 1;
 			addChild(view);
 			view.camera.z = -10;
 			
@@ -141,7 +142,7 @@ package
 			if (Context3D.supportsVideoTexture&& camera){
 				//texture = new TextureSet(camera);
 			}
-			texture //= new TextureSet(bmd);
+			texture = new TextureSet(bmd);
 			material.culling =  Context3DTriangleFace.NONE;
 			//material.blendModel = BlendMode.ADD;
 			material.normalMapAble = false;
@@ -200,7 +201,7 @@ package
 		
 		public function addSky():void {
 			//skybox
-			skybox = new Node3D;
+			skybox = new Node3D("sky");
 			var m:Material = new Material(new SkyBoxGLShader);
 			skybox.material = m;
 			m.castShadow = false;
@@ -213,7 +214,7 @@ package
 		}
 		
 		public function initNode():void {
-			//addSky();
+			addSky();
 			teapot = new Node3D;
 			teapot.material = material;
 			material.gray = true;
@@ -238,11 +239,19 @@ package
 		}
 		
 		public function initUI():void {
+			stage.addEventListener(MouseEvent.CLICK, stage_click);
+			
 			if(Multitouch.supportsTouchEvents&&Multitouch.maxTouchPoints)
 			addChild(gamepad);
 			gamepad.x = 200;
 			gamepad.y = 200;
 			addChild(stats);
+		}
+		
+		private function stage_click(e:MouseEvent):void 
+		{
+			//teapot.drawable = Meshs.unpack(Teapot.teapot());
+			teapot.material.diffTexture = new TextureSet(new BitmapData(1,1,false,0xff0000));
 		}
 		
 		public function initCtrl():void {

@@ -13,6 +13,7 @@ package gl3d.core.shaders
 	import flash.utils.getDefinitionByName;
 	import flash.utils.getQualifiedClassName;
 	import gl3d.core.Camera3D;
+	import gl3d.core.IndexBufferSet;
 	import gl3d.core.renders.GL;
 	import gl3d.core.shaders.GLAS3Shader;
 	import gl3d.core.Material;
@@ -158,8 +159,8 @@ package gl3d.core.shaders
 				vs.bind(this,material,isLastSameMaterial);
 				fs.bind(this, material,isLastSameMaterial);
 				if(!isLastSameMaterial){
-					material.view.renderer.gl3d.setProgramConstantsFromVector(Context3DProgramType.VERTEX, vs.constMemLen, vs.constPoolVec);
-					material.view.renderer.gl3d.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, fs.constMemLen, fs.constPoolVec);
+					if(vs.constPoolVec.length)material.view.renderer.gl3d.setProgramConstantsFromVector(Context3DProgramType.VERTEX, vs.constMemLen, vs.constPoolVec);
+					if(fs.constPoolVec.length)material.view.renderer.gl3d.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, fs.constMemLen, fs.constPoolVec);
 				}
 			}
 			var allTexReady:Boolean = true;
@@ -194,7 +195,8 @@ package gl3d.core.shaders
 			}
 			
 			if (programSet) {
-				material.view.renderer.gl3d.drawTriangles(material.node.drawable.index,0,material.node.drawable.index.numTriangles);
+				var index:IndexBufferSet = material.node.drawable.index;
+				material.view.renderer.gl3d.drawTriangles(index,0,index.numTriangles);
 			}
 			LastMaterial = material;
 		}

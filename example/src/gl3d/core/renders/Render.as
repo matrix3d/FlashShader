@@ -14,7 +14,7 @@ package gl3d.core.renders
 	{
 		public var gl3d:GL;
 		public var view:View3D;
-		public var agalVersion:int;
+		public var agalVersion:int = 2;
 		public var collects:Vector.<Node3D> = new Vector.<Node3D>;
 		//public var lights:Vector.<Light> = new Vector.<Light>;
 		private var _visible:Boolean = true;

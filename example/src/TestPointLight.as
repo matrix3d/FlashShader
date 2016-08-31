@@ -1,13 +1,17 @@
 package
 {
 	import com.bit101.components.PushButton;
+	import flash.display.BitmapData;
 	import flash.events.Event;
 	import gl3d.core.Camera3D;
 	import gl3d.core.Light;
 	import gl3d.core.Material;
+	import gl3d.core.MaterialBase;
 	import gl3d.core.Node3D;
+	import gl3d.core.TextureSet;
 	import gl3d.meshs.Meshs;
 	import gl3d.meshs.Teapot;
+	import gl3d.util.Stats;
 	
 	public class TestPointLight extends BaseExample
 	{
@@ -21,20 +25,27 @@ package
 			button = new PushButton(this, 10, 10, "Reset", onReset);
 		}
 		
+		public function TestPointLight() 
+		{
+			super();
+		}
+		
 		override public function initNode():void
 		{
+			view.enableErrorChecking = true;
 			addSky();
-			var node:Node3D = new Node3D;
+			var node:Node3D = new Node3D("sphere");
 			node.material = new Material;
 			node.drawable = Meshs.sphere();
 			view.scene.addChild(node);
 			
-			var plane:Node3D = new Node3D;
+			var plane:Node3D = new Node3D("plane");
 			plane.material = new Material;
 			plane.drawable = Meshs.plane(3);
 			plane.setRotation(90, 0, 0);
 			plane.y = -1.5;
 			view.scene.addChild(plane);
+			addChild(new Stats(view));
 		}
 		
 		override protected function stage_resize(e:Event = null):void 
@@ -43,8 +54,11 @@ package
 			c2d.perspective.orthoOffCenterLH( 0, stage.stageWidth, -stage.stageHeight ,0, -1000, 1000);
 		}
 		
+		private var inum:int = 0;
 		override public function initLight():void
 		{
+			trace("initlight");
+			inum++;
 			var light:Light;
 			while (lights.length)
 			{
@@ -64,31 +78,34 @@ package
 				}
 			}
 			var i:int;
-			lightNum =  2 + 2 * Math.random();
+			lightNum =  2;// 4//2 + 2 * Math.random();
 			for (i = 0; i < lightNum; i += 1)
 			{
 				light = new RotLight();
+				light.name = "light" + i;
 				light.shadowMapEnabled = true;
 				lights.push(light);
-				view.scene.addChild(light);
 				
 				var size:int = 100;
-				quat = new Node3D;
+				quat = new Node3D(inum+"quat"+i);
 				quat.material = new Material;
+				quat.material.diffTexture = new TextureSet(new BitmapData(1,1,false,0xffffff*Math.random()))//light.shadowMap;
+				quat.material.diffTexture = light.shadowMap;
 				quat.material.materialCamera = c2d;
 				quat.material.lightAble = false;
+				quat.material.castShadow = false;
 				quat.drawable = Meshs.plane(size);
 				quat.x = size + i * ((size*2)+1);
 				quat.y = -size;
-				quat.material.castShadow = false;
 				view.scene.addChild(quat);
-				
-				quat.material.diffTexture = light.shadowMap;
+				quats.push(quat);
+				view.scene.addChild(light);
 			}
 		}
 		
 		override public function enterFrame(e:Event):void 
 		{
+			//trace("-----------");
 			for each(var light:RotLight in lights) {
 				light.matrix.appendRotation(light.speed, light.axis);
 				light.updateTransforms();
