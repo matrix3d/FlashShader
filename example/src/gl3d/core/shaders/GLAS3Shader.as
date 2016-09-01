@@ -13,6 +13,7 @@ package gl3d.core.shaders
 	{
 		public var namedVars:Object = { };
 		private var binds:Vector.<Array> = new Vector.<Array>;
+		private var fusedBind:List; 
 		private var usedbinds:Vector.<Function>;
 		public function GLAS3Shader(programType:String=Context3DProgramType.VERTEX,creator:Creator=null) 
 		{
@@ -22,17 +23,32 @@ package gl3d.core.shaders
 		public function bind(shader:GLShader,material:Material,isLastSameMaterial:Boolean):void {
 			if (usedbinds==null){
 				usedbinds = new Vector.<Function>;
+				var l:List;
 				for each(var binderArr:Array in binds) {
 					var b:GLBinder = binderArr[0];
 					if(b.v.used){
 						var f:Function = binderArr[1];
 						usedbinds.push(f);
+						var n:List = new List;
+						n.fun = f;
+						if (l){
+							l.next = n;
+						}
+						l = n;
+						if (fusedBind==null){
+							fusedBind = l;
+						}
 					}
 				}
 			}
-			for each(f in usedbinds) {
-				f(shader,material,isLastSameMaterial);
+			n = fusedBind;
+			while (n){
+				n.fun(shader,material,isLastSameMaterial);
+				n = n.next;
 			}
+			/*for each(f in usedbinds) {
+				f(shader,material,isLastSameMaterial);
+			}*/
 		}
 		//uniform
 		public function uniformModel():Var {
@@ -394,4 +410,8 @@ package gl3d.core.shaders
 		
 	}
 
+}
+class List{
+	public var fun:Function;
+	public var next:List;
 }

@@ -108,12 +108,6 @@ package gl3d.shaders
 			var worldPos:Var = m44(pos, model);
 			var viewPos:Var = m44(worldPos, view);
 			var opVar:Var = m44(viewPos, perspective);
-			/*if (material.isIntVertexScreen){
-				debug("int");
-				var intmuler:Var = mul(mov(.5),uniformPixelSize());
-				div(floor(mul(opVar.xy, intmuler)), intmuler, opVar.xy)
-				debug("int");
-			}*/
 			op = opVar;
 			
 			if (material.lightAble||material.reflectTexture) {
@@ -160,8 +154,6 @@ package gl3d.shaders
 					var w2c:Var = nrm(sub(worldPos, uniformCameraPos()));
 					//r=2n(n.l)-l
 					mov(sub(w2c,mul2([2, worldNorm,dp3(worldNorm,w2c)])),reflected);
-					
-					//mov(norm, reflected);
 				}
 			}
 			
