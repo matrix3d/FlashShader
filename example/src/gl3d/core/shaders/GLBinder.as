@@ -4,6 +4,7 @@ package gl3d.core.shaders
 	import flash.display3D.Context3DProgramType;
 	import flash.geom.Matrix3D;
 	import flash.geom.Vector3D;
+	import gl3d.core.Camera3D;
 	import gl3d.core.Light;
 	import gl3d.core.Material;
 	import gl3d.core.renders.GL;
@@ -45,7 +46,11 @@ package gl3d.core.shaders
 		}
 		public function bindLightShadowCameraWorld(shader:GLShader, material:Material,isLastSameMaterial:Boolean):void {
 			if (!isLastSameMaterial) {
-				material.view.renderer.gl3d.setProgramConstantsFromMatrix(as3shader.programType, v.index,material.view.lights[index].shadowCamera.world,true);
+				// TODO : 优化
+				var c:Camera3D = material.view.lights[index].shadowCamera as Camera3D;
+				var m2:Matrix3D = c.world.clone();
+				m2.append(c.perspective);
+				material.view.renderer.gl3d.setProgramConstantsFromMatrix(as3shader.programType,v.index,m2,true);
 			}
 		}
 		public function bindCameraPosUniform(shader:GLShader, material:Material,isLastSameMaterial:Boolean):void {
