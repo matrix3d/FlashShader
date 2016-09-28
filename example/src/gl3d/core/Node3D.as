@@ -19,6 +19,7 @@ package gl3d.core
 		public var _world:Matrix3D = new Matrix3D;
 		public var _world2local:Matrix3D = new Matrix3D;
 		private var _matrix:Matrix3D = new Matrix3D;
+		private var _rotation:Vector3D = new Vector3D;
 		public var children:Vector.<Node3D> = new Vector.<Node3D>;
 		public var renderChildren:Vector.<Node3D> = new Vector.<Node3D>;
 		public var drawable:Drawable;
@@ -31,6 +32,7 @@ package gl3d.core
 		public var copyfrom:Node3D;
 		private var dirty:Boolean = true;
 		private var dirtyInv:Boolean = true;
+		private var dirtyRot:Boolean = true;
 		public var visible:Boolean = true;
 		private static var _temp0:Vector3D = new Vector3D();
 		
@@ -166,52 +168,55 @@ package gl3d.core
 		
 		public function setRotation(x:Number, y:Number, z:Number):void
 		{
+			_rotation.setTo(x, y, z);
 			Matrix3DUtils.setRotation(this._matrix, x, y, z);
 			this.updateTransforms(true);
 		}
 		
-		public function getRotation(local:Boolean = true, out:Vector3D = null):Vector3D
+		public function getRotation():Vector3D
 		{
-			if (out == null)
-			{
-				out = new Vector3D();
+			//out = Matrix3DUtils.getRotation(local ? this._matrix : this.world, out);
+			//return out;
+			if (dirtyRot){
+				dirtyRot = false;
+				Matrix3DUtils.getRotation(this._matrix , _temp0);
+				_rotation.copyFrom(_temp0);
 			}
-			out = Matrix3DUtils.getRotation(local ? this._matrix : this.world, out);
-			return out;
+			return _rotation;
 		}
 		
-		/*public function get rotationX():Number
+		public function get rotationX():Number
 		{
-			return getRotation(true, _temp0).x;
+			return getRotation().x;
 		}
 		
 		public function set rotationX(val:Number):void
 		{
-			getRotation(true, _temp0);
-			setRotation(val, _temp0.y, _temp0.z);
+			getRotation();
+			setRotation(val, _rotation.y, _rotation.z);
 		}
 		
 		public function get rotationY():Number
 		{
-			return getRotation(true, _temp0).y;
+			return getRotation().y;
 		}
 		
 		public function set rotationY(val:Number):void
 		{
-			getRotation(true, _temp0);
-			setRotation(_temp0.x, val, _temp0.z);
+			getRotation();
+			setRotation(_rotation.x, val, _rotation.z);
 		}
 		
 		public function get rotationZ():Number
 		{
-			return getRotation(true, _temp0).z;
+			return getRotation().z;
 		}
 		
 		public function set rotationZ(val:Number):void
 		{
-			getRotation(true, _temp0);
-			setRotation(_temp0.x, _temp0.y, val);
-		}*/
+			getRotation();
+			setRotation(_rotation.x, _rotation.y, val);
+		}
 		
 		public function get world():Matrix3D
 		{
@@ -255,6 +260,7 @@ package gl3d.core
 		public function set matrix(value:Matrix3D):void
 		{
 			_matrix = value;
+			dirtyRot = true;
 			updateTransforms(true);
 		}
 		

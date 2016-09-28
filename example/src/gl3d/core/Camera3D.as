@@ -9,7 +9,8 @@ package gl3d.core {
 	 */
 	public class Camera3D extends Node3D
 	{
-		public var perspective:PerspectiveMatrix3D = new PerspectiveMatrix3D;
+		public var perspective:Matrix3D = new PerspectiveMatrix3D;
+		private var p:PerspectiveMatrix3D = perspective as PerspectiveMatrix3D;
 		private var _view:Matrix3D = new Matrix3D;
 		public function Camera3D(name:String=null ) 
 		{
@@ -47,6 +48,84 @@ package gl3d.core {
 				pos.y - this.y,
 				pos.z - this.z );
 			rayDirection.normalize();
+		}
+		
+		public function perspectiveLH(width:Number, 
+									  height:Number, 
+									  zNear:Number, 
+									  zFar:Number):void {
+			p.perspectiveLH(width, height, zNear, zFar);
+		}
+
+		public function perspectiveRH(width:Number, 
+									  height:Number, 
+									  zNear:Number, 
+									  zFar:Number):void {
+			p.perspectiveRH(width, height, zNear, zFar);
+		}
+
+		public function perspectiveFieldOfViewLH(fieldOfViewY:Number, 
+												 aspectRatio:Number, 
+												 zNear:Number, 
+												 zFar:Number):void {
+			p.perspectiveFieldOfViewLH(fieldOfViewY, aspectRatio, zNear, zFar);
+		}
+
+		public function perspectiveFieldOfViewRH(fieldOfViewY:Number, 
+												 aspectRatio:Number, 
+												 zNear:Number, 
+												 zFar:Number):void {
+			p.perspectiveFieldOfViewRH(fieldOfViewY, aspectRatio, zNear, zFar);
+		}
+
+		public function perspectiveOffCenterLH(left:Number, 
+									 		   right:Number,
+									  		   bottom:Number,
+									           top:Number,
+									  		   zNear:Number, 
+									  		   zFar:Number):void {
+			p.perspectiveOffCenterLH(left, right, bottom, top, zNear, zFar);
+		}
+
+		public function perspectiveOffCenterRH(left:Number, 
+											   right:Number,
+											   bottom:Number,
+											   top:Number,
+											   zNear:Number, 
+											   zFar:Number):void {
+			p.perspectiveOffCenterRH(left, right, bottom, top, zNear, zFar);
+		}
+		
+		public function orthoLH(width:Number,
+								height:Number,
+								zNear:Number,
+								zFar:Number):void {
+			p.orthoLH(width, height, zNear, zFar);
+		}
+
+		public function orthoRH(width:Number,
+								height:Number,
+								zNear:Number,
+								zFar:Number):void {
+			p.orthoRH(width, height, zNear, zFar);
+		}
+
+		public function orthoOffCenterLH(left:Number, 
+										 right:Number,
+										 bottom:Number,
+									     top:Number,
+										 zNear:Number, 
+										 zFar:Number):void {
+			p.orthoOffCenterLH(left, right, bottom, top, zNear, zFar);
+		}
+
+		public function orthoOffCenterRH(left:Number, 
+										 right:Number,
+										 bottom:Number,
+										 top:Number,
+										 zNear:Number, 
+										 zFar:Number):void {
+			p.orthoOffCenterRH(left, right, bottom, top, zNear, zFar);
 		}
 		
 	}

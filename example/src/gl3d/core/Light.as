@@ -1,5 +1,6 @@
 package gl3d.core {
 	import flash.geom.Vector3D;
+	import gl3d.util.Matrix3DUtils;
 	/**
 	 * ...
 	 * @author lizhi
@@ -23,6 +24,17 @@ package gl3d.core {
 		{
 			this.lightType = lightType;
 			super(name);
+			
+			switch(lightType){
+				case DISTANT:
+					_shadowCamera = new Camera3D;
+					//_shadowCamera.perspective.
+					break;
+				case POINT:
+					break;
+				case SPOT:
+					break;
+			}
 		}
 		
 		override public function dispose():void 
@@ -35,9 +47,11 @@ package gl3d.core {
 		
 		public function get shadowCamera():Camera3D 
 		{
-			_shadowCamera.matrix.pointAt(new Vector3D(x, y, z), Vector3D.Z_AXIS, new Vector3D(0, -1, 0));
+			//_shadowCamera.matrix.position = new Vector3D(.000001);
+			//_shadowCamera.matrix.pointAt(new Vector3D(x, y, z), Vector3D.Z_AXIS, new Vector3D(0, -1, 0));
+			Matrix3DUtils.lookAt(_shadowCamera.matrix, x, y, z,Vector3D.Z_AXIS);
 			_shadowCamera.updateTransforms();
-			_shadowCamera.perspective.orthoLH(10, 10, -5, 5);
+			_shadowCamera.orthoLH(10, 10, -5, 5);
 			return _shadowCamera;
 		}
 	}
