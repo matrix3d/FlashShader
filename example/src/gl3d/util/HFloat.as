@@ -2,7 +2,9 @@ package gl3d.util
 {
 	import flash.utils.ByteArray;
 	/**
-	 * ...
+	 * 
+	 * http://www.codersnotes.com/notes/wrangling-halfs/
+	 * http://www.java-gaming.org/index.php?topic=36705.0
 	 * @author lizhi
 	 */
 	public class HFloat 
@@ -26,18 +28,38 @@ package gl3d.util
 			return b.readFloat();
 		}
 		
+		
 		public static function toHalfFloat(v:Number):int
 		{
 			var f:int = floatToIntBits(v);
 
 			return ((( f>>16 ) & 0x8000 ) | (((( f & 0x7f800000 ) - 0x38000000 )>>13 ) & 0x7c00 ) | (( f>>13 ) & 0x03ff ));
 		}
-
 		public static function toFloat(half:int):Number
 		{
 			return intBitsToFloat((( half & 0x8000 )<<16 ) | ((( half & 0x7c00 ) + 0x1C000 )<<13 ) | (( half & 0x03FF )<<13 ));
 		}
-		
+
+		/**
+		 * 
+		 * @param	sign 符号
+		 * @param	exponent 指数位宽
+		 * @param	fraction 尾数精度
+		 * @return
+		 */
+		public static function halfToFloat(sign:int, exponent:int, fraction:int):Number{
+			trace(sign, exponent, fraction);
+			var v:Number = exponent * Math.log(fraction);
+			if (sign > 0) v *=-1;
+			return v;
+		}
+		public static function toFloatAgal(half:int):Number{
+			var se:int = int(half >> 10);
+			var f:int = half - (se << 10);
+			var s:int = int(se >> 5);
+			var e:int = se-(s << 5);
+			return halfToFloat(s,e,f);
+		}
 	}
 
 }
