@@ -5,6 +5,7 @@ package gl3d.util
 	 * 
 	 * http://www.codersnotes.com/notes/wrangling-halfs/
 	 * http://www.java-gaming.org/index.php?topic=36705.0
+	 * http://stackoverflow.com/questions/5678432/decompressing-half-precision-floats-in-javascript
 	 * @author lizhi
 	 */
 	public class HFloat 
@@ -31,12 +32,27 @@ package gl3d.util
 		
 		public static function toHalfFloat(v:Number):int
 		{
+			/*if (v == 0) {
+				return 0;
+			}
+			if (v > 0.0 && v < 5.96046e-8) {
+				return 0x0001;
+			}
+			if (v < 0.0 && v > -5.96046e-8) {
+				return 0x8001;
+			}
+			if (v > 65504.0) {
+				return 0x7bff;  // max value supported by half float
+			}
+			if (v < -65504.0){
+				return ( 0x7bff | 0x8000 );
+			}*/
 			var f:int = floatToIntBits(v);
-
 			return ((( f>>16 ) & 0x8000 ) | (((( f & 0x7f800000 ) - 0x38000000 )>>13 ) & 0x7c00 ) | (( f>>13 ) & 0x03ff ));
 		}
 		public static function toFloat(half:int):Number
 		{
+			//if (half == 0) return 0;
 			return intBitsToFloat((( half & 0x8000 )<<16 ) | ((( half & 0x7c00 ) + 0x1C000 )<<13 ) | (( half & 0x03FF )<<13 ));
 		}
 
@@ -44,21 +60,29 @@ package gl3d.util
 		 * 
 		 * @param	sign 符号
 		 * @param	exponent 指数位宽
-		 * @param	fraction 尾数精度
+		 * @param	fractionshr10 尾数精度
 		 * @return
 		 */
-		public static function halfToFloat(sign:int, exponent:int, fraction:int):Number{
-			trace(sign, exponent, fraction);
-			var v:Number = exponent * Math.log(fraction);
-			if (sign > 0) v *=-1;
-			return v;
+		public static function halfToFloat(seshr5:Number,eshr5:Number, exponent:Number, fractionshr10:Number):Number{
+			var v:Number = Math.pow(2, exponent - 15) * (1 + fractionshr10);
+			var s:Number = seshr5 == eshr5?1:0;
+			s -= .5;
+			s *= 2;
+			return v*s;
 		}
 		public static function toFloatAgal(half:int):Number{
-			var se:int = int(half >> 10);
-			var f:int = half - (se << 10);
-			var s:int = int(se >> 5);
-			var e:int = se-(s << 5);
-			return halfToFloat(s,e,f);
+			var halfshr10:Number = half / Math.pow(2,10);
+			var fshr10:Number = frc(halfshr10);
+			var se:Number = halfshr10 - fshr10;
+			var seshr5:Number = se / Math.pow(2, 5);
+			var eshr5:Number = frc(seshr5);
+			var e:Number = eshr5 * Math.pow(2, 5);
+			var v:Number = halfToFloat(seshr5, eshr5, e, fshr10);
+			//v = v * (half != 0?1:0);
+			return v;
+		}
+		public static function frc(v:Number):Number{
+			return v - int(v);
 		}
 	}
 

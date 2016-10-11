@@ -9,6 +9,7 @@ package gl3d.core.skin
 	import gl3d.core.Node3D;
 	import gl3d.core.VertexBufferSet;
 	import gl3d.ctrl.Ctrl;
+	import gl3d.util.HFloat;
 	import gl3d.util.Matrix3DUtils;
 	/**
 	 * ...
@@ -92,17 +93,39 @@ package gl3d.core.skin
 					if(target.skin.useQuat){
 						q.fromMatrix(matrix);
 						var qs:Vector.<Number> = target.skin.skinFrame.quaternions;
-						var i8:int = i * 8;
-						qs[i8++] = q.x;
-						qs[i8++] = q.y;
-						qs[i8++] = q.z;
-						qs[i8++] = q.w;
 						var r:Vector3D = q.tran;
 						var s:Vector3D = q.scale;
-						qs[i8++] = r.x/s.x;
-						qs[i8++] = r.y/s.y;
-						qs[i8++] = r.z/s.z;
-						qs[i8] = r.w;
+						var i8:int = i * 8;
+						if(target.skin.useHalfFloat){
+							//qs[i8++] = q.x;
+							//qs[i8++] = q.y;
+							//qs[i8++] = q.z;
+							//qs[i8++] = q.w;
+							
+							qs[i8++] = HFloat.toHalfFloat(q.x);
+							qs[i8++] = HFloat.toHalfFloat(q.y);
+							qs[i8++] = HFloat.toHalfFloat(q.z);
+							qs[i8++] = HFloat.toHalfFloat(q.w);
+							qs[i8++] = HFloat.toHalfFloat(r.x/s.x);
+							qs[i8++] = HFloat.toHalfFloat(r.y/s.y);
+							qs[i8++] = HFloat.toHalfFloat(r.z/s.z);
+							qs[i8] = 0;// r.w;
+							
+							//qs[i8++] = r.x/s.x;
+							//qs[i8++] = r.y/s.y;
+							//qs[i8++] = r.z / s.z;
+							//qs[i8] = 0;// r.w;
+							
+						}else{
+							qs[i8++] = q.x;
+							qs[i8++] = q.y;
+							qs[i8++] = q.z;
+							qs[i8++] = q.w;
+							qs[i8++] = r.x/s.x;
+							qs[i8++] = r.y/s.y;
+							qs[i8++] = r.z/s.z;
+							qs[i8] = 0;// r.w;
+						}
 					}
 				}
 				
@@ -139,6 +162,15 @@ package gl3d.core.skin
 										var nr:Vector3D = matrix.deltaTransformVector(norm);
 									}else {
 										q.fromMatrix(matrix);
+										if (target.skin.useHalfFloat){
+											q.x = HFloat.toFloat(HFloat.toHalfFloat(q.x));
+											q.y = HFloat.toFloat(HFloat.toHalfFloat(q.y));
+											q.z = HFloat.toFloat(HFloat.toHalfFloat(q.z));
+											q.w = HFloat.toFloat(HFloat.toHalfFloat(q.w));
+											q.tran.x=HFloat.toFloat(HFloat.toHalfFloat(q.tran.x));
+											q.tran.y=HFloat.toFloat(HFloat.toHalfFloat(q.tran.y));
+											q.tran.z=HFloat.toFloat(HFloat.toHalfFloat(q.tran.z));
+										}
 										vr = q.rotatePoint(pos);
 										vr = vr.add(q.tran);
 										nr = q.rotatePoint(norm);

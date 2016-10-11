@@ -60,7 +60,6 @@ package gl3d.shaders
 			world2local = uniformWorld2Local();
 			view = uniformView();
 			perspective = uniformPerspective();
-			//lightPos = uniformLightPos(0);
 		}
 		
 		override public function build():void {
@@ -69,20 +68,28 @@ package gl3d.shaders
 			if (material.gpuSkin) {
 				if (material.node.skin.useQuat) {
 					joint = mul(2,buffJoints());
-					joints = uniformJointsQuat(material.node.skin.joints.length);//= this.uniformAmbient//floatArray(material.node.skin.joints.length*2);
+					joints = uniformJointsQuat(material.node.skin.joints.length);
 				}else {
 					joint = mul(4,buffJoints());
-					joints = uniformJointsMatrix(material.node.skin.joints.length);//matrixArray(material.node.skin.joints.length);
+					joints = uniformJointsMatrix(material.node.skin.joints.length);
 				}
 				var xyzw:String = "xyzw";
 				for (var i:int = 0; i < material.node.skin.maxWeight; i++ ) {
 					var c:String = xyzw.charAt(i % 4);
+					var jw:Var = weight.c(c);
 					if (material.node.skin.useQuat) {
-						joint = joint.c(c)/*:this.joint2.c(c)*/;
-						var value:Var = mul(weight.c(c)/*:weight2.c(c)*/, q44(pos, joints.c(joint),joints.c(joint,1)));
+						joint = joint.c(c);
+						var jq:Var = joints.c(joint);
+						var jqt:Var = joints.c(joint, 1);
+						if (material.node.skin.useHalfFloat){
+							jq = half2float(jq);
+							jqt = half2float(jqt);
+						}
+						var value:Var = mul(jw, q44(pos, jq,jqt));
 					}else {
-						joint = joint.c(c)/*:this.joint2.c(c)*/;
-						value = mul(/*i<4?*/weight.c(c)/*:weight2.c(c)*/, m44(pos, joints.c(joint)));
+						joint = joint.c(c);
+						var jm:Var = joints.c(joint);
+						value = mul(jw, m44(pos, jm));
 					}
 					
 					if (i==0) {
@@ -91,7 +98,7 @@ package gl3d.shaders
 						result = add(result, value);
 					}
 					if(material.lightAble){
-						var valueNorm:Var = mul(weight.c(c), material.node.skin.useQuat?q33(norm,mov(joints.c(joint))):m33(norm, joints.c(joint)));
+						var valueNorm:Var = mul(jw, material.node.skin.useQuat?q33(norm,mov(jq)):m33(norm, jm));
 						if (i==0) {
 							var resultNorm:Var = valueNorm;
 						}else {
@@ -188,20 +195,6 @@ package gl3d.shaders
 			if (material.writeDepth) {
 				mov(opVar, opVarying);
 			}
-		}
-		
-		//http://molecularmusings.wordpress.com/2013/05/24/a-faster-quaternion-vector-multiplication/
-		//t = 2 * cross(q.xyz, v)
-		//v' = v + q.w * t + cross(q.xyz, t)
-		public function q44(pos:Var, quas:Var, tran:Var):Var {
-			var temp:Var = add(q33(pos, mov(quas)), tran);
-			mov(1, temp.w);
-			return temp.xyzw;
-		}
-		
-		public function q33(pos:Var, quas:Var):Var {
-			var t:Var = mul(2 , crs(quas, pos));
-			return add2([pos , mul(quas.w , t) , crs(quas, t)]);
 		}
 	}
 

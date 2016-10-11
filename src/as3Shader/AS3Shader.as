@@ -466,6 +466,41 @@ package as3Shader {
 			return sub(a, frc(a), t);
 		}
 		
+		
+		
+		//http://molecularmusings.wordpress.com/2013/05/24/a-faster-quaternion-vector-multiplication/
+		//t = 2 * cross(q.xyz, v)
+		//v' = v + q.w * t + cross(q.xyz, t)
+		public function q44(pos:Var, quas:Var, tran:Var):Var {
+			var temp:Var = add(q33(pos, mov(quas)), tran);
+			mov(1, temp.w);
+			return temp.xyzw;
+		}
+		
+		public function q33(pos:Var, quas:Var):Var {
+			var t:Var = mul(2 , crs(quas, pos));
+			return add2([pos , mul(quas.w , t) , crs(quas, t)]);
+		}
+		
+		public function half2float(half:Var):Var{
+			debug("half2float start");
+			half = mov(half);
+			var halfshr10:Var = div(half , Math.pow(2,10));
+			var fshr10:Var = frc(halfshr10);
+			var se:Var = sub(halfshr10 , fshr10);
+			var seshr5:Var = div(se , Math.pow(2, 5));
+			var eshr5:Var = frc(seshr5);
+			var e:Var = mul(eshr5 , Math.pow(2, 5));
+			var v:Var = mul(pow(2, sub(e, 15)) , add(1 , fshr10));
+			var s:Var = seq(seshr5, eshr5);
+			s = sub(s, .5);
+			s = mul(s, 2);
+			v = mul(v, s);
+			//v = mul(v, sne(half, 0));
+			debug("half2float end");
+			return v;
+		}
+		
 		/** float */
 		public function F(data:Object, len:int = 1):Var { 
 			if (data is int||data is Number||data is uint) {
