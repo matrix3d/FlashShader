@@ -67,8 +67,11 @@ package gl3d.shaders
 			var pos:Var = this.pos;
 			if (material.gpuSkin) {
 				if (material.node.skin.useQuat) {
-					joint = mul(2,buffJoints());
-					joints = uniformJointsQuat(material.node.skin.joints.length);
+					joint = buffJoints();
+					if (!material.node.skin.useHalfFloat){
+						joint = mul(2,buffJoints());
+					}
+					joints = uniformJointsQuat(material.node.skin.joints.length,material.node.skin.useHalfFloat);
 				}else {
 					joint = mul(4,buffJoints());
 					joints = uniformJointsMatrix(material.node.skin.joints.length);
@@ -79,11 +82,17 @@ package gl3d.shaders
 					var jw:Var = weight.c(c);
 					if (material.node.skin.useQuat) {
 						joint = joint.c(c);
-						var jq:Var = joints.c(joint);
-						var jqt:Var = joints.c(joint, 1);
 						if (material.node.skin.useHalfFloat){
-							jq = half2float(jq);
-							jqt = half2float(jqt);
+							var jq_jqt:Array = half2float2(mov(joints.c(joint)));
+							var jq:Var = jq_jqt[1];
+							var jqt:Var = jq_jqt[0];
+							//var jq:Var = mov(joints.c(joint));
+							//var jqt:Var = mov(joints.c(joint, 1));
+							//jq = half2float2(jq)[1];
+							//jqt = half2float2(jqt)[0];
+						}else{
+							jq = joints.c(joint);
+							jqt = joints.c(joint, 1);
 						}
 						var value:Var = mul(jw, q44(pos, jq,jqt));
 					}else {

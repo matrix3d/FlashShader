@@ -30,7 +30,7 @@ package
 			n1.drawable = Meshs.cube(1,1,1);
 			n1.material = new Material;
 			view1.scene.addChild(n1);
-			view1.camera.perspective.perspectiveFieldOfViewLH(Math.PI / 4, view1.stage3dWidth/ view1.stage3dHeight, .1, 4000);
+			view1.camera.perspectiveFieldOfViewLH(Math.PI / 4, view1.stage3dWidth/ view1.stage3dHeight, .1, 4000);
 			view1.camera.z = -10;
 			//view1.lights[0].z = -1000;
 			view1.scene.addChild(n1);
@@ -40,7 +40,7 @@ package
 			view2.y = 30;
 			addChild(view2);
 			view2.camera.z = -10;
-			view2.camera.perspective.perspectiveFieldOfViewLH(Math.PI / 4, view1.stage3dWidth/ view1.stage3dHeight, .1, 4000);
+			view2.camera.perspectiveFieldOfViewLH(Math.PI / 4, view1.stage3dWidth/ view1.stage3dHeight, .1, 4000);
 			//view2.lights[0].z = -10;
 			n2 = new Node3D;
 			n2.drawable = Teapot.teapot();
@@ -52,7 +52,7 @@ package
 			view3.scene = view1.scene;
 			view3.y = 220;
 			addChild(view3);
-			view3.camera.perspective.orthoLH(view3.stage3dWidth/50, view3.stage3dHeight/50, .1, 4000);
+			view3.camera.orthoLH(view3.stage3dWidth/50, view3.stage3dHeight/50, .1, 4000);
 			view3.camera.z = -10;
 			view3.lights=view1.lights;
 		}

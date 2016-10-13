@@ -75,7 +75,7 @@ package
 		override protected function stage_resize(e:Event = null):void 
 		{
 			super.stage_resize(e);
-			view.camera.perspective.orthoLH(stage.stageWidth, stage.stageHeight, 0, 400000);
+			view.camera.orthoLH(stage.stageWidth, stage.stageHeight, 0, 400000);
 		}
 	}
 

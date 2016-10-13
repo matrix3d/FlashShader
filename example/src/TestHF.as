@@ -14,6 +14,12 @@ package
 		
 		public function TestHF() 
 		{
+			var a:Number =-4.438871302557631;
+			var b:Number = 0.000030517578125;
+			trace(a,b);
+			trace(HFloat.half2float2( HFloat.toHalfFloat2(a,b)));
+			trace(HFloat.half2float2Agal( HFloat.toHalfFloat2(a,b)));
+			return;
 			var samples:Array = [
 				0x3C00, // = 1
 					0xC000, // = −2
@@ -27,14 +33,17 @@ package
 					0x3555, // ≈ 0.33325... ≈ 1/3
 					0x7C01  // = NaN
 				]
-			samples = [HFloat.toHalfFloat(0)];
+			samples = [HFloat.toHalfFloat(0.000007172189798818296)];
+			//samples = [HFloat.toHalfFloat(125.8)];
 			for each(var s:int in samples){
 				trace("---------------");
 				trace(s.toString(2));
+				trace(s);
 				trace(HFloat.toFloat(s));
 				trace(HFloat.toFloatAgal(s));
 			}
-			
+			trace(HFloat.toFloat(1));
+			trace(HFloat.toFloat(0x8001));
 			//testshader();
 		}
 		

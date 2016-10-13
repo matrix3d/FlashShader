@@ -496,9 +496,18 @@ package as3Shader {
 			s = sub(s, .5);
 			s = mul(s, 2);
 			v = mul(v, s);
-			//v = mul(v, sne(half, 0));
+			v = mul(v, sne(half, 0));
 			debug("half2float end");
 			return v;
+		}
+		
+		public function half2float2(half2:Var):Array{
+			debug("half2float2 start");
+			var half2shr16:Var = div(half2, 0x10000);
+			var lowshr16:Var = frc(half2shr16);
+			var highshr16:Var = sub(half2shr16, lowshr16);
+			debug("half2float2 end");
+			return [half2float(highshr16), half2float(mul(lowshr16, 0x10000))];
 		}
 		
 		/** float */
@@ -509,13 +518,13 @@ package as3Shader {
 				return createTempConst([data[0],data[1],data[2],data[3]], len) 
 			}
 			return createTempConst(data, len) 
-		};
+		}
 		public function M(data:Matrix3D):Var { return createTempConst(data,4) };
 		public function C(index:int = 0, len:int=1):Var {
 			var c:Var = new Var(Var.TYPE_C, index);
 			c.constLenght = len;
 			return c;
-		};
+		}
 		public function T(index:int=0):Var { return new Var(Var.TYPE_T,index)};
 		public function VA(index:int=0):Var { return new Var(Var.TYPE_VA,index)};
 		public function V(index:int=0):Var { return new Var(Var.TYPE_V,index)};

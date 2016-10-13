@@ -39,7 +39,7 @@ package
 			n1.drawable = Meshs.cube(.1, .1, .1);
 			n1.material = new Material;
 			n1.material.lightAble = true;
-			for (var i:int = 0; i < 1000;i++ ){
+			for (var i:int = 0; i < 5000;i++ ){
 				var n2:Node3D = n1.clone();
 				//n2.material = new InstanceMaterial();
 				n2.x=3*(Math.random()-.5)
@@ -47,7 +47,7 @@ package
 				n2.z=3*(Math.random()-.5)
 				view.scene.addChild(n2);
 			}
-			view.camera.perspective.perspectiveFieldOfViewLH(Math.PI / 4, view.stage3dWidth/ view.stage3dHeight, .1, 4000);
+			view.camera.perspectiveFieldOfViewLH(Math.PI / 4, view.stage3dWidth/ view.stage3dHeight, .1, 4000);
 			view.camera.z = -10;
 			view.scene.addChild(n1);
 			

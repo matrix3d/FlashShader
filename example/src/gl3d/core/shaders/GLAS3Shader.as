@@ -154,10 +154,11 @@ package gl3d.core.shaders
 			return u;
 		}
 		
-		public function uniformJointsQuat(numJoints:int):Var {
+		public function uniformJointsQuat(numJoints:int,half:Boolean):Var {
 			var name:String = "ujointsquat";
 			if (getNamedVar(name)) return getNamedVar(name);
-			var u:Var = floatArray(numJoints*2);
+			var u:Var = floatArray(numJoints*(half?1:2));
+			//var u:Var = floatArray(numJoints*2);
 			setNamedVar(name, u);
 			var binder:GLBinder = new GLBinder(this, u);
 			binds.push([binder,binder.bindJointsQuatUniform]);

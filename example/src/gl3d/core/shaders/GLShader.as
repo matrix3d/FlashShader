@@ -126,17 +126,17 @@ package gl3d.core.shaders
 				trace(v.index, name);
 			}
 			//trace(vs);
-			gl.creator = new GLCodeCreator();
-			trace(gl.code);
+			//gl.creator = new GLCodeCreator();
+			//trace(gl.code);
 			trace();
 		}
 		
 		public function getVertexShader(material:Material):GLAS3Shader {
-			return null;
+			return vs;
 		}
 		
 		public function getFragmentShader(material:Material):GLAS3Shader {
-			return null;
+			return fs;
 		}
 		
 		public function update(material:Material):void 

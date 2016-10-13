@@ -45,10 +45,10 @@ package
 		
 		override public function initCtrl():void 
 		{
-				view.ctrls=Vector.<Ctrl>([new FollowCtrl(player,view.camera)]);
-	//}else {
-			//	view.ctrls=Vector.<Ctrl>([new FirstPersonCtrl(view.camera,stage)]);
-			//}
+				//view.ctrls=Vector.<Ctrl>([new FollowCtrl(player,view.camera)]);
+				//}else {
+					view.ctrls=Vector.<Ctrl>([new FirstPersonCtrl(view.camera,stage)]);
+				//}
 			
 		}
 		

@@ -77,7 +77,6 @@ package
 				load(v);
 			}
 			try{
-			//load("test2.fbx");
 			//load("C:/Users/aaaa/Desktop/test2.fbx");
 			//load("C:/Users/aaaa/Desktop/卡攻击.fbx");
 			//load("C:/Users/aaaa/Desktop/大理宝石商人.fbx");
@@ -93,7 +92,7 @@ package
 			//load("../src/assets/test4.FBX");
 			//load("../src/assets/miku.mtl");
 			//load("../src/assets/miku.obj");
-			//load("../src/assets/astroBoy_walk_Max.dae");
+			load("../src/assets/astroBoy_walk_Max.dae");
 			//load("../src/assets/miku.pmx");
 			//load("../src/assets/melt.vmd");
 			//load("../src/assets/aoying.fbx");

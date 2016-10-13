@@ -78,7 +78,7 @@ package
 		override protected function stage_resize(e:Event = null):void
 		{
 			super.stage_resize(e);
-			view.camera.perspective.orthoOffCenterRH( 0, stage.stageWidth, stage.stageHeight, 0, -1000, 1000);
+			view.camera.orthoOffCenterRH( 0, stage.stageWidth, stage.stageHeight, 0, -1000, 1000);
 		}
 		override public function initLight():void {
 			lights.push(new Light);

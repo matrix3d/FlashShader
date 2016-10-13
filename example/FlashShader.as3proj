@@ -12,7 +12,6 @@
     <movie minorVersion="0" />
     <movie platform="Flash Player" />
     <movie background="#FFFFFF" />
-    <movie preferredSDK="AIR 22.0.0;22.0.0;" />
   </output>
   <!-- Other classes to be compiled into your SWF -->
   <classpaths>
@@ -46,7 +45,7 @@
     <option loadExterns="" />
     <option staticLinkRSL="True" />
     <option additional="-swf-version=33" />
-    <option compilerConstants="" />
+    <option compilerConstants="CONFIG::js_only,false&#xA;CONFIG::as_only,true" />
     <option minorVersion="" />
   </build>
   <!-- SWC Include Libraries -->
@@ -58,6 +57,7 @@
     <element path="lib\daedalus-lib.swc" />
     <element path="lib\AwayPhysics.swc" />
     <element path="lib\RectanglePacker.swc" />
+    <element path="lib\MinimalComps_0_9_10.swc" />
   </libraryPaths>
   <!-- External Libraries -->
   <externalLibraryPaths>
@@ -77,7 +77,7 @@
   </library>
   <!-- Class files to compile (other referenced classes will automatically be included) -->
   <compileTargets>
-    <compile path="src\AwayphysicsBvhTriangleMeshCarTest.as" />
+    <compile path="src\ModelViewer.as" />
   </compileTargets>
   <!-- Paths to exclude from the Project Explorer tree -->
   <hiddenPaths>
@@ -95,7 +95,7 @@
   </options>
   <!-- Plugin storage -->
   <storage>
-    <entry key="at_enabled"><![CDATA[0]]></entry>
+    <entry key="at_enabled"><![CDATA[1]]></entry>
     <entry key="at_password"><![CDATA[]]></entry>
   </storage>
 </project>

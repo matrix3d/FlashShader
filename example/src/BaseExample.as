@@ -142,15 +142,15 @@ package
 			if (Context3D.supportsVideoTexture&& camera){
 				//texture = new TextureSet(camera);
 			}
-			texture = new TextureSet(bmd);
+			//texture = new TextureSet(bmd);
 			material.culling =  Context3DTriangleFace.NONE;
 			//material.blendModel = BlendMode.ADD;
 			material.normalMapAble = false;
-			material.color.setTo(1, 1, 1);
+			material.color.setTo(1, 0, 1);
 			material.ambient.setTo(.5, .5, .5);
 			material.specularPower = 10;
 			material.specularAble = true;
-			material.lightAble = true;
+			material.lightAble = false;
 			material.wireframeAble = false;
 			material.toonAble = false;
 			material.alphaThreshold = .7;
@@ -214,17 +214,15 @@ package
 		}
 		
 		public function initNode():void {
-			addSky();
+			//addSky();
 			teapot = new Node3D;
 			teapot.material = material;
-			material.gray = true;
 			teapot.drawable = //Teapot.teapot();
 			Meshs.unpack(Meshs.sphere(5,5));
 			view.scene.addChild(teapot);
 			teapot.scaleX = teapot.scaleY = teapot.scaleZ = 1;
 			view.background = 0//xffffff;
 			teapot.picking = new AS3Picking();
-			stage.addEventListener(MouseEvent.MOUSE_DOWN, stage_mouseDown);
 		}
 		
 		private function stage_mouseDown(e:MouseEvent):void 
@@ -239,19 +237,11 @@ package
 		}
 		
 		public function initUI():void {
-			stage.addEventListener(MouseEvent.CLICK, stage_click);
-			
 			if(Multitouch.supportsTouchEvents&&Multitouch.maxTouchPoints)
 			addChild(gamepad);
 			gamepad.x = 200;
 			gamepad.y = 200;
 			addChild(stats);
-		}
-		
-		private function stage_click(e:MouseEvent):void 
-		{
-			//teapot.drawable = Meshs.unpack(Teapot.teapot());
-			teapot.material.diffTexture = new TextureSet(new BitmapData(1,1,false,0xff0000));
 		}
 		
 		public function initCtrl():void {
@@ -268,7 +258,7 @@ package
 			view.invalid = true;
 			view.stage3dWidth = stage.stageWidth;
 			view.stage3dHeight = stage.stageHeight;
-			view.camera.perspective.perspectiveFieldOfViewLH(Math.PI / 4, view.stage3dWidth/ view.stage3dHeight, .1, 4000);
+			view.camera.perspectiveFieldOfViewLH(Math.PI / 4, view.stage3dWidth/ view.stage3dHeight, .1, 4000);
 			if (debug) {
 				debug.width = view.stage3dWidth;
 				debug.height = view.stage3dHeight;
@@ -278,6 +268,11 @@ package
 		public function enterFrame(e:Event):void
 		{
 			if (teapot) {
+				teapot.x = Math.sin(getTimer() / 1000);
+				teapot.y = Math.sin(getTimer() / 700);
+				teapot.z = Math.sin(getTimer() / 400);
+				teapot.rotationY+=2;
+				teapot.rotationX+=2;
 				//teapot.matrix.appendRotation(1, Vector3D.Y_AXIS);
 				//teapot.updateTransforms(true);
 				//teapot.rotationX+=.01;
