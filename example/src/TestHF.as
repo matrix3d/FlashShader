@@ -17,7 +17,7 @@ package
 			var a:Number =-4.438871302557631;
 			var b:Number = 0.000030517578125;
 			trace(a,b);
-			trace(HFloat.half2float2( HFloat.toHalfFloat2(a,b)));
+			//trace(HFloat.half2float2( HFloat.toHalfFloat2(a,b)));
 			trace(HFloat.half2float2Agal( HFloat.toHalfFloat2(a,b)));
 			return;
 			var samples:Array = [

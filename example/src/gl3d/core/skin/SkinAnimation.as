@@ -68,7 +68,6 @@ package gl3d.core.skin
 				track.target.updateTransforms(true);
 			}
 			
-			
 			for each(var target:Node3D in targets){
 				var world2local:Matrix3D = target.world2local;
 				if (target.skin == null) continue;
@@ -97,34 +96,10 @@ package gl3d.core.skin
 						var s:Vector3D = q.scale;
 						if (target.skin.useHalfFloat){
 							var i4:int = i * 4;
-							//var i8:int = i * 8;
-							//qs[i8++] = q.x;
-							//qs[i8++] = q.y;
-							//qs[i8++] = q.z;
-							//qs[i8++] = q.w;
-							
-							qs[i4++] = HFloat.toHalfFloat2(r.x/s.x,q.x);
-							qs[i4++] = HFloat.toHalfFloat2(r.y/s.y,q.y);
-							qs[i4++] = HFloat.toHalfFloat2(r.z/s.z,q.z);
-							qs[i4++] = HFloat.toHalfFloat(q.w);
-							
-							//qs[i8++] = HFloat.toHalfFloat2(r.x / s.x, q.x);
-							//qs[i8++] = HFloat.toHalfFloat2(r.y / s.y, q.y);
-							//qs[i8++] = HFloat.toHalfFloat2(r.z / s.z, q.z);
-							//qs[i8++] = HFloat.toHalfFloat(q.w);
-							//qs[i8++] = HFloat.toHalfFloat2(r.x / s.x, q.x);
-							//qs[i8++] = HFloat.toHalfFloat2(r.y / s.y, q.y);
-							//qs[i8++] = HFloat.toHalfFloat2(r.z / s.z, q.z);
-							//qs[i8++] = HFloat.toHalfFloat(q.w);
-							//qs[i8++] = HFloat.toHalfFloat2(q.x,r.x / s.x);
-							//qs[i8++] = HFloat.toHalfFloat2(q.y,r.y / s.y);
-							//qs[i8++] = HFloat.toHalfFloat2(q.z,r.z / s.z);
-							//qs[i8++] = HFloat.toHalfFloat2(q.w,0);
-							
-							//qs[i8++] = r.x/s.x;
-							//qs[i8++] = r.y/s.y;
-							//qs[i8++] = r.z / s.z;
-							//qs[i8] = 0;// r.w;
+							qs[i4++] =  ((q.x + 1) * .5 * 0x10000) + int((r.x / s.x + 100) / 200 * 0x10000) * 0x10000;
+							qs[i4++] = ((q.y + 1) * .5 * 0x10000) + int((r.y / s.y + 100) / 200 * 0x10000) * 0x10000;
+							qs[i4++] = ((q.z + 1) * .5 * 0x10000) + int((r.z / s.z + 100) / 200 * 0x10000) * 0x10000;
+							qs[i4++] = ((q.w + 1) * .5 * 0x10000);
 							
 						}else{
 							var i8:int = i * 8;
@@ -135,7 +110,7 @@ package gl3d.core.skin
 							qs[i8++] = r.x/s.x;
 							qs[i8++] = r.y/s.y;
 							qs[i8++] = r.z/s.z;
-							qs[i8] = 0;// r.w;
+							qs[i8] = 0;
 						}
 					}
 				}
@@ -174,12 +149,7 @@ package gl3d.core.skin
 									}else {
 										q.fromMatrix(matrix);
 										if (target.skin.useHalfFloat){
-											//var isTrace:Boolean = q.x < 0.001;
-											//if(isTrace)
-											//trace("转换前",q.x);
-											//var temp:Number = r.x/s.x;
-											//var temp2:Number = q.x;
-											var qx:Array = HFloat.half2float2Agal(HFloat.toHalfFloat2(r.x/s.x,q.x));
+											/*var qx:Array = HFloat.half2float2Agal(HFloat.toHalfFloat2(r.x/s.x,q.x));
 											var qy:Array = HFloat.half2float2Agal(HFloat.toHalfFloat2(r.y/s.y,q.y));
 											var qz:Array = HFloat.half2float2Agal(HFloat.toHalfFloat2(r.z/s.z,q.z));
 											var qw:Array = HFloat.half2float2Agal(HFloat.toHalfFloat(q.w));
@@ -189,15 +159,7 @@ package gl3d.core.skin
 											q.w = qw[1];
 											q.tran.x = qx[0];
 											q.tran.y = qy[0];
-											q.tran.z = qz[0];
-											//if(isTrace)
-											//trace("转换后",q.x);
-											//if (Math.abs(temp2-q.x)>1){
-											//	trace("q",temp, temp2);
-											//}
-											//if (Math.abs(temp-q.tran.x)>1){
-											//	trace("tran",temp, temp2);
-											//}
+											q.tran.z = qz[0];*/
 										}
 										vr = q.rotatePoint(pos);
 										vr = vr.add(q.tran);

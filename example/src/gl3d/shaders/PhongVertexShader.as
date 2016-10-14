@@ -83,13 +83,12 @@ package gl3d.shaders
 					if (material.node.skin.useQuat) {
 						joint = joint.c(c);
 						if (material.node.skin.useHalfFloat){
-							var jq_jqt:Array = half2float2(mov(joints.c(joint)));
-							var jq:Var = jq_jqt[1];
-							var jqt:Var = jq_jqt[0];
-							//var jq:Var = mov(joints.c(joint));
-							//var jqt:Var = mov(joints.c(joint, 1));
-							//jq = half2float2(jq)[1];
-							//jqt = half2float2(jqt)[0];
+							var half2:Var = mov(joints.c(joint));
+							var half2shr16:Var = div(half2, 0x10000);
+							var lowshr16:Var = frc(half2shr16);
+							var highshr16:Var = sub(half2shr16, lowshr16);
+							var jq:Var = sub(div(lowshr16,.5),1);
+							var jqt:Var = sub(div(highshr16, 0x10000 / 200), 100);
 						}else{
 							jq = joints.c(joint);
 							jqt = joints.c(joint, 1);
