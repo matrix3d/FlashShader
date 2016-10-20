@@ -9,6 +9,7 @@ package gl3d.shaders
 	import gl3d.core.shaders.GLAS3Shader;
 	import gl3d.core.Material;
 	import gl3d.core.TextureSet;
+	import gl3d.core.skin.SkinAnimation;
 	/**
 	 * ...
 	 * @author lizhi
@@ -83,12 +84,12 @@ package gl3d.shaders
 					if (material.node.skin.useQuat) {
 						joint = joint.c(c);
 						if (material.node.skin.useHalfFloat){
-							var half2:Var = mov(joints.c(joint));
-							var half2shr16:Var = div(half2, 0x10000);
-							var lowshr16:Var = frc(half2shr16);
-							var highshr16:Var = sub(half2shr16, lowshr16);
-							var jq:Var = sub(div(lowshr16,.5),1);
-							var jqt:Var = sub(div(highshr16, 0x10000 / 200), 100);
+							var v:Var = mov(joints.c(joint));
+							var h:Var = mul(v, SkinAnimation.sh);
+							var l:Var = frc(h);
+							h = sub(h, l);
+							var jqt:Var = sub(mul(h, 40 / SkinAnimation.sh), 20);
+							var jq:Var = sub(mul(l, 2 ), 1);
 						}else{
 							jq = joints.c(joint);
 							jqt = joints.c(joint, 1);

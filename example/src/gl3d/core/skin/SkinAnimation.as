@@ -3,6 +3,7 @@ package gl3d.core.skin
 	import flash.geom.Matrix3D;
 	import flash.geom.Utils3D;
 	import flash.geom.Vector3D;
+	import flash.utils.ByteArray;
 	import gl3d.core.animation.IAnimation;
 	import gl3d.core.skin.Joint;
 	import gl3d.core.math.Quaternion;
@@ -25,6 +26,8 @@ package gl3d.core.skin
 		static private var q1:Quaternion= new Quaternion;
 		static private var q2:Quaternion = new Quaternion;
 		public var name:String;
+		static public var sh:Number = 5000;
+		static public var sh2:Number = sh * sh;
 		public function SkinAnimation() 
 		{
 			
@@ -49,6 +52,24 @@ package gl3d.core.skin
 			return q1.toMatrix(target);
 		}
 		
+		
+		/**
+		 * t -100 100, q -1 1
+		 */
+		private function test(t:Number, q:Number):Array{
+			var t2:Number = int((t + 20) / 40 * sh)/sh;
+			var q2:Number = (q + 1) / 2 / sh;
+			var v:Number = t2 + q2;
+			var b:ByteArray = new ByteArray;
+			b.writeFloat(v);
+			b.position = 0;
+			var v2:Number = b.readFloat();
+			var t3:Number = int(v2 * sh) / sh;
+			var q4:Number = (v2 - t3) * sh;
+			var t4:Number = t3 * 40 - 20;
+			q4 = q4 * 2 - 1;
+			return [t4,q4];
+		}
 		public function update(t:Number):void 
 		{
 			for each(var track:Track in tracks) {
@@ -96,11 +117,10 @@ package gl3d.core.skin
 						var s:Vector3D = q.scale;
 						if (target.skin.useHalfFloat){
 							var i4:int = i * 4;
-							qs[i4++] =  ((q.x + 1) * .5 * 0x10000) + int((r.x / s.x + 100) / 200 * 0x10000) * 0x10000;
-							qs[i4++] = ((q.y + 1) * .5 * 0x10000) + int((r.y / s.y + 100) / 200 * 0x10000) * 0x10000;
-							qs[i4++] = ((q.z + 1) * .5 * 0x10000) + int((r.z / s.z + 100) / 200 * 0x10000) * 0x10000;
-							qs[i4++] = ((q.w + 1) * .5 * 0x10000);
-							
+							qs[i4++] =  (int((r.x/s.x + 20) / 40 * sh) + (q.x + 1) / 2) / sh;
+							qs[i4++] =  (int((r.y/s.y + 20) / 40 * sh) + (q.y + 1) / 2) / sh;
+							qs[i4++] =  (int((r.z/s.z + 20) / 40 * sh) + (q.z + 1) / 2) / sh;
+							qs[i4++] = ((q.w + 1) / 2) / sh;
 						}else{
 							var i8:int = i * 8;
 							qs[i8++] = q.x;
@@ -152,14 +172,14 @@ package gl3d.core.skin
 											/*var qx:Array = HFloat.half2float2Agal(HFloat.toHalfFloat2(r.x/s.x,q.x));
 											var qy:Array = HFloat.half2float2Agal(HFloat.toHalfFloat2(r.y/s.y,q.y));
 											var qz:Array = HFloat.half2float2Agal(HFloat.toHalfFloat2(r.z/s.z,q.z));
-											var qw:Array = HFloat.half2float2Agal(HFloat.toHalfFloat(q.w));
-											q.x = qx[1];
-											q.y = qy[1];
-											q.z = qz[1];
-											q.w = qw[1];
-											q.tran.x = qx[0];
-											q.tran.y = qy[0];
-											q.tran.z = qz[0];*/
+											var qw:Array = HFloat.half2float2Agal(HFloat.toHalfFloat(q.w));*/
+											q.x = test(r.x/s.x,q.x)[1];
+											q.y = test(r.y/s.y,q.y)[1];
+											q.z = test(r.z/s.z,q.z)[1];
+											q.w = test(0,q.w)[1];
+											q.tran.x = test(r.x/s.x,q.x)[0];
+											q.tran.y = test(r.y/s.y,q.y)[0];
+											q.tran.z = test(r.z/s.z,q.z)[0];
 										}
 										vr = q.rotatePoint(pos);
 										vr = vr.add(q.tran);
@@ -191,6 +211,7 @@ package gl3d.core.skin
 				}
 			}
 		}
+		
 		
 		private function updateIK(iks:Vector.<Joint>, mesh:Node3D):void {
 			//return;

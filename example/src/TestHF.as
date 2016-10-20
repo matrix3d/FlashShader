@@ -4,6 +4,7 @@ package
 	import as3Shader.GLCodeCreator;
 	import as3Shader.Var;
 	import flash.display.Sprite;
+	import flash.utils.ByteArray;
 	import gl3d.util.HFloat;
 	/**
 	 * ...
@@ -14,6 +15,38 @@ package
 		
 		public function TestHF() 
 		{
+			var q:Number = 0.12345678;
+			var t:Number = 0.4567824312;
+			var v:Number = Number(t.toFixed(5)) + q / 100000;
+			var by:ByteArray = new ByteArray;
+			by.writeFloat(v);
+			by.position = 0;
+			for (var i:int = 0; i < 10;i++ ){
+				t = (Math.random()-.5)*200;
+				q = (Math.random()-.5)*2;
+				v = Number(t.toFixed(3)) + q / 1000;
+				by.position = 0;
+				trace("-----------");
+				trace(t, q);
+				trace(v);
+				by.writeFloat(v);
+				by.position = 0;
+				trace(by.readFloat());
+			}
+			return;
+			var a:Number = 0x3;
+			var b:Number = 0x5;
+			trace(a.toString(16), b.toString(16));
+			var c:Number = a * 0x100 + b;
+			trace(c.toString(16));
+			var a2:Number=int(c/0x100)
+			var b2:Number = c - a2*0x100;
+			trace(a2.toString(16), b2.toString(16));
+			trace(0xffff.toString(2));
+			trace(0x10000.toString(2));
+			trace(0x7fff.toString(2));
+			trace(0x8000.toString(2));
+			return;
 			var a:Number =-4.438871302557631;
 			var b:Number = 0.000030517578125;
 			trace(a,b);
