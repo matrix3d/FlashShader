@@ -137,18 +137,21 @@ package gl3d.core
 		{
 			Matrix3DUtils.scaleX(this._matrix, val);
 			this.updateTransforms(true);
+			dirtyRot = true;
 		}
 		
 		public function set scaleY(val:Number):void
 		{
 			Matrix3DUtils.scaleY(this._matrix, val);
 			this.updateTransforms(true);
+			dirtyRot = true;
 		}
 		
 		public function set scaleZ(val:Number):void
 		{
 			Matrix3DUtils.scaleZ(this._matrix, val);
 			this.updateTransforms(true);
+			dirtyRot = true;
 		}
 		
 		public function get scaleX():Number
@@ -274,6 +277,7 @@ package gl3d.core
 				}
 			}
 			dirty = true;
+
 		}
 		
 		public function rayMeshTest(rayOrigin:Vector3D, rayDirection:Vector3D, pixelPos:Vector3D = null):Boolean
