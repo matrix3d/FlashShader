@@ -36,10 +36,10 @@ package gl3d.core
 		private var _rotation:Vector3D = new Vector3D;
 		private var _position:Vector3D = new Vector3D;
 		private var trs: Vector.<Vector3D> = Vector.<Vector3D>([_position,_rotation,_scale]);
-		private var dirtyMatrix:Boolean = true;
-		private var dirtyWrold:Boolean = true;
-		private var dirtyInv:Boolean = true;
-		private var dirtyRotScale:Boolean = true;
+		private var dirtyMatrix:Boolean = false;
+		private var dirtyWrold:Boolean = false;
+		private var dirtyInv:Boolean = false;
+		private var dirtyRotScale:Boolean = false;
 		public var visible:Boolean = true;
 		private static var _temp0:Vector3D = new Vector3D();
 		
@@ -227,7 +227,7 @@ package gl3d.core
 			out = out || new Vector3D;
 			decompose();
 			out.setTo(_rotation.x*_toAng,_rotation.y*_toAng,_rotation.z*_toAng);
-			return _rotation;
+			return out;
 		}
 		
 		public function get rotationX():Number
