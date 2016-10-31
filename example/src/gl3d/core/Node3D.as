@@ -15,11 +15,13 @@ package gl3d.core
 	 */
 	public class Node3D
 	{
+		private static var _toRad:Number = Math.PI / 180;
+		
+		private static var _toAng:Number = 180 / Math.PI;
 		public var parent:Node3D;
 		public var _world:Matrix3D = new Matrix3D;
 		public var _world2local:Matrix3D = new Matrix3D;
 		private var _matrix:Matrix3D = new Matrix3D;
-		private var _rotation:Vector3D = new Vector3D;
 		public var children:Vector.<Node3D> = new Vector.<Node3D>;
 		public var renderChildren:Vector.<Node3D> = new Vector.<Node3D>;
 		public var drawable:Drawable;
@@ -30,9 +32,14 @@ package gl3d.core
 		public var skin:Skin;
 		public var type:String;
 		public var copyfrom:Node3D;
-		private var dirty:Boolean = true;
+		private var _scale:Vector3D = new Vector3D(1, 1, 1);
+		private var _rotation:Vector3D = new Vector3D;
+		private var _position:Vector3D = new Vector3D;
+		private var trs: Vector.<Vector3D> = Vector.<Vector3D>([_position,_rotation,_scale]);
+		private var dirtyMatrix:Boolean = true;
+		private var dirtyWrold:Boolean = true;
 		private var dirtyInv:Boolean = true;
-		private var dirtyRot:Boolean = true;
+		private var dirtyRotScale:Boolean = true;
 		public var visible:Boolean = true;
 		private static var _temp0:Vector3D = new Vector3D();
 		
@@ -91,146 +98,187 @@ package gl3d.core
 			//}
 		}
 		
+		public function getPosition(out:Vector3D=null):Vector3D{
+			out = out || new Vector3D;
+			out.copyFrom(_position);
+			return out;
+		}
+		
+		public function setPosition(x:Number,y:Number,z:Number):void{
+			_position.setTo(x, y, z);
+			matrix.copyColumnFrom(3, _position);
+			updateTransforms();
+		}
+		
 		public function get x():Number
 		{
-			this._matrix.copyColumnTo(3, _temp0);
-			return _temp0.x;
+			return _position.x;
+			//matrix.copyColumnTo(3, _temp0);
+			//return _temp0.x;
 		}
 		
 		public function set x(val:Number):void
 		{
-			this._matrix.copyColumnTo(3, _temp0);
-			_temp0.x = val;
-			this._matrix.copyColumnFrom(3, _temp0);
-			this.updateTransforms(true);
+			matrix.copyColumnTo(3, _position);
+			_position.x = val;
+			matrix.copyColumnFrom(3, _position);
+			updateTransforms(true);
 		}
 		
 		public function get y():Number
 		{
-			this._matrix.copyColumnTo(3, _temp0);
-			return _temp0.y;
+			return _position.y;
+			//matrix.copyColumnTo(3, _temp0);
+			//return _temp0.y;
 		}
 		
 		public function set y(val:Number):void
 		{
-			this._matrix.copyColumnTo(3, _temp0);
-			_temp0.y = val;
-			this._matrix.copyColumnFrom(3, _temp0);
-			this.updateTransforms(true);
+			matrix.copyColumnTo(3, _position);
+			_position.y = val;
+			matrix.copyColumnFrom(3, _position);
+			updateTransforms(true);
 		}
 		
 		public function get z():Number
 		{
-			this._matrix.copyColumnTo(3, _temp0);
-			return _temp0.z;
+			return _position.z;
+			//matrix.copyColumnTo(3, _temp0);
+			//return _temp0.z;
 		}
 		
 		public function set z(val:Number):void
 		{
-			this._matrix.copyColumnTo(3, _temp0);
-			_temp0.z = val;
-			this._matrix.copyColumnFrom(3, _temp0);
-			this.updateTransforms(true);
+			matrix.copyColumnTo(3, _position);
+			_position.z = val;
+			matrix.copyColumnFrom(3, _position);
+			updateTransforms(true);
 		}
 		
 		public function set scaleX(val:Number):void
 		{
-			Matrix3DUtils.scaleX(this._matrix, val);
-			this.updateTransforms(true);
-			dirtyRot = true;
+			_scale.x = val;
+			//Matrix3DUtils.scaleX(this._matrix, val);
+			updateTransforms(true);
+			dirtyMatrix = true;
+			//dirtyRotScale = true;
 		}
 		
 		public function set scaleY(val:Number):void
 		{
-			Matrix3DUtils.scaleY(this._matrix, val);
-			this.updateTransforms(true);
-			dirtyRot = true;
+			_scale.y = val;
+			//Matrix3DUtils.scaleY(this._matrix, val);
+			updateTransforms(true);
+			dirtyMatrix = true;
 		}
 		
 		public function set scaleZ(val:Number):void
 		{
-			Matrix3DUtils.scaleZ(this._matrix, val);
-			this.updateTransforms(true);
-			dirtyRot = true;
+			_scale.z = val;
+			//Matrix3DUtils.scaleZ(this._matrix, val);
+			updateTransforms(true);
+			//dirtyRotScale = true;
+			dirtyMatrix = true;
 		}
 		
 		public function get scaleX():Number
 		{
-			return Matrix3DUtils.getRight(this._matrix, _temp0).length;
+			decompose();
+			return _scale.x;
+			//return Matrix3DUtils.getRight(this._matrix, _temp0).length;
 		}
 		
 		public function get scaleY():Number
 		{
-			return Matrix3DUtils.getUp(this._matrix, _temp0).length;
+			decompose();
+			return _scale.y;
+			//return Matrix3DUtils.getUp(this._matrix, _temp0).length;
 		}
 		
 		public function get scaleZ():Number
 		{
-			return Matrix3DUtils.getDir(this._matrix, _temp0).length;
+			decompose();
+			return _scale.z;
+			//return Matrix3DUtils.getDir(this._matrix, _temp0).length;
+		}
+		public function setScale(x:Number, y:Number, z:Number):void
+		{
+			_scale.setTo(x,y,z);
+			updateTransforms(true);
+			dirtyMatrix = true;
 		}
 		
+		public function getScale(out:Vector3D=null):Vector3D
+		{
+			out = out || new Vector3D;
+			decompose();
+			out.copyFrom(_scale);
+			return out;
+		}
 		public function setRotation(x:Number, y:Number, z:Number):void
 		{
-			_rotation.setTo(x, y, z);
-			Matrix3DUtils.setRotation(this._matrix, x, y, z);
-			this.updateTransforms(true);
+			_rotation.setTo(x*_toRad, y*_toRad, z*_toRad);
+			updateTransforms(true);
+			dirtyMatrix = true;
 		}
 		
-		public function getRotation():Vector3D
+		public function getRotation(out:Vector3D=null):Vector3D
 		{
-			//out = Matrix3DUtils.getRotation(local ? this._matrix : this.world, out);
-			//return out;
-			if (dirtyRot){
-				dirtyRot = false;
-				Matrix3DUtils.getRotation(this._matrix , _temp0);
-				_rotation.copyFrom(_temp0);
-			}
+			out = out || new Vector3D;
+			decompose();
+			out.setTo(_rotation.x*_toAng,_rotation.y*_toAng,_rotation.z*_toAng);
 			return _rotation;
 		}
 		
 		public function get rotationX():Number
 		{
-			return getRotation().x;
+			decompose();
+			return _rotation.x*_toAng;
 		}
 		
 		public function set rotationX(val:Number):void
 		{
-			getRotation();
-			setRotation(val, _rotation.y, _rotation.z);
+			_rotation.x = val*_toRad;
+			updateTransforms(true);
+			dirtyMatrix = true;
 		}
 		
 		public function get rotationY():Number
 		{
-			return getRotation().y;
+			decompose();
+			return _rotation.y*_toAng;
 		}
 		
 		public function set rotationY(val:Number):void
 		{
-			getRotation();
-			setRotation(_rotation.x, val, _rotation.z);
+			_rotation.y = val*_toRad;
+			updateTransforms(true);
+			dirtyMatrix = true;
 		}
 		
 		public function get rotationZ():Number
 		{
-			return getRotation().z;
+			decompose();
+			return _rotation.z*_toAng;
 		}
 		
 		public function set rotationZ(val:Number):void
 		{
-			getRotation();
-			setRotation(_rotation.x, _rotation.y, val);
+			_rotation.z = val*_toRad;
+			updateTransforms(true);
+			dirtyMatrix = true;
 		}
 		
 		public function get world():Matrix3D
 		{
-			if (dirty)
+			if (dirtyWrold)
 			{
-				_matrix.copyToMatrix3D(_world);
-				if (parent && parent.parent)
+				matrix.copyToMatrix3D(_world);
+				if (parent)
 				{
 					_world.append(parent.world);
 				}
-				dirty = false;
+				dirtyWrold = false;
 				dirtyInv = true;
 			}
 			return _world;
@@ -246,7 +294,7 @@ package gl3d.core
 		
 		public function get world2local():Matrix3D
 		{
-			if (dirty || dirtyInv)
+			if (dirtyWrold || dirtyInv)
 			{
 				_world2local.copyFrom(world);
 				_world2local.invert();
@@ -257,13 +305,15 @@ package gl3d.core
 		
 		public function get matrix():Matrix3D
 		{
+			recompose();
 			return _matrix;
 		}
 		
 		public function set matrix(value:Matrix3D):void
 		{
 			_matrix = value;
-			dirtyRot = true;
+			dirtyRotScale = true;
+			_matrix.copyColumnTo(3, _position);
 			updateTransforms(true);
 		}
 		
@@ -276,8 +326,21 @@ package gl3d.core
 					c.updateTransforms(true);
 				}
 			}
-			dirty = true;
-
+			dirtyWrold = true;
+		}
+		
+		private function decompose():void{
+			if (dirtyRotScale){
+				dirtyRotScale = false;
+				Matrix3DUtils.decompose(matrix, null, trs);
+			}
+		}
+		
+		private function recompose():void{
+			if (dirtyMatrix){
+				dirtyMatrix = false;
+				_matrix.recompose(trs);
+			}
 		}
 		
 		public function rayMeshTest(rayOrigin:Vector3D, rayDirection:Vector3D, pixelPos:Vector3D = null):Boolean

@@ -126,7 +126,7 @@ package
 			}*/
 			skyBoxTexture = new TextureSet(bmds, false,false, false,true);
 			
-			bmd = new BitmapData(128, 128, false, 0xff0000);
+			bmd = new BitmapData(256, 256, false, 0xff0000);
 			bmd.perlinNoise(30, 30, 2, 1, true, true);
 			
 			//atf
@@ -136,7 +136,7 @@ package
 			
 			
 			//[Embed(source = "assets/leaf.png")]var leafp:Class;
-			//texture = new TextureSet(bmd,true,false, false, false, false);
+			texture = new TextureSet(bmd,false,false, false, false, false);
 			
 			var camera:Camera = Camera.getCamera();
 			if (Context3D.supportsVideoTexture&& camera){
@@ -170,6 +170,7 @@ package
 			stage.align = StageAlign.TOP_LEFT;
 			stage.scaleMode = StageScaleMode.NO_SCALE;
 			stage.addEventListener(Event.RESIZE, stage_resize);
+			stage.addEventListener(MouseEvent.CLICK, stage_mouseDown);
 			stage_resize();
 			//post = "def";
 			//post = "water";
@@ -217,8 +218,8 @@ package
 			//addSky();
 			teapot = new Node3D;
 			teapot.material = material;
-			teapot.drawable = //Teapot.teapot();
-			Meshs.unpack(Meshs.sphere(5,5));
+			teapot.drawable = Teapot.teapot();
+			//Meshs.unpack(Meshs.sphere(5,5));
 			view.scene.addChild(teapot);
 			teapot.scaleX = teapot.scaleY = teapot.scaleZ = 1;
 			view.background = 0//xffffff;
@@ -231,8 +232,9 @@ package
 			var rayDirection:Vector3D = new Vector3D;
 			var pix:Vector3D = new Vector3D;
 			view.camera.computePickRayDirectionMouse(mouseX, mouseY, stage.stageWidth, stage.stageHeight, rayOrigin, rayDirection);
-			if (teapot.rayMeshTest(rayOrigin, rayDirection,pix)) {
+			if (teapot&&teapot.rayMeshTest(rayOrigin, rayDirection,pix)) {
 				trace("test");
+				teapot.scaleX *=-1;
 			}
 		}
 		
@@ -268,11 +270,14 @@ package
 		public function enterFrame(e:Event):void
 		{
 			if (teapot) {
-				teapot.x = Math.sin(getTimer() / 1000);
-				teapot.y = Math.sin(getTimer() / 700);
-				teapot.z = Math.sin(getTimer() / 400);
+				//teapot.rotationX = teapot.rotationX;// .rotationY ++;
+				//trace(teapot.scaleX,teapot.scaleY,teapot.scaleZ);
+				//trace(teapot.getRotation());
+				//teapot.x = Math.sin(getTimer() / 1000);
+				//teapot.y = Math.sin(getTimer() / 700);
+				//teapot.z = Math.sin(getTimer() / 400);
 				teapot.rotationY+=2;
-				teapot.rotationX+=2;
+				//teapot.rotationX+=2;
 				//teapot.matrix.appendRotation(1, Vector3D.Y_AXIS);
 				//teapot.updateTransforms(true);
 				//teapot.rotationX+=.01;
