@@ -69,9 +69,11 @@ package gl3d.core
 		public function removeChild(n:Node3D):void
 		{
 			var i:int = children.indexOf(n);
-			if (i != -1) children.splice(i, 1);
-			n.parent = null;
-			n.updateTransforms(true);
+			if (i != -1) {
+				children.splice(i, 1);
+				n.parent = null;
+				n.updateTransforms(true);
+			}
 		}
 		
 		public function update(view:View3D, material:MaterialBase = null):void

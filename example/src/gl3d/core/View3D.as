@@ -20,7 +20,7 @@ package gl3d.core {
 	public class View3D extends Sprite
 	{
 		public var _enableErrorChecking:Boolean = false;
-		public var scene:Node3D = new Node3D("scene");
+		public var scene:Scene3D = new Scene3D;
 		public var camera:Camera3D = new Camera3D;
 		public var renderer:Render;
 		public var lights:Vector.<Light> = new <Light>[];
