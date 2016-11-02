@@ -44,7 +44,7 @@
     <option linkReport="" />
     <option loadExterns="" />
     <option staticLinkRSL="True" />
-    <option additional="-swf-version=33" />
+    <option additional="-swf-version=30" />
     <option compilerConstants="CONFIG::js_only,false&#xA;CONFIG::as_only,true" />
     <option minorVersion="" />
   </build>

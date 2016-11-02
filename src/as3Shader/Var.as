@@ -7,6 +7,7 @@ package as3Shader {
 	 */
 	dynamic public class Var extends Proxy
 	{
+		private static const type2name:Array = [null,"c","t","va","v","fs","oc","op"];
 		public static const TYPE_C:int = 1;
 		public static const TYPE_T:int = 2;
 		public static const TYPE_VA:int = 3;
@@ -70,7 +71,11 @@ package as3Shader {
 		}
 		
 		public function toString():String {
-			return [type, index] + "";
+			var s:String = type2name[type] + "[" + index + "]";
+			if (component){
+				s+="["+component+"]"
+			}
+			return s;
 		}
 		
 		CONFIG::js_only{

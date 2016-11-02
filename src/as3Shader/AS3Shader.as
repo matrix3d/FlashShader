@@ -23,10 +23,12 @@ package as3Shader {
 		public var samplers:Array;
 		public var buffs:Array;
 		public var varyings:Array;
+		public var temps:Array;
 		private var uniformVars:Array;
 		private var samplerVars:Array;
 		private var buffVars:Array;
 		private var varyingVars:Array;
+		private var tempVars:Array;
 		
 		public var programType:String;
 		public var constPoolVec:Vector.<Number>;
@@ -55,6 +57,36 @@ package as3Shader {
 			
 		}
 		
+		private function findUsed(lines:Array,i:int,usedline:Array):void{
+			if (usedline[i]){
+				return;
+			}
+			usedline[i] = true;
+			var line:Array = lines[i];
+			//trace(i, "used");
+			var nv:Var = line[1];
+			if (nv.component is Var){
+				findUsedSub(lines, nv.component as Var, i,usedline);
+			}
+			for (var j:int = 2; j < line.length; j++ ){
+				findUsedSub(lines, line[j] as Var, i,usedline);
+			}
+		}
+		
+		private function findUsedSub(lines:Array, v:Var, i:int,usedline:Array):void{
+			var comps:Array = [];
+			for (var k:int = i - 1; k >= 0;k-- ){
+				var line2:Array = lines[k];
+				var v2:Var = line2[1];
+				if (v2.type == v.type && v2.index == v.index){
+					findUsed(lines,k,usedline);
+					if (v2.component==null){
+						break;
+					}
+				}
+			}
+		}
+		
 		public function optimize():void {
 			var xyzw:String = "xyzw";
 			var startEnds:Array = [];
@@ -65,8 +97,25 @@ package as3Shader {
 			samplers = [];
 			buffs = [];
 			varyings = [];
+			temps = [];
+			//删除多余line 
+			// todo : vshader fshader v
+			var usedline:Array = [];
+			for (var i:int = lines.length - 1; i >= 0;i-- ){
+				line = lines[i];
+				var t:Var = line[1];
+				if (t.type==Var.TYPE_OP||t.type==Var.TYPE_OC||t.type==Var.TYPE_V){
+					findUsed(lines,i,usedline);
+				}
+			}
+			for (i = lines.length - 1; i >= 0;i-- ){
+				if (lines[i]==null){
+					trace("remove line", i);
+					lines.splice(i, 1);
+				}
+			}
 			//find
-			for (var i:int = 0; i < lines.length;i++ ) {
+			for (i = 0; i < lines.length;i++ ) {
 				var line:Array = lines[i];
 				var len:int = line.length;
 				for (var j:int = 1; j <len ;j++ ) {
@@ -76,25 +125,6 @@ package as3Shader {
 						addVar(v.component as Var, i, startEnds, ttypePool, tempConsts);
 					}
 				}
-			}
-			
-			if (uniformCounter) {
-				uniforms=optimizeVar(uniforms,uniformVars);
-			}
-			for each(v in uniforms) {
-				var theConstMemLen:int = v.index + v.constLenght;
-				if (theConstMemLen>constMemLen) {
-					constMemLen = theConstMemLen;
-				}
-			}
-			if (programType==Context3DProgramType.FRAGMENT&&samplerCounter) {
-				samplers=optimizeVar(samplers,samplerVars);
-			}
-			if (programType==Context3DProgramType.VERTEX&&buffCounter) {
-				buffs=optimizeVar(buffs,buffVars);
-			}
-			if (programType==Context3DProgramType.VERTEX&&varyingCounter) {
-				varyings=optimizeVar(varyings,varyingVars);
 			}
 			
 			//optimize temp
@@ -117,6 +147,27 @@ package as3Shader {
 					}
 				}
 			}
+			
+			if (uniformCounter) {
+				uniforms=optimizeVar(uniforms,uniformVars);
+			}
+			for each(v in uniforms) {
+				var theConstMemLen:int = v.index + v.constLenght;
+				if (theConstMemLen>constMemLen) {
+					constMemLen = theConstMemLen;
+				}
+			}
+			if (programType==Context3DProgramType.FRAGMENT) {
+				samplers=optimizeVar(samplers,samplerVars);
+			}
+			if (programType==Context3DProgramType.VERTEX) {
+				buffs=optimizeVar(buffs,buffVars);
+			}
+			if (programType==Context3DProgramType.VERTEX) {
+				varyings=optimizeVar(varyings,varyingVars);
+			}
+			temps=optimizeVar(temps,temps);
+			
 			
 			for each(v in tempConsts) {
 				var floats:Array = v.data as Array;
@@ -187,6 +238,7 @@ package as3Shader {
 				var vs:Array = ttypePool[v.index];//把相同索引的临时变量放入数组
 				if (vs == null) vs = ttypePool[v.index] = [];
 				vs.push(v);
+				temps.push(v);
 			}else if (v.type==Var.TYPE_C) {//遍历常量
 				if (v.index!=-1) {//找到非临时常量使用的最大内存
 					uniforms.push(v);
@@ -202,7 +254,8 @@ package as3Shader {
 			}
 		}
 		
-		public function optimizeVar(vars:Array,sourceVars:Array):Array {
+		public function optimizeVar(vars:Array, sourceVars:Array):Array {
+			if (sourceVars==null||sourceVars.length == 0) return vars;
 			var map:Object = { };
 			var newVars:Array = [];
 			var index2newindex:Object = { };
