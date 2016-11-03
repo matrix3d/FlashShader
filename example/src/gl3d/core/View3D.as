@@ -37,6 +37,10 @@ package gl3d.core {
 		public var profile:String;
 		public var background:uint = 0;
 		public var invalid:Boolean = true;
+		public var postWidth:Number =-1;
+		public var postHeight:Number =-1;
+		public var postDivX:Number = 1;
+		public var postDivY:Number = 1;
 		public function View3D(id:Object=0) 
 		{
 			this.id = id;

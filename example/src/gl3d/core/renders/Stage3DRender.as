@@ -99,6 +99,9 @@ package gl3d.core.renders
 					stage3d.y = view.y;
 					gl3d.configureBackBuffer(view.stage3dWidth, view.stage3dHeight, view.antiAlias);
 					view.invalid = false;
+					for (var i:int = 0; i < view.postRTTs.length; i++ ) {
+						view.postRTTs[i].invalid = true;
+					}
 				}
 				collects.length = 0;
 				view.lights.length = 0;
@@ -131,10 +134,10 @@ package gl3d.core.renders
 				
 				if (view.posts.length) {
 					var len:int = view.posts.length>1?2:1;
-					for (var i:int = 0; i < len; i++ ) {
+					for (i = 0; i < len; i++ ) {
 						view.postRTTs[i].update(view);
 						if (view.postRTTs[i].texture==null) {
-							view.postRTTs[i].texture = gl3d.createRectangleTexture(view.stage3dWidth, view.stage3dHeight,Context3DTextureFormat.BGRA, true);
+							view.postRTTs[i].texture = gl3d.createRectangleTexture((view.postWidth==-1?view.stage3dWidth:view.postWidth)*view.postDivX,(view.postHeight==-1?view.stage3dHeight:view.postHeight)*view.postDivY,Context3DTextureFormat.BGRA, true);
 						}
 					}
 					renderTarget = view.postRTTs[0];
