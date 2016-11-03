@@ -65,10 +65,10 @@ package as3Shader {
 			var line:Array = lines[i];
 			//trace(i, "used");
 			var nv:Var = line[1];
-			if (nv.component is Var){
+			if (nv&&nv.component is Var){
 				findUsedSub(lines, nv.component as Var, i,usedline);
 			}
-			for (var j:int = 2; j < line.length; j++ ){
+			for (var j:int = line[2]?2:1; j < line.length; j++ ){
 				findUsedSub(lines, line[j] as Var, i,usedline);
 			}
 		}
@@ -99,23 +99,23 @@ package as3Shader {
 			varyings = [];
 			temps = [];
 			//删除多余line 
-			// todo : vshader fshader v
-			var usedline:Array = [];
+			// todo : vshader fshader v (eif etc)
+			/*var usedline:Array = [];
 			for (var i:int = lines.length - 1; i >= 0;i-- ){
 				line = lines[i];
 				var t:Var = line[1];
-				if (t.type==Var.TYPE_OP||t.type==Var.TYPE_OC||t.type==Var.TYPE_V){
+				if (line[2]==null||t.type==Var.TYPE_OP||t.type==Var.TYPE_OC||t.type==Var.TYPE_V){
 					findUsed(lines,i,usedline);
 				}
 			}
 			for (i = lines.length - 1; i >= 0;i-- ){
-				if (lines[i]==null){
+				if (usedline[i]==null){
 					trace("remove line", i);
 					lines.splice(i, 1);
 				}
-			}
+			}*/
 			//find
-			for (i = 0; i < lines.length;i++ ) {
+			for (var i:int = 0; i < lines.length;i++ ) {
 				var line:Array = lines[i];
 				var len:int = line.length;
 				for (var j:int = 1; j <len ;j++ ) {
@@ -611,12 +611,12 @@ package as3Shader {
 		public function m34(a:Object, b:Object, t:Var=null,component:String=null):Var {return f("m34", a, b, t,null,3,component||"xyz");}
 		public function ddx(a:Object, t:Var=null):Var {return f("ddx", a, null, t);}
 		public function ddy(a:Object, t:Var=null):Var {return f("ddy", a, null, t);}
-		public function ife(a:Object, b:Object, t:Var=null):Var {return f("ife", a, b, t);}
-		public function ine(a:Object, b:Object, t:Var=null):Var {return f("ine", a, b, t);}
-		public function ifg(a:Object, b:Object, t:Var=null):Var {return f("ifg", a, b, t);}
-		public function ifl(a:Object, b:Object, t:Var=null):Var {return f("ifl", a, b, t);}
-		public function els(a:Object, b:Object, t:Var=null):Var {return f("els", a, b, t);}
-		public function eif(a:Object, b:Object, t:Var=null):Var {return f("eif", a, b, t);}
+		public function ife(a:Object, b:Object):Var {return f("ife", a, b,null,null,1);}
+		public function ine(a:Object, b:Object):Var {return f("ine", a, b,null,null,1);}
+		public function ifg(a:Object, b:Object):Var {return f("ifg", a, b, null,null,1);}
+		public function ifl(a:Object, b:Object):Var {return f("ifl", a, b, null,null,1);}
+		public function els():Var {return f("els", null,null,null,null,0);}
+		public function eif():Var {return f("eif", null,null,null,null,0);}
 		public function ted(a:Object, b:Object, t:Var=null):Var {return f("ted", a, b, t);}
 		public function kil(a:Object):Var {return f("kil", a, null, null,null,1);}
 		public function tex(a:Object = null, b:Object = null, t:Var = null, flags:Array = null):Var {return f("tex", a, b, t,flags);}
