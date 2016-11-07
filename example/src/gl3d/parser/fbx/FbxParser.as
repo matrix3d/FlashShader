@@ -420,7 +420,7 @@ package gl3d.parser.fbx
 				var o:Object = {childs:[] };
 				o.model = model;
 				var mtype:String = FbxTools.getType(model);
-				o.isJoint = (mtype == "LimbNode") || (mtype == "Limb");
+				o.isJoint = mtype != "Mesh"//(mtype == "LimbNode") || (mtype == "Limb");
 				o.isMesh = mtype == "Mesh";
 				hobjects[FbxTools.getId(model)] = o;
 				name2object[FbxTools.getName(model)] = o;

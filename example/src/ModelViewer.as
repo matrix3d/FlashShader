@@ -49,7 +49,7 @@ package
 		private var vmd:VMD;
 		private var loader2url:Dictionary = new Dictionary;
 		private var md5mesh:MD5MeshParser;
-		private var node:Node3D;
+		private var node:Node3D=new Node3D;
 		private var scaleUI:HUISlider;
 		private var timeUI:HUISlider;
 		private var pauseUI:CheckBox;
@@ -79,7 +79,7 @@ package
 			try{
 			//load("C:/Users/aaaa/Desktop/test2.fbx");
 			//load("C:/Users/aaaa/Desktop/卡攻击.fbx");
-			//load("C:/Users/aaaa/Desktop/大理宝石商人.fbx");
+			load("C:/Users/Administrator/Desktop/xsi_man_skinning.fbx");
 			//load("C:/Users/aaaa/Desktop/黄蓉动画.fbx");
 			//load("C:/Users/aaaa/Desktop/mesh.amf");
 			//load("C:/Users/aaaa/Desktop/mesh.json");
@@ -92,7 +92,7 @@ package
 			//load("../src/assets/test4.FBX");
 			//load("../src/assets/miku.mtl");
 			//load("../src/assets/miku.obj");
-			load("../src/assets/astroBoy_walk_Max.dae");
+			//load("../src/assets/astroBoy_walk_Max.dae");
 			//load("../src/assets/miku.pmx");
 			//load("../src/assets/melt.vmd");
 			//load("../src/assets/aoying.fbx");
@@ -348,7 +348,8 @@ package
 				if (lastNode&&lastNode.parent) {
 					lastNode.parent.removeChild(lastNode);
 				}
-				node = curnode;
+				node.children.length = 0;
+				node.addChild(curnode);
 				node.scaleX=
 				node.scaleY=
 				node.scaleZ = defScale;
