@@ -26,7 +26,8 @@ package gl3d.parser.q3bsp.render
 		{
 			this.bsp = bsp;
 			var b:BitmapData = new BitmapData(512, 512);
-			Utils.createXorMap(b)
+			b.perlinNoise(10, 10, 4, 1, true, true);
+			//Utils.createXorMap(b)
 			var diffTexture:TextureSet = new TextureSet(b);
 			var lightmapTexture:TextureSet = new TextureSet(bsp.lightmapBmd);
 			var textures:Array = [];

@@ -28,6 +28,7 @@ package
 	import gl3d.core.skin.SkinAnimation;
 	import gl3d.core.skin.SkinAnimationCtrl;
 	import gl3d.core.View3D;
+	import gl3d.parser.a3ds.A3DSParser;
 	import gl3d.parser.dae.ColladaDecoder;
 	import gl3d.parser.fbx.FbxParser;
 	import gl3d.parser.md5.MD5AnimParser;
@@ -321,6 +322,11 @@ package
 						anim = fbx.animc;
 						curnode = fbx.rootNode;
 					}
+					defScale = 0.01;
+					break;
+				case "3ds":
+					var a3ds:A3DSParser = new A3DSParser(byte);
+					curnode = a3ds.root;
 					defScale = 0.01;
 					break;
 				case "json":
