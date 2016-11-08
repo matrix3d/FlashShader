@@ -80,7 +80,7 @@ package
 			try{
 			//load("C:/Users/aaaa/Desktop/test2.fbx");
 			//load("C:/Users/aaaa/Desktop/卡攻击.fbx");
-			load("C:/Users/Administrator/Desktop/xsi_man_skinning.fbx");
+			//load("C:/Users/Administrator/Desktop/xsi_man_skinning.fbx");
 			//load("C:/Users/aaaa/Desktop/黄蓉动画.fbx");
 			//load("C:/Users/aaaa/Desktop/mesh.amf");
 			//load("C:/Users/aaaa/Desktop/mesh.json");

@@ -86,7 +86,7 @@ package gl3d.parser.object
 				nmat.ambient.y = mat.a[1];
 				nmat.ambient.z = mat.a[2];
 				if (mat.dmap!=null) {
-					new MatLoadMsg(mat.dmap, nmat);
+					new MatLoadMsg(mat.dmap, null,nmat);
 				}
 				mats.push(nmat);
 			}

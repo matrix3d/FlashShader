@@ -55,7 +55,7 @@ package gl3d.parser.obj
 									node.material.ambient.z = mtl.Ka[2];
 								}
 								if (mtl.map_Kd) {
-									new MatLoadMsg(mtl.map_Kd,node.material);
+									new MatLoadMsg(mtl.map_Kd,null,node.material);
 								}
 							}
 						}

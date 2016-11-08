@@ -80,7 +80,7 @@ package gl3d.parser.fbx
 					var size:int = r.readUnsignedInt();
 					r.readBytes(b, 0, size);
 					b.position = 0;
-					return r;
+					return b;
 				case "S":
 					size = r.readUnsignedInt();
 					return r.readUTFBytes(size);

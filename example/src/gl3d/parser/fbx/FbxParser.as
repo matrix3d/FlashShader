@@ -2,6 +2,7 @@ package gl3d.parser.fbx
 {
 	import flash.geom.Matrix3D;
 	import flash.geom.Vector3D;
+	import flash.net.FileReference;
 	import flash.utils.ByteArray;
 	import gl3d.core.Drawable;
 	import gl3d.core.DrawableSource;
@@ -239,7 +240,14 @@ package gl3d.parser.fbx
 									var tex:Object = getChild(material, "Texture") ;
 									if (tex) {
 										var texPath:String = String(FbxTools.get(tex, "FileName").props[0]);
-										new MatLoadMsg(texPath, submesh.material);
+										var video:Object = getChild(tex, "Video");
+										if (video){
+											var videoObj:Object = FbxTools.get(video, "Content", true);
+											if (videoObj&&videoObj.props){
+												var videoByte:ByteArray = videoObj.props[0] as ByteArray;
+											}
+										}
+										new MatLoadMsg(texPath,videoByte, submesh.material);
 									}
 								}
 								//break;
