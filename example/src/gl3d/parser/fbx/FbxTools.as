@@ -75,8 +75,9 @@ package gl3d.parser.fbx {
 		
 		static public function getName(n : * ) : String {
 			var n1:String = String(n.props[n.props.length - 2]);
-			if(n1)return n1.split("::").pop();
-			return null;
+			if(n1)n1= n1.split("::").pop();
+			if(n1)n1= n1.split(":").pop();
+			return n1;
 		}
 		
 		static public function getType(n : * ) : String {

@@ -504,7 +504,13 @@ package gl3d.parser.fbx
 					var animDataBase:Object= animData[mid] = animData[mid] || { };
 					animDataBase[cname] = [x, y, z];
 					animDataBase.times = times;
-					animDataBase.target = name2object[FbxTools.getName(model)];
+					var targetName:String = FbxTools.getName(model);
+					animDataBase.target = name2object[targetName];
+					if (animDataBase.target==null){
+						trace("can not find anim target name", targetName);
+						animData[mid] = null;
+						delete animData[mid];
+					}
 				}
 			}
 			
