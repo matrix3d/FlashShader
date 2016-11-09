@@ -324,6 +324,7 @@ package gl3d.parser.fbx
 			var skin:Skin = (o.obj as Node3D).skin;
 			var prim2skinData:Object = { };
 			var transPoss:Array = [];
+			var maxWeightError:Boolean = false;
 			doobj(o,skin,skinNodes,prim2skinData,transPoss);
 			function doobj(o:Object,skin:Skin,skinNodes:Vector.<Node3D>,prim2skinData:Object,transPoss:Array):void {
 				if (o.isJoint) {
@@ -352,11 +353,13 @@ package gl3d.parser.fbx
 							{
 								var index:int = indexes[i];
 								var wjdata:Array = skinData.wj[index] = skinData.wj[index] || [];
-								if(wjdata.length<4){
+								if(wjdata.length<Skin.MAX_WEIGHT){
 									wjdata.push([weights[i],jid]);
 									if (skin.maxWeight<wjdata.length) {
 										skin.maxWeight = wjdata.length;
 									}
+								}else{
+									maxWeightError = true;
 								}
 							}
 							
@@ -372,6 +375,10 @@ package gl3d.parser.fbx
 				for each(var c:Object in o.childs) {
 					doobj(c,skin,skinNodes,prim2skinData,transPoss);
 				}
+			}
+			
+			if(maxWeightError){
+				trace("maxWeightError");
 			}
 			
 			for (var primID:String in prim2skinData) {

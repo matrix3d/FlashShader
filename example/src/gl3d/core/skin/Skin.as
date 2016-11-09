@@ -12,6 +12,7 @@ package gl3d.core.skin
 	 */
 	public class Skin 
 	{
+		public static var MAX_WEIGHT:int = 4;
 		public var skinFrame:SkinFrame;
 		public var maxWeight:int;
 		public var joints:Vector.<Joint> = new Vector.<Joint>;

@@ -17,13 +17,14 @@ package gl3d.core {
 		public static var FORMATS:Array = [null, "float1", "float2", "float3", "float4"];
 		//public var subBuffs:Array;
 		public var cpuSkin:VertexBufferSet;
-		public function VertexBufferSet(data:Vector.<Number>,data32PerVertex:int) 
+		public function VertexBufferSet(data:Vector.<Number>,data32PerVertex:int/*,subBuffs:Array=null*/) 
 		{
 			this.data = data;
 			this.data32PerVertex = data32PerVertex;
-			if (data32PerVertex>4) {
-				throw "error";
-			}
+			//this.subBuffs = subBuffs;
+			//if (data32PerVertex>4&&subBuffs==null) {
+			//	throw "error";
+			//}
 		}
 		
 		public function update(context:GL):void 
@@ -44,11 +45,14 @@ package gl3d.core {
 		}
 		
 		public function bind(context:GL, i:int, offset:int = 0, format:String = null):void {
-			/*if (subBuffs) {
-				for each(var a:Array in subBuffs) {
-					context.setVertexBufferAt(a[0], buff,a[1],a[2]);
-				}
-			}else {*/
+			//if (subBuffs) {
+			//	var buffOffset:int = 0;
+			//	for (var j:int = 0; j < subBuffs.length; j++ ) {
+			//		var count:int = subBuffs[j];
+			//		context.setVertexBufferAt(i + j, buff, buffOffset, format || FORMATS[count]);
+			//		buffOffset += count;
+			//	}
+			//}else {
 				context.setVertexBufferAt(i, buff,offset,format||FORMATS[data32PerVertex]);
 			//}
 		}

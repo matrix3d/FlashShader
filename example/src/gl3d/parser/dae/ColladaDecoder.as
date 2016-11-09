@@ -198,7 +198,7 @@ package gl3d.parser.dae
 						ws.push(0);
 					}
 				}
-				if (maxWeight <= 4) {
+				if (maxWeight <= Skin.MAX_WEIGHT) {
 					skinNodes.push(skinNode);	
 					var skin:Skin = new Skin;
 					//skin.invBindMatrixs = Vector.<Matrix3D>(invBindMatrixs);
