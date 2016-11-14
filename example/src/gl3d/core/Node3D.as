@@ -41,6 +41,11 @@ package gl3d.core
 		private var dirtyInv:Boolean = false;
 		private var dirtyRotScale:Boolean = false;
 		public var visible:Boolean = true;
+		
+		public var startTime:int = 0;//动画开始的时间
+		public var lifeTimeRange:Vector3D = new Vector3D(1000, 1000);//生命周期范围
+		public var scaleFromTo:Vector3D;
+		
 		private static var _temp0:Vector3D = new Vector3D();
 		
 		private static var _temp1:Vector3D = new Vector3D();

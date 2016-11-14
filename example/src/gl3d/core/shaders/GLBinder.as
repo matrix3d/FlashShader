@@ -122,7 +122,9 @@ package gl3d.core.shaders
 		public function bindWireframeColorUniform(shader:GLShader, material:Material,isLastSameMaterial:Boolean):void {
 			if (!isLastSameMaterial) material.view.renderer.gl3d.setProgramConstantsFromVector3D(as3shader.programType, v.index,material.wireframeColor);
 		}
-		
+		public function bindTerrainScaleVar(shader:GLShader, material:Material,isLastSameMaterial:Boolean):void {
+			if (!isLastSameMaterial) material.view.renderer.gl3d.setProgramConstantsFromVector3D(as3shader.programType, v.index,material.terrainScale);
+		}
 		//textures
 		public function bindDiffSampler(shader:GLShader, material:Material,isLastSameMaterial:Boolean):void {
 			shader.textureSets[v.index] = material.diffTexture;

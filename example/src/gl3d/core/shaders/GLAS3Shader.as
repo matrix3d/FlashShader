@@ -227,6 +227,15 @@ package gl3d.core.shaders
 			binds.push([binder,binder.bindWireframeColorUniform]);
 			return u;
 		}
+		public function uniformTerrainScaleVar():Var {
+			var name:String = "uterrainscalevar";
+			if (getNamedVar(name)) return getNamedVar(name);
+			var u:Var = uniform();
+			setNamedVar(name, u);
+			var binder:GLBinder = new GLBinder(this, u);
+			binds.push([binder,binder.bindTerrainScaleVar]);
+			return u;
+		}
 		
 		//textures
 		public function samplerDiff():Var {

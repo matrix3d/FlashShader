@@ -121,6 +121,15 @@ package gl3d.shaders
 				}
 			}
 			
+			if (material.node.scaleFromTo){
+				var time:Var = frc(div(sub(uniformTime(), mov(material.node.startTime)), material.node.lifeTimeRange.x));
+			}
+			if (material.node.scaleFromTo){
+				var size:Var = add(material.node.scaleFromTo.x, mul(time, material.node.scaleFromTo.y - material.node.scaleFromTo.x))
+				pos = mov(pos);
+				mul(pos.xyz, size,pos.xyz);
+			}
+			
 			var worldPos:Var = m44(pos, model);
 			var viewPos:Var = m44(worldPos, view);
 			var opVar:Var = m44(viewPos, perspective);
