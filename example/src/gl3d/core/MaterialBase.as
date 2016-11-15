@@ -53,6 +53,7 @@ package gl3d.core
 		public var depthMask:Boolean = true;
 		public var border:Boolean = false;
 		public var borderColor:Vector3D = new Vector3D(1, 0, 0, 1);
+		public var isBillbard:Boolean = false;
 		public function MaterialBase() 
 		{
 			

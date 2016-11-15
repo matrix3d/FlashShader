@@ -164,6 +164,7 @@ package gl3d.core
 		
 		public function set scaleX(val:Number):void
 		{
+			decompose();
 			_scale.x = val;
 			//Matrix3DUtils.scaleX(this._matrix, val);
 			updateTransforms(true);
@@ -173,6 +174,7 @@ package gl3d.core
 		
 		public function set scaleY(val:Number):void
 		{
+			decompose();
 			_scale.y = val;
 			//Matrix3DUtils.scaleY(this._matrix, val);
 			updateTransforms(true);
@@ -181,6 +183,7 @@ package gl3d.core
 		
 		public function set scaleZ(val:Number):void
 		{
+			decompose();
 			_scale.z = val;
 			//Matrix3DUtils.scaleZ(this._matrix, val);
 			updateTransforms(true);
@@ -210,6 +213,7 @@ package gl3d.core
 		}
 		public function setScale(x:Number, y:Number, z:Number):void
 		{
+			decompose();
 			_scale.setTo(x,y,z);
 			updateTransforms(true);
 			dirtyMatrix = true;
@@ -224,6 +228,7 @@ package gl3d.core
 		}
 		public function setRotation(x:Number, y:Number, z:Number):void
 		{
+			decompose();
 			_rotation.setTo(x*_toRad, y*_toRad, z*_toRad);
 			updateTransforms(true);
 			dirtyMatrix = true;
@@ -245,6 +250,7 @@ package gl3d.core
 		
 		public function set rotationX(val:Number):void
 		{
+			decompose();
 			_rotation.x = val*_toRad;
 			updateTransforms(true);
 			dirtyMatrix = true;
@@ -258,6 +264,7 @@ package gl3d.core
 		
 		public function set rotationY(val:Number):void
 		{
+			decompose();
 			_rotation.y = val*_toRad;
 			updateTransforms(true);
 			dirtyMatrix = true;
@@ -271,6 +278,7 @@ package gl3d.core
 		
 		public function set rotationZ(val:Number):void
 		{
+			decompose();
 			_rotation.z = val*_toRad;
 			updateTransforms(true);
 			dirtyMatrix = true;

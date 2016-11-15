@@ -212,9 +212,9 @@ package gl3d.core {
 					case 1:
 						isCube = true;
 				}
-				width = int(Math.pow(2, data.readUnsignedByte()));
-				height = int(Math.pow(2, data.readUnsignedByte()));
-				var numTextures:int = data.readUnsignedByte();
+				width = int(Math.pow(2, atf.readUnsignedByte()));
+				height = int(Math.pow(2, atf.readUnsignedByte()));
+				var numTextures:int = atf.readUnsignedByte();
 				//mipmap = numTextures > 1;
 				
 				if (createTexture){

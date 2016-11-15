@@ -129,9 +129,16 @@ package gl3d.shaders
 				pos = mov(pos);
 				mul(pos.xyz, size,pos.xyz);
 			}
-			
-			var worldPos:Var = m44(pos, model);
-			var viewPos:Var = m44(worldPos, view);
+			if(material.isBillbard){
+				var worldPos:Var = m44(mov([0,0,0,1]), model);
+				var viewPos:Var = m44(worldPos.xyzw, view);
+				pos = mov(pos.xyzw);
+				m33(pos.xyz,model,pos.xyz);
+				add(viewPos.xyz, pos, viewPos.xyz);
+			}else{
+				worldPos = m44(pos, model);
+				viewPos = m44(worldPos, view);
+			}
 			var opVar:Var = m44(viewPos, perspective);
 			op = opVar;
 			
