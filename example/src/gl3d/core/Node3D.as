@@ -25,6 +25,7 @@ package gl3d.core
 		public var children:Vector.<Node3D> = new Vector.<Node3D>;
 		public var renderChildren:Vector.<Node3D> = new Vector.<Node3D>;
 		public var drawable:Drawable;
+		public var posVelocityDrawable:Drawable;//粒子的位置速度drawable
 		public var material:MaterialBase;
 		public var name:String;
 		public var picking:Picking = new AS3Picking;

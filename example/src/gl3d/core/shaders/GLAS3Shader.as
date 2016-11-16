@@ -293,24 +293,21 @@ package gl3d.core.shaders
 			return samp;
 		}
 		//buffs
-		public function buffPos():Var {
-			var name:String = "bpos";
+		private function buffWithNameAndFun(name:String, funname:String):Var{
 			var b:Var = getNamedVar(name);
 			if (b) return b;
 			b = buff();
 			setNamedVar(name, b);
 			var binder:GLBinder = new GLBinder(this,b);
-			binds.push([binder,binder.bindPosBuff]);
+			binds.push([binder,binder[funname]]);
 			return b;
 		}
+		
+		public function buffPos():Var {
+			return buffWithNameAndFun("bpos", "bindPosBuff");
+		}
 		public function buffNorm():Var {
-			var name:String = "bnorm";
-			if (getNamedVar(name)) return getNamedVar(name);
-			var b:Var = buff();
-			setNamedVar(name, b);
-			var binder:GLBinder = new GLBinder(this,b);
-			binds.push([binder,binder.bindNormBuff]);
-			return b;
+			return buffWithNameAndFun("bnorm","bindNormBuff");
 		}
 		public function buffTangent():Var {
 			var name:String = "btangent";
@@ -411,6 +408,25 @@ package gl3d.core.shaders
 			binds.push(binder.bindCpuSkinNormBuff);
 			return buff;
 		}*/
+		public function buffParticlePos():Var {
+			var name:String = "bparpos";
+			var b:Var = getNamedVar(name);
+			if (b) return b;
+			b = buff();
+			setNamedVar(name, b);
+			var binder:GLBinder = new GLBinder(this,b);
+			binds.push([binder,binder.bindParticlePosBuff]);
+			return b;
+		}
+		public function buffParticleNorm():Var {
+			var name:String = "bparnorm";
+			if (getNamedVar(name)) return getNamedVar(name);
+			var b:Var = buff();
+			setNamedVar(name, b);
+			var binder:GLBinder = new GLBinder(this,b);
+			binds.push([binder,binder.bindParticleNormBuff]);
+			return b;
+		}
 		public function getNamedVar(name:String):Var {
 			return namedVars[name];
 		}

@@ -94,25 +94,27 @@ package gl3d.util
 			text +=  frameRate;
 			var mem:int = System.totalMemoryNumber / 1024 / 1024;
 			if (mem > maxMem) maxMem = mem;
-			text += "\nmem : " + mem+" / "+maxMem;
+			text += "\nmem : " + mem + " / " + maxMem;
+			if(text!=tf.text){
 			tf.text = text;
 			
 			var fpsGrapHeight:Number = 10;
-			graphics.clear();
-			graphics.beginFill(0xffffff, .7);
-			var w:Number = tf.width;
-			var h:Number = tf.height;
-			graphics.drawRect(0, 0, w, h+fpsGrapHeight);
-			graphics.endFill();
-			graphics.lineStyle(0);
-			var len:int = Math.min(w, fpss.length);
-			for (var i:int = 0; i < len;i++ ){
-				var x:Number = i;
-				var y:Number = Math.round(h + fpsGrapHeight * (1 - fpss[i] / frameRate));
-				if (i == 0){
-					graphics.moveTo(x, y);
-				}else{
-					graphics.lineTo(x, y);
+				graphics.clear();
+				graphics.beginFill(0xffffff, .7);
+				var w:Number = tf.width;
+				var h:Number = tf.height;
+				graphics.drawRect(0, 0, w, h+fpsGrapHeight);
+				graphics.endFill();
+				graphics.lineStyle(0);
+				var len:int = Math.min(w, fpss.length);
+				for (var i:int = 0; i < len;i++ ){
+					var x:Number = i;
+					var y:Number = Math.round(h + fpsGrapHeight * (1 - fpss[i] / frameRate));
+					if (i == 0){
+						graphics.moveTo(x, y);
+					}else{
+						graphics.lineTo(x, y);
+					}
 				}
 			}
 		}

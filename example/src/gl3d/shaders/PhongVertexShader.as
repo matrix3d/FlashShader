@@ -121,7 +121,7 @@ package gl3d.shaders
 				}
 			}
 			
-			if (material.node.scaleFromTo){
+			if (material.node.scaleFromTo||(material.node.posVelocityDrawable&&material.node.posVelocityDrawable.norm)){
 				var time:Var = frc(div(sub(uniformTime(), mov(material.node.startTime)), material.node.lifeTimeRange.x));
 			}
 			if (material.node.scaleFromTo){
@@ -129,14 +129,29 @@ package gl3d.shaders
 				pos = mov(pos);
 				mul(pos.xyz, size,pos.xyz);
 			}
+			//粒子位置和速度，放弃复杂的算法，直接用2个buff来实现，加速度，贝塞尔曲线用2个常量表示
+			//曲线 颜色，缩放，速度
+			
 			if(material.isBillbard){
 				var worldPos:Var = m44(mov([0,0,0,1]), model);
 				var viewPos:Var = m44(worldPos.xyzw, view);
 				pos = mov(pos.xyzw);
-				m33(pos.xyz,model,pos.xyz);
-				add(viewPos.xyz, pos, viewPos.xyz);
+				m33(pos.xyz, model, worldPos.xyz);
+				if (material.node.posVelocityDrawable&&material.node.posVelocityDrawable.pos){
+					add(worldPos.xyz, buffParticlePos(), worldPos.xyz);
+				}
+				if (material.node.posVelocityDrawable && material.node.posVelocityDrawable.norm){
+					add(worldPos.xyz, mul(time,buffParticleNorm()), worldPos.xyz);
+				}
+				add(viewPos.xyz, worldPos, viewPos.xyz);
 			}else{
 				worldPos = m44(pos, model);
+				if (material.node.posVelocityDrawable&&material.node.posVelocityDrawable.pos){
+					add(worldPos.xyz, buffParticlePos(), worldPos.xyz);
+				}
+				if (material.node.posVelocityDrawable && material.node.posVelocityDrawable.norm){
+					add(worldPos.xyz, mul(time,buffParticleNorm()), worldPos.xyz);
+				}
 				viewPos = m44(worldPos, view);
 			}
 			var opVar:Var = m44(viewPos, perspective);

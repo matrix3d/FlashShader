@@ -42,7 +42,7 @@ package gl3d.core
 		private var _wireframeAble:Boolean = false;
 		public var isDistanceField:Boolean = false;
 		public var wireframeColor:Vector3D =new Vector3D(.5, 0, .5, 0);
-		public var terrainScale:Vector3D =new Vector3D(1,1,1,1);
+		public var terrainScale:Vector3D =new Vector3D(10,10,10,10);
 		public var invalid:Boolean = true;
 		private var _normalMapAble:Boolean;
 		

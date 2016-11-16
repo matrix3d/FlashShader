@@ -188,6 +188,16 @@ package gl3d.core.shaders
 		public function bindCpuSkinNormBuff(shader:GLShader,material:Material):void {
 			if(v.used)shader.buffSets[v.index] = material.node.drawable.pos.cpuSkinNorm;
 		}*/
+		public function bindParticlePosBuff(shader:GLShader,material:Material,isLastSameMaterial:Boolean):void {
+			//if (v.used) {
+				shader.buffSets[v.index] = material.node.posVelocityDrawable.pos;
+			//}
+		}
+		public function bindParticleNormBuff(shader:GLShader,material:Material,isLastSameMaterial:Boolean):void {
+			//if (v.used) {
+				shader.buffSets[v.index] = material.node.posVelocityDrawable.norm;
+			//}
+		}
 		
 	}
 

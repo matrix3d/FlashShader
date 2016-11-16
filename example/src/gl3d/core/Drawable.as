@@ -26,10 +26,12 @@ package gl3d.core {
 		public var source:DrawableSource;
 		
 		private var _unpackedDrawable:Drawable;
+		public var autoNormal:Boolean;
 		public var oldi2newis:Object;
 		public var smooting:Boolean = true;
-		public function Drawable() 
+		public function Drawable(autoNormal:Boolean=true) 
 		{
+			this.autoNormal = autoNormal;
 			
 		}
 		
@@ -52,7 +54,7 @@ package gl3d.core {
 		
 		public function get norm():VertexBufferSet 
 		{
-			if (_norm==null) {
+			if (_norm==null&&autoNormal) {
 				_norm=Meshs.computeNormal(this);
 			}
 			return _norm;
