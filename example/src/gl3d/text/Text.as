@@ -43,7 +43,7 @@ package gl3d.text
 			pin[7] = size;
 			material = new Material;
 			material.lightAble = false;
-			material.blendModel = BlendMode.LAYER;
+			material.blendMode = BlendMode.LAYER;
 			material.culling = Context3DTriangleFace.NONE;
 			material.passCompareMode = Context3DCompareMode.ALWAYS;
 		}

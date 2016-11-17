@@ -122,7 +122,11 @@ package gl3d.shaders
 			}
 			
 			if (material.node.scaleFromTo||(material.node.posVelocityDrawable&&material.node.posVelocityDrawable.norm)){
-				var time:Var = frc(div(sub(uniformTime(), mov(material.node.startTime)), material.node.lifeTimeRange.x));
+				var time:Var = div(sub(uniformTime(), mov(material.node.startTime)), material.node.lifeTimeRange.x);
+				if (material.node.randomTime){
+					add(time.x, buffRandom(), time.x);
+				}
+				frc(time.x,time);
 			}
 			if (material.node.scaleFromTo){
 				var size:Var = add(material.node.scaleFromTo.x, mul(time, material.node.scaleFromTo.y - material.node.scaleFromTo.x))
@@ -134,23 +138,23 @@ package gl3d.shaders
 			
 			if(material.isBillbard){
 				var worldPos:Var = m44(mov([0,0,0,1]), model);
+				if (material.node.posVelocityDrawable&&material.node.posVelocityDrawable.pos){
+					add(worldPos.xyz, m44(buffParticlePos(),model), worldPos.xyz);
+				}
+				if (material.node.posVelocityDrawable && material.node.posVelocityDrawable.norm){
+					add(worldPos.xyz, mul(time,m44(buffParticleNorm(),model)), worldPos.xyz);
+				}
 				var viewPos:Var = m44(worldPos.xyzw, view);
 				pos = mov(pos.xyzw);
 				m33(pos.xyz, model, worldPos.xyz);
-				if (material.node.posVelocityDrawable&&material.node.posVelocityDrawable.pos){
-					add(worldPos.xyz, buffParticlePos(), worldPos.xyz);
-				}
-				if (material.node.posVelocityDrawable && material.node.posVelocityDrawable.norm){
-					add(worldPos.xyz, mul(time,buffParticleNorm()), worldPos.xyz);
-				}
 				add(viewPos.xyz, worldPos, viewPos.xyz);
 			}else{
 				worldPos = m44(pos, model);
 				if (material.node.posVelocityDrawable&&material.node.posVelocityDrawable.pos){
-					add(worldPos.xyz, buffParticlePos(), worldPos.xyz);
+					add(worldPos.xyz, m44(buffParticlePos(),model), worldPos.xyz);
 				}
 				if (material.node.posVelocityDrawable && material.node.posVelocityDrawable.norm){
-					add(worldPos.xyz, mul(time,buffParticleNorm()), worldPos.xyz);
+					add(worldPos.xyz, mul(time,m44(buffParticleNorm(),model)), worldPos.xyz);
 				}
 				viewPos = m44(worldPos, view);
 			}

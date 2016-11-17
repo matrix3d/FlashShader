@@ -44,6 +44,7 @@ package gl3d.core
 		public var visible:Boolean = true;
 		
 		public var startTime:int = 0;//动画开始的时间
+		public var randomTime:Boolean = false;
 		public var lifeTimeRange:Vector3D = new Vector3D(1000, 1000);//生命周期范围
 		public var scaleFromTo:Vector3D;
 		
