@@ -22,7 +22,7 @@ package
 		override public function initNode():void 
 		{
 			
-			var shape:Drawable = Meshs.plane(.01);//Meshs.cube(.01,.01,.03)//Teapot.teapot();
+			var shape:Drawable = Meshs.plane(.005);//Meshs.cube(.1,.1,.1)//Teapot.teapot();
 			var pvshape:Drawable = Teapot.teapot(10);
 			view.scene.addChild(craeteParticle(shape,pvshape,pvshape.pos.data.length/3));
 		}
@@ -35,6 +35,7 @@ package
 			material = new Material;
 			material.blendMode = BlendMode.ADD;
 			material.isBillbard = true;
+			material.isStretched = false;
 			node.material = material;
 			//node.setScale(.1, .1, .1);
 			
