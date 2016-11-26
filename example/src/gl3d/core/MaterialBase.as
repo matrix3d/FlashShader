@@ -24,6 +24,7 @@ package gl3d.core
 		public var toonStep:Number = 2;
 		public var receiveShadows:Boolean = true;
 		public var alphaThreshold:Number = 0;
+		public var blurSize:int = 0;
 		
 		public var view:View3D;
 		public var camera:Camera3D;

@@ -37,7 +37,7 @@ package
 		override protected function stage_resize(e:Event = null):void 
 		{
 			super.stage_resize(e);
-			c2d.perspective.orthoOffCenterRH( 0, stage.stageWidth, stage.stageHeight,0, -1000, 1000);
+			c2d.orthoOffCenterRH( 0, stage.stageWidth, stage.stageHeight,0, -1000, 1000);
 		}
 		override public function initNode():void 
 		{
@@ -61,10 +61,11 @@ package
 			view.background = 0x999999;
 			quat = new Node3D;
 			quat.material = new Material;
-			quat.material.gray = true;
+			quat.material.gray = false;
+			quat.material.border = true;
 			//quat.material.isIntVertexScreen = true;
-			quat.material.uvMuler = [.5, .5];
-			quat.material.uvAdder = [.5, .5];
+			quat.material.uvMuler = [1, 1];
+			quat.material.uvAdder = [0, 0];
 			quat.material.materialCamera = c2d;
 			quat.material.lightAble = false;
 			quat.material.castShadow = false;
@@ -73,7 +74,7 @@ package
 			node.addChild(quat);
 			
 			quat.material.diffTexture = new TextureSet(bmd, false,false, false, false,true,null);
-			quat.material.blendModel = BlendMode.LAYER;
+			quat.material.blendMode = BlendMode.LAYER;
 			var r:Number = 1;
 			var vs:Vector.<Number> = Vector.<Number>([0, 0, 0, r, 0, 0, 0, r, 0, r, r, 0]);
 			var uv:Vector.<Number> = Vector.<Number>([0, 0, 1, 0, 0, 1, 1, 1]);

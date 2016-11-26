@@ -114,18 +114,15 @@ package gl3d.shaders
 					}
 				}
 				if (material.border){
-					var borderOffsets:Array = [[1, 0], [ -1 , 0], [0, 1 ], [0, -1]];
-					var isBorder:Var;
-					for each(var borderOffset:Array in borderOffsets){
-						var isBorderV:Var = tex(add(div(borderOffset,mov(uniformTextureSize())), vs.uvVarying), diffSampler, null, material.diffTexture.flags).w;
-						if (isBorder==null){
-							isBorder = isBorderV;
-						}else{
-							isBorder = add(isBorder, isBorderV);
-						}
-					}
-					var c1:Var = tex(add([1/256,0],vs.uvVarying), diffSampler, null, material.diffTexture.flags)
-					mix(diffColor.xyzw,[1,0,0,.5],mul(seq(diffColor.w,0),sne(isBorder,0)),diffColor.xyzw);
+					var zeroone:Var=mov([0, 1])
+					var borderOffsets:Var = div(zeroone.xxyy, uniformTextureSize().xyxy);
+					var borderOffsetsAddUV:Var = add(borderOffsets,vs.uvVarying.xyxy);
+					var negborderOffsetsAddUV:Var = add(neg(borderOffsets), vs.uvVarying.xyxy);
+					var isBorder:Var = tex(borderOffsetsAddUV.zy, diffSampler, null, material.diffTexture.flags);
+					isBorder = add(isBorder, tex(negborderOffsetsAddUV.zy, diffSampler, null, material.diffTexture.flags));
+					isBorder = add(isBorder, tex(borderOffsetsAddUV.xw, diffSampler, null, material.diffTexture.flags));
+					isBorder=add(isBorder,tex(negborderOffsetsAddUV.xw, diffSampler, null, material.diffTexture.flags));
+					mix(diffColor.xyzw,zeroone.yxxy,mul(slt(diffColor.w,.1),sge(isBorder.w,.1)),diffColor.xyzw);
 				}
 				oc = diffColor;
 			}else {

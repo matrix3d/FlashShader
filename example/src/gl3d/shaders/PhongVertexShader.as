@@ -124,7 +124,7 @@ package gl3d.shaders
 			if (material.node.scaleFromTo||(material.node.posVelocityDrawable&&material.node.posVelocityDrawable.norm)){
 				var time:Var = div(sub(uniformTime(), mov(material.node.startTime)), material.node.lifeTimeRange.x);
 				if (material.node.randomTime){
-					add(time.x, buffRandom(), time.x);
+					add(time.x, buffRandom().w, time.x);
 				}
 				frc(time.x,time);
 			}
