@@ -115,7 +115,8 @@ package gl3d.shaders
 				}
 				if (material.border){
 					var buv:Var = vs.uvVarying;
-					var zeroone:Var=mov([0, 1])
+					var borderWidth:int = 2;
+					var zeroone:Var=mov([0, borderWidth])
 					var borderOffsets:Var = div(zeroone.xxyy, uniformTextureSize().xyxy);
 					var negBorderOffsets:Var=neg(borderOffsets)
 					var borderOffsetsAddUV:Var = add(borderOffsets,buv.xyxy);
@@ -125,14 +126,14 @@ package gl3d.shaders
 					max(isBorder, tex(borderOffsetsAddUV.xw, diffSampler, null, material.diffTexture.flags),isBorder);
 					max(isBorder, tex(negborderOffsetsAddUV.xw, diffSampler, null, material.diffTexture.flags),isBorder);
 					//border width2
-					if(true){
+					/*if(true){
 						borderOffsetsAddUV = add(borderOffsets,borderOffsetsAddUV);
 						negborderOffsetsAddUV = add(negBorderOffsets,negborderOffsetsAddUV);
 						max(isBorder, tex(borderOffsetsAddUV.zy, diffSampler, null, material.diffTexture.flags),isBorder);
 						max(isBorder, tex(negborderOffsetsAddUV.zy, diffSampler, null, material.diffTexture.flags),isBorder);
 						max(isBorder, tex(borderOffsetsAddUV.xw, diffSampler, null, material.diffTexture.flags),isBorder);
 						max(isBorder, tex(negborderOffsetsAddUV.xw, diffSampler, null, material.diffTexture.flags),isBorder);
-					}
+					}*/
 					
 					mix(diffColor.xyzw,[1,0,0,1],mul(slt(diffColor.w,.8),sge(isBorder.w,.8)),diffColor.xyzw);//如果当前透明度小于一个值 并且 周围像素最大值大于一个值(证明边上有像素)
 				}
