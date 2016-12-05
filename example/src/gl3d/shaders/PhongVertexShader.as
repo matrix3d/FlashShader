@@ -65,7 +65,7 @@ package gl3d.shaders
 		
 		override public function build():void {
 			var norm:Var = this.norm;
-			var pos:Var = mov(pos);
+			var pos:Var = mov(this.pos);
 			if (material.gpuSkin) {
 				if (material.node.skin.useQuat) {
 					joint = buffJoints();
