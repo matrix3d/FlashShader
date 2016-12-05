@@ -135,7 +135,7 @@ package gl3d.shaders
 						max(isBorder, tex(negborderOffsetsAddUV.xw, diffSampler, null, material.diffTexture.flags),isBorder);
 					}*/
 					
-					mix(diffColor.xyzw,[1,0,0,1],mul(slt(diffColor.w,.8),sge(isBorder.w,.8)),diffColor.xyzw);//如果当前透明度小于一个值 并且 周围像素最大值大于一个值(证明边上有像素)
+					mix(diffColor.xyzw,[1,0,0,1],mul(sub(1,diffColor.w),mul(slt(diffColor.w,.8),sge(isBorder.w,.8))),diffColor.xyzw);//如果当前透明度小于一个值 并且 周围像素最大值大于一个值(证明边上有像素)
 				}
 				oc = diffColor;
 			}else {
