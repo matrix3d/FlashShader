@@ -121,6 +121,12 @@ package gl3d.shaders
 					var negBorderOffsets:Var=neg(borderOffsets)
 					var borderOffsetsAddUV:Var = add(borderOffsets,buv.xyxy);
 					var negborderOffsetsAddUV:Var = add(negBorderOffsets, buv.xyxy);
+					if (material.uvMuler || material.uvAdder){
+						var uvma:Var = mov(uniformUVMulAdder());
+						var maxuv:Var = add(uvma.xy,uvma.zw);
+						min(borderOffsetsAddUV, maxuv.xyxy, borderOffsetsAddUV);
+						max(negborderOffsetsAddUV, uvma.zwzw, negborderOffsetsAddUV);
+					}
 					var isBorder:Var = tex(borderOffsetsAddUV.zy, diffSampler, null, material.diffTexture.flags);
 					max(isBorder, tex(negborderOffsetsAddUV.zy, diffSampler, null, material.diffTexture.flags),isBorder);
 					max(isBorder, tex(borderOffsetsAddUV.xw, diffSampler, null, material.diffTexture.flags),isBorder);
@@ -134,8 +140,10 @@ package gl3d.shaders
 						max(isBorder, tex(borderOffsetsAddUV.xw, diffSampler, null, material.diffTexture.flags),isBorder);
 						max(isBorder, tex(negborderOffsetsAddUV.xw, diffSampler, null, material.diffTexture.flags),isBorder);
 					}*/
-					
-					mix(diffColor.xyzw,[1,0,0,1],mul(sub(1,diffColor.w),mul(slt(diffColor.w,.8),sge(isBorder.w,.8))),diffColor.xyzw);//如果当前透明度小于一个值 并且 周围像素最大值大于一个值(证明边上有像素)
+					//软边
+					mix(diffColor.xyzw,[1,0,0,1],mul(sub(1,diffColor.w),isBorder.wwww/*mul(slt(diffColor.w,.8),sge(isBorder.w,.8))*/),diffColor.xyzw);
+					//硬边 如果当前透明度小于一个值 并且 周围像素最大值大于一个值(证明边上有像素)
+					//mix(diffColor.xyzw,[1,0,0,1],mul(slt(diffColor.w,.8),sge(isBorder.w,.8)),diffColor.xyzw);
 				}
 				oc = diffColor;
 			}else {
