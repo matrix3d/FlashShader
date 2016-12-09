@@ -55,7 +55,7 @@ package gl3d.core
 		public var border:Boolean = false;
 		public var borderColor:Vector3D = new Vector3D(1, 0, 0, 1);
 		public var isBillbard:Boolean = false;
-		public var isStretched:Boolean = false;//基于速度缩放
+		//public var isStretched:Boolean = false;//基于速度缩放
 		public function MaterialBase() 
 		{
 			

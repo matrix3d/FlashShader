@@ -121,7 +121,7 @@ package gl3d.shaders
 				}
 			}
 			
-			if (material.node.scaleFromTo||(material.node.posVelocityDrawable&&material.node.posVelocityDrawable.norm)){
+			if (material.node.scaleFromTo||material.node.rotationStartAndSpeed||(material.node.posVelocityDrawable&&material.node.posVelocityDrawable.norm)){
 				var time:Var = div(sub(uniformTime(), mov(material.node.startTime)), material.node.lifeTimeRange.x);
 				if (material.node.randomTime){
 					add(time.x, buffRandom().w, time.x);
@@ -132,40 +132,49 @@ package gl3d.shaders
 				var size:Var = add(material.node.scaleFromTo.x, mul(time, material.node.scaleFromTo.y - material.node.scaleFromTo.x))
 				mul(pos.xyz, size,pos.xyz);
 			}
+			if (material.node.rotationStartAndSpeed){
+				debug("rot");
+				var rot:Var = add(material.node.rotationStartAndSpeed.x, mul(time, material.node.rotationStartAndSpeed.y));
+				var quas:Var=mov([0,0,0,0]);
+				if (material.node.randomAxis) {
+					mul(sin(rot).x,nrm(sub(buffRandom().xyz,.5)),quas.xyz);
+				}else {
+					//quas = rotationAxis.xyzz*sin(rot);
+				}
+				cos(rot.x, quas.w);
+				pos = q33(pos, quas);
+				debug("rot");
+			}
+			
 			//粒子位置和速度，放弃复杂的算法，直接用2个buff来实现，加速度，贝塞尔曲线用2个常量表示
 			//曲线 颜色，缩放，速度
 			
 			if (material.node.posVelocityDrawable && material.node.posVelocityDrawable.norm){
 				var velocity:Var = buffParticleNorm();
 			}
+			
 			if(material.isBillbard){
 				if (material.node.posVelocityDrawable && material.node.posVelocityDrawable.pos){
-					var ppos:Var = mov(buffParticlePos());
+					var ppos:Var = mov(buffParticlePos());//位置
 				}else{
-					ppos = mov([0,0,0,1]);
+					ppos = mov([0,0,0,1]);//位置
 				}
-				if (velocity){
+				if (velocity){//位置+速度
 					add(ppos.xyz, mul(time,velocity), ppos.xyz);
 				}
-				var worldPos:Var = m44(ppos, model);
-				var viewPos:Var = m44(worldPos.xyzw, view);
+				var worldPos:Var = m44(ppos, model);//转换世界坐标
+				var viewPos:Var = m44(worldPos.xyzw, view);//转换屏幕坐标
 				
-				if (material.isStretched && velocity){
-					var v2:Var = mul(velocity, velocity);
-					var l2:Var = sqt(add(v2.x, v2.y));
-					var nv:Var = div(velocity.xy, l2);
-					var smy:Var = mul(pos.xyxy, nv.xyyx);
-					var pos2:Var = mov([0, 0]);
-					sub(smy.x, smy.y,pos2.x);
-					add(smy.z, smy.w, pos2.y);
-					//add(mul(10,pos2.xy),pos.xy,pos.xy);
-					mul(10,pos2.xy,pos.xy);
-					//add(pos.xyz,mul(1,q33(pos.xyz, velocity)).xyz,pos.xyz);
-					//add(pos.xyz, mul2([pos.xyz,velocity.xyz, 100]), pos.xyz);
-				}
+				/*if (material.isStretched && velocity){
+					var l3:Var = sqt(dp3(velocity, velocity));
+					var nv:Var = div(velocity.xyz, l3.xxx);
+					var smy:Var = mul2([[100,1,100,1],pos.xyxy, nv.xyyx]);
+					sub(smy.x, smy.y,pos.x);
+					add(smy.z, smy.w, pos.y);
+				}*/
 				
-				m33(pos.xyz, model, worldPos.xyz);
-				add(viewPos.xyz, worldPos, viewPos.xyz);
+				m33(pos.xyz, model, worldPos.xyz);//模型m33
+				add(viewPos.xyz, worldPos, viewPos.xyz);//位置+方向
 			}else{
 				//if (material.isStretched&&velocity){
 				//	add(pos.xyz, mul2([pos.xyz,velocity.xyz, 100]), pos.xyz);

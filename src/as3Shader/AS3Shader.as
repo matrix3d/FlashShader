@@ -488,7 +488,7 @@ package as3Shader {
 		}
 		
 		public function vec2(a:Object, b:Object, t:Var = null):Var {
-			t = t || createTempVar();
+			t = t || mov([0,0,0,0]);
 			mov(a, t.x);
 			mov(b, t.y);
 			return t;

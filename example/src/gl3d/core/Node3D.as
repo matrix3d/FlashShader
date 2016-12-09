@@ -49,7 +49,7 @@ package gl3d.core
 		public var lifeTimeRange:Vector3D = new Vector3D(1000, 1000);//生命周期范围
 		public var scaleFromTo:Vector3D;
 		public var rotationStartAndSpeed:Vector3D;
-		public var randomAxis:Vector3D;
+		public var randomAxis:Boolean;
 		public var rotationAxis:Vector3D;
 		
 		private static var _temp0:Vector3D = new Vector3D();
