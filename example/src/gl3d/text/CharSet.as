@@ -27,30 +27,28 @@ package gl3d.text
 		{
 		}
 		
-		public function add(chars:Array,line:TextLine):void{
+		public function add(chars:Array):void{
 			if(chars)
-			newChars.push([chars,line]);
+			newChars.push(chars);
 		}
 		
-		public function getChar(txt:String,font:String,fontSize:int):Char{
+		public function getChar(txt:String,font:String,fontSize:int):CharInstance{
 			return fontSizeChars[font+fontSize+txt];
 		}
 		
-		public function setChar(char:Char,font:String,fontSize:int):void{
+		public function setChar(char:CharInstance,font:String,fontSize:int):void{
 			fontSizeChars[font + fontSize+char.txt] = char;
 		}
 		
 		public function update():void{
 			if (newChars.length){
 				var needUpdate:Boolean = false;
-				for each(var newCharAndLine:Array in newChars){
-					var newChar:Array = newCharAndLine[0];
-					var line:TextLine = newCharAndLine[1];
-					for each(var txt:String in newChar){
-						if (getChar(txt,line.font,line.fontSize)==null){
-							var char:Char = new Char(txt,line.font,line.fontSize);
+				for each(var newChar:Array in newChars){
+					for each(var c:Char in newChar){
+						if (getChar(c.txt,c.font,c.fontSize)==null){
+							var char:CharInstance = new CharInstance(c.txt,c.font,c.fontSize);
 							char.id = numChar;
-							setChar(char, line.font, line.fontSize);
+							setChar(char, c.font, c.fontSize);
 							numChar++;
 							needUpdate = true;
 						}

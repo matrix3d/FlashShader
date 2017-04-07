@@ -27,7 +27,7 @@ package gl3d.core {
 		public var fog:Fog = new Fog;
 		public var ctrls:Vector.<Ctrl> = new Vector.<Ctrl>;
 		public var posts:Vector.<PostEffect> = new Vector.<PostEffect>;
-		public var postRTTs:Vector.<TextureSet> = Vector.<TextureSet>([new TextureSet(null,true,false,false), new TextureSet(null,true,false,false)]);
+		public var postRTTs:Vector.<TextureSet> = new <TextureSet>[new TextureSet(null,true,false,false), new TextureSet(null,true,false,false)];
 		private var _antiAlias:int = 2;
 		public var id:Object;
 		public var stage3dWidth:Number = 200;

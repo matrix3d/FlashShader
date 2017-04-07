@@ -33,8 +33,23 @@ package gl3d.text
 				var tl:int = _text.length;
 				chars = [];
 				for (var i:int = 0; i < tl;i++ ){
-					chars.push(_text.charAt(i));
+					chars.push(new Char(_text.charAt(i),font,fontSize));
 				}
+			}
+		}
+		
+		public function appendText(value:String,font:String="_serif",fontSize:int=12):void{
+			textDirty = true;
+			if(_text){
+				_text += value;
+			}else{
+				_text = value;
+			}
+			
+			var tl:int = value.length;
+			chars = chars||[];
+			for (var i:int = 0; i < tl;i++ ){
+				chars.push(new Char(value.charAt(i),font,fontSize));
 			}
 		}
 		

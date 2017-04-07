@@ -56,7 +56,7 @@ package gl3d.text
 					num += line.chars.length;
 					if (line.textDirty){
 						line.textDirty = false;
-						charSet.add(line.chars,line);
+						charSet.add(line.chars);
 					}
 				}
 			}
@@ -103,8 +103,8 @@ package gl3d.text
 					var tx:int = 0;
 					var tlen:int = cs.length;
 					for (var j:int = 0; j < tlen; j++ ){
-						var txt:String = cs[j];
-						var char:Char = charSet.getChar(txt, line.font, line.fontSize);//chars[txt];
+						var txt:Char = cs[j];
+						var char:CharInstance = charSet.getChar(txt.txt, txt.font, txt.fontSize);//chars[txt];
 						
 						var ts:int = tx + char.width;
 						
