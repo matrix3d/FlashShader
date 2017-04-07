@@ -28,6 +28,7 @@ package gl3d.shaders
 		public var pos:Var //= buff();
 		public var norm:Var //= buff();
 		public var uv:Var //= buff();
+		public var color:Var //= buff();
 		public var tangent:Var //= buff();
 		public var targetPosition:Var //= buff();
 		public var weight:Var //= buff();
@@ -41,6 +42,7 @@ package gl3d.shaders
 		public var normVarying:Var = varying();
 		public var tangentVarying:Var = varying();
 		public var uvVarying:Var = varying();
+		public var colorVarying:Var = varying();
 		public var targetPositionVarying:Var = varying();
 		public var reflected:Var = varying();
 		public var modelPosVarying:Var = varying();
@@ -53,6 +55,7 @@ package gl3d.shaders
 			pos = buffPos();
 			norm = buffNorm();
 			uv = buffUV();
+			color = buffColor();
 			tangent = buffTangent();
 			targetPosition = buffTargetPosition();
 			weight = buffWeights();
@@ -268,6 +271,9 @@ package gl3d.shaders
 			
 			if (material.writeDepth) {
 				mov(opVar, opVarying);
+			}
+			if (material.vertexColorAble){
+				mov(color, colorVarying);
 			}
 		}
 	}

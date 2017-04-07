@@ -161,6 +161,9 @@ package gl3d.core.shaders
 		public function bindUVBuff(shader:GLShader,material:Material,isLastSameMaterial:Boolean):void {
 			shader.buffSets[v.index] = material.node.drawable.uv;
 		}
+		public function bindColorBuff(shader:GLShader,material:Material,isLastSameMaterial:Boolean):void {
+			shader.buffSets[v.index] = material.node.drawable.color;
+		}
 		public function bindRandomBuff(shader:GLShader,material:Material,isLastSameMaterial:Boolean):void {
 			shader.buffSets[v.index] = material.node.drawable.random;
 		}

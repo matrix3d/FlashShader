@@ -14,6 +14,7 @@ package gl3d.core
 		public var castShadow:Boolean = true;
 		public var gpuSkin:Boolean = false;
 		public var lightAble:Boolean = true;
+		public var vertexColorAble:Boolean = false;
 		public var fogAble:Boolean = true;
 		private var _writeDepth:Boolean = false;
 		public var ambientAble:Boolean = true;

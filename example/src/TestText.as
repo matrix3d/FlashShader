@@ -8,12 +8,17 @@ package
 	import flash.geom.Vector3D;
 	import flash.text.TextField;
 	import flash.text.TextFormat;
+	import flash.text.engine.ElementFormat;
+	import flash.text.engine.FontDescription;
+	import flash.text.engine.TextBlock;
+	import flash.text.engine.TextElement;
 	import gl3d.core.Light;
 	import gl3d.core.Material;
 	import gl3d.core.Node3D;
 	import gl3d.meshs.Meshs;
 	import gl3d.text.Text;
 	import gl3d.text.TextLine;
+	import flash.text.engine.TextLine;
 	import gl3d.util.MathUtil;
 	/**
 	 * ...
@@ -23,6 +28,7 @@ package
 	{
 		private var text:Text;
 		private var bmp:Bitmap = new Bitmap;
+		private var line:gl3d.text.TextLine;
 		public function TestText() 
 		{
 		}
@@ -31,11 +37,11 @@ package
 		{
 			view.background = 0x888888;
 			
-			text = new Text(null, 12);
-			text.border = true;
-			var line:TextLine;
-			for (var i:int = 0; i < 100;i++ ){
-				line = new TextLine;
+			text = new Text();
+			text.border = false;
+			var line:gl3d.text.TextLine;
+			for (var i:int = 0; i < 1;i++ ){
+				line = new gl3d.text.TextLine;
 				addText((stage.stageWidth*Math.random()),(stage.stageHeight * Math.random()));
 			}
 			view.scene.addChild(text);
@@ -59,10 +65,28 @@ package
 		}
 		
 		private function addText(x:Number, y:Number):void{
-			var line:TextLine = new TextLine(String.fromCharCode(0x4E00 + int(Math.random() * (0x9FFF - 0x4E00)))+"1.2345");
+			line = new gl3d.text.TextLine(String.fromCharCode(0x4E00 + int(Math.random() * (0x9FFF - 0x4E00))) + "123abgA", "宋体", 20 * Math.random() + 10,0xffffff * Math.random());
+			line.appendText(String.fromCharCode(0x4E00 + int(Math.random() * (0x9FFF - 0x4E00))) + "123abgA", "宋体", 20 * Math.random() + 10,0xffffff * Math.random());
 			line.x = x;
+			//line.rotationX = 360 * Math.random();
+			//line.rotationY = 360 * Math.random();
+			//line.rotationZ = 360 * Math.random();
 			line.y = y;
 			text.addChild(line);
+			/*var tf:TextField = new TextField;
+			tf.defaultTextFormat = new TextFormat("_serif");
+			tf.text = line.text;
+			addChild(tf);
+			tf.x = x;
+			tf.y = y + 20;
+			
+			var block:TextBlock = new TextBlock;
+			var te:TextElement = new TextElement(line.text, new ElementFormat(new FontDescription("_serif"), 12,0xffffff));
+			block.content = te;
+			var textline:flash.text.engine.TextLine = block.createTextLine();
+			addChild(textline);
+			textline.x = x;
+			textline.y = y + 60;*/
 		}
 		
 		override public function initCtrl():void 
@@ -71,6 +95,8 @@ package
 		
 		override public function enterFrame(e:Event):void 
 		{
+			//line.rotationZ++;
+			//line.rotationX+=.5;
 			super.enterFrame(e);	
 			bmp.bitmapData = text.material.diffTexture.data as BitmapData;
 		}

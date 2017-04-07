@@ -327,6 +327,15 @@ package gl3d.core.shaders
 			binds.push([binder,binder.bindUVBuff]);
 			return b;
 		}
+		public function buffColor():Var {
+			var name:String = "bcolor";
+			if (getNamedVar(name)) return getNamedVar(name);
+			var b:Var = buff();
+			setNamedVar(name, b);
+			var binder:GLBinder = new GLBinder(this,b);
+			binds.push([binder,binder.bindColorBuff]);
+			return b;
+		}
 		public function buffRandom():Var {
 			var name:String = "brandom";
 			if (getNamedVar(name)) return getNamedVar(name);

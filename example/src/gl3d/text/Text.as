@@ -39,6 +39,7 @@ package gl3d.text
 		{
 			charSet = new CharSet();
 			material = new Material;
+			material.vertexColorAble = true;
 			material.lightAble = false;
 			material.blendMode = BlendMode.LAYER;
 			material.culling = Context3DTriangleFace.NONE;
@@ -71,6 +72,7 @@ package gl3d.text
 				da.index = new IndexBufferSet(new Vector.<uint>(pow2num*6));
 				da.pos = new VertexBufferSet(new Vector.<Number>(pow2num * 4 * 3), 3);
 				da.uv = new VertexBufferSet(new Vector.<Number>(pow2num * 4 * 2), 2);
+				da.color = new VertexBufferSet(new Vector.<Number>(pow2num * 4 * 4), 4);
 				var indexd:Vector.<uint> = da.index.data;
 				for (var i:int = 0; i < pow2num;i++ ){
 					indexd[i * 6] = i * 4;
@@ -85,8 +87,10 @@ package gl3d.text
 			//update
 			da.pos.dataInvalid = true;
 			da.uv.dataInvalid = true;
+			da.color.dataInvalid = true;
 			var posd:Vector.<Number> = da.pos.data;
 			var uvd:Vector.<Number> = da.uv.data;
+			var colord:Vector.<Number> = da.color.data;
 			var k:int = 0;
 			//var chars:Object = charSet.chars;
 			for (i = 0; i < clen;i++ ){
@@ -128,6 +132,12 @@ package gl3d.text
 						uvd[k * 8 + 1] = uvd[k * 8 + 3] = char.v0;
 						uvd[k * 8 + 2] = uvd[k * 8 + 4] = char.u1;
 						uvd[k * 8 + 5] = uvd[k * 8 + 7] = char.v1;
+						
+						colord[k * 16] = colord[k * 16 + 4] = colord[k * 16 + 8] = colord[k * 16 + 12] = txt.r;
+						colord[k * 16 + 1] = colord[k * 16 + 5] = colord[k * 16 + 9] = colord[k * 16 + 13] = txt.g;
+						colord[k * 16 + 2] = colord[k * 16 + 6] = colord[k * 16 + 10] = colord[k * 16 + 14] = txt.b;
+						colord[k * 16 + 3] = colord[k * 16 + 7] = colord[k * 16 + 11] = colord[k * 16 + 15] = 1;
+						
 						tx = ts;
 						k++;
 					}

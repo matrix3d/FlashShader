@@ -8,13 +8,14 @@ package gl3d.text
 	public class TextLine extends Node3D
 	{
 		private var _text:String;
-		private var _color:uint = 0;
 		public var fontSize:int;
 		public var font:String;
 		public var chars:Array;
 		public var textDirty:Boolean = true;
-		public function TextLine(text:String=null,font:String="_serif",fontSize:int=12) 
+		public var color:uint;
+		public function TextLine(text:String=null,font:String="_serif",fontSize:int=12,color:uint=0) 
 		{
+			this.color = color;
 			this.fontSize = fontSize;
 			this.font = font;
 			this.text = text;
@@ -33,12 +34,12 @@ package gl3d.text
 				var tl:int = _text.length;
 				chars = [];
 				for (var i:int = 0; i < tl;i++ ){
-					chars.push(new Char(_text.charAt(i),font,fontSize));
+					chars.push(new Char(_text.charAt(i),font,fontSize,color));
 				}
 			}
 		}
 		
-		public function appendText(value:String,font:String="_serif",fontSize:int=12):void{
+		public function appendText(value:String,font:String="_serif",fontSize:int=12,color:uint=0):void{
 			textDirty = true;
 			if(_text){
 				_text += value;
@@ -49,18 +50,8 @@ package gl3d.text
 			var tl:int = value.length;
 			chars = chars||[];
 			for (var i:int = 0; i < tl;i++ ){
-				chars.push(new Char(value.charAt(i),font,fontSize));
+				chars.push(new Char(value.charAt(i),font,fontSize,color));
 			}
-		}
-		
-		public function get color():uint 
-		{
-			return _color;
-		}
-		
-		public function set color(value:uint):void 
-		{
-			_color = value;
 		}
 	}
 

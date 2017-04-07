@@ -162,6 +162,9 @@ package gl3d.shaders
 					diffColor = sub(1, alpha);
 				}
 			}
+			if (material.vertexColorAble){
+				mul(vs.colorVarying, diffColor,diffColor);
+			}
 			return material.gray?diffColor.xxxw:diffColor;
 		}
 		

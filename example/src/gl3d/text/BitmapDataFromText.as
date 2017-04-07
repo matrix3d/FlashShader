@@ -28,7 +28,8 @@ package gl3d.text
 		public var lineHeight:int;
 		public function BitmapDataFromText(txt:String,fontSize:int=12,fontName:String="_serif") 
 		{
-			var te:TextElement = new TextElement(txt, new ElementFormat(new FontDescription(fontName), fontSize,0xffffff));
+			var format:ElementFormat = new ElementFormat(new FontDescription(fontName), fontSize, 0xffffff);
+			var te:TextElement = new TextElement(txt, format);
 			block.content = te;
 			var textline:flash.text.engine.TextLine = block.createTextLine();
 			width = Math.ceil(textline.width);
