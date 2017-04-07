@@ -9,10 +9,14 @@ package gl3d.text
 	{
 		private var _text:String;
 		private var _color:uint = 0;
+		public var fontSize:int;
+		public var font:String;
 		public var chars:Array;
 		public var textDirty:Boolean = true;
-		public function TextLine(text:String=null) 
+		public function TextLine(text:String=null,font:String="_serif",fontSize:int=12) 
 		{
+			this.fontSize = fontSize;
+			this.font = font;
 			this.text = text;
 		}
 		

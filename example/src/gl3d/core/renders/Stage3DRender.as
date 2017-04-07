@@ -63,6 +63,10 @@ package gl3d.core.renders
 		
 		private function stage_context3dCreate(e:Event):void 
 		{
+			if (stage3d.context3D.profile==null){
+				stage3d.requestContext3D();
+				return;
+			}
 			gl3d = new GL(stage3d.context3D);
 			gl3d.enableErrorChecking = view.enableErrorChecking;
 			view.profile = stage3d.context3D.profile;

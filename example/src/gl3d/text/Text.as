@@ -30,17 +30,14 @@ package gl3d.text
 	public class Text extends Node3D
 	{
 		private var drawablePool:Object = {};
-		private var size:int;
 		private var pin:Vector.<Number> = new <Number>[0,0,0,1,0,0,0,1,0];
 		private var pout:Vector.<Number> = new Vector.<Number>(9);
 		private var _border:Boolean = false;
 		private var _borderColor:uint = 0;
 		public var charSet:CharSet;
-		public function Text(font:String=null,fontSize:int=12) 
+		public function Text() 
 		{
-			charSet = new CharSet(font, fontSize);
-			size = charSet.size;
-			pin[7] = size;
+			charSet = new CharSet();
 			material = new Material;
 			material.lightAble = false;
 			material.blendMode = BlendMode.LAYER;
@@ -59,9 +56,12 @@ package gl3d.text
 					num += line.chars.length;
 					if (line.textDirty){
 						line.textDirty = false;
-						charSet.add(line.chars);
+						charSet.add(line.chars,line);
 					}
 				}
+			}
+			if (num==0){
+				return;
 			}
 			charSet.update();
 			var pow2num:int = MathUtil.getNextPow2(num);
@@ -88,7 +88,7 @@ package gl3d.text
 			var posd:Vector.<Number> = da.pos.data;
 			var uvd:Vector.<Number> = da.uv.data;
 			var k:int = 0;
-			var chars:Object = charSet.chars;
+			//var chars:Object = charSet.chars;
 			for (i = 0; i < clen;i++ ){
 				line = children[i] as TextLine;
 				var cs:Array = line.chars;
@@ -97,16 +97,16 @@ package gl3d.text
 					pout[3] -= pout[0];
 					pout[4] -= pout[1];
 					pout[5] -= pout[2];
+					pout[6] -= pout[0];
+					pout[7] -= pout[1];
+					pout[8] -= pout[2];
 					var tx:int = 0;
 					var tlen:int = cs.length;
 					for (var j:int = 0; j < tlen; j++ ){
 						var txt:String = cs[j];
-						var char:Char = chars[txt];
+						var char:Char = charSet.getChar(txt, line.font, line.fontSize);//chars[txt];
 						
-						var b:TextLineMetrics = char.linem;
-						//var cix:int = char.tx;
-						//var ciy:int = char.ty;
-						var ts:int = tx + b.width;
+						var ts:int = tx + char.width;
 						
 						posd[k * 12] = pout[0] + tx * pout[3];
 						posd[k * 12 + 1] = pout[1] +tx* pout[4];
@@ -116,19 +116,18 @@ package gl3d.text
 						posd[k * 12 + 4] = pout[1] + ts * pout[4];
 						posd[k * 12 + 5] = pout[2] + ts * pout[5];
 						
-						posd[k * 12 + 6] = pout[6] + ts * pout[3];
-						posd[k * 12 + 7] = pout[7] + ts * pout[4];
-						posd[k * 12 + 8] = pout[8] + ts * pout[5];
+						posd[k * 12 + 6] = pout[0]+char.height*pout[6] + ts * pout[3];
+						posd[k * 12 + 7] = pout[1]+char.height*pout[7] + ts * pout[4];
+						posd[k * 12 + 8] = pout[2]+char.height*pout[8] + ts * pout[5];
 						
-						posd[k * 12 + 9] = pout[6] + tx * pout[3];
-						posd[k * 12 + 10] = pout[7] + tx * pout[4];
-						posd[k * 12 + 11] = pout[8] + tx * pout[5];
+						posd[k * 12 + 9] = pout[0]+char.height*pout[6] + tx * pout[3];
+						posd[k * 12 + 10] = pout[1]+char.height*pout[7] + tx * pout[4];
+						posd[k * 12 + 11] = pout[2]+char.height*pout[8] + tx * pout[5];
 						
 						uvd[k * 8] = uvd[k * 8 + 6] = char.u0;
 						uvd[k * 8 + 1] = uvd[k * 8 + 3] = char.v0;
 						uvd[k * 8 + 2] = uvd[k * 8 + 4] = char.u1;
 						uvd[k * 8 + 5] = uvd[k * 8 + 7] = char.v1;
-						
 						tx = ts;
 						k++;
 					}

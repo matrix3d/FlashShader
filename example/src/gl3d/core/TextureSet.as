@@ -119,9 +119,11 @@ package gl3d.core {
 		public function updateBMD(context:GL):void {
 			var bmd:BitmapData = data as BitmapData;
 			if (data) {
-				if(texture==null){
+				if (dataInvalid){
 					var w:int = MathUtil.getNextPow2(bmd.width);
 					var h:int = MathUtil.getNextPow2(bmd.height);
+				}
+				if(texture==null){
 					texture = context.createTexture(w, h, Context3DTextureFormat.BGRA, optimizeForRenderToTexture);
 				}
 				if (dataInvalid){

@@ -27,12 +27,12 @@ package gl3d.particle
 		public var stretchedLength:Number = 10;//拉伸长度
 		public var isVertexColor:Boolean = false;//顶点色
 		
-		public var count:int = 10000;
+		public var count:int = 100;
 		public var timeLife:ParticleValue=new ParticleValue([1000],[2000]);
 		public var isAddRandomLifeTime:Boolean = true;//是否增加随机生命周期
 		
 		public var loop:Number = 0;
-		public var shapeID:int = 2;
+		public var shapeID:int = 1;
 		
 		public var pos:ParticleValue = new ParticleValue([-20,-20,-20],[20,20,20]);;
 		public var scale:ParticleValue=new ParticleValue([0],[1]);
@@ -64,7 +64,7 @@ package gl3d.particle
 					drawable.randomStep = shape.pos.data.length / 3;
 				}
 				this.material = new Material;
-				this.material.blendModel = BlendMode.ADD;
+				this.material.blendMode = BlendMode.ADD;
 				this.material.culling = Context3DTriangleFace.NONE;
 				this.material.depthMask = false;
 				(this.material as Material).shader = new ParticleGLShader;

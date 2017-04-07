@@ -18,7 +18,7 @@ package gl3d.core.skin
 		public var joints:Vector.<Joint> = new Vector.<Joint>;
 		public var iks:Vector.<Joint> = new Vector.<Joint>;
 		public var useQuat:Boolean = true;
-		public var useHalfFloat:Boolean = false;
+		public var useHalfFloat:Boolean = true;
 		public var useCpu:Boolean = false;
 		public function Skin() 
 		{
