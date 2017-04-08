@@ -34,8 +34,12 @@ package gl3d.text
 			var textline:flash.text.engine.TextLine = block.createTextLine();
 			width = Math.ceil(textline.width);
 			height = Math.ceil(Math.ceil(textline.ascent) + Math.ceil(textline.descent));
-			bmd = new BitmapData(width, height, true, 0);
-			bmd.draw(textline,new Matrix(1,0,0,1,0,Math.ceil(textline.ascent)),null,null,null,true);
+			if(width>0&&height>0){
+				bmd = new BitmapData(width, height, true, 0);
+				bmd.draw(textline, new Matrix(1, 0, 0, 1, 0, Math.ceil(textline.ascent)), null, null, null, true);
+			}else{
+				width = fontSize/4;
+			}
 			xadvance = width;
 			lineHeight = height;
 		}

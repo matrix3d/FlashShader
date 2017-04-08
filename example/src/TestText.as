@@ -66,7 +66,8 @@ package
 		
 		private function addText(x:Number, y:Number):void{
 			line = new gl3d.text.TextLine(String.fromCharCode(0x4E00 + int(Math.random() * (0x9FFF - 0x4E00))) + "123abgA", "宋体", 20 * Math.random() + 10,0xffffff * Math.random());
-			line.appendText(String.fromCharCode(0x4E00 + int(Math.random() * (0x9FFF - 0x4E00))) + "123abgA", "宋体", 20 * Math.random() + 10,0xffffff * Math.random());
+			line.htmlText = "<c><font size='22' color='#ff0000'>d</font>   <font size='300'>d</font></c>";
+			//line.appendText(String.fromCharCode(0x4E00 + int(Math.random() * (0x9FFF - 0x4E00))) + "123a b gA", "宋体", 20 * Math.random() + 10,0xffffff * Math.random());
 			line.x = x;
 			//line.rotationX = 360 * Math.random();
 			//line.rotationY = 360 * Math.random();
@@ -97,7 +98,8 @@ package
 		{
 			//line.rotationZ++;
 			//line.rotationX+=.5;
-			super.enterFrame(e);	
+			super.enterFrame(e);
+			if(text.material.diffTexture)
 			bmp.bitmapData = text.material.diffTexture.data as BitmapData;
 		}
 		

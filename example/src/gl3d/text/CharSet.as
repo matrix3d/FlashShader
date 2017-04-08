@@ -90,7 +90,9 @@ package gl3d.text
 								char.height = bft.height;
 								helpMatr.tx = rect.x;
 								helpMatr.ty = rect.y;
-								bmd.draw(bft.bmd, helpMatr);
+								if(bft.bmd){
+									bmd.draw(bft.bmd, helpMatr);
+								}
 								char.u0 = rect.x / tsizew;
 								char.v0 = rect.y / tsizeh;
 								char.u1 = (rect.x +bft.width) / tsizew;
