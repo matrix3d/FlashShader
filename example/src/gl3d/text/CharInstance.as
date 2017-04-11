@@ -19,6 +19,8 @@ package gl3d.text
 		public var dirty:Boolean = true;
 		public var width:int;
 		public var height:int;
+		public var ascent:int;
+		public var xadvance:int;
 		public function CharInstance(txt:String,font:String,fontSize:int) 
 		{
 			this.fontSize = fontSize;

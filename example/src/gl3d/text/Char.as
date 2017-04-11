@@ -6,6 +6,7 @@ package gl3d.text
 	 */
 	public class Char 
 	{
+		public var instance:CharInstance;
 		public var color:uint;
 		public var txt:String;
 		public var font:String;

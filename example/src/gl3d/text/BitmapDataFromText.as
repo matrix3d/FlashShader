@@ -24,8 +24,8 @@ package gl3d.text
 		//public var yoffset:int;
 		public var width:int;
 		public var height:int;
+		public var ascent:int;
 		public var xadvance:int;
-		public var lineHeight:int;
 		public function BitmapDataFromText(txt:String,fontSize:int=12,fontName:String="_serif") 
 		{
 			var format:ElementFormat = new ElementFormat(new FontDescription(fontName), fontSize, 0xffffff);
@@ -33,15 +33,15 @@ package gl3d.text
 			block.content = te;
 			var textline:flash.text.engine.TextLine = block.createTextLine();
 			width = Math.ceil(textline.width);
-			height = Math.ceil(Math.ceil(textline.ascent) + Math.ceil(textline.descent));
+			ascent = Math.ceil(textline.ascent);
+			height = Math.ceil(ascent + Math.ceil(textline.descent));
 			if(width>0&&height>0){
 				bmd = new BitmapData(width, height, true, 0);
-				bmd.draw(textline, new Matrix(1, 0, 0, 1, 0, Math.ceil(textline.ascent)), null, null, null, true);
+				bmd.draw(textline, new Matrix(1, 0, 0, 1, 0, ascent), null, null, null, true);
 			}else{
 				width = fontSize/4;
 			}
 			xadvance = width;
-			lineHeight = height;
 		}
 	}
 }

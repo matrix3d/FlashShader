@@ -45,13 +45,15 @@ package gl3d.text
 				var needUpdate:Boolean = false;
 				for each(var newChar:Array in newChars){
 					for each(var c:Char in newChar){
-						if (getChar(c.txt,c.font,c.fontSize)==null){
-							var char:CharInstance = new CharInstance(c.txt,c.font,c.fontSize);
+						var char:CharInstance=getChar(c.txt,c.font,c.fontSize)
+						if (char==null){
+							char = new CharInstance(c.txt,c.font,c.fontSize);
 							char.id = numChar;
 							setChar(char, c.font, c.fontSize);
 							numChar++;
 							needUpdate = true;
 						}
+						c.instance = char;
 					}
 				}
 				if (!needUpdate) return;
@@ -96,7 +98,10 @@ package gl3d.text
 								char.u0 = rect.x / tsizew;
 								char.v0 = rect.y / tsizeh;
 								char.u1 = (rect.x +bft.width) / tsizew;
-								char.v1 = (rect.y+bft.height) / tsizeh;
+								char.v1 = (rect.y + bft.height) / tsizeh;
+								
+								char.ascent = bft.ascent;
+								char.xadvance = bft.xadvance;
 							}
 						}
 						break;

@@ -1,5 +1,6 @@
 package gl3d.text 
 {
+	import flash.text.TextFieldAutoSize;
 	import gl3d.core.Node3D;
 	/**
 	 * ...
@@ -14,6 +15,10 @@ package gl3d.text
 		public var textDirty:Boolean = true;
 		public var color:uint;
 		private var _htmlText:String;
+		public var width:Number = 100;
+		public var height:Number = 100;
+		public var wordWrap:Boolean = false;
+		public var autoSize:String = TextFieldAutoSize.NONE;
 		public function TextLine(text:String=null,font:String="_serif",fontSize:int=12,color:uint=0) 
 		{
 			this.color = color;

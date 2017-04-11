@@ -48,6 +48,7 @@ package gl3d.text
 		
 		override public function update(view:View3D, material:MaterialBase = null):void 
 		{
+			//添加新的字符串
 			var num:int = 0;
 			var charCount:int = 0;
 			var clen:int = children.length;
@@ -64,7 +65,10 @@ package gl3d.text
 			if (num==0){
 				return;
 			}
+			//更新字符集
 			charSet.update();
+			
+			//新建vertex index
 			var pow2num:int = MathUtil.getNextPow2(num);
 			var da:Drawable = drawablePool[pow2num];
 			if (da==null){
@@ -84,7 +88,7 @@ package gl3d.text
 				}
 			}
 			this.material.diffTexture = charSet.tset;
-			//update
+			//更新vertex index
 			da.pos.dataInvalid = true;
 			da.uv.dataInvalid = true;
 			da.color.dataInvalid = true;
@@ -92,11 +96,12 @@ package gl3d.text
 			var uvd:Vector.<Number> = da.uv.data;
 			var colord:Vector.<Number> = da.color.data;
 			var k:int = 0;
-			//var chars:Object = charSet.chars;
 			for (i = 0; i < clen;i++ ){
 				line = children[i] as TextLine;
 				var cs:Array = line.chars;
-				if (cs&&cs.length){
+				if (cs && cs.length){
+					//pin为三个点 (原点坐标,单位x坐标,单位y坐标)
+					//转换到pout 然后原点坐标 减去单位坐标 得到单位x ,单位y
 					line.matrix.transformVectors(pin, pout);
 					pout[3] -= pout[0];
 					pout[4] -= pout[1];
@@ -105,28 +110,54 @@ package gl3d.text
 					pout[7] -= pout[1];
 					pout[8] -= pout[2];
 					var tx:int = 0;
+					var ty:int = 0;
 					var tlen:int = cs.length;
 					for (var j:int = 0; j < tlen; j++ ){
 						var txt:Char = cs[j];
-						var char:CharInstance = charSet.getChar(txt.txt, txt.font, txt.fontSize);//chars[txt];
+						var char:CharInstance = txt.instance;
 						
+						//tx为文字起始点 ts为文字末尾点
 						var ts:int = tx + char.width;
+						if (line.wordWrap){
+							if (line.autoSize==TextFieldAutoSize.NONE){
+								// todo :
+							}else{
+								// todo :
+							}
+							if (ts>line.width){
+								//break;
+								tx = 0;
+								ty += char.height;
+							}
+						}else{
+							if (line.autoSize==TextFieldAutoSize.LEFT){
+								
+							}else if (line.autoSize==TextFieldAutoSize.RIGHT){
+								// todo :
+							}else if (line.autoSize==TextFieldAutoSize.CENTER){
+								// todo :
+							}else{
+								if (ts>line.width){
+									break;
+								}
+							}
+						}
 						
-						posd[k * 12] = pout[0] + tx * pout[3];
-						posd[k * 12 + 1] = pout[1] +tx* pout[4];
-						posd[k * 12 + 2] = pout[2] + tx * pout[5];
+						posd[k * 12] = pout[0] +(ty-char.ascent) * pout[6]+ tx * pout[3];
+						posd[k * 12 + 1] = pout[1]+(ty-char.ascent) * pout[7] +tx* pout[4];
+						posd[k * 12 + 2] = pout[2]+(ty-char.ascent) * pout[8] + tx * pout[5];
 						
-						posd[k * 12 + 3] = pout[0] + ts * pout[3];
-						posd[k * 12 + 4] = pout[1] + ts * pout[4];
-						posd[k * 12 + 5] = pout[2] + ts * pout[5];
+						posd[k * 12 + 3] = pout[0]+(ty-char.ascent) * pout[6] + ts * pout[3];
+						posd[k * 12 + 4] = pout[1]+(ty-char.ascent) * pout[7] + ts * pout[4];
+						posd[k * 12 + 5] = pout[2]+(ty-char.ascent) * pout[8] + ts * pout[5];
 						
-						posd[k * 12 + 6] = pout[0]+char.height*pout[6] + ts * pout[3];
-						posd[k * 12 + 7] = pout[1]+char.height*pout[7] + ts * pout[4];
-						posd[k * 12 + 8] = pout[2]+char.height*pout[8] + ts * pout[5];
+						posd[k * 12 + 6] = pout[0]+(ty-char.ascent) * pout[6] + char.height * pout[6] + ts * pout[3];
+						posd[k * 12 + 7] = pout[1]+(ty-char.ascent) * pout[7]+char.height*pout[7] + ts * pout[4];
+						posd[k * 12 + 8] = pout[2]+(ty-char.ascent) * pout[8]+char.height*pout[8] + ts * pout[5];
 						
-						posd[k * 12 + 9] = pout[0]+char.height*pout[6] + tx * pout[3];
-						posd[k * 12 + 10] = pout[1]+char.height*pout[7] + tx * pout[4];
-						posd[k * 12 + 11] = pout[2]+char.height*pout[8] + tx * pout[5];
+						posd[k * 12 + 9] = pout[0]+(ty-char.ascent) * pout[6]+char.height*pout[6] + tx * pout[3];
+						posd[k * 12 + 10] = pout[1]+(ty-char.ascent) * pout[7]+char.height*pout[7] + tx * pout[4];
+						posd[k * 12 + 11] = pout[2]+(ty-char.ascent) * pout[8]+char.height*pout[8] + tx * pout[5];
 						
 						uvd[k * 8] = uvd[k * 8 + 6] = char.u0;
 						uvd[k * 8 + 1] = uvd[k * 8 + 3] = char.v0;
@@ -138,13 +169,14 @@ package gl3d.text
 						colord[k * 16 + 2] = colord[k * 16 + 6] = colord[k * 16 + 10] = colord[k * 16 + 14] = txt.b;
 						colord[k * 16 + 3] = colord[k * 16 + 7] = colord[k * 16 + 11] = colord[k * 16 + 15] = 1;
 						
-						tx = ts;
+						tx += char.xadvance;
 						k++;
 					}
 				}
 			}
 			drawable = da;
-			drawable.index.numTriangles = num*2;
+			drawable.index.numTriangles = num * 2;
+			//绘制
 			super.update(view, material);
 		}
 		
