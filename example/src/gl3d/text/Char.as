@@ -16,6 +16,11 @@ package gl3d.text
 		public var r:Number;
 		public var g:Number;
 		public var b:Number;
+		
+		public var x0:Number;
+		public var x1:Number;
+		public var y0:Number;
+		public var y1:Number;
 		public function Char(txt:String,font:String,fontSize:int,color:uint) 
 		{
 			this.color = color;

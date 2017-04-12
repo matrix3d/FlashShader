@@ -54,8 +54,8 @@ package gl3d.core.renders
 		public function createCubeTexture(size : int, format : String, optimizeForRenderToTexture : Boolean, streamingLevels : int = 0) : CubeTexture {
 			return context.createCubeTexture(size, format, optimizeForRenderToTexture/*, streamingLevels*/);
 		}
-		public function createIndexBuffer(numIndices : int) : IndexBuffer3D {
-			return context.createIndexBuffer(numIndices);
+		public function createIndexBuffer(numIndices : int,bufferUsage:String) : IndexBuffer3D {
+			return context.createIndexBuffer(numIndices,bufferUsage);
 		}
 		public function createProgram() : Program3D {
 			return context.createProgram();
@@ -73,8 +73,8 @@ package gl3d.core.renders
 			return context.createVideoTexture();
 		}
 		
-		public function createVertexBuffer(numVertices : int, data32PerVertex : int) : VertexBuffer3D {
-			return context.createVertexBuffer(numVertices, data32PerVertex);
+		public function createVertexBuffer(numVertices : int, data32PerVertex : int,bufferUsage:String) : VertexBuffer3D {
+			return context.createVertexBuffer(numVertices, data32PerVertex,bufferUsage);
 		}
 		public function dispose(recreate : Boolean = true) : void {
 			context.dispose(recreate);

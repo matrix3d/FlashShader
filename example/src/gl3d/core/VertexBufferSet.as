@@ -14,11 +14,13 @@ package gl3d.core {
 		public var invalid:Boolean = true;
 		public var dataInvalid:Boolean = true;
 		private var context:GL;
+		private var bufferUsage:String;
 		public static var FORMATS:Array = [null, "float1", "float2", "float3", "float4"];
 		//public var subBuffs:Array;
 		public var cpuSkin:VertexBufferSet;
-		public function VertexBufferSet(data:Vector.<Number>,data32PerVertex:int/*,subBuffs:Array=null*/) 
+		public function VertexBufferSet(data:Vector.<Number>,data32PerVertex:int/*,subBuffs:Array=null*/,bufferUsage:String="staticDraw") 
 		{
+			this.bufferUsage = bufferUsage;
 			this.data = data;
 			this.data32PerVertex = data32PerVertex;
 			//this.subBuffs = subBuffs;
@@ -32,7 +34,7 @@ package gl3d.core {
 			if (invalid||this.context!=context) {
 				if(data){
 					var num:int = data.length / data32PerVertex;
-					buff = context.createVertexBuffer(num, data32PerVertex);
+					buff = context.createVertexBuffer(num, data32PerVertex,bufferUsage);
 					invalid = false;
 					this.context = context;
 				}

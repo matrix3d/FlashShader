@@ -12,10 +12,12 @@ package gl3d.core {
 		private var invalid:Boolean = true;
 		public var dataInvalid:Boolean = true;
 		private var context:GL;
+		private var bufferUsage:String;
 		public var buff:IndexBuffer3D;
 		public var numTriangles:int = -1
-		public function IndexBufferSet(data:Vector.<uint>) 
+		public function IndexBufferSet(data:Vector.<uint>,bufferUsage:String="staticDraw") 
 		{
+			this.bufferUsage = bufferUsage;
 			this.data = data;
 			
 		}
@@ -24,7 +26,7 @@ package gl3d.core {
 		{
 			if (invalid||this.context!=context) {
 				var num:int = data.length;
-				buff = context.createIndexBuffer(num);
+				buff = context.createIndexBuffer(num,bufferUsage);
 				invalid = false;
 				dataInvalid = true;
 				this.context = context;
