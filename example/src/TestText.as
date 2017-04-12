@@ -18,7 +18,7 @@ package
 	import gl3d.core.Node3D;
 	import gl3d.meshs.Meshs;
 	import gl3d.text.Text;
-	import gl3d.text.TextLine;
+	import gl3d.text.TextField;
 	import flash.text.engine.TextLine;
 	import gl3d.util.MathUtil;
 	/**
@@ -29,7 +29,7 @@ package
 	{
 		private var text:Text;
 		private var bmp:Bitmap = new Bitmap;
-		private var line:gl3d.text.TextLine;
+		private var line:gl3d.text.TextField;
 		public function TestText() 
 		{
 		}
@@ -40,16 +40,16 @@ package
 			
 			text = new Text();
 			text.border = false;
-			var line:gl3d.text.TextLine;
+			var line:gl3d.text.TextField;
 			for (var i:int = 0; i < 1;i++ ){
-				line = new gl3d.text.TextLine;
+				line = new gl3d.text.TextField;
 				addText((stage.stageWidth*Math.random()),(stage.stageHeight * Math.random()));
 			}
 			view.scene.addChild(text);
 			addChild(bmp);
 			stage.addEventListener(MouseEvent.CLICK, stage_click);
 			
-			for (i = 0; i < 10;i++ ){
+			for (i = 0; i < 0;i++ ){
 				var cube:Node3D = new Node3D;
 				cube.setRotation(Math.random() * 360, Math.random() * 360, Math.random() * 360);
 				cube.drawable = Meshs.cube(50, 50, 50);
@@ -66,8 +66,8 @@ package
 		}
 		
 		private function addText(x:Number, y:Number):void{
-			line = new gl3d.text.TextLine("123456789abcdefghi大小多少人口手上中下日月水火山石田土木竹迷住刀工车舟", "宋体", 20 * Math.random() + 10,0xffffff * Math.random());
-			line.autoSize = TextFieldAutoSize.LEFT;
+			line = new gl3d.text.TextField("1\r2\n3456789abcdefghi大小多少人口手上中下日月水火山石田土木竹迷住刀工车舟", "宋体", 20 * Math.random() + 10,0xffffff * Math.random());
+			//line.autoSize = TextFieldAutoSize.LEFT;
 			line.wordWrap = true;
 			//line = new gl3d.text.TextLine(String.fromCharCode(0x4E00 + int(Math.random() * (0x9FFF - 0x4E00))) + "123abgA", "宋体", 20 * Math.random() + 10,0xffffff * Math.random());
 			//line.htmlText = "<c><font size='22' color='#ff0000'>d</font>   <font size='300'>d</font></c>";
@@ -101,6 +101,7 @@ package
 		override public function enterFrame(e:Event):void 
 		{
 			//line.rotationZ++;
+			//line.textMatrixDirty = true;
 			//line.rotationX+=.5;
 			super.enterFrame(e);
 			if(text.material.diffTexture)

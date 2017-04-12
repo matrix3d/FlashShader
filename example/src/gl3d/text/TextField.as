@@ -6,20 +6,24 @@ package gl3d.text
 	 * ...
 	 * @author lizhi
 	 */
-	public class TextLine extends Node3D
+	public class TextField extends Node3D
 	{
 		private var _text:String;
 		public var fontSize:int;
 		public var font:String;
 		public var chars:Array;
 		public var textDirty:Boolean = true;
+		public var textMatrixDirty:Boolean = false;
 		public var color:uint;
 		private var _htmlText:String;
 		public var width:Number = 100;
 		public var height:Number = 100;
 		public var wordWrap:Boolean = false;
 		public var autoSize:String = TextFieldAutoSize.NONE;
-		public function TextLine(text:String=null,font:String="_serif",fontSize:int=12,color:uint=0) 
+		
+		public var textWidth:Number = 0;
+		public var textHeight:Number = 0;
+		public function TextField(text:String=null,font:String="_serif",fontSize:int=12,color:uint=0) 
 		{
 			this.color = color;
 			this.fontSize = fontSize;
