@@ -36,6 +36,7 @@ package gl3d.text
 		private var _border:Boolean = false;
 		private var _borderColor:uint = 0;
 		public var charSet:CharSet;
+		private var lineInfos:Array = [];
 		public function Text() 
 		{
 			charSet = new CharSet();
@@ -74,7 +75,9 @@ package gl3d.text
 			//更新字符集
 			charSet.update();
 			
-			if(changed){
+			if (changed){
+				var currentLineNum:int = -1;
+				num = 0;
 				charVersion++;
 				//更新char相对位置
 				for (i = 0; i < clen;i++ ){
@@ -82,22 +85,35 @@ package gl3d.text
 					line.textMatrixDirty = false;
 					var cs:Array = line.chars;
 					if (cs && cs.length){
-						var tx:int = 0;
-						var ty:int = 0;
+						currentLineNum++;
+						var lineInfo:LineInfo = lineInfos[currentLineNum] = lineInfos[currentLineNum] || new LineInfo;
+						lineInfo.maxFontSize = 0;
+						lineInfo.maxAscent = 0;
+						var tx:int=2;
+						var ty:int=2;
 						var tlen:int = cs.length;
 						for (var j:int = 0; j < tlen; j++ ){
 							var txt:Char = cs[j];
+							txt.lineInfo = lineInfo;
 							var char:CharInstance = txt.instance;
 							if (txt.txt=="\n"){
-								tx = 0;
-								ty += char.fontSize;
+								tx = 2;
+								ty += lineInfo.maxFontSize;
+								currentLineNum++;
+								lineInfo = lineInfos[currentLineNum] = lineInfos[currentLineNum] || new LineInfo;
+								lineInfo.maxFontSize = 0;
+								lineInfo.maxAscent = 0;
 								continue;
 							}
 							//tx为文字起始点 ts为文字末尾点
 							if (line.wordWrap){
-								if ((tx+char.width)>line.width){
-									tx = 0;
-									ty += char.fontSize;
+								if ((tx + char.width) > line.width){
+									tx = 2;
+									ty += lineInfo.maxFontSize;
+									currentLineNum++;
+									lineInfo = lineInfos[currentLineNum] = lineInfos[currentLineNum] || new LineInfo;
+									lineInfo.maxFontSize = 0;
+									lineInfo.maxAscent = 0;
 								}
 								if (line.autoSize==TextFieldAutoSize.NONE){
 									if (ty>line.height){
@@ -121,12 +137,21 @@ package gl3d.text
 								}
 							}
 							
+							if (lineInfo.maxFontSize < txt.fontSize) {
+								lineInfo.maxFontSize = txt.fontSize;
+							}
+							if (lineInfo.maxAscent<char.ascent){
+								lineInfo.maxAscent = char.ascent;
+							}
+							
 							txt.charVersion = charVersion;
+							txt.lineInfo = lineInfo;
 							txt.x0 = tx;
 							txt.x1 = tx+char.width;
 							txt.y0 = ty - char.ascent;
 							txt.y1 = txt.y0 + char.height;
-							tx += char.xadvance;	
+							tx += char.xadvance;
+							num++;
 						}
 					}
 				}
@@ -179,22 +204,23 @@ package gl3d.text
 								continue;
 							}
 							char = txt.instance;
+							var maxFontSize:int = txt.lineInfo.maxAscent;
 							
-							posd[k * 12] = pout[0] + txt.x0 *pout[3]+txt.y0 * pout[6];
-							posd[k * 12 + 1] = pout[1] +txt.x0* pout[4]+txt.y0 * pout[7];
-							posd[k * 12 + 2] = pout[2] + txt.x0 * pout[5]+txt.y0 * pout[8];
+							posd[k * 12] = pout[0] + txt.x0 *pout[3]+(txt.y0+maxFontSize) * pout[6];
+							posd[k * 12 + 1] = pout[1] +txt.x0* pout[4]+(txt.y0+maxFontSize) * pout[7];
+							posd[k * 12 + 2] = pout[2] + txt.x0 * pout[5]+(txt.y0+maxFontSize) * pout[8];
 							
-							posd[k * 12 + 3] = pout[0] + txt.x1 * pout[3]+txt.y0 * pout[6];
-							posd[k * 12 + 4] = pout[1] + txt.x1 * pout[4]+txt.y0 * pout[7];
-							posd[k * 12 + 5] = pout[2] + txt.x1 * pout[5]+txt.y0 * pout[8];
+							posd[k * 12 + 3] = pout[0] + txt.x1 * pout[3]+(txt.y0+maxFontSize) * pout[6];
+							posd[k * 12 + 4] = pout[1] + txt.x1 * pout[4]+(txt.y0+maxFontSize) * pout[7];
+							posd[k * 12 + 5] = pout[2] + txt.x1 * pout[5]+(txt.y0+maxFontSize) * pout[8];
 							
-							posd[k * 12 + 6] = pout[0]  + txt.x1 * pout[3]+txt.y1 * pout[6];
-							posd[k * 12 + 7] = pout[1] + txt.x1 * pout[4]+txt.y1 * pout[7];
-							posd[k * 12 + 8] = pout[2] + txt.x1 * pout[5]+txt.y1 * pout[8];
+							posd[k * 12 + 6] = pout[0]  + txt.x1 * pout[3]+(txt.y1+maxFontSize) * pout[6];
+							posd[k * 12 + 7] = pout[1] + txt.x1 * pout[4]+(txt.y1+maxFontSize) * pout[7];
+							posd[k * 12 + 8] = pout[2] + txt.x1 * pout[5]+(txt.y1+maxFontSize) * pout[8];
 							
-							posd[k * 12 + 9] = pout[0] + txt.x0 * pout[3]+txt.y1 * pout[6];
-							posd[k * 12 + 10] = pout[1] + txt.x0 * pout[4]+txt.y1 * pout[7];
-							posd[k * 12 + 11] = pout[2] + txt.x0 * pout[5]+txt.y1 * pout[8];
+							posd[k * 12 + 9] = pout[0] + txt.x0 * pout[3]+(txt.y1+maxFontSize) * pout[6];
+							posd[k * 12 + 10] = pout[1] + txt.x0 * pout[4]+(txt.y1+maxFontSize) * pout[7];
+							posd[k * 12 + 11] = pout[2] + txt.x0 * pout[5]+(txt.y1+maxFontSize) * pout[8];
 							
 							uvd[k * 8] = uvd[k * 8 + 6] = char.u0;
 							uvd[k * 8 + 1] = uvd[k * 8 + 3] = char.v0;
