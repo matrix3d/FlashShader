@@ -1,6 +1,7 @@
 package gl3d.core
 {
 	import flash.geom.Matrix3D;
+	import flash.geom.Rectangle;
 	import flash.geom.Vector3D;
 	import gl3d.core.skin.Skin;
 	import gl3d.ctrl.Ctrl;
@@ -23,6 +24,8 @@ package gl3d.core
 		public var _world2local:Matrix3D = new Matrix3D;
 		private var _matrix:Matrix3D = new Matrix3D;
 		public var children:Vector.<Node3D> = new Vector.<Node3D>;
+		public var mask:Node3D;
+		public var scissorRectangle:Rectangle;
 		public var renderChildren:Vector.<Node3D> = new Vector.<Node3D>;
 		public var drawable:Drawable;
 		public var posVelocityDrawable:Drawable;//粒子的位置速度drawable
@@ -100,6 +103,12 @@ package gl3d.core
 						}
 					}
 				}
+				if (scissorRectangle){
+					view.renderer.gl3d.setScissorRectangle(scissorRectangle);
+				}
+				if (mask){
+					Mask.startMask(view, mask);
+				}
 				if (material || this.material)
 				{
 					(material || this.material).draw(this, view);
@@ -107,6 +116,9 @@ package gl3d.core
 				for each (var child:Node3D in renderChildren)
 				{
 					child.update(view, material);
+				}
+				if (mask){
+					Mask.stopMask(view, mask);
 				}
 			//}
 		}

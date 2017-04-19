@@ -1,6 +1,7 @@
 package gl3d.text 
 {
 	import flash.display.BitmapData;
+	import flash.display.InteractiveObject;
 	import flash.geom.Matrix;
 	import flash.geom.Rectangle;
 	import flash.text.TextField;
@@ -27,24 +28,45 @@ package gl3d.text
 		{
 		}
 		
-		public function add(chars:Array):void{
-			if(chars)
-			newChars.push(chars);
+		public function add(chars:Array,len:int):void{
+			if(chars){
+				newChars.push(chars,len);
+			}
 		}
 		
-		public function getChar(txt:String,font:String,fontSize:int):CharInstance{
-			return fontSizeChars[font+fontSize+txt];
+		public function getChar(txt:String, font:String, fontSize:int):CharInstance{
+			var farr:Object = fontSizeChars[font];
+			if (farr==null){
+				return null;
+			}
+			var sizearr:Object = farr[fontSize];
+			if (sizearr==null){
+				return null;
+			}
+			return sizearr[txt];
 		}
 		
-		public function setChar(char:CharInstance,font:String,fontSize:int):void{
-			fontSizeChars[font + fontSize+char.txt] = char;
+		public function setChar(char:CharInstance, font:String, fontSize:int):void{
+			var farr:Object = fontSizeChars[font];
+			if (farr==null){
+				farr = fontSizeChars[font] = {};
+			}
+			var sizearr:Object = farr[fontSize];
+			if (sizearr==null){
+				sizearr = farr[fontSize] = {};
+			}
+			sizearr[char.txt] = char;
 		}
 		
 		public function update():void{
 			if (newChars.length){
 				var needUpdate:Boolean = false;
-				for each(var newChar:Array in newChars){
-					for each(var c:Char in newChar){
+				var len:int = newChars.length;
+				for (var i:int = 0; i < len;i+=2 ){
+					var newChar:Array = newChars[i];
+					var newCharLen:int = newChars[i + 1];
+					for (var j:int = 0; j < newCharLen;j++){
+						var c:Char = newChar[j];
 						var char:CharInstance=getChar(c.txt,c.font,c.fontSize)
 						if (char==null){
 							char = new CharInstance(c.txt,c.font,c.fontSize);
@@ -56,8 +78,8 @@ package gl3d.text
 						c.instance = char;
 					}
 				}
-				if (!needUpdate) return;
 				newChars = [];
+				if (!needUpdate) return;
 				
 				while(true){
 					if (rp==null){
@@ -71,37 +93,46 @@ package gl3d.text
 					tset.dataInvalid = true;
 					var id2index:Object = {};
 					var id2bft:Object = {};
-					for each(char in fontSizeChars){
-						if (char.dirty||gdirty){
-							char.dirty = true;
-							var bft:BitmapDataFromText = new BitmapDataFromText(char.txt,char.fontSize,char.font);
-							id2index[char.id] = rp.rectangleCount;
-							id2bft[char.id] = bft;
-							rp.insertRectangle(bft.width+1, bft.height+1, char.id);
-							rp.packRectangles(false);
+					for each(var tempa:Object in fontSizeChars){
+						for each(var tempb:Object in tempa){
+							for each(char in tempb){
+								if (char.dirty||gdirty){
+									char.dirty = true;
+									var bft:BitmapDataFromText = new BitmapDataFromText(char.txt,char.fontSize,char.font);
+									id2index[char.id] = rp.rectangleCount;
+									id2bft[char.id] = bft;
+									rp.insertRectangle(bft.width+1, bft.height+1, char.id);
+									rp.packRectangles(false);
+								}
+							}
 						}
+						
 					}
 					if (rp.rectangleCount == numChar){
-						for each(char in fontSizeChars){
-							if (char.dirty){
-								char.dirty = false;
-								var rect:Rectangle = new Rectangle;
-								rp.getRectangle(id2index[char.id], rect);
-								bft = id2bft[char.id];
-								char.width = bft.width;
-								char.height = bft.height;
-								helpMatr.tx = rect.x;
-								helpMatr.ty = rect.y;
-								if(bft.bmd){
-									bmd.draw(bft.bmd, helpMatr);
+						for each(tempa in fontSizeChars){
+							for each(tempb in tempa){
+								for each(char in tempb){
+									if (char.dirty){
+										char.dirty = false;
+										var rect:Rectangle = new Rectangle;
+										rp.getRectangle(id2index[char.id], rect);
+										bft = id2bft[char.id];
+										char.width = bft.width;
+										char.height = bft.height;
+										helpMatr.tx = rect.x;
+										helpMatr.ty = rect.y;
+										if(bft.bmd){
+											bmd.draw(bft.bmd, helpMatr);
+										}
+										char.u0 = rect.x / tsizew;
+										char.v0 = rect.y / tsizeh;
+										char.u1 = (rect.x +bft.width) / tsizew;
+										char.v1 = (rect.y + bft.height) / tsizeh;
+										
+										char.ascent = bft.ascent;
+										char.xadvance = bft.xadvance;
+									}	
 								}
-								char.u0 = rect.x / tsizew;
-								char.v0 = rect.y / tsizeh;
-								char.u1 = (rect.x +bft.width) / tsizew;
-								char.v1 = (rect.y + bft.height) / tsizeh;
-								
-								char.ascent = bft.ascent;
-								char.xadvance = bft.xadvance;
 							}
 						}
 						break;

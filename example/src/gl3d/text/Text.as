@@ -58,11 +58,11 @@ package gl3d.text
 			for (i = 0; i < clen;i++ ){
 				var line:TextField = children[i] as TextField;
 				if (line&&line.chars){
-					num += line.chars.length;
+					num += line.charsLength;
 					if (line.textDirty){
 						line.textDirty = false;
 						line.textMatrixDirty = true;
-						charSet.add(line.chars);
+						charSet.add(line.chars,line.charsLength);
 					}
 					if (line.textMatrixDirty){
 						changed = true;
@@ -84,14 +84,14 @@ package gl3d.text
 					line = children[i] as TextField;
 					line.textMatrixDirty = false;
 					var cs:Array = line.chars;
-					if (cs && cs.length){
+					if (cs && line.charsLength){
 						currentLineNum++;
 						var lineInfo:LineInfo = lineInfos[currentLineNum] = lineInfos[currentLineNum] || new LineInfo;
 						lineInfo.maxFontSize = 0;
 						lineInfo.maxAscent = 0;
 						var tx:int=2;
 						var ty:int=2;
-						var tlen:int = cs.length;
+						var tlen:int = line.charsLength;
 						for (var j:int = 0; j < tlen; j++ ){
 							var txt:Char = cs[j];
 							txt.lineInfo = lineInfo;
@@ -187,7 +187,7 @@ package gl3d.text
 				for (i = 0; i < clen;i++ ){
 					line = children[i] as TextField;
 					cs = line.chars;
-					if (cs && cs.length){
+					if (cs && line.charsLength){
 						//pin为三个点 (原点坐标,单位x坐标,单位y坐标)
 						//转换到pout 然后原点坐标 减去单位坐标 得到单位x ,单位y
 						line.matrix.transformVectors(pin, pout);
@@ -197,7 +197,7 @@ package gl3d.text
 						pout[6] -= pout[0];
 						pout[7] -= pout[1];
 						pout[8] -= pout[2];
-						tlen = cs.length;
+						tlen = line.charsLength;
 						for (j = 0; j < tlen; j++ ){
 							txt = cs[j];
 							if (txt.charVersion != charVersion){

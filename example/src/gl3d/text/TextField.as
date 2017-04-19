@@ -11,7 +11,8 @@ package gl3d.text
 		private var _text:String;
 		public var fontSize:int;
 		public var font:String;
-		public var chars:Array;
+		public var chars:Array = [];
+		public var charsLength:int = 0;
 		public var textDirty:Boolean = true;
 		public var textMatrixDirty:Boolean = false;
 		public var color:uint;
@@ -38,13 +39,23 @@ package gl3d.text
 		
 		public function set text(value:String):void 
 		{
+			if (_text==value){
+				return;
+			}
 			textDirty = true;
 			_text = value;
 			if(_text){
-				var tl:int = _text.length;
-				chars = [];
-				for (var i:int = 0; i < tl;i++ ){
-					chars.push(new Char(_text.charAt(i),font,fontSize,color));
+				charsLength = _text.length;
+				for (var i:int = 0; i < charsLength; i++ ){
+					var c:Char = chars[i];
+					if (c==null){
+						c = chars[i] = new Char(_text.charAt(i), font, fontSize, color);
+					}else{
+						c.txt = _text.charAt(i);
+						c.font = font;
+						c.fontSize = fontSize;
+						c.color = color;
+					}
 				}
 			}
 		}
@@ -57,7 +68,7 @@ package gl3d.text
 		public function set htmlText(value:String):void 
 		{
 			_htmlText = value;
-			chars = [];
+			charsLength = 0;
 			if (value){
 				try{
 					var xml:XML = new XML(value);
@@ -108,9 +119,19 @@ package gl3d.text
 			
 			var tl:int = value.length;
 			chars = chars||[];
-			for (var i:int = 0; i < tl;i++ ){
-				chars.push(new Char(value.charAt(i),font,fontSize,color));
+			for (var j:int = 0; j < tl; j++ ){
+				var i:int = j + charsLength;
+				var c:Char = chars[i];
+				if (c==null){
+					c = chars[i] = new Char(_text.charAt(i), font, fontSize, color);
+				}else{
+					c.txt = _text.charAt(i);
+					c.font = font;
+					c.fontSize = fontSize;
+					c.color = color;
+				}
 			}
+			charsLength += tl;
 		}
 	}
 
