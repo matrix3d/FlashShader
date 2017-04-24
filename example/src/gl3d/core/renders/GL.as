@@ -87,7 +87,11 @@ package gl3d.core.renders
 			if(isBeginDraw)
 			beginDraw();
 			indexBuffer.update(this);
-			drawTriangleCounter += indexBuffer.data.length/3;
+			if(numTriangles==-1){
+				drawTriangleCounter += indexBuffer.data.length / 3;
+			}else{
+				drawTriangleCounter += numTriangles;
+			}
 			drawCounter++;
 			context.drawTriangles(indexBuffer.buff, firstIndex, numTriangles);
 		}
