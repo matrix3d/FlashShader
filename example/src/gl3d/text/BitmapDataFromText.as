@@ -26,7 +26,7 @@ package gl3d.text
 		public var height:int;
 		public var ascent:int;
 		public var xadvance:int;
-		public function BitmapDataFromText(txt:String,fontSize:int=12,fontName:String="_serif") 
+		public function BitmapDataFromText(txt:String,fontSize:int=12,fontName:String="SimSun") 
 		{
 			var format:ElementFormat = new ElementFormat(new FontDescription(fontName), fontSize, 0xffffff);
 			var te:TextElement = new TextElement(txt, format);

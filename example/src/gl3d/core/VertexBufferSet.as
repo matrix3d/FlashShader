@@ -9,20 +9,25 @@ package gl3d.core {
 	public class VertexBufferSet 
 	{
 		public var data32PerVertex:int;
+		public var formatIndex:int;
 		public var data:Vector.<Number>;
-		private var buff:VertexBuffer3D;
+		protected var buff:VertexBuffer3D;
 		public var invalid:Boolean = true;
 		public var dataInvalid:Boolean = true;
-		private var context:GL;
-		private var bufferUsage:String;
-		public static var FORMATS:Array = [null, "float1", "float2", "float3", "float4"];
+		protected var context:GL;
+		protected var bufferUsage:String;
+		public static var FORMATS:Array = [null, "float1", "float2", "float3", "float4","bytes4"];
 		//public var subBuffs:Array;
 		public var cpuSkin:VertexBufferSet;
-		public function VertexBufferSet(data:Vector.<Number>,data32PerVertex:int/*,subBuffs:Array=null*/,bufferUsage:String="staticDraw") 
+		public function VertexBufferSet(data:Vector.<Number>,data32PerVertex:int/*,subBuffs:Array=null*/,bufferUsage:String="staticDraw",formatIndex:int=-1) 
 		{
 			this.bufferUsage = bufferUsage;
 			this.data = data;
 			this.data32PerVertex = data32PerVertex;
+			if (formatIndex==-1){
+				formatIndex = data32PerVertex;
+			}
+			this.formatIndex = formatIndex;
 			//this.subBuffs = subBuffs;
 			//if (data32PerVertex>4&&subBuffs==null) {
 			//	throw "error";
@@ -55,7 +60,7 @@ package gl3d.core {
 			//		buffOffset += count;
 			//	}
 			//}else {
-				context.setVertexBufferAt(i, buff,offset,format||FORMATS[data32PerVertex]);
+				context.setVertexBufferAt(i, buff,offset,format||FORMATS[formatIndex]);
 			//}
 		}
 		

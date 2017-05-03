@@ -12,6 +12,9 @@ package gl3d.text
 	import flash.text.TextFieldAutoSize;
 	import flash.text.TextFormat;
 	import flash.text.TextLineMetrics;
+	import flash.utils.ByteArray;
+	import flash.utils.Endian;
+	import gl3d.core.BytesVertexBufferSet;
 	import gl3d.core.Drawable;
 	import gl3d.core.DrawableSource;
 	import gl3d.core.IndexBufferSet;
@@ -35,11 +38,10 @@ package gl3d.text
 		private var pout:Vector.<Number> = new Vector.<Number>(9);
 		private var _border:Boolean = false;
 		private var _borderColor:uint = 0;
-		public var charSet:CharSet;
+		public static var charSet:CharSet = new CharSet;
 		private var lineInfos:Array = [];
 		public function Text() 
 		{
-			charSet = new CharSet();
 			material = new Material;
 			material.vertexColorAble = true;
 			material.lightAble = false;
@@ -50,6 +52,7 @@ package gl3d.text
 		
 		override public function update(view:View3D, material:MaterialBase = null):void 
 		{
+			view.enableErrorChecking = true;
 			//添加新的字符串
 			var num:int = 0;
 			var charCount:int = 0;
@@ -123,17 +126,8 @@ package gl3d.text
 										break;
 									}
 									// todo :
-								}else{
-									// todo :
 								}
 							}else{
-								/*if (line.autoSize==TextFieldAutoSize.LEFT){
-									
-								}else if (line.autoSize==TextFieldAutoSize.RIGHT){
-									// todo :
-								}else if (line.autoSize==TextFieldAutoSize.CENTER){
-									// todo :
-								}else*/
 								if(line.autoSize==TextFieldAutoSize.NONE){
 									if ((tx+char.width)>line.width){
 										break;
@@ -177,8 +171,11 @@ package gl3d.text
 					da = drawablePool[pow2num] = new Drawable;
 					da.index = new IndexBufferSet(new Vector.<uint>(pow2num*6),"dynamicDraw");
 					da.pos = new VertexBufferSet(new Vector.<Number>(pow2num * 4 * 3), 3,"dynamicDraw");
-					da.uv = new VertexBufferSet(new Vector.<Number>(pow2num * 4 * 2), 2,"dynamicDraw");
-					da.color = new VertexBufferSet(new Vector.<Number>(pow2num * 4 * 4), 4,"dynamicDraw");
+					da.uv = new VertexBufferSet(new Vector.<Number>(pow2num * 4 * 2), 2, "dynamicDraw");
+					var colord:ByteArray = new ByteArray;
+					colord.endian = Endian.LITTLE_ENDIAN;
+					colord.length = pow2num * 4*4;
+					da.color = new BytesVertexBufferSet(colord/*new Vector.<Number>(pow2num * 4)*/, 1,"dynamicDraw");
 					var indexd:Vector.<uint> = da.index.data;
 					for (var i:int = 0; i < pow2num;i++ ){
 						indexd[i * 6] = i * 4;
@@ -196,7 +193,7 @@ package gl3d.text
 				da.color.dataInvalid = true;
 				var posd:Vector.<Number> = da.pos.data;
 				var uvd:Vector.<Number> = da.uv.data;
-				var colord:Vector.<Number> = da.color.data;
+				colord = da.color.bytedata;
 				var k:int = 0;
 				for (i = 0; i < clen;i++ ){
 					line = children[i] as TextField;
@@ -242,10 +239,14 @@ package gl3d.text
 							uvd[k * 8 + 2] = uvd[k * 8 + 4] = char.u1;
 							uvd[k * 8 + 5] = uvd[k * 8 + 7] = char.v1;
 							
-							colord[k * 16] = colord[k * 16 + 4] = colord[k * 16 + 8] = colord[k * 16 + 12] = txt.r;
-							colord[k * 16 + 1] = colord[k * 16 + 5] = colord[k * 16 + 9] = colord[k * 16 + 13] = txt.g;
-							colord[k * 16 + 2] = colord[k * 16 + 6] = colord[k * 16 + 10] = colord[k * 16 + 14] = txt.b;
-							colord[k * 16 + 3] = colord[k * 16 + 7] = colord[k * 16 + 11] = colord[k * 16 + 15] = 1;
+							colord[k * 16] = colord[k * 16 + 4] = colord[k * 16 + 8] = colord[k * 16 + 12] = txt.r*0xff;
+							colord[k * 16 + 1] = colord[k * 16 + 5] = colord[k * 16 + 9] = colord[k * 16 + 13] =txt.g*0xff;
+							colord[k * 16 + 2] = colord[k * 16 + 6] = colord[k * 16 + 10] = colord[k * 16 + 14] =txt.b*0xff;
+							colord[k * 16 + 3] = colord[k * 16 + 7] = colord[k * 16 + 11] = colord[k * 16 + 15] = 0xff;
+							//colord[k * 4] = colord[k * 4 + 1] = colord[k * 4 + 2] = colord[k * 4 + 3] = 0xff//txt.r*0;
+							//colord[k * 16 + 1] = colord[k * 16 + 5] = colord[k * 16 + 9] = colord[k * 16 + 13] =0xffffffff// txt.g*0;
+							//colord[k * 16 + 2] = colord[k * 16 + 6] = colord[k * 16 + 10] = colord[k * 16 + 14] =0xffffffff// txt.b*0;
+							//colord[k * 16 + 3] = colord[k * 16 + 7] = colord[k * 16 + 11] = colord[k * 16 + 15] = 0xffffffff//0xff
 							
 							k++;
 						}
@@ -256,27 +257,6 @@ package gl3d.text
 			}
 			//绘制
 			super.update(view, material);
-		}
-		
-		public function get border():Boolean 
-		{
-			return _border;
-		}
-		
-		public function set border(value:Boolean):void 
-		{
-			_border = value;
-			material.border = value;
-		}
-		
-		public function get borderColor():uint 
-		{
-			return _borderColor;
-		}
-		
-		public function set borderColor(value:uint):void 
-		{
-			_borderColor = value;
 		}
 	}
 

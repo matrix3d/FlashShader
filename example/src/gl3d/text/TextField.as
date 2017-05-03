@@ -24,7 +24,7 @@ package gl3d.text
 		
 		public var textWidth:Number = 0;
 		public var textHeight:Number = 0;
-		public function TextField(text:String=null,font:String="_serif",fontSize:int=12,color:uint=0) 
+		public function TextField(text:String=null,font:String="SimSun",fontSize:int=12,color:uint=0) 
 		{
 			this.color = color;
 			this.fontSize = fontSize;
@@ -109,7 +109,7 @@ package gl3d.text
 		}
 		
 		
-		public function appendText(value:String,font:String="_serif",fontSize:int=12,color:uint=0):void{
+		public function appendText(value:String,font:String="SimSun",fontSize:int=12,color:uint=0):void{
 			textDirty = true;
 			if(_text){
 				_text += value;
