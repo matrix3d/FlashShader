@@ -193,7 +193,7 @@ package gl3d.text
 				da.color.dataInvalid = true;
 				var posd:Vector.<Number> = da.pos.data;
 				var uvd:Vector.<Number> = da.uv.data;
-				colord = da.color.bytedata;
+				colord = (da.color as BytesVertexBufferSet).bytedata;
 				var k:int = 0;
 				for (i = 0; i < clen;i++ ){
 					line = children[i] as TextField;

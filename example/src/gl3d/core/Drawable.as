@@ -18,7 +18,7 @@ package gl3d.core {
 		public var randomStep:int = 4;
 		private var _targetPosition:VertexBufferSet;
 		public var uv2:VertexBufferSet;
-		public var color:BytesVertexBufferSet;
+		public var color:VertexBufferSet;
 		
 		private var _joint:VertexBufferSet;
 		private var _weight:VertexBufferSet;
