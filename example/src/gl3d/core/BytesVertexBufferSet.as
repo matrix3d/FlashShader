@@ -22,7 +22,7 @@ package gl3d.core
 		{
 			if (invalid||this.context!=context) {
 				if(bytedata){
-					var num:int = bytedata.length / 4;
+					var num:int = bytedata.length / 4 / data32PerVertex;
 					buff = context.createVertexBuffer(num, data32PerVertex,bufferUsage);
 					invalid = false;
 					this.context = context;
@@ -31,11 +31,7 @@ package gl3d.core
 			}
 			if (bytedata&&dataInvalid){
 				dataInvalid = false;
-				//var testb:ByteArray = new ByteArray;
-				//testb.endian = Endian.LITTLE_ENDIAN;
-				//testb.length = bytedata.length * 4;
-				
-				buff.uploadFromByteArray(bytedata, 0,0, bytedata.length /4);
+				buff.uploadFromByteArray(bytedata, 0, 0, bytedata.length / 4 / data32PerVertex);
 			}
 		}
 		

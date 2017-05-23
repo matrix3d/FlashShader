@@ -34,8 +34,10 @@ package gl3d.core.renders
 		}
 		
 		public function collect(node:Node3D):void {
-			if(node.visible){
-				collects.push(node);
+			if (node.visible){
+				if(node.material||node.controllers){
+					collects.push(node);
+				}
 				if (node is Light) {
 					view.lights.push(node);
 				}
