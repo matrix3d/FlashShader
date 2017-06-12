@@ -10,21 +10,21 @@ package gl3d.util
 	import flash.text.TextFieldAutoSize;
 	import flash.text.TextFormat;
 	import flash.utils.getTimer;
-	import gl3d.core.View3D;
+	//import gl3d.core.View3D;
 	/**
 	 * ...
 	 * @author lizhi
 	 */
 	public class Stats extends Sprite
 	{
-		private var view:View3D;
+		private var view:Object;
 		public var tf:TextField;
 		public var fpsCounter:int = 0;
 		public var fps:int = 0;
 		public var lastTime:int = -10000;
 		public var maxMem:int = 0;
 		private var fpss:Array = [];
-		public function Stats(view:View3D=null) 
+		public function Stats(view:Object=null) 
 		{
 			this.view = view;
 			

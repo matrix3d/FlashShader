@@ -44,17 +44,26 @@ package gl3d.core.renders
 			stage3d.addEventListener(Event.CONTEXT3D_CREATE, stage_context3dCreate);
 			stage3d.addEventListener(ErrorEvent.ERROR, stage3Ds_error);
 			//stage.stage3Ds[0].requestContext3D(Context3DRenderMode.AUTO, Context3DProfile.STANDARD);
-			var pfs:Vector.<String> = new <String>[Context3DProfile.BASELINE_EXTENDED,Context3DProfile.BASELINE,Context3DProfile.BASELINE_CONSTRAINED];
-			if (agalVersion == 2){
-				pfs.unshift(Context3DProfile.STANDARD_CONSTRAINED);
-				pfs.unshift(Context3DProfile.STANDARD)
-			}
-			for (var i:int = pfs.length - 1; i >= 0;i-- ) {
-				if (pfs[i]==null) {
-					pfs.splice(i, 1);
+			if(stage3d.hasOwnProperty("requestContext3DMatchingProfiles")){
+				var pfs:Vector.<String> = new <String>[Context3DProfile.BASELINE_EXTENDED,Context3DProfile.BASELINE,Context3DProfile.BASELINE_CONSTRAINED];
+				if (agalVersion == 2){
+					pfs.unshift(Context3DProfile.STANDARD_CONSTRAINED);
+					pfs.unshift(Context3DProfile.STANDARD)
 				}
+				for (var i:int = pfs.length - 1; i >= 0;i-- ) {
+					if (pfs[i]==null) {
+						pfs.splice(i, 1);
+					}
+				}
+				try{
+					stage3d.requestContext3DMatchingProfiles(pfs);
+				}catch (err:Error){
+					stage3d.requestContext3D();
+				}
+			}else{
+				stage3d.requestContext3D();
 			}
-			stage3d.requestContext3DMatchingProfiles(pfs);
+			
 		}
 		private function stage3Ds_error(e:ErrorEvent):void 
 		{
@@ -63,13 +72,15 @@ package gl3d.core.renders
 		
 		private function stage_context3dCreate(e:Event):void 
 		{
-			if (stage3d.context3D.profile==null){
-				stage3d.requestContext3D();
-				return;
-			}
+			//if (stage3d.context3D.profile==null){
+			//	stage3d.requestContext3D();
+			//	return;
+			//}
 			gl3d = new GL(stage3d.context3D);
 			gl3d.enableErrorChecking = view.enableErrorChecking;
-			view.profile = stage3d.context3D.profile;
+			if(stage3d.context3D.hasOwnProperty("profile")){
+				view.profile = stage3d.context3D.profile;
+			}
 			view.driverInfo = gl3d.driverInfo;
 			if (view.profile==Context3DProfile.STANDARD||view.profile==Context3DProfile.STANDARD_CONSTRAINED) {
 				agalVersion = 2;

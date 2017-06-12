@@ -7,7 +7,7 @@ package gl3d.core.renders
 	import flash.display3D.IndexBuffer3D;
 	import flash.display3D.Program3D;
 	import flash.display3D.textures.CubeTexture;
-	import flash.display3D.textures.RectangleTexture;
+	//import flash.display3D.textures.RectangleTexture;
 	import flash.display3D.textures.Texture;
 	import flash.display3D.textures.TextureBase;
 	import flash.display3D.VertexBuffer3D;
@@ -54,14 +54,17 @@ package gl3d.core.renders
 		public function createCubeTexture(size : int, format : String, optimizeForRenderToTexture : Boolean, streamingLevels : int = 0) : CubeTexture {
 			return context.createCubeTexture(size, format, optimizeForRenderToTexture/*, streamingLevels*/);
 		}
-		public function createIndexBuffer(numIndices : int,bufferUsage:String) : IndexBuffer3D {
-			return context.createIndexBuffer(numIndices,bufferUsage);
+		public function createIndexBuffer(numIndices : int, bufferUsage:String) : IndexBuffer3D {
+			if (context.createIndexBuffer.length==2){
+				return context.createIndexBuffer(numIndices,bufferUsage);
+			}
+			return context.createIndexBuffer(numIndices);
 		}
 		public function createProgram() : Program3D {
 			return context.createProgram();
 		}
 		
-		public function createRectangleTexture (width:int, height:int, format:String, optimizeForRenderToTexture:Boolean) : RectangleTexture {
+		public function createRectangleTexture (width:int, height:int, format:String, optimizeForRenderToTexture:Boolean) : TextureBase {
 			return context.createRectangleTexture(width, height, format, optimizeForRenderToTexture);
 		}
 
@@ -73,8 +76,11 @@ package gl3d.core.renders
 			return context.createVideoTexture();
 		}
 		
-		public function createVertexBuffer(numVertices : int, data32PerVertex : int,bufferUsage:String) : VertexBuffer3D {
-			return context.createVertexBuffer(numVertices, data32PerVertex,bufferUsage);
+		public function createVertexBuffer(numVertices : int, data32PerVertex : int, bufferUsage:String) : VertexBuffer3D {
+			if (context.createVertexBuffer.length==3){
+				return context.createVertexBuffer(numVertices, data32PerVertex,bufferUsage);
+			}
+			return context.createVertexBuffer(numVertices, data32PerVertex);
 		}
 		public function dispose(recreate : Boolean = true) : void {
 			context.dispose(recreate);

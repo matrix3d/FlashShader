@@ -4,7 +4,7 @@ package gl3d.core {
 	import flash.display3D.Context3DTextureFilter;
 	import flash.display3D.Context3DTextureFormat;
 	import flash.display3D.textures.CubeTexture;
-	import flash.display3D.textures.RectangleTexture;
+	//import flash.display3D.textures.RectangleTexture;
 	import flash.display3D.textures.Texture;
 	import flash.display3D.textures.TextureBase;
 	//import flash.display3D.textures.VideoTexture;
@@ -111,8 +111,8 @@ package gl3d.core {
 			}else if (texture is CubeTexture) {
 				(texture as CubeTexture).uploadFromByteArray(byte,0, side, miplevel);
 				//(texture as CubeTexture).uploadFromBitmapData(source, side, miplevel);
-			}else if (texture is RectangleTexture) {
-				(texture as RectangleTexture).uploadFromByteArray(byte, 0);
+			}else/* if (texture is RectangleTexture)*/ {
+				texture["uploadFromByteArray"](byte, 0);
 			}
 		}
 		
