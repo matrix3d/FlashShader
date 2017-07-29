@@ -8,6 +8,7 @@ package
 	import flash.geom.Vector3D;
 	import flash.system.System;
 	import flash.utils.ByteArray;
+	import flash.utils.getTimer;
 	import gl3d.core.Fog;
 	import gl3d.core.InstanceMaterial;
 	import gl3d.ctrl.ArcBallCtrl;
@@ -57,21 +58,21 @@ package
 			view.fog.mode = Fog.FOG_LINEAR;
 			view.fog.start = 100;
 			view.fog.end = 200;
-			view.fog.fogColor = [0x84 / 0xff, 0x98 / 0xff, 0xbe / 0xff];
+			view.fog.fogColor =[0x84 / 0xff, 0x98 / 0xff, 0xbe / 0xff];
 			view.background = 0x8498be;
 			view.camera.z = -100;
 			view.camera.y = 50;
 			view.camera.setRotation(  30 ,0,0);
 			//view.light.lightPower = 2;
 			
-			[Embed(source = "assets/unityterraintexture/Cliff (Layered Rock).jpg")]var c0:Class;
-			[Embed(source = "assets/unityterraintexture/GoodDirt.jpg")]var c1:Class;
+			[Embed(source = "assets/unityterraintexture/GoodDirt.jpg")]var c0:Class;
+			[Embed(source = "assets/unityterraintexture/Cliff (Layered Rock).jpg")]var c1:Class;
 			[Embed(source = "assets/unityterraintexture/Grass (Hill).jpg")]var c2:Class;
 			[Embed(source = "assets/unityterraintexture/Grass&Rock.jpg")]var c3:Class;
 			
-			var bmd:BitmapData = new BitmapData(128, 128, false, 0xff0000);
-			bmd.perlinNoise(30, 30, 10, 1, false, false);
-			var byte:ByteArray = bmd.getPixels(bmd.rect);
+			var bmd:BitmapData = new BitmapData(128, 128, false, 0);
+			bmd.perlinNoise(30, 30, 2, 1, true, false);
+			/*var byte:ByteArray = bmd.getPixels(bmd.rect);
 			for (var i:int = 0; i < byte.length;i+=4 ) {
 				var a:uint = byte[i];
 				var r:uint = byte[i+1];
@@ -90,10 +91,10 @@ package
 				byte[i + 3] = b
 			}
 			byte.position = 0;
-			bmd.setPixels(bmd.rect, byte);
-			
+			bmd.setPixels(bmd.rect, byte);*/
 			var texture:TextureSet=new TextureSet(bmd);
 			//material.color = Vector.<Number>([.6, .6, .6, 1]);
+			material = new Material;
 			material.normalMapAble = false;
 			material.diffTexture = texture;
 			material.terrainTextureSets = [getTerrainTexture(c0), getTerrainTexture(c1), getTerrainTexture(c2), getTerrainTexture(c3)];
@@ -106,7 +107,7 @@ package
 			
 			bmd = new BitmapData(128, 128);
 			bmd.perlinNoise(30,30,5,1000*Math.random(),true,true)
-			terrain.drawable = Meshs.terrain(128,new Vector3D(350,350,350),bmd);
+			terrain.drawable = Meshs.terrain(128, new Vector3D(350, 350, 350), bmd);
 			view.scene.addChild(terrain);
 			terrain.picking = new TerrainPicking(terrain);
 			
@@ -130,17 +131,23 @@ package
 			//p.scenes[0].setRotation( -90, 0, 0);// -Math.PI / 2 ;
 			//p.root.rotationY = 0;// -Math.PI;
 			view.scene.addChild(player);
-			addNode(30);
+			addNode(100);
 		}
 		
 		private function addNode(num:int):void {
 			while(num-->0){
 				var d:int = 3;
-				var clone:Node3D = player.clone(true);
+				/*var clone:Node3D = player.clone(true);
 				players.push(clone);
 				
 				changeMaterial(clone);
-				(new Node3D).addChild(clone);
+				(new Node3D).addChild(clone);*/
+				var clone:Node3D = player.clone(false);
+				players.push(clone);
+				
+				//changeMaterial(clone);
+				//(new Node3D).addChild(clone);
+				view.scene.addChild(clone);
 			}
 		}
 		
@@ -159,9 +166,14 @@ package
 				var pix:Vector3D = new Vector3D;
 				view.camera.computePickRayDirectionMouse(mouseX, mouseY, stage.stageWidth, stage.stageHeight, rayOrigin, rayDirection);
 				
+				var c:int = 1;
+				var t:int = getTimer();
+				while(c-->0){
 				if (terrain.rayMeshTest(rayOrigin, rayDirection, pix)) {
 //					te.draw(pix.x/350+.5, pix.z/350+.5);
 				}
+				}
+				//trace(getTimer()-t);
 			}
 		}
 		
@@ -199,6 +211,9 @@ package
 		
 		override public function enterFrame(e:Event):void
 		{
+			if (skybox){
+				skybox.rotationY+=.02;
+			}
 			if (isClick) {
 				doClick();
 				isClick = false;

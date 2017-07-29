@@ -128,7 +128,7 @@ package gl3d.shaders
 				if (!material.isDistanceField) {
 					if (material.border){
 						var buv:Var = vs.uvVarying;
-						var borderWidth:int = 2;
+						var borderWidth:int = 1;
 						var zeroone:Var=mov([0, borderWidth])
 						var borderOffsets:Var = div(zeroone.xxyy, uniformTextureSize().xyxy);
 						var negBorderOffsets:Var=neg(borderOffsets)
@@ -147,7 +147,7 @@ package gl3d.shaders
 						//软边
 						mix(diffmap.xyzw,[1,0,0,1],mul(sub(1,diffmap.w),isBorder.w/*mul(slt(diffColor.w,.8),sge(isBorder.w,.8))*/),diffmap.xyzw);
 						//硬边 如果当前透明度小于一个值 并且 周围像素最大值大于一个值(证明边上有像素)
-						//mix(diffColor.xyzw,[1,0,0,1],mul(slt(diffColor.w,.8),sge(isBorder.w,.8)),diffColor.xyzw);
+						//mix(diffmap.xyzw,[1,0,0,1],mul(slt(diffmap.w,.8),sge(isBorder.w,.8)),diffmap.xyzw);
 					}
 					
 					diffColor = mul(diffmap, this.diffColor);

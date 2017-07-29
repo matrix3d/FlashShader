@@ -93,10 +93,11 @@ package
 				//console.textfield = debug;
 			}
 			view = new View3D(0);
+			//view.scene.scissorRectangle = new Rectangle(100, 100, 400, 400);
 			//view.renderer.visible = false;
 			//view.visible = false;
 			view.antiAlias = 2;
-			view.enableErrorChecking = true;
+			//view.enableErrorChecking = true;
 			//view.renderer.agalVersion = 1;
 			addChild(view);
 			view.camera.z = -10;
@@ -130,30 +131,34 @@ package
 			bmd.perlinNoise(30, 30, 2, 1, true, true);
 			
 			//atf
-			//[Embed(source = "assets/leaf_apple.atf", mimeType = "application/octet-stream")]var leafc:Class;
-			//[Embed(source = "assets/new_leaf.atf", mimeType = "application/octet-stream")]var leafc:Class;
+			//[Embed(source = "assets/leaf.atf", mimeType = "application/octet-stream")]var texc:Class;
+			//[Embed(source = "idle.atf", mimeType = "application/octet-stream")]var texc:Class;
 			//texture = new TextureSet((new texc as ByteArray),false,false,false,false);
 			
 			
 			//[Embed(source = "assets/leaf.png")]var leafp:Class;
-			texture = new TextureSet(bmd,false,false, false, false, false);
+			//texture = new TextureSet((new leafp as Bitmap).bitmapData,false,false, false, false, false);
 			
-			var camera:Camera = Camera.getCamera();
+			/*var camera:Camera = Camera.getCamera();
 			if (Context3D.supportsVideoTexture&& camera){
-				//texture = new TextureSet(camera);
-			}
+				texture = new TextureSet(camera);
+			}*/
 			//texture = new TextureSet(bmd);
-			material.culling =  Context3DTriangleFace.NONE;
+			//material.culling =  Context3DTriangleFace.NONE;
 			//material.blendModel = BlendMode.ADD;
 			material.normalMapAble = false;
-			material.color.setTo(1, 0, 1);
+			material.color.setTo(1, 1, 1);
+			//material.alpha = .5;
+			material.blendMode = BlendMode.LAYER;
+			material.culling = Context3DTriangleFace.NONE;
 			material.ambient.setTo(.5, .5, .5);
 			material.specularPower = 10;
 			material.specularAble = true;
-			material.lightAble = false;
+			material.lightAble = true;
 			material.wireframeAble = false;
 			material.toonAble = false;
-			material.alphaThreshold = .7;
+			material.alphaThreshold = .1;
+			material.blurSize = 2;
 			material.diffTexture = texture;
 			if (material.normalMapAble) {
 				material.normalmapTexture= normalMapTexture;
@@ -210,18 +215,27 @@ package
 			m.specularPower = 10;
 			m.color.setTo(.5,.5,.5);
 			m.culling = Context3DTriangleFace.BACK;
-			skybox.drawable = Meshs.cube(2000,2000,2000);
+			skybox.drawable = Meshs.cube(500,500,500);
 			view.scene.addChild(skybox);
 		}
 		
 		public function initNode():void {
-			//addSky();
+			addSky();
 			teapot = new Node3D;
+			//teapot.lifeTimeRange.x = 1000;
 			teapot.material = material;
 			teapot.drawable = Teapot.teapot();
-			//Meshs.unpack(Meshs.sphere(5,5));
 			view.scene.addChild(teapot);
-			teapot.scaleX = teapot.scaleY = teapot.scaleZ = 1;
+			//teapot.scaleX = teapot.scaleY = teapot.scaleZ = .1;
+			for (var i:int = 0; i < 0;i++ ){
+				var t:Node3D = teapot.clone();
+				t.startTime = 1000 * Math.random();
+				//t.setRotation(360 * Math.random(), 360 * Math.random(), 360 * Math.random());
+				view.scene.addChild(t);
+				t.x+=6*(Math.random()-.5)
+				t.y+=6*(Math.random()-.5)
+				t.z+=6*(Math.random()-.5)
+			}
 			view.background = 0//xffffff;
 			teapot.picking = new AS3Picking();
 		}
@@ -234,7 +248,7 @@ package
 			view.camera.computePickRayDirectionMouse(mouseX, mouseY, stage.stageWidth, stage.stageHeight, rayOrigin, rayDirection);
 			if (teapot&&teapot.rayMeshTest(rayOrigin, rayDirection,pix)) {
 				trace("test");
-				teapot.scaleX *=-1;
+				//teapot.scaleX *=-1;
 			}
 		}
 		
@@ -250,6 +264,7 @@ package
 			fc = new FirstPersonCtrl(view.camera, stage);
 			fc.speed = speed;
 			fc.movementFunc = movementFunc;
+			//view.ctrls.push(fc);
 			
 			ac = new ArcBallCtrl(view.camera, stage);
 			view.ctrls.push(ac);
@@ -276,7 +291,7 @@ package
 				//teapot.x = Math.sin(getTimer() / 1000);
 				//teapot.y = Math.sin(getTimer() / 700);
 				//teapot.z = Math.sin(getTimer() / 400);
-				teapot.rotationY+=2;
+				//teapot.rotationY+=2;
 				//teapot.rotationX+=2;
 				//teapot.matrix.appendRotation(1, Vector3D.Y_AXIS);
 				//teapot.updateTransforms(true);

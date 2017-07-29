@@ -11,22 +11,21 @@ package gl3d.shaders
 	{
 		public var dir:Var;
 		public var pos:Var;
-		public var m:Var;
 		public var v:Var;
 		public var p:Var;
-		public var camPos:Var;
+		public var m:Var;
 		public function SkyBoxVertexShader() 
 		{
 			pos = buffPos();
-			m = uniformModel()//matrix();
-			v = uniformView()//matrix();
-			p = uniformPerspective()//matrix();
-			camPos =uniformCameraPos();
-			var wpos:Var = m44(pos, m);
-			op = m44(m44(wpos,v),p);
-			
 			dir = varying();
-			sub(wpos, camPos,dir);
+			mov(pos, dir);
+			m = uniformModel();
+			v = uniformView();
+			p = uniformPerspective();
+			var wpos:Var = mov(pos);
+			m33(m33(wpos,m,wpos.xyz), v, wpos.xyz);
+			op = m44(wpos,p);
+			
 		}
 		
 	}

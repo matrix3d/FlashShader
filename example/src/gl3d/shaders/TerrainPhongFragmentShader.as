@@ -22,13 +22,13 @@ package gl3d.shaders
 			var diffColor0:Var = tex(mul(uv,uniformTerrainScaleVar().x), samplerTerrains(0),null,flags);
 			var diffColor1:Var = tex(mul(uv,uniformTerrainScaleVar().y), samplerTerrains(1),null,flags);
 			var diffColor2:Var = tex(mul(uv,uniformTerrainScaleVar().z), samplerTerrains(2),null,flags);
-			//var diffColor3:Var = tex(scaledUV, samplerTerrains(3), null, flags);
+			var diffColor3:Var = tex(mul(uv,uniformTerrainScaleVar().w), samplerTerrains(3),null,flags);
 			var diffColor:Var=
 						add2([
-							mul(diffColor0,map.x),
-							mul(diffColor1,map.y),
-							mul(diffColor2,map.z)/*,
-							mul(diffColor3,map.w)*/
+							mul(diffColor0,sub2([1,map.x,map.y,map.z])),
+							mul(diffColor1,map.x),
+							mul(diffColor2,map.y),
+							mul(diffColor3,map.z)
 						]);
 			mov(1,diffColor.w);//diffColor.w = 1;
 			return diffColor;

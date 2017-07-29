@@ -1,7 +1,9 @@
 package gl3d.shaders 
 {
 	import as3Shader.AS3Shader;
+	import as3Shader.Var;
 	import flash.display3D.Context3DProgramType;
+	import gl3d.core.Fog;
 	import gl3d.core.Material;
 	import gl3d.core.shaders.GLAS3Shader;
 	/**
@@ -13,7 +15,18 @@ package gl3d.shaders
 		public function SkyBoxFragmentShader(material:Material,vs:SkyBoxVertexShader) 
 		{
 			super(Context3DProgramType.FRAGMENT);
-			tex(vs.dir, samplerDiff(), oc,material.diffTexture.flags);
+			var out:Var=tex(vs.dir, samplerDiff(),null,material.diffTexture.flags);
+			if (material.fogAble){
+				var fog:Fog = material.view.fog;
+				if (fog.mode != Fog.FOG_NONE) {
+					var d:Var = vs.dir.y;
+					var low:Number = 0;
+					var up:Number =30;
+					var f:Var = sat(div(sub(d , low) , sub(up , low)));
+					mix(material.view.fog.fogColor,out.xyz,f.x,out.xyz);
+				}
+			}
+			mov(out, oc);
 		}
 		
 	}

@@ -48,7 +48,7 @@ package gl3d.core.renders
 				var pfs:Vector.<String> = new <String>[Context3DProfile.BASELINE_EXTENDED,Context3DProfile.BASELINE,Context3DProfile.BASELINE_CONSTRAINED];
 				if (agalVersion == 2){
 					pfs.unshift(Context3DProfile.STANDARD_CONSTRAINED);
-					pfs.unshift(Context3DProfile.STANDARD)
+					pfs.unshift(Context3DProfile.STANDARD);
 				}
 				for (var i:int = pfs.length - 1; i >= 0;i-- ) {
 					if (pfs[i]==null) {
