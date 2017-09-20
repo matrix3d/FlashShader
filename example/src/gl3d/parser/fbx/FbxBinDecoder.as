@@ -9,7 +9,7 @@ package gl3d.parser.fbx
 	 */
 	public class FbxBinDecoder 
 	{
-		private const _BLOCK_SENTINEL_LENGTH:int = 13;
+		private var _BLOCK_SENTINEL_LENGTH:int = 13;
 		public var childs:Array;
 		public var isBin:Boolean = false;
 		public function FbxBinDecoder(byte:ByteArray) 
@@ -22,9 +22,11 @@ package gl3d.parser.fbx
 			}
 			byte.position = 23;
 			var version:int = byte.readUnsignedInt();
+			var is64bits:Boolean = version >= 7500;
+			_BLOCK_SENTINEL_LENGTH = is64bits?25:13;
 			childs = [];
 			while(true){
-				var elem:Object = read_elem(byte);
+				var elem:Object = read_elem(byte,is64bits);
 				if (elem==null) {
 					break;
 				}
@@ -73,7 +75,7 @@ package gl3d.parser.fbx
 				case "D":
 					return r.readDouble();
 				case "L":
-					return [r.readUnsignedInt(),r.readUnsignedInt()];
+					return readLong(r)//[r.readUnsignedInt(),r.readUnsignedInt()];
 				case "R":
 					var b:ByteArray = new ByteArray;
 					b.endian = Endian.LITTLE_ENDIAN;
@@ -95,17 +97,23 @@ package gl3d.parser.fbx
 			return null;
 		}
 		
-		private function read_elem(read:ByteArray):Object{
+		private function readLong(read:ByteArray):uint{
+			var l:uint= read.readUnsignedInt();
+			var h:uint = read.readUnsignedInt();
+			return l;
+		}
+		
+		private function read_elem(read:ByteArray,is64bits:Boolean):Object{
 			// [0] the offset at which this block ends
 			// [1] the number of properties in the scope
 			// [2] the length of the property list
-			var end_offset:int = read.readUnsignedInt();
+			var end_offset:int = is64bits?readLong(read):read.readUnsignedInt();
+			
 			if (end_offset == 0){
 				return null;
 			}
-
-			var prop_count:int = read.readUnsignedInt();
-			var prop_length:int = read.readUnsignedInt();
+			var prop_count:int =is64bits?readLong(read):read.readUnsignedInt();
+			var prop_length:int =is64bits?readLong(read):read.readUnsignedInt();
 
 			var elem_id:String = read_string_ubyte(read)        //# elem name of the scope/key
 			//var elem_props_type:Array = [];  //# elem property types
@@ -120,7 +128,7 @@ package gl3d.parser.fbx
 
 			if (read.position< end_offset){
 				while (read.position < (end_offset - _BLOCK_SENTINEL_LENGTH)){
-					elem_subtree.push(read_elem(read));
+					elem_subtree.push(read_elem(read,is64bits));
 				}
 				if ( read.readUTFBytes(_BLOCK_SENTINEL_LENGTH) != "") {
 					throw "failed to read nested block sentinel,expected all bytes to be 0";
