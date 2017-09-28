@@ -31,6 +31,8 @@ package
 	import gl3d.parser.a3ds.A3DSParser;
 	import gl3d.parser.dae.ColladaDecoder;
 	import gl3d.parser.fbx.FbxParser;
+	import gl3d.parser.lol.skl.LolSklParser;
+	import gl3d.parser.lol.skn.LolSknParser;
 	import gl3d.parser.md5.MD5AnimParser;
 	import gl3d.parser.md5.MD5MeshParser;
 	import gl3d.parser.mmd.MMD;
@@ -94,11 +96,14 @@ package
 			//load("../src/assets/miku.mtl");
 			//load("../src/assets/miku.obj");
 			//load("../src/assets/astroBoy_walk_Max.dae");
+			//load("a1.fbx");
 			//load("../src/assets/miku.pmx");
 			//load("../src/assets/melt.vmd");
 			//load("../src/assets/aoying.fbx");
 			//load("../src/assets/aoying gongji.FBX");
-			//load("../src/assets/cubetext.FBX");
+			//load("../src/assets/test.3ds");
+			//load("../src/assets/lol/LOLJax/Jax.skn");
+			load("../src/assets/lol/LOLJax/Jax.skl");
 			}catch(err:Error){}
 		}
 		
@@ -335,6 +340,16 @@ package
 				case "amf":
 					byte.uncompress(CompressionAlgorithm.LZMA);
 					object = byte.readObject();
+					break;
+				case "skn":
+					var sknp:LolSknParser = new LolSknParser(byte);
+					curnode = sknp.root;
+					defScale = 0.01;
+					break;
+				case "skl":
+					var sklp:LolSklParser = new LolSklParser(byte);
+					curnode = sklp.root;
+					defScale = 0.01;
 					break;
 			}
 			if (object) {
