@@ -475,7 +475,10 @@ package as3Shader {
         }
 		
 		public function mix(a:Object, b:Object, v:Object, t:Var = null):Var {
-			return add(a,mul(v, sub(b,a)),t);
+			debug("mix start");
+			var out:Var = add(a, mul(v, sub(b, a)), t);
+			debug("mix end");
+			return out;
 		}
 		
 		public function mod(a:Object, b:Object, t:Var=null):Var {
@@ -488,21 +491,26 @@ package as3Shader {
 		}
 		
 		public function vec2(a:Object, b:Object, t:Var = null):Var {
-			t = t || mov([0,0,0,0]);
-			mov(a, t.x);
+			t = t || createTempVar();
 			mov(b, t.y);
+			mov(a, t.x);
 			return t;
 		}
 		
-		public function vec3(a:Object, b:Object, c:Object,t:Var = null):Var {
-			t = vec2(a, b, t);
+		public function vec3(a:Object, b:Object, c:Object, t:Var = null):Var {
+			t = t || createTempVar();
 			mov(c, t.z);
+			mov(b, t.y);
+			mov(a, t.x);
 			return t;
 		}
 		
 		public function vec4(a:Object, b:Object,c:Object,d:Object, t:Var = null):Var {
-			t = vec3(a, b, c, t);
+			t = t || createTempVar();
 			mov(d, t.w);
+			mov(c, t.z);
+			mov(b, t.y);
+			mov(a, t.x);
 			return t;
 		}
 		
