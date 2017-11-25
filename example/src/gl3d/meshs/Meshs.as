@@ -61,38 +61,109 @@ package gl3d.meshs
 			var hh:Number = heigth / 2;
 			var hd:Number = depth / 2;
 			return createDrawable(
-				Vector.<uint>([
-					0, 1, 2, 0, 2, 3,
-					4, 6, 5, 4, 7, 6,
-					8, 10, 9, 8, 11, 10,
-					12, 13, 14, 12, 14, 15,
-					16, 17, 18, 16, 18, 19,
-					20, 22, 21, 20, 23, 22
-					]),
-				Vector.<Number>([
-					hw, hh, hd, hw, -hh, hd, -hw, -hh, hd, -hw, hh, hd,
-					hw, hh, -hd, hw, -hh, -hd, -hw, -hh, -hd, -hw, hh, -hd,
-					hw, hh, hd, hw, hh, -hd, -hw, hh, -hd, -hw, hh, hd,
-					hw, -hh, hd, hw, -hh, -hd, -hw, -hh, -hd, -hw, -hh, hd,
-					hw, hh, hd, hw, hh, -hd, hw, -hh, -hd, hw, -hh, hd,
-					-hw, hh, hd, -hw, hh, -hd, -hw, -hh, -hd, -hw, -hh, hd
-				]),
-				Vector.<Number>([
-					1, 0, 1, 1, 0, 1, 0, 0,
-					1, 0, 1, 1, 0, 1, 0, 0,
-					1, 0, 1, 1, 0, 1, 0, 0,
-					1, 0, 1, 1, 0, 1, 0, 0,
-					1, 0, 1, 1, 0, 1, 0, 0,
-					1, 0, 1, 1, 0, 1, 0, 0
-				]),
-				Vector.<Number>([
-					0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1,
-					0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1,
-					0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0,
-					0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0,
-					1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0,
-					-1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0
-				])
+				Vector.<uint>([0, 2, 1,      0, 3, 2,    // Front face
+								4, 6, 5,      4, 7, 6,    // Back face
+								8, 10, 9,     8, 11, 10,  // Top face
+								12, 14, 13,   12, 15, 14, // Bottom face
+								16, 18, 17,   16, 19, 18, // Right face
+								20, 22, 21,   20, 23, 22]  // Left face;
+								),
+				Vector.<Number>(// Front face
+            [-hw, -hh,  hd,
+             hw, -hh,  hd,
+             hw,  hh,  hd,
+            -hw,  hh,  hd,
+            // Back face
+            -hw, -hh, -hd,
+            -hw,  hh, -hd,
+             hw,  hh, -hd,
+             hw, -hh, -hd,
+            // Top face
+            -hw,  hh, -hd,
+            -hw,  hh,  hd,
+             hw,  hh,  hd,
+             hw,  hh, -hd,
+            // Bottom face
+            -hw, -hh, -hd,
+             hw, -hh, -hd,
+             hw, -hh,  hd,
+            -hw, -hh,  hd,
+            // Right face
+             hw, -hh, -hd,
+             hw,  hh, -hd,
+             hw,  hh,  hd,
+             hw, -hh,  hd,
+            // Left face
+            -hw, -hh, -hd,
+            -hw, -hh,  hd,
+            -hw,  hh,  hd,
+            -hw,  hh, -hd]),
+				Vector.<Number>([ // Front face
+            1.0, 0.0,
+            0.0, 0.0,
+            0.0, 1.0,
+            1.0, 1.0,
+            // Back face
+            0.0, 0.0,
+            0.0, 1.0,
+            1.0, 1.0,
+            1.0, 0.0,
+            // Top face
+            1.0, 1.0,
+            1.0, 0.0,
+            0.0, 0.0,
+            0.0, 1.0,
+            // Bottom face
+            0.0, 1.0,
+            1.0, 1.0,
+            1.0, 0.0,
+            0.0, 0.0,
+            // Right face
+            0.0, 0.0,
+            0.0, 1.0,
+            1.0, 1.0,
+            1.0, 0.0,
+            // Left face
+            1.0, 0.0,
+            0.0, 0.0,
+            0.0, 1.0,
+            1.0, 1.0]
+			),
+				Vector.<Number>([// Front face
+             0.0,  0.0,  1.0,
+             0.0,  0.0,  1.0,
+             0.0,  0.0,  1.0,
+             0.0,  0.0,  1.0,
+
+            // Back face
+             0.0,  0.0, -1.0,
+             0.0,  0.0, -1.0,
+             0.0,  0.0, -1.0,
+             0.0,  0.0, -1.0,
+
+            // Top face
+             0.0,  1.0,  0.0,
+             0.0,  1.0,  0.0,
+             0.0,  1.0,  0.0,
+             0.0,  1.0,  0.0,
+
+            // Bottom face
+             0.0, -1.0,  0.0,
+             0.0, -1.0,  0.0,
+             0.0, -1.0,  0.0,
+             0.0, -1.0,  0.0,
+
+            // Right face
+             1.0,  0.0,  0.0,
+             1.0,  0.0,  0.0,
+             1.0,  0.0,  0.0,
+             1.0,  0.0,  0.0,
+
+            // Left face
+            -1.0,  0.0,  0.0,
+            -1.0,  0.0,  0.0,
+            -1.0,  0.0,  0.0,
+            -1.0,  0.0,  0.0])
 			);
 		}
 		
