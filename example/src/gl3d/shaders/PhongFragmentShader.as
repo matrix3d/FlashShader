@@ -126,30 +126,6 @@ package gl3d.shaders
 			}else {
 				diffmap = tex(vs.uvVarying, diffSampler, null, material.diffTexture.flags);
 				if (!material.isDistanceField) {
-					if (material.border){
-						var buv:Var = vs.uvVarying;
-						var borderWidth:int = 1;
-						var zeroone:Var=mov([0, borderWidth])
-						var borderOffsets:Var = div(zeroone.xxyy, uniformTextureSize().xyxy);
-						var negBorderOffsets:Var=neg(borderOffsets)
-						var borderOffsetsAddUV:Var = add(borderOffsets,buv.xyxy);
-						var negborderOffsetsAddUV:Var = add(negBorderOffsets, buv.xyxy);
-						if (material.uvMuler || material.uvAdder){
-							var uvma:Var = mov(uniformUVMulAdder());
-							var maxuv:Var = add(uvma.xy,uvma.zw);
-							min(borderOffsetsAddUV, maxuv.xyxy, borderOffsetsAddUV);
-							max(negborderOffsetsAddUV, uvma.zwzw, negborderOffsetsAddUV);
-						}
-						var isBorder:Var = tex(borderOffsetsAddUV.zy, diffSampler, null, material.diffTexture.flags);
-						max(isBorder, tex(negborderOffsetsAddUV.zy, diffSampler, null, material.diffTexture.flags),isBorder);
-						max(isBorder, tex(borderOffsetsAddUV.xw, diffSampler, null, material.diffTexture.flags),isBorder);
-						max(isBorder, tex(negborderOffsetsAddUV.xw, diffSampler, null, material.diffTexture.flags),isBorder);
-						//软边
-						mix(diffmap.xyzw,[1,0,0,1],mul(sub(1,diffmap.w),isBorder.w/*mul(slt(diffColor.w,.8),sge(isBorder.w,.8))*/),diffmap.xyzw);
-						//硬边 如果当前透明度小于一个值 并且 周围像素最大值大于一个值(证明边上有像素)
-						//mix(diffmap.xyzw,[1,0,0,1],mul(slt(diffmap.w,.8),sge(isBorder.w,.8)),diffmap.xyzw);
-					}
-					
 					diffColor = mul(diffmap, this.diffColor);
 					if (material.alphaThreshold > 0) {
 						kil(sub(diffmap.w,material.alphaThreshold).x);
@@ -165,6 +141,33 @@ package gl3d.shaders
 			if (material.vertexColorAble){
 				mul(vs.colorVarying, diffColor,diffColor);
 			}
+			
+			if (material.border){
+				var buv:Var = vs.uvVarying;
+				var borderWidth:int = 1;
+				//var zeroone:Var=mov([0, borderWidth])
+				var fw:Var = fwidth(buv);
+				var borderOffsets:Var = vec4(0,0,fw.x,fw.y)//div(zeroone.xxyy, uniformTextureSize().xyxy);	//borderOffset= 0011/whwh
+				var borderOffsetsAddUV:Var = add(buv.xyxy,borderOffsets);				//borderOffsetsAddUV = borderOffset + uv.xyxy
+				var negborderOffsetsAddUV:Var = sub(buv.xyxy,borderOffsets);		//negborderOffsetsAddUV = negBorderOffsets + uv.xyxy
+				
+				if (material.uvMuler || material.uvAdder){
+					var uvma:Var = mov(uniformUVMulAdder());
+					var maxuv:Var = add(uvma.xy,uvma.zw);
+					min(borderOffsetsAddUV, maxuv.xyxy, borderOffsetsAddUV);
+					max(negborderOffsetsAddUV, uvma.zwzw, negborderOffsetsAddUV);
+				}
+				//isBorder = 周围上下左右4像素的最大值
+				var isBorder:Var = tex(borderOffsetsAddUV.zy, diffSampler, null, material.diffTexture.flags);
+				max(isBorder, tex(negborderOffsetsAddUV.zy, diffSampler, null, material.diffTexture.flags),isBorder);
+				max(isBorder, tex(borderOffsetsAddUV.xw, diffSampler, null, material.diffTexture.flags),isBorder);
+				max(isBorder, tex(negborderOffsetsAddUV.xw, diffSampler, null, material.diffTexture.flags),isBorder);
+				//软边 color = mix(texColor,borderColor,(1-tex.alpha)*isBorder.alpha);
+				diffColor = mix(diffColor,[0,0,0,1],mul(sub(1,diffmap.w),isBorder.w/*mul(slt(diffColor.w,.8),sge(isBorder.w,.8))*/),diffColor);
+				//硬边 如果当前透明度小于一个值 并且 周围像素最大值大于一个值(证明边上有像素)
+				//mix(diffmap.xyzw,[1,0,0,1],mul(slt(diffmap.w,.8),sge(isBorder.w,.8)),diffmap.xyzw);
+			}
+			
 			return material.gray?diffColor.xxxw:diffColor;
 		}
 		
