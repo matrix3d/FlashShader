@@ -471,13 +471,11 @@ package as3Shader {
             // Scale, bias and saturate x to 0..1 range
             var x2:Var = sat(div(sub(x , edge0) , sub(edge1 , edge0)));
             // Evaluate polynomial
-            return mul2([x2,x2,sub(3 , mul(2,x2))],t);
+            return mul2([x2,x2,sub(3 , add(x2,x2))],t);
         }
 		
 		public function mix(a:Object, b:Object, v:Object, t:Var = null):Var {
-			debug("mix start");
 			var out:Var = add(a, mul(v, sub(b, a)), t);
-			debug("mix end");
 			return out;
 		}
 		
@@ -492,6 +490,8 @@ package as3Shader {
 		
 		public function vec2(a:Object, b:Object, t:Var = null):Var {
 			t = t || createTempVar();
+			mov(b, t.w);
+			mov(b, t.z);
 			mov(b, t.y);
 			mov(a, t.x);
 			return t;
@@ -499,6 +499,7 @@ package as3Shader {
 		
 		public function vec3(a:Object, b:Object, c:Object, t:Var = null):Var {
 			t = t || createTempVar();
+			mov(c, t.w);
 			mov(c, t.z);
 			mov(b, t.y);
 			mov(a, t.x);
