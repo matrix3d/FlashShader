@@ -18,7 +18,7 @@ package
 	 */
 	public class TestShader extends BaseExample
 	{
-		private var cube:Node3D;
+		private var nodes:Array=[];
 		public function TestShader() 
 		{
 		}
@@ -26,44 +26,56 @@ package
 		
 		override public function initNode():void 
 		{
-			addChild(new Stats(view));
-			addSky();
-			/*var m:Matrix3D = new Matrix3D;
-			m.appendScale(100, 100, 100);
-			m.appendTranslation(100, 100, 100);
-			
-			var v:Matrix3D = new Matrix3D;
-			v.appendTranslation(0, 0, -100);
-			v.invert();
-			
-			var p:Vector3D = new Vector3D(0,0,100);
-			var mp:Vector3D = m.transformVector(p);
-			trace(mp);
-			trace(mp.subtract(new Vector3D(0,0,-100)));
-			var camera2light:Vector3D = v.transformVector(m.transformVector(p));
-			trace(camera2light);
-			
-			return*/
-			
 			view.background = 0x999999;
-			cube = new Node3D;
-			cube.drawable = 
-			//Meshs.cube();
-			Meshs.sphere(15,15,3)
-			//Teapot.teapot();
-			cube.material = new Material(new MyShader());
-			cube.material.normalMapAble = true;
+			//[Embed(source = "assets/stoneBlocksNormal.png")]
+			//[Embed(source="assets/normal.png")]
+			[Embed(source="assets/WxkHQ.jpg")]
+			var normalc:Class;
 			
-			[Embed(source = "assets/stoneBlocksNormal.png")]var normalc:Class;
+			var nt:TextureSet = new TextureSet((new normalc as Bitmap).bitmapData);
 			
-			cube.material.normalmapTexture = new TextureSet((new normalc as Bitmap).bitmapData);
+			var shapes:Array = [Teapot.teapot(), Meshs.cube(2, 2, 2), Meshs.sphere(15, 15, 1)];
+			var materials:Array = [];
+			var m:Material =new Material(new MyShader);
+			m.normalmapTexture = nt;
+			m.reflectTexture = skyBoxTexture;
+			materials.push(m);
+			m =new Material(new MyShader);
+			m.normalMapAble = true;
+			m.normalmapTexture = nt;
+			m.reflectTexture = skyBoxTexture;
+			materials.push(m);
+			m =new Material(new MyShader);
+			m.normalMapAble = true;
+			m.normalmapTexture = nt;
+			materials.push(m);
 			
-			view.scene.addChild(cube);
+			for (var i:int = 0; i < shapes.length;i++ ){
+				for (var j:int = 0; j < materials.length;j++ ){
+					
+					var node:Node3D = new Node3D;
+					view.scene.addChild(node);
+					nodes.push(node);
+					node.drawable = shapes[i];
+					node.material = materials[j];
+					node.x = 3 * (i-(shapes.length-1)/2);
+					node.y = 3 * (j - (materials.length - 1) / 2);
+					if (i==0){
+						node.y -= 1;
+						node.setScale(.7, .7, .7);
+					}
+				}
+				
+			}
+			
+			addSky();
 		}
 		
 		override public function enterFrame(e:Event):void 
 		{
-			cube.rotationY+=.3;
+			for each(var node:Node3D in nodes){
+				node.rotationY += .3;
+			}
 			//cube.rotationX+=.5;
 			super.enterFrame(e);
 		}
@@ -139,7 +151,7 @@ package
 			var normal:Var = buffNorm();
 			
 			var lightVec:Var= nrm(sub(lightPos, mpos));
-			var viewVec:Var = nrm(neg(vpos));
+			var viewVec:Var = nrm(sub(uniformCameraPos(),mpos));
 			var normalWorld:Var= nrm(m33(normal, m));
 			
 			if (material.normalMapAble){
@@ -171,21 +183,39 @@ package
 
 		override public function build():void 
 		{
+			var lightVec:Var = nrm(vs.lightVary);
+			var viewVec:Var = nrm(vs.viewVary);
 			if (material.normalMapAble){
-				var normapMap:Var = tex(mul(vs.uvVary,5), samplerNormalmap(), null, material.normalmapTexture.flags);
+				var normapMap:Var = tex(mul(vs.uvVary,1), samplerNormalmap(), null, material.normalmapTexture.flags);
 				normapMap = add(normapMap, normapMap);
 				normapMap = sub(normapMap, 1);
 				var normal:Var = nrm(normapMap);
 			}else{
-				normal = vs.normalVary;
+				normal = nrm(vs.normalVary);
 			}
 			
 			//r =2n(n.l)-l;
-			var a:Var = mul(normal, dp3(normal, vs.lightVary));
-			var reflectedLightVec:Var = sub(add(a,a), vs.lightVary);
+			var reflectedLightVec:Var = mul(normal, dp3(normal, lightVec));
+			reflectedLightVec = sub(add(reflectedLightVec,reflectedLightVec), lightVec);
 			
-			var color:Var = sat(dp3(nrm(vs.lightVary), nrm(normal)));
-			color=add(color,pow(sat(dp3(nrm(reflectedLightVec), nrm(vs.viewVary))), 100));
+			var color:Var = sat(dp3(lightVec, normal));
+			color = add(color, pow(sat(dp3(reflectedLightVec, viewVec)), 10));
+			
+			if (material.reflectTexture){
+				//http://developer.download.nvidia.com/CgTutorial/cg_tutorial_chapter07.html
+				var cosI:Var = dp3(normal, viewVec);
+				var reflectedViewVec:Var = mul(normal, cosI);
+				reflectedViewVec = sub(add(reflectedViewVec,reflectedViewVec), viewVec);
+				var reflectColor:Var = tex(reflectedViewVec, samplerReflect(), null, material.reflectTexture.flags);
+				
+				var eta:Number = 1 / 1.3;
+				var cosT2:Var = sub(1, mul(eta * eta, (sub(1,add(cosI,cosI)))));
+				var t:Var = sub(mul(sub(mul(eta,cosI),sqt(abs(cosT2))),normal),mul(eta,viewVec));
+				var refractedVec:Var = mul(t, sge(cosT2, 0));
+				var refractColor:Var = tex(refractedVec, samplerReflect(), null, material.reflectTexture.flags);
+				
+				color = mix(color,mix(reflectColor,refractColor,mix(.5,1,pow(sub(1,cosI),5))),1);				
+			}
 			mov(color,oc);
 		}
 	}

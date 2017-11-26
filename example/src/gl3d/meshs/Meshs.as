@@ -272,13 +272,13 @@ package gl3d.meshs
 		
 		public static function removeDuplicatedVertices(drawable:Drawable):void {
 			var posdata:Vector.<Number> = drawable.pos.data;
-			//var uvdata:Vector.<Number> = drawable.uv.data;
+			var uvdata:Vector.<Number> = drawable.uv.data;
 			var hashToNewVertexId:Object = { };
 			var oldVertexIdToNewVertexId:Array = [];
 			var newVertexCount:int = 0;
 			var newVertexId:uint = 0;
 			for (var i:int = 0; i < posdata.length/3;i++ ) {
-				var hash:String = posdata[i*3] + "," + posdata[i*3 + 1] + "," + posdata[i*3 + 2]/*+"," + uvdata[i*2]+"," + uvdata[i*2+1]*/;
+				var hash:String = posdata[i*3] + "," + posdata[i*3 + 1] + "," + posdata[i*3 + 2]+"," + uvdata[i*2]+"," + uvdata[i*2+1];
 				var index:Object = hashToNewVertexId[hash];
 				if (index==null) {
 					newVertexId = newVertexCount++;
@@ -287,8 +287,8 @@ package gl3d.meshs
 						posdata[newVertexId*3] = posdata[i*3];
 						posdata[newVertexId*3+1] = posdata[i*3+1];
 						posdata[newVertexId*3+2] = posdata[i*3+2];
-						//uvdata[newVertexId*2] = uvdata[i*2];
-						//uvdata[newVertexId*2+1] = uvdata[i*2+1];
+						uvdata[newVertexId*2] = uvdata[i*2];
+						uvdata[newVertexId*2+1] = uvdata[i*2+1];
 					}
 				}else {
 					newVertexId = uint(index);
@@ -296,7 +296,7 @@ package gl3d.meshs
 				oldVertexIdToNewVertexId[i] = newVertexId;
 			}
 			posdata.length = newVertexCount * 3;
-			//uvdata.length = newVertexCount * 2;
+			uvdata.length = newVertexCount * 2;
 			
 			var idata:Vector.<uint> = drawable.index.data;
 			for (i = 0; i < idata.length;i++ ) {

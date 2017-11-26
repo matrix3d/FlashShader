@@ -102,12 +102,19 @@ package
 			addChild(view);
 			view.camera.z = -10;
 			
-			[Embed(source = "assets/skybox/px.jpg")]var pxc:Class;
+			/*[Embed(source = "assets/skybox/px.jpg")]var pxc:Class;
 			[Embed(source = "assets/skybox/nx.jpg")]var nxc:Class;
 			[Embed(source = "assets/skybox/py.jpg")]var pyc:Class;
 			[Embed(source = "assets/skybox/ny.jpg")]var nyc:Class;
 			[Embed(source = "assets/skybox/pz.jpg")]var pzc:Class;
-			[Embed(source = "assets/skybox/nz.jpg")]var nzc:Class;
+			[Embed(source = "assets/skybox/nz.jpg")]var nzc:Class;*/
+			
+			[Embed(source = "assets/skybox/mp_petesoasis/petesoasis_ft.jpg")]var pxc:Class;
+			[Embed(source = "assets/skybox/mp_petesoasis/petesoasis_bk.jpg")]var nxc:Class;
+			[Embed(source = "assets/skybox/mp_petesoasis/petesoasis_up.jpg")]var pyc:Class;
+			[Embed(source = "assets/skybox/mp_petesoasis/petesoasis_dn.jpg")]var nyc:Class;
+			[Embed(source = "assets/skybox/mp_petesoasis/petesoasis_rt.jpg")]var pzc:Class;
+			[Embed(source = "assets/skybox/mp_petesoasis/petesoasis_lf.jpg")]var nzc:Class;
 			var bmds:Array = [
 			(new pxc as Bitmap).bitmapData,
 			(new nxc as Bitmap).bitmapData,
@@ -146,6 +153,10 @@ package
 			//texture = new TextureSet(bmd);
 			//material.culling =  Context3DTriangleFace.NONE;
 			//material.blendModel = BlendMode.ADD;
+			
+			[Embed(source = "assets/1234.png")]var tt:Class;
+			texture = new TextureSet((new tt as Bitmap).bitmapData);
+			
 			material.normalMapAble = false;
 			material.color.setTo(1, 1, 1);
 			//material.alpha = .5;
@@ -153,6 +164,7 @@ package
 			material.culling = Context3DTriangleFace.NONE;
 			material.ambient.setTo(.5, .5, .5);
 			material.specularPower = 10;
+			material.reflectTexture
 			material.specularAble = true;
 			material.lightAble = true;
 			material.wireframeAble = false;
@@ -163,7 +175,7 @@ package
 			if (material.normalMapAble) {
 				material.normalmapTexture= normalMapTexture;
 			}
-			//material.reflectTexture = skyBoxTexture;
+			material.reflectTexture = skyBoxTexture;
 			
 			stats = new Stats(view);
 			initLight();
@@ -210,6 +222,7 @@ package
 			skybox = new Node3D("sky");
 			var m:Material = new Material(new SkyBoxGLShader);
 			skybox.material = m;
+			m.uvMuler = [10,10,10,10];
 			m.castShadow = false;
 			m.diffTexture = skyBoxTexture
 			m.specularPower = 10;
@@ -224,7 +237,10 @@ package
 			teapot = new Node3D;
 			//teapot.lifeTimeRange.x = 1000;
 			teapot.material = material;
-			teapot.drawable = Teapot.teapot();
+			teapot.drawable = 
+			//Meshs.cube();
+			//Meshs.sphere();
+			Teapot.teapot();
 			view.scene.addChild(teapot);
 			//teapot.scaleX = teapot.scaleY = teapot.scaleZ = .1;
 			for (var i:int = 0; i < 0;i++ ){

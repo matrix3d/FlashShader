@@ -2,6 +2,7 @@ package gl3d.meshs
 {
 	import flash.geom.Vector3D;
 	import gl3d.core.Drawable;
+	import gl3d.core.DrawableSource;
 	/**
 	 * ...
 	 * @author lizhi
@@ -155,7 +156,7 @@ package gl3d.meshs
 		public static function teapot(divs:uint = 10):Drawable {
 			var indexData	: Vector.<uint>	= new Vector.<uint>();
 			var vertexData	: Vector.<Number>	= new Vector.<Number>;
-			
+			var uvData	: Vector.<Number>	= new Vector.<Number>;
 			var patch			: Vector.<Vector3D>	= new Vector.<Vector3D>(16, true);
 			var currentVertexId	: uint				= 0;
 			
@@ -164,12 +165,12 @@ package gl3d.meshs
 				for (var i : uint = 0; i < 16; ++i)
 					patch[i] = POINTS[bezierPatch[i] - 1];
 				
-				genPatchVertexData(patch, divs, vertexData);
+				genPatchVertexData(patch, divs, vertexData,uvData);
 				genPatchIndexData(currentVertexId, divs, indexData);
 				
 				currentVertexId += (divs + 1) * (divs + 1);
 			}
-			var drawable:Drawable = Meshs.createDrawable(indexData, vertexData, null,null);
+			var drawable:Drawable = Meshs.createDrawable(indexData, vertexData, uvData,null);
 			Meshs.removeDuplicatedVertices(drawable);
 			//drawable.norm = Meshs.computeNormal(drawable);
 			//drawable.uv = Meshs.computeUV(drawable);
@@ -179,7 +180,7 @@ package gl3d.meshs
 		
 		private static function genPatchVertexData(patch		: Vector.<Vector3D>, 
 								   			divs		: uint,
-											vertexData	: Vector.<Number>) : void
+											vertexData	: Vector.<Number>,uvData:Vector.<Number>) : void
 		{
 			// create 2 temporary vertex vectors and initialize them
 			var last : Vector.<Vector3D> = new Vector.<Vector3D>(divs + 1, true);
@@ -205,6 +206,8 @@ package gl3d.meshs
 					vertexData.push(last[v].x);
 					vertexData.push(last[v].z); 
 					vertexData.push(last[v].y);
+					uvData.push(u/divs);
+					uvData.push(v/divs);
 				}
 			}
 		}
