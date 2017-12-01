@@ -98,13 +98,13 @@ package gl3d.core.shaders
 			return u;
 		}
 		
-		public function uniformLightShadowCameraWorld(index:int):Var {
-			var name:String = "ulightCameraWorld"+index;
+		public function uniformLightShadowCameraVP(index:int):Var {
+			var name:String = "ulightCameraVP"+index;
 			if (getNamedVar(name)) return getNamedVar(name);
 			var u:Var = uniform();
 			setNamedVar(name, u);
 			var binder:GLBinder = new GLBinder(this, u,index);
-			binds.push([binder,binder.bindLightShadowCameraWorld]);
+			binds.push([binder,binder.bindLightShadowCameraVP]);
 			return u;
 		}
 		
