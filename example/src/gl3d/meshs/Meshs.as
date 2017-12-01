@@ -5,6 +5,7 @@ package gl3d.meshs
 	import flash.geom.Matrix;
 	import flash.geom.Vector3D;
 	import gl3d.core.Drawable;
+	import gl3d.core.DrawableSource;
 	import gl3d.core.IndexBufferSet;
 	import gl3d.core.VertexBufferSet;
 	/**
@@ -271,14 +272,27 @@ package gl3d.meshs
 		}
 		
 		public static function removeDuplicatedVertices(drawable:Drawable):void {
+			var source:DrawableSource = new DrawableSource;
+			var uvi:Array = source.uvIndex = [];
+			var posi:Array = source.index = [];
+			var pos:Array = source.pos = [];
+			var uv:Array = source.uv = [];
+			
 			var posdata:Vector.<Number> = drawable.pos.data;
 			var uvdata:Vector.<Number> = drawable.uv.data;
+			var idata:Vector.<uint> = drawable.index.data;
+			for each(var v:Number in uvdata){
+				uv.push(v);
+			}
+			for (var i:int = 0; i < idata.length;i+=3 ){
+				uvi.push([idata[i],idata[i+1],idata[i+2]]);
+			}
 			var hashToNewVertexId:Object = { };
 			var oldVertexIdToNewVertexId:Array = [];
 			var newVertexCount:int = 0;
 			var newVertexId:uint = 0;
-			for (var i:int = 0; i < posdata.length/3;i++ ) {
-				var hash:String = posdata[i*3] + "," + posdata[i*3 + 1] + "," + posdata[i*3 + 2]+"," + uvdata[i*2]+"," + uvdata[i*2+1];
+			for (i = 0; i < posdata.length/3;i++ ) {
+				var hash:String = posdata[i*3] + "," + posdata[i*3 + 1] + "," + posdata[i*3 + 2]//+"," + uvdata[i*2]+"," + uvdata[i*2+1];
 				var index:Object = hashToNewVertexId[hash];
 				if (index==null) {
 					newVertexId = newVertexCount++;
@@ -298,10 +312,20 @@ package gl3d.meshs
 			posdata.length = newVertexCount * 3;
 			uvdata.length = newVertexCount * 2;
 			
-			var idata:Vector.<uint> = drawable.index.data;
 			for (i = 0; i < idata.length;i++ ) {
 				idata[i] = oldVertexIdToNewVertexId[idata[i]];
 			}
+			
+			for each(v in posdata){
+				pos.push(v);
+			}
+			for (i = 0; i < idata.length;i+=3 ){
+				posi.push([idata[i],idata[i+1],idata[i+2]]);
+			}
+			drawable.source = source;
+			drawable.index = null;
+			drawable.pos = null;
+			drawable.uv = null;
 		}
 		
 		public static function computeUV(drawable:Drawable):VertexBufferSet {
