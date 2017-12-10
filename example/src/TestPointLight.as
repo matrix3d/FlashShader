@@ -36,7 +36,7 @@ package
 			addSky();
 			var node:Node3D = new Node3D("sphere");
 			node.material = new Material;
-			node.material.receiveShadows = false;
+			node.material.receiveShadows = true;
 			node.material.castShadow = true;
 			node.drawable = Meshs.sphere();
 			node.y =-.7;
@@ -44,7 +44,8 @@ package
 			
 			var plane:Node3D = new Node3D("plane");
 			plane.material = new Material;
-			plane.material.castShadow = false;
+			plane.material.castShadow = true;
+			plane.material.receiveShadows = true;
 			plane.drawable = Meshs.plane(30);
 			plane.setRotation(90, 0, 0);
 			plane.y = -1.5;
@@ -55,7 +56,7 @@ package
 		override protected function stage_resize(e:Event = null):void 
 		{
 			super.stage_resize(e);
-			c2d.perspective.orthoOffCenterLH( 0, stage.stageWidth, -stage.stageHeight ,0, -1000, 1000);
+			c2d.orthoOffCenterLH( 0, stage.stageWidth, -stage.stageHeight ,0, -1000, 1000);
 		}
 		
 		private var inum:int = 0;
@@ -112,8 +113,8 @@ package
 			//trace("-----------");
 			for each(var light:RotLight in lights) {
 				light.matrix.appendRotation(light.speed, light.axis);
-				light.x = light.z = 0;
-				light.y = 2.5;
+				//light.x = light.z = 0;
+				//light.y = 2.5;
 				light.updateTransforms();
 			}
 			super.enterFrame(e);
@@ -157,10 +158,10 @@ class RotLight extends Light {
 		color.setTo(Math.random(), Math.random(), Math.random());
 		material = new Material;
 		material.castShadow = true;
-		material.receiveShadows = false;
+		material.receiveShadows = true;
 		material.lightAble = true;
 		material.color.copyFrom(color);
 		drawable = Meshs.sphere();
-		scaleX = scaleY = scaleZ = .1;
+		scaleX = scaleY = scaleZ = .5;
 	}
 }
