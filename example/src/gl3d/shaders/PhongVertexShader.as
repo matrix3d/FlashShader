@@ -16,7 +16,6 @@ package gl3d.shaders
 	 */
 	public class PhongVertexShader extends GLAS3Shader
 	{
-		private var material:Material;
 		public var model:Var //= matrix();
 		public var world2local:Var //= matrix();
 		public var view:Var //= matrix();
@@ -47,10 +46,9 @@ package gl3d.shaders
 		public var reflected:Var = varying();
 		public var modelPosVarying:Var = varying();
 		public var opVarying:Var = varying();
-		public function PhongVertexShader(material:Material) 
+		public function PhongVertexShader() 
 		{
 			super(Context3DProgramType.VERTEX);
-			this.material = material;
 			
 			pos = buffPos();
 			norm = buffNorm();

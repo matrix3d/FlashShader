@@ -12,7 +12,6 @@ package gl3d.shaders.particle
 	 */
 	public class ParticleVertexShader extends GLAS3Shader
 	{
-		private var material:Material;
 		public var model:Var// = matrix();
 		public var view:Var //= matrix();
 		public var perspective:Var// = matrix();
@@ -26,9 +25,8 @@ package gl3d.shaders.particle
 		
 		public var uvVarying:Var = varying();
 		public var colorVarying:Var = varying();
-		public function ParticleVertexShader(material:Material) 
+		public function ParticleVertexShader() 
 		{
-			this.material = material;
 			pos = buffPos();
 			norm = buffNorm();
 			uv = buffUV();

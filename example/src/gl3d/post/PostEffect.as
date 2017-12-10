@@ -21,7 +21,7 @@ package gl3d.post
 		public function PostEffect(shader:GLShader=null,numTexture:int=1) 
 		{
 			this.numTexture = numTexture;
-			this.shader = shader || new PostGLShader;
+			this.shader = shader;
 			if (node==null) {
 				node = new Node3D;
 				var hw:Number = 1;

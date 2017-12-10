@@ -11,7 +11,8 @@ package gl3d.core {
 	import gl3d.core.skin.Skin;
 	import gl3d.meshs.Meshs;
 	import gl3d.core.shaders.GLShader;
-	import gl3d.shaders.PhongGLShader;
+	import gl3d.shaders.PhongFragmentShader;
+	import gl3d.shaders.PhongVertexShader;
 	/**
 	 * ...
 	 * @author lizhi
@@ -23,7 +24,7 @@ package gl3d.core {
 		private var lastNumLight:int = -1;
 		public function Material(shader:GLShader=null) 
 		{
-			this.shader = shader||new PhongGLShader();
+			this.shader = shader||new GLShader(new PhongVertexShader,new PhongFragmentShader);
 		}
 		
 		override public function draw(node:Node3D,view:View3D):void {

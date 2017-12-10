@@ -11,6 +11,7 @@ package
 	import flash.utils.getTimer;
 	import gl3d.core.Fog;
 	import gl3d.core.InstanceMaterial;
+	import gl3d.core.shaders.GLShader;
 	import gl3d.ctrl.ArcBallCtrl;
 	import gl3d.ctrl.Ctrl;
 	import gl3d.ctrl.FirstPersonCtrl;
@@ -22,6 +23,8 @@ package
 	import gl3d.parser.dae.ColladaDecoder;
 	import gl3d.parser.obj.OBJEncoder;
 	import gl3d.pick.TerrainPicking;
+	import gl3d.shaders.PhongVertexShader;
+	import gl3d.shaders.TerrainPhongFragmentShader;
 	import gl3d.shaders.TerrainPhongGLShader;
 	import gl3d.core.TextureSet;
 	/**
@@ -99,7 +102,7 @@ package
 			material.diffTexture = texture;
 			material.terrainTextureSets = [getTerrainTexture(c0), getTerrainTexture(c1), getTerrainTexture(c2), getTerrainTexture(c3)];
 //			te.setTextures(material.terrainTextureSets);
-			material.shader = new TerrainPhongGLShader();
+			material.shader = new GLShader(new PhongVertexShader,new TerrainPhongFragmentShader);
 			material.reflectTexture = null;
 			
 			terrain = new Node3D;

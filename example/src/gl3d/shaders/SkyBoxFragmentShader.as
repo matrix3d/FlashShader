@@ -12,14 +12,21 @@ package gl3d.shaders
 	 */
 	public class SkyBoxFragmentShader extends GLAS3Shader
 	{
-		public function SkyBoxFragmentShader(material:Material,vs:SkyBoxVertexShader) 
+		private var svs:SkyBoxVertexShader;
+		public function SkyBoxFragmentShader() 
 		{
 			super(Context3DProgramType.FRAGMENT);
-			var out:Var=tex(vs.dir, samplerDiff(),null,material.diffTexture.flags);
+			
+		}
+		
+		override public function build():void 
+		{
+			svs = vs as SkyBoxVertexShader;
+			var out:Var=tex(svs.dir, samplerDiff(),null,material.diffTexture.flags);
 			if (material.fogAble){
 				var fog:Fog = material.view.fog;
 				if (fog.mode != Fog.FOG_NONE) {
-					var d:Var = vs.dir.y;
+					var d:Var = svs.dir.y;
 					var low:Number = 0;
 					var up:Number =30;
 					var f:Var = sat(div(sub(d , low) , sub(up , low)));

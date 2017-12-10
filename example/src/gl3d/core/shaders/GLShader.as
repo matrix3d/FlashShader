@@ -38,8 +38,10 @@ package gl3d.core.shaders
 		public var debug:Boolean = true;
 		public static var PROGRAM_POOL:Object = { };
 		public static var LastMaterial:Material;
-		public function GLShader() 
+		public function GLShader(vs:GLAS3Shader,fs:GLAS3Shader) 
 		{
+			this.vs = vs;
+			this.fs = fs;
 			textureSets = [];
 			buffSets = [];
 		}
@@ -132,10 +134,13 @@ package gl3d.core.shaders
 		}
 		
 		public function getVertexShader(material:Material):GLAS3Shader {
+			vs.material = material;
 			return vs;
 		}
 		
 		public function getFragmentShader(material:Material):GLAS3Shader {
+			fs.material = material;
+			fs.vs = vs;
 			return fs;
 		}
 		

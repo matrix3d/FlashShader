@@ -36,16 +36,16 @@ package
 			
 			var shapes:Array = [Teapot.teapot(), Meshs.cube(2, 2, 2), Meshs.sphere(15, 15, 1)];
 			var materials:Array = [];
-			var m:Material =new Material(new MyShader);
+			var m:Material =new Material(new GLShader(new MyVertexShader,new MyFragmentShader));
 			m.normalmapTexture = nt;
 			m.reflectTexture = skyBoxTexture;
 			materials.push(m);
-			m =new Material(new MyShader);
+			m =new Material(new GLShader(new MyVertexShader,new MyFragmentShader));
 			m.normalMapAble = true;
 			m.normalmapTexture = nt;
 			m.reflectTexture = skyBoxTexture;
 			materials.push(m);
-			m =new Material(new MyShader);
+			m =new Material(new GLShader(new MyVertexShader,new MyFragmentShader));
 			m.normalMapAble = true;
 			m.normalmapTexture = nt;
 			materials.push(m);
@@ -93,39 +93,18 @@ package
 	import gl3d.core.shaders.GLShader;
 	import gl3d.shaders.PhongGLShader;
 	import gl3d.shaders.PhongVertexShader;
-	/**
-	 * ...
-	 * @author lizhi
-	 */
-	class MyShader extends GLShader
-	{
-		public function MyShader() 
-		{
-		}
-		
-		override public function getFragmentShader(material:Material):GLAS3Shader {
-			return new MyFragmentShader(material,vs as MyVertexShader);
-		}
-		
-		override public function getVertexShader(material:Material):GLAS3Shader 
-		{
-			return new MyVertexShader(material);
-		}
-	}
 	
 	//光照
 	class MyVertexShader extends GLAS3Shader
 	{
-		private var material:Material;
 		public var lightVary:Var;
 		public var normalVary:Var;
 		public var viewVary:Var;
 		public var uvVary:Var;
-		public function MyVertexShader(material:Material) 
+		public function MyVertexShader() 
 		{
 			
 			super(Context3DProgramType.VERTEX);
-			this.material = material;
 		}
 
 		override public function build():void 
@@ -172,26 +151,24 @@ package
 	}
 	class MyFragmentShader extends GLAS3Shader
 	{
-		private var vs:MyVertexShader;
-		private var material:Material;
-		public function MyFragmentShader(material:Material,vs:MyVertexShader) 
+		private var mvs:MyVertexShader;
+		public function MyFragmentShader() 
 		{
 			super(Context3DProgramType.FRAGMENT);
-			this.material = material;
-			this.vs = vs;
 		}
 
 		override public function build():void 
 		{
-			var lightVec:Var = nrm(vs.lightVary);
-			var viewVec:Var = nrm(vs.viewVary);
+			mvs = vs as MyVertexShader;
+			var lightVec:Var = nrm(mvs.lightVary);
+			var viewVec:Var = nrm(mvs.viewVary);
 			if (material.normalMapAble){
-				var normapMap:Var = tex(mul(vs.uvVary,1), samplerNormalmap(), null, material.normalmapTexture.flags);
+				var normapMap:Var = tex(mul(mvs.uvVary,1), samplerNormalmap(), null, material.normalmapTexture.flags);
 				normapMap = add(normapMap, normapMap);
 				normapMap = sub(normapMap, 1);
 				var normal:Var = nrm(normapMap);
 			}else{
-				normal = nrm(vs.normalVary);
+				normal = nrm(mvs.normalVary);
 			}
 			
 			//r =2n(n.l)-l;
@@ -214,7 +191,10 @@ package
 				var refractedVec:Var = mul(t, sge(cosT2, 0));
 				var refractColor:Var = tex(refractedVec, samplerReflect(), null, material.reflectTexture.flags);
 				
-				color = mix(color,mix(reflectColor,refractColor,mix(.5,1,pow(sub(1,cosI),5))),1);				
+				//reflectColor = mov([1, 0, 0, 1]);
+				//refractColor = mov([1, 1, 1, 1]);
+				
+				color = mix(color,mix(refractColor,reflectColor,mix(.3,1,pow(sub(1,cosI),5))),1);				
 			}
 			mov(color,oc);
 		}

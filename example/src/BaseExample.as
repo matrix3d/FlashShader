@@ -26,6 +26,8 @@ package
 	import flash.utils.getTimer;
 	import gl3d.core.Fog;
 	import gl3d.core.Light;
+	import gl3d.core.shaders.GLAS3Shader;
+	import gl3d.core.shaders.GLShader;
 	import gl3d.ctrl.ArcBallCtrl;
 	import gl3d.ctrl.FirstPersonCtrl;
 	import gl3d.core.Material;
@@ -38,13 +40,17 @@ package
 	import gl3d.core.Node3D;
 	import gl3d.pick.AS3Picking;
 	import gl3d.post.PostEffect;
+	import gl3d.shaders.SkyBoxFragmentShader;
+	import gl3d.shaders.SkyBoxVertexShader;
 	import gl3d.shaders.posts.AsciiArtShader;
 	import gl3d.shaders.posts.FlowerShader;
 	import gl3d.shaders.posts.FxaaShader;
 	import gl3d.shaders.posts.HdrShader;
 	import gl3d.shaders.posts.HeartShader;
+	import gl3d.shaders.posts.PostFragmentShader;
 	import gl3d.shaders.posts.PostGLShader;
 	import gl3d.shaders.posts.BlurShader;
+	import gl3d.shaders.posts.PostVertexShader;
 	import gl3d.shaders.posts.PulseShader;
 	import gl3d.shaders.posts.RedScreenShader;
 	import gl3d.shaders.posts.ShapeShader;
@@ -52,7 +58,6 @@ package
 	import gl3d.shaders.posts.TileableWaterCausticShader;
 	import gl3d.core.TextureSet;
 	import gl3d.core.View3D;
-	import gl3d.shaders.SkyBoxGLShader;
 	import gl3d.util.Stats;
 	import gl3d.util.Utils;
 	import ui.Gamepad;
@@ -220,7 +225,7 @@ package
 		public function addSky():void {
 			//skybox
 			skybox = new Node3D("sky");
-			var m:Material = new Material(new SkyBoxGLShader);
+			var m:Material = new Material(new GLShader(new SkyBoxVertexShader,new SkyBoxFragmentShader));
 			skybox.material = m;
 			m.uvMuler = [10,10,10,10];
 			m.castShadow = false;
@@ -351,45 +356,45 @@ package
 			switch(txt) {
 				case "blur":
 					var blurSize:Number = 2;
-					view.posts.push(new PostEffect(new PostGLShader(null,new BlurShader(blurSize))));
-					view.posts.push(new PostEffect(new PostGLShader(null,new BlurShader(blurSize,false))));
+					view.posts.push(new PostEffect(new GLShader(new PostVertexShader,new BlurShader(blurSize))));
+					view.posts.push(new PostEffect(new GLShader(new PostVertexShader,new BlurShader(blurSize,false))));
 					break;
 				case "fxaa":
-					view.posts.push(new PostEffect(new PostGLShader(null,new FxaaShader)));
+					view.posts.push(new PostEffect(new GLShader(new PostVertexShader,new FxaaShader)));
 					break;
 				case "fxaa2x":
-					view.posts.push(new PostEffect(new PostGLShader(null,new FxaaShader)));
-					view.posts.push(new PostEffect(new PostGLShader(null,new FxaaShader)));
+					view.posts.push(new PostEffect(new GLShader(new PostVertexShader,new FxaaShader)));
+					view.posts.push(new PostEffect(new GLShader(new PostVertexShader,new FxaaShader)));
 					break;
 				case "water":
-					view.posts.push(new PostEffect(new PostGLShader(null, new TileableWaterCausticShader), 0));
+					view.posts.push(new PostEffect(new GLShader(new PostVertexShader, new TileableWaterCausticShader), 0));
 					break;
 				case "bend":
-					view.posts.push(new PostEffect(new PostGLShader(null, new PulseShader)));
+					view.posts.push(new PostEffect(new GLShader(new PostVertexShader, new PulseShader)));
 					break;
 				case "heart":
-					view.posts.push(new PostEffect(new PostGLShader(null, new HeartShader),0));
+					view.posts.push(new PostEffect(new GLShader(new PostVertexShader, new HeartShader),0));
 					break;
 				case "flower":
-					view.posts.push(new PostEffect(new PostGLShader(null, new FlowerShader),0));
+					view.posts.push(new PostEffect(new GLShader(new PostVertexShader, new FlowerShader),0));
 					break;
 				case "sinwater":
-					view.posts.push(new PostEffect(new PostGLShader(null, new SinWaterShader)));
+					view.posts.push(new PostEffect(new GLShader(new PostVertexShader, new SinWaterShader)));
 					break
 				case "hdr":
-					view.posts.push(new PostEffect(new PostGLShader(null, new HdrShader)));
+					view.posts.push(new PostEffect(new GLShader(new PostVertexShader, new HdrShader)));
 					break;
 				case "shape":
-					view.posts.push(new PostEffect(new PostGLShader(null, new ShapeShader), 0));
+					view.posts.push(new PostEffect(new GLShader(new PostVertexShader, new ShapeShader), 0));
 					break;
 				case "asciiart":
-					view.posts.push(new PostEffect(new PostGLShader(null, new AsciiArtShader)));
+					view.posts.push(new PostEffect(new GLShader(new PostVertexShader, new AsciiArtShader)));
 					break;
 				case "red":
-					view.posts.push(new PostEffect(new PostGLShader(null, new RedScreenShader),0));
+					view.posts.push(new PostEffect(new GLShader(new PostVertexShader, new RedScreenShader),0));
 					break;
 				case "def":
-					view.posts.push(new PostEffect(new PostGLShader()));
+					view.posts.push(new PostEffect(new GLShader(new PostVertexShader,new PostFragmentShader)));
 			}
 		}
 	}

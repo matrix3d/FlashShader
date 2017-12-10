@@ -15,11 +15,9 @@ package gl3d.shaders
 	 */
 	public class PhongFragmentShader extends GLAS3Shader
 	{
-		public var material:Material;
 		private var e:Var;
 		private var n:Var;
 		private var diffmap:Var;
-		public var vs:PhongVertexShader;
 		public var wireframeColor:Var //uniform();
 		public var diffColor:Var //= uniform();
 		//public var lightColor:Var //= //uniform();
@@ -29,11 +27,10 @@ package gl3d.shaders
 		public var diffSampler:Var// = sampler();
 		public var normalmapSampler:Var// = sampler();
 		public var reflectSampler:Var// = sampler();
-		public function PhongFragmentShader(material:Material,vs:PhongVertexShader) 
+		private var pvs:PhongVertexShader ;
+		public function PhongFragmentShader() 
 		{
 			super(Context3DProgramType.FRAGMENT);
-			this.vs = vs;
-			this.material = material;
 			diffSampler = samplerDiff();
 			normalmapSampler = samplerNormalmap();
 			reflectSampler = samplerReflect();
@@ -44,9 +41,10 @@ package gl3d.shaders
 		}
 		
 		override public function build():void {
+			pvs = vs as PhongVertexShader;
 			if(!material.writeDepth){
 				if (material.wireframeAble) {
-					var tp:Var = mov(vs.targetPositionVarying);
+					var tp:Var = mov(pvs.targetPositionVarying);
 					var a3:Var = smoothstep(0, fwidth(tp), tp);
 					var wireframeColor:Var = mul(sub( 1 , min(min(a3.x, a3.y), a3.z).xxx ) , this.wireframeColor);
 				}
@@ -68,7 +66,7 @@ package gl3d.shaders
 						}
 						if (light.shadowMapEnabled && material.receiveShadows) {
 							debug("shadowstart");
-							var shadowLightPos:Var = vs.shadowLightPoss[i];
+							var shadowLightPos:Var = pvs.shadowLightPoss[i];
 							var shadowLightXY:Var = add(mul(div(shadowLightPos.xy, shadowLightPos.w), [.5, -.5]), .5);
 							var shadowLightDepth:Var = tex(shadowLightXY, samplerShadowmaps(i));
 							var curDepth:Var = div(shadowLightPos.z, shadowLightPos.w);
@@ -96,13 +94,13 @@ package gl3d.shaders
 					}
 				}
 				if (material.reflectTexture) {
-					var refc:Var = tex(vs.reflected, reflectSampler, null,material.reflectTexture.flags);
+					var refc:Var = tex(pvs.reflected, reflectSampler, null,material.reflectTexture.flags);
 					mul(diffColor.xyz,refc.xyz,diffColor.xyz);
 				}
 				if(material.fogAble){
 					var fog:Fog = material.view.fog;
 					if (fog.mode != Fog.FOG_NONE) {
-						var d:Var = distance(uniformCameraPos(), vs.modelPosVarying, 3);
+						var d:Var = distance(uniformCameraPos(), pvs.modelPosVarying, 3);
 						if (fog.mode == Fog.FOG_EXP) {
 							var f:Var = rcp(exp(mul(d, fog.density)));
 						}else if (fog.mode==Fog.FOG_EXP2) {
@@ -116,7 +114,7 @@ package gl3d.shaders
 				}
 				oc = diffColor;
 			}else {
-				oc = div(vs.opVarying.z,vs.opVarying.w);
+				oc = div(pvs.opVarying.z,pvs.opVarying.w);
 			}
 		}
 		
@@ -124,7 +122,7 @@ package gl3d.shaders
 			if (material.diffTexture==null) {
 				var diffColor:Var = mov(this.diffColor);
 			}else {
-				diffmap = tex(vs.uvVarying, diffSampler, null, material.diffTexture.flags);
+				diffmap = tex(pvs.uvVarying, diffSampler, null, material.diffTexture.flags);
 				if (!material.isDistanceField) {
 					diffColor = mul(diffmap, this.diffColor);
 					if (material.alphaThreshold > 0) {
@@ -139,11 +137,11 @@ package gl3d.shaders
 				}
 			}
 			if (material.vertexColorAble){
-				mul(vs.colorVarying, diffColor,diffColor);
+				mul(pvs.colorVarying, diffColor,diffColor);
 			}
 			
 			if (material.border){
-				var buv:Var = vs.uvVarying;
+				var buv:Var = pvs.uvVarying;
 				var borderWidth:int = 1;
 				//var zeroone:Var=mov([0, borderWidth])
 				var fw:Var = fwidth(buv);
@@ -184,14 +182,14 @@ package gl3d.shaders
 			var lightPower:Var =lightColor.w;
 			var specularPow:Var = specular.x;
 			
-			var normal:Var = vs.normVarying;
+			var normal:Var = pvs.normVarying;
 			if (material.normalMapAble) {
-				var tangent:Var = vs.tangentVarying;
+				var tangent:Var = pvs.tangentVarying;
 				var biTangent:Var = crs(normal, tangent);
-				var normalMap:Var = sub(mul(tex(vs.uvVarying, normalmapSampler,null,material.normalmapTexture.flags),2),1);
+				var normalMap:Var = sub(mul(tex(pvs.uvVarying, normalmapSampler,null,material.normalmapTexture.flags),2),1);
 			}
 			
-			var l:Var = vs.posLightVaryings[i];
+			var l:Var = pvs.posLightVaryings[i];
 			if (material.normalMapAble) {
 				n = normalMap;
 				l = local2tangent(tangent,biTangent,normal,l);
@@ -200,7 +198,7 @@ package gl3d.shaders
 			}
 			var cosTheta:Var = sat(dp3(n,l));
 			if(material.specularAble||material.reflectTexture){
-				e = vs.eyeDirectionVarying;
+				e = pvs.eyeDirectionVarying;
 				if (material.normalMapAble) {
 					e = local2tangent(tangent,biTangent,normal,e);
 				}
@@ -216,14 +214,14 @@ package gl3d.shaders
 		}
 		
 		public function getDistanceColor(i:int):Var {
-			var d:Var = sub(uniformLightPos(i), vs.modelPosVarying);
+			var d:Var = sub(uniformLightPos(i), pvs.modelPosVarying);
 			return sat(sub(1,div(dp3(d,d),mul(mov(uniformLightVar(i).x),uniformLightVar(i).x))));
 		}
 		
 		public function getSmoothColor(i:int):Var {
 			var factor1:Var = uniformLightVar(i).y;
 			var factor2:Var = uniformLightVar(i).z;
-			var lightToPoint:Var = sub(vs.modelPosVarying, uniformLightPos(i));
+			var lightToPoint:Var = sub(pvs.modelPosVarying, uniformLightPos(i));
 			var lightAngleCosine:Var = dp3(nrm(mov(uniformLightPos(i))), nrm(lightToPoint));
 			return sat(add(mul(factor1, lightAngleCosine), factor2));
 		}

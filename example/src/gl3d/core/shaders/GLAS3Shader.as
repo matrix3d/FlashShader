@@ -11,6 +11,8 @@ package gl3d.core.shaders
 	 */
 	public class GLAS3Shader extends AS3Shader
 	{
+		public var material:Material;
+		public var vs:GLAS3Shader;
 		public var namedVars:Object = { };
 		private var binds:Vector.<Array> = new Vector.<Array>;
 		private var fusedBind:List; 

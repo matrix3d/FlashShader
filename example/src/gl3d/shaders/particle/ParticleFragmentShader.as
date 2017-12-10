@@ -11,14 +11,10 @@ package gl3d.shaders.particle
 	 */
 	public class ParticleFragmentShader extends GLAS3Shader
 	{
-		private var material:Material;
-		private var vs:ParticleVertexShader;
 		public var diffSampler:Var //= sampler();
-		public function ParticleFragmentShader(material:Material,vs:ParticleVertexShader) 
+		public function ParticleFragmentShader() 
 		{
 			super(Context3DProgramType.FRAGMENT);
-			this.vs = vs;
-			this.material = material;
 			diffSampler = samplerDiff();
 			
 		}
