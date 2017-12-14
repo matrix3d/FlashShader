@@ -74,7 +74,7 @@ package
 		override public function enterFrame(e:Event):void 
 		{
 			for each(var node:Node3D in nodes){
-				node.rotationY += .3;
+				//node.rotationY += .3;
 			}
 			//cube.rotationX+=.5;
 			super.enterFrame(e);
@@ -84,6 +84,7 @@ package
 
 }
 
+	import adobe.utils.CustomActions;
 	import as3Shader.AS3Shader;
 	import as3Shader.Var;
 	import flash.display3D.Context3DProgramType;
@@ -94,8 +95,80 @@ package
 	import gl3d.shaders.PhongGLShader;
 	import gl3d.shaders.PhongVertexShader;
 	
-	//光照
+	//https://rendermeapangolin.wordpress.com/2015/04/27/ocean-modelisation-gerstner/
 	class MyVertexShader extends GLAS3Shader
+	{
+		public var posV:Var;
+		public function MyVertexShader() 
+		{
+			
+			super(Context3DProgramType.VERTEX);
+			
+		}
+		
+		public function hfactor(V:Var):Var
+		{
+			return mul(2 * 0.001 * 7.065 , pow(V, 2.5));
+		}
+
+		public function wfactor(V:Var):Var
+		{
+			return mul(div(9.8 , V) , Math.sqrt(2.0/3.0));
+		}
+
+		public function kfactor(V:Var):Var
+		{
+			var w:Var = wfactor(V);
+			return div(mul(w,w),9.8);
+		}
+
+		public function main():void
+		{
+			var dpos:Var = mov(buffPos());
+			mul(dpos.xyz, 10, dpos.xyz);
+			var windspeed:Var = mov(8);
+			var time:Var = div(mov(uniformTime()),1000);
+			var h:Var = hfactor(windspeed);
+			var k:Var = kfactor(windspeed);
+			var w:Var = wfactor(windspeed);
+
+			mov( mul(neg(h) , cos(sub(mul(k,dpos.x) , mul(w,time.x)))),dpos.y);    
+			add(dpos.x , mul(h , sin(sub(mul(k,dpos.x) , mul(w,time)))),dpos.x);
+		   
+			mul(dpos.xyz, 1 / 10, dpos.xyz);
+			
+			var wpos:Var = m44(dpos, uniformModel());
+			var vp:Var = m44(m44( wpos,uniformView()), uniformPerspective());
+			mov(vp, op);
+			
+			posV = varying();
+			mov(wpos, posV);
+		}
+		
+		override public function build():void 
+		{
+			main();
+		}
+	}
+	class MyFragmentShader extends GLAS3Shader
+	{
+		public function MyFragmentShader() 
+		{
+			super(Context3DProgramType.FRAGMENT);
+		}
+
+		override public function build():void 
+		{
+			var mvs:MyVertexShader = vs as MyVertexShader;
+			var dx:Var = ddx(mvs.posV);
+			var dy:Var = ddy(mvs.posV);
+			var norm:Var = add(mul(nrm(crs(dx, dy)),.5),.5);
+			oc = norm;
+		}
+	}
+	
+	//光照
+	/*class MyVertexShader extends GLAS3Shader
 	{
 		public var lightVary:Var;
 		public var normalVary:Var;
@@ -198,7 +271,7 @@ package
 			}
 			mov(color,oc);
 		}
-	}
+	}*/
 	
 	//ddx ddy 法线
 	/*class MyVertexShader extends GLAS3Shader
