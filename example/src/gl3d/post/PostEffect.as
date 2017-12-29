@@ -4,7 +4,6 @@ package gl3d.post
 	import gl3d.meshs.Meshs;
 	import gl3d.core.Node3D;
 	import gl3d.core.shaders.GLShader;
-	import gl3d.shaders.posts.PostGLShader;
 	import gl3d.core.TextureSet;
 	import gl3d.util.Utils;
 	import gl3d.core.View3D;

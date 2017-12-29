@@ -18,7 +18,6 @@ package gl3d.core.renders
 		public var collects:Vector.<Node3D> = new Vector.<Node3D>;
 		//public var lights:Vector.<Light> = new Vector.<Light>;
 		private var _visible:Boolean = true;
-		private var endScissorRectangle
 		public function Render(view:View3D) 
 		{
 			this.view = view;

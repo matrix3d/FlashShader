@@ -127,12 +127,12 @@ package
 			var dpos:Var = mov(buffPos());
 			mul(dpos.xyz, 10, dpos.xyz);
 			var windspeed:Var = mov(8);
-			var time:Var = div(mov(uniformTime()),1000);
+			var time:Var = div(mov(uniformTime()),300);
 			var h:Var = hfactor(windspeed);
 			var k:Var = kfactor(windspeed);
 			var w:Var = wfactor(windspeed);
 
-			mov( mul(neg(h) , cos(sub(mul(k,dpos.x) , mul(w,time.x)))),dpos.y);    
+			add(dpos.y, mul(neg(h) , cos(sub(mul(k,dpos.x) , mul(w,time.x)))),dpos.y);    
 			add(dpos.x , mul(h , sin(sub(mul(k,dpos.x) , mul(w,time)))),dpos.x);
 		   
 			mul(dpos.xyz, 1 / 10, dpos.xyz);

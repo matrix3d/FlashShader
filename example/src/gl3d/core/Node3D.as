@@ -132,7 +132,8 @@ package gl3d.core
 		public function setPosition(x:Number,y:Number,z:Number):void{
 			_position.setTo(x, y, z);
 			matrix.copyColumnFrom(3, _position);
-			updateTransforms();
+			updateTransforms(true);
+			dirtyMatrix = true;
 		}
 		
 		public function get x():Number
