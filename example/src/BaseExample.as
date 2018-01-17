@@ -48,7 +48,6 @@ package
 	import gl3d.shaders.posts.HdrShader;
 	import gl3d.shaders.posts.HeartShader;
 	import gl3d.shaders.posts.PostFragmentShader;
-	import gl3d.shaders.posts.PostGLShader;
 	import gl3d.shaders.posts.BlurShader;
 	import gl3d.shaders.posts.PostVertexShader;
 	import gl3d.shaders.posts.PulseShader;
@@ -107,19 +106,19 @@ package
 			addChild(view);
 			view.camera.z = -10;
 			
-			/*[Embed(source = "assets/skybox/px.jpg")]var pxc:Class;
+			[Embed(source = "assets/skybox/px.jpg")]var pxc:Class;
 			[Embed(source = "assets/skybox/nx.jpg")]var nxc:Class;
 			[Embed(source = "assets/skybox/py.jpg")]var pyc:Class;
 			[Embed(source = "assets/skybox/ny.jpg")]var nyc:Class;
 			[Embed(source = "assets/skybox/pz.jpg")]var pzc:Class;
-			[Embed(source = "assets/skybox/nz.jpg")]var nzc:Class;*/
+			[Embed(source = "assets/skybox/nz.jpg")]var nzc:Class;
 			
-			[Embed(source = "assets/skybox/mp_petesoasis/petesoasis_ft.jpg")]var pxc:Class;
+			/*[Embed(source = "assets/skybox/mp_petesoasis/petesoasis_ft.jpg")]var pxc:Class;
 			[Embed(source = "assets/skybox/mp_petesoasis/petesoasis_bk.jpg")]var nxc:Class;
 			[Embed(source = "assets/skybox/mp_petesoasis/petesoasis_up.jpg")]var pyc:Class;
 			[Embed(source = "assets/skybox/mp_petesoasis/petesoasis_dn.jpg")]var nyc:Class;
 			[Embed(source = "assets/skybox/mp_petesoasis/petesoasis_rt.jpg")]var pzc:Class;
-			[Embed(source = "assets/skybox/mp_petesoasis/petesoasis_lf.jpg")]var nzc:Class;
+			[Embed(source = "assets/skybox/mp_petesoasis/petesoasis_lf.jpg")]var nzc:Class;*/
 			var bmds:Array = [
 			(new pxc as Bitmap).bitmapData,
 			(new nxc as Bitmap).bitmapData,
@@ -159,8 +158,8 @@ package
 			//material.culling =  Context3DTriangleFace.NONE;
 			//material.blendModel = BlendMode.ADD;
 			
-			[Embed(source = "assets/1234.png")]var tt:Class;
-			texture = new TextureSet((new tt as Bitmap).bitmapData);
+//			[Embed(source = "assets/1234.png")]var tt:Class;
+	//		texture = new TextureSet((new tt as Bitmap).bitmapData);
 			
 			material.normalMapAble = false;
 			material.color.setTo(1, 1, 1);
