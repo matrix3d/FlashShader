@@ -12,7 +12,7 @@ package gl3d.core
 			
 		}
 		
-		override public function addChild(n:Node3D):void 
+		/*override public function addChild(n:Node3D):void 
 		{
 			if (n.parent)
 			{
@@ -28,7 +28,7 @@ package gl3d.core
 				children.splice(i, 1);
 				n.parent = null;
 			}
-		}
+		}*/
 		
 	}
 
