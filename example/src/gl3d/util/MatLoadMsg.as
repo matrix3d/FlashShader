@@ -10,6 +10,9 @@ package gl3d.util
 	import gl3d.core.Material;
 	import gl3d.core.MaterialBase;
 	import gl3d.core.TextureSet;
+	import gl3d.core.shaders.GLShader;
+	import gl3d.shaders.PhongFragmentShader;
+	import gl3d.shaders.PhongVertexShader;
 	/**
 	 * ...
 	 * @author lizhi
@@ -48,6 +51,7 @@ package gl3d.util
 			if(mat){
 				mat.diffTexture = new TextureSet(bmd);
 				mat.diffTexture.name = sourceURL;
+				(mat as Material).shader=new GLShader(new PhongVertexShader,new PhongFragmentShader)
 				mat.invalid = true;
 			}
 		}

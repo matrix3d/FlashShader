@@ -82,6 +82,7 @@ package gl3d.shaders
 					if (material.toonAble) {
 						phongColor = div(floor(add(.5,mul(material.toonStep, phongColor))),material.toonStep);
 					}
+					sat(phongColor.xyz, phongColor.xyz);
 					mov(diffColor.w, phongColor.w);
 					if (wireframeColor) {
 						add(wireframeColor,mul(phongColor, diffColor),diffColor);
