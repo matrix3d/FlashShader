@@ -457,9 +457,9 @@ package gl3d.parser.fbx
 		public function getParent( node : Object, nodeName : String, opt : Boolean =false):Object {
 			var p:Array = getParents(node, nodeName);
 			if( p.length > 1 )
-				throw node.getName() + " has " + p.length + " " + nodeName + " parents ";
+				trace( node.name + " has " + p.length + " " + nodeName + " parents ");
 			if( p.length == 0 && !opt )
-				throw "Missing " + node.getName() + " " + nodeName + " parent";
+				throw "Missing " + node.name + " " + nodeName + " parent";
 			return p[0];
 		}
 
