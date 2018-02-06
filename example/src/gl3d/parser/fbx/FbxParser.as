@@ -36,6 +36,7 @@ package gl3d.parser.fbx
 		public var skinNodes:Vector.<Node3D> = new Vector.<Node3D>;
 		public var converter:Converter;
 		public var animc:SkinAnimationCtrl;
+		public var globalSettings:Object;
 		public function FbxParser(data:Object,parserMesh:Boolean=true,parserAnim:Boolean=true) 
 		{
 			if (data is ByteArray) {
@@ -49,6 +50,7 @@ package gl3d.parser.fbx
 				childs = decoder.childs;
 			}
 			root = { name : "Root", props : [0, "Root", "Root"], childs :childs };
+			
 			for each(var obj:Object in root.childs) {
 				init(obj);
 			}
@@ -95,6 +97,8 @@ package gl3d.parser.fbx
 					for each(c in n.childs )
 						ids[FbxTools.getId(c)]= c;
 					break;
+				case "GlobalSettings":
+					globalSettings = n;
 				default:
 			}
 		}
@@ -496,6 +500,18 @@ package gl3d.parser.fbx
 		}
 		
 		public function loadAnimation(afbx:FbxParser) :void {
+			var timeSpanStop:Number = 46186158000;
+			if (globalSettings){
+				for each(var p:Object in FbxTools.getAll(globalSettings, "Properties70.P").concat(FbxTools.getAll(globalSettings, "Properties60.Property")) ) {
+					var name:String = String(p.props[0]);
+					switch( name) {
+					case "TimeSpanStop":
+						timeSpanStop = p.props[4];
+						break;
+					}
+				}
+			}
+			
 			var animDatas:Object = { };
 			for each(var a:Object in FbxTools.getAll(afbx.root,"Objects.AnimationStack") ){
 				var name:String = FbxTools.getName(a);
@@ -550,7 +566,8 @@ package gl3d.parser.fbx
 						}else {
 							timeValue = animDataBase.times[i];
 						}
-						var time:Number = timeValue / 46186158000;
+						var time:Number = timeValue / timeSpanStop;
+						//time = i / 30;
 						var s:Array = animDataBase.S;
 						var r:Array = animDataBase.R;
 						var t:Array = animDataBase.T;
@@ -572,9 +589,23 @@ package gl3d.parser.fbx
 						frame.time = time;
 						track.frames.push(frame);
 					}
-					anim.maxTime = anim.maxTime>time?anim.maxTime:time;
+					//track.frames.sort(sortFrameFun);
+					var maxTime:Number = 0;
+					if (track.frames.length){
+						maxTime = track.frames[track.frames.length - 1].time;
+					}
+					anim.maxTime = anim.maxTime > maxTime?anim.maxTime:maxTime;
 				}
 			}
+		}
+		
+		private function sortFrameFun(f0:TrackFrame, f1:TrackFrame):int{
+			if (f0.time<f1.time){
+				return -1;
+			}else if (f0.time>f1.time){
+				return 1;
+			}
+			return 0;
 		}
 	}
 
