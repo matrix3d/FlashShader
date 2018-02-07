@@ -1,8 +1,11 @@
 package gl3d.core
 {
+	import Vector;
 	import flash.geom.Matrix3D;
 	import flash.geom.Rectangle;
 	import flash.geom.Vector3D;
+	import flash.utils.getDefinitionByName;
+	import flash.utils.getQualifiedClassName;
 	import gl3d.core.skin.Skin;
 	import gl3d.ctrl.Ctrl;
 	import gl3d.pick.AS3Picking;
@@ -35,7 +38,6 @@ package gl3d.core
 		public var controllers:Vector.<Ctrl>;
 		public var skin:Skin;
 		public var type:String;
-		public var copyfrom:Node3D;
 		private var _scale:Vector3D = new Vector3D(1, 1, 1);
 		private var _rotation:Vector3D = new Vector3D;
 		private var _position:Vector3D = new Vector3D;
@@ -99,7 +101,7 @@ package gl3d.core
 					for each (var c:Ctrl in controllers)
 					{
 						if(c){
-							c.update(view.time);
+							c.update(view.time,this);
 						}
 					}
 				}
@@ -386,22 +388,31 @@ package gl3d.core
 			return false;
 		}
 		
-		public function clone(addRender:Boolean = false):Node3D
+		public function clone():Node3D
 		{
-			var node:Node3D = new Node3D;
-			node.copyfrom = this;
+			var clzn:String = getQualifiedClassName(this);
+			var clz:Class = getDefinitionByName(clzn) as Class;
+			var node:Node3D = new clz as Node3D;
+			//node.copyfrom = this;
 			node.drawable = drawable;
+			node.name = name;
+			node.type = type;
 			node.material = material;
 			node.matrix = matrix.clone();
-			node.skin = skin;
+			if (controllers){
+				node.controllers = new Vector.<Ctrl>;
+				for each(var c:Ctrl in controllers){
+					node.controllers.push(c.clone());
+				}
+			}
+			
+			if(skin){
+				node.skin = skin.clone();
+			}
 			for each (var child:Node3D in children)
 			{
-				if (child.type != "JOINT")
-					node.addChild(child.clone(addRender));
-			}
-			if (addRender && drawable)
-			{
-				renderChildren.push(node);
+				//if (child.type != "JOINT")
+					node.addChild(child.clone(/*addRender*/));
 			}
 			return node;
 		}

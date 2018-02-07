@@ -16,6 +16,7 @@ package
 	import flash.events.SecurityErrorEvent;
 	import flash.external.ExternalInterface;
 	import flash.geom.Matrix3D;
+	import flash.net.FileFilter;
 	import flash.net.FileReference;
 	import flash.net.URLLoader;
 	import flash.net.URLLoaderDataFormat;
@@ -103,7 +104,7 @@ package
 			//load("../src/assets/aoying gongji.FBX");
 			//load("../src/assets/test.3ds");
 			//load("../src/assets/lol/LOLJax/Jax.skn");
-			load("../src/assets/lol/LOLJax/Jax.skl");
+			//load("../src/assets/lol/LOLJax/Jax.skl");
 			}catch(err:Error){}
 		}
 		
@@ -257,7 +258,7 @@ package
 		{
 			file = new FileReference;
 			file.addEventListener(Event.SELECT, file_select);
-			file.browse();
+			file.browse([new FileFilter("*","*.*"),new FileFilter("*.fbx","*.fbx")]);
 		}
 		
 		private function file_select(e:Event):void 
@@ -375,6 +376,10 @@ package
 				node.scaleY=
 				node.scaleZ = defScale;
 				view.scene.addChild(node);
+				
+				var cnode:Node3D = curnode.clone();
+				node.addChild(cnode);
+				cnode.x = 200;
 			}
 		}
 	}

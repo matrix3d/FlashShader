@@ -1,5 +1,6 @@
 package gl3d.core.skin 
 {
+	import gl3d.core.Node3D;
 	import gl3d.ctrl.Ctrl;
 	/**
 	 * ...
@@ -18,7 +19,7 @@ package gl3d.core.skin
 			
 		}
 		
-		override public function update(time:int):void 
+		override public function update(time:int,node:Node3D):void 
 		{
 			if (anim) {
 				if(playing){
@@ -28,13 +29,21 @@ package gl3d.core.skin
 				if (isNaN(t)) {
 					t = 0;
 				}
-				anim.update(t);
+				anim.update(t,node);
 			}
 		}
 		
 		public function add(anim:SkinAnimation):void {
 			this.anim = anim;
 			anims.push(anim);
+		}
+		
+		override public function clone():Ctrl 
+		{
+			var c:SkinAnimationCtrl = new SkinAnimationCtrl;
+			c.add(anim.clone());
+			c.startTime = 1000 * Math.random();
+			return c;
 		}
 	}
 

@@ -16,6 +16,12 @@ package gl3d.core.skin
 			super(name);
 		}
 		
+		override public function clone():Node3D 
+		{
+			var c:Joint = super.clone() as Joint;
+			c.invBindMatrix.copyFrom(invBindMatrix);
+			return c;
+		}
 	}
 
 }

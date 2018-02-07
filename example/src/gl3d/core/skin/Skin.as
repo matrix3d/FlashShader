@@ -15,7 +15,9 @@ package gl3d.core.skin
 		public static var MAX_WEIGHT:int = 4;
 		public var skinFrame:SkinFrame;
 		public var maxWeight:int;
-		public var joints:Vector.<Joint> = new Vector.<Joint>;
+		public var jointNames:Vector.<String> = new Vector.<String>;
+		public var joints:Vector.<Joint>= new Vector.<Joint>;
+		public var ikNames:Vector.<String> = new Vector.<String>;
 		public var iks:Vector.<Joint> = new Vector.<Joint>;
 		public var useQuat:Boolean = true;
 		public var useHalfFloat:Boolean = false;
@@ -72,6 +74,25 @@ package gl3d.core.skin
 			news.joints = joints;
 			news.maxWeight = newMaxWeight;
 			node.skin = news;
+		}
+		
+		public function clone():Skin 
+		{
+			var skin:Skin = new Skin;
+			skin.maxWeight = maxWeight;
+			if(jointNames.length){
+				skin.jointNames = jointNames.slice();
+			}
+			
+			for each(var j:Node3D in joints){
+				skin.jointNames.push(j.name);
+			}
+			
+			skin.ikNames = ikNames.slice();
+			skin.useCpu = useCpu;
+			skin.useHalfFloat = useHalfFloat;
+			skin.useQuat = useQuat;
+			return skin;
 		}
 		
 		static private function optimize2(node:Node3D):void 

@@ -1,5 +1,6 @@
 package gl3d.ctrl 
 {
+	import gl3d.core.Node3D;
 	/**
 	 * ...
 	 * @author lizhi
@@ -12,8 +13,13 @@ package gl3d.ctrl
 			
 		}
 		
-		public function update(time:int):void {
+		public function update(time:int,node:Node3D):void {
 			
+		}
+		
+		public function clone():Ctrl 
+		{
+			return null;
 		}
 		
 	}

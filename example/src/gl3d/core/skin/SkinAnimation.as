@@ -21,6 +21,7 @@ package gl3d.core.skin
 		public var tracks:Vector.<Track> = new Vector.<Track>;
 		public var bindShapeMatrix:Matrix3D;
 		public var targets:Vector.<Node3D>;
+		public var targetNames:Vector.<String>;
 		public var maxTime:Number = 0;
 		private var q:Quaternion = new Quaternion;
 		static private var q1:Quaternion= new Quaternion;
@@ -35,7 +36,21 @@ package gl3d.core.skin
 		
 		public function clone():SkinAnimation {
 			var c:SkinAnimation = new SkinAnimation;
-			c.tracks = tracks;
+			//c.tracks = tracks;
+			//if(targetNames)
+			c.targetNames = targetNames.slice();
+			c.name = name;
+			for each(var t:Track in tracks){
+				var t2:Track = new Track;
+				t2.targetName = t.targetName;
+				for each(var f:TrackFrame in t.frames){
+					var f2:TrackFrame = new TrackFrame;
+					f2.time = f.time;
+					f2.matrix = f.matrix.clone();
+					t2.frames.push(f2);
+				}
+				c.tracks.push(t2);
+			}
 			c.bindShapeMatrix = bindShapeMatrix;
 			c.maxTime = maxTime;
 			return c;
@@ -70,9 +85,25 @@ package gl3d.core.skin
 			q4 = q4 * 2 - 1;
 			return [t4,q4];
 		}
-		public function update(t:Number):void 
+		
+		private function getChildByName(node:Node3D,name:String):Node3D{
+			if (node.name == name) return node;
+			for each(var c:Node3D in node.children){
+				var f:Node3D = getChildByName(c, name);
+				if (f){
+					return f;
+				}
+			}
+			return null;
+		}
+		
+		public function update(t:Number,node:Node3D):void 
 		{
 			for each(var track:Track in tracks) {
+				if (track.target==null){
+					track.target = getChildByName(node, track.targetName);
+				}
+				
 				var last:TrackFrame = null;
 				var f:TrackFrame = null;
 				for each(f in track.frames) {
@@ -89,12 +120,28 @@ package gl3d.core.skin
 				track.target.updateTransforms(true);
 			}
 			
+			if (targets==null&&targetNames){
+				targets = new Vector.<Node3D>;
+				for each(var tname:String in targetNames){
+					var tn:Node3D = getChildByName(node, tname);
+					if (tn){
+						targets.push(tn);
+					}
+				}
+			}
+			
 			for each(var target:Node3D in targets){
 				var world2local:Matrix3D = target.world2local;
 				if (target.skin == null) continue;
 				if (target.skin.skinFrame == null) target.skin.skinFrame = new SkinFrame;
 				target.skin.skinFrame.quaternions.length = target.skin.skinFrame.matrixs.length * (target.skin.useHalfFloat?4:8);
 				updateIK(target.skin.iks,target);
+				
+				if (target.skin.joints.length<target.skin.jointNames.length){
+					for (i = 0; i < target.skin.jointNames.length;i++ ){
+						target.skin.joints[i] = getChildByName(node, target.skin.jointNames[i]);
+					}
+				}
 				if (target.skin.skinFrame.matrixs.length == 0) {
 					var nj:int = target.skin.joints.length;
 					for (i = 0; i < nj;i++ ) {

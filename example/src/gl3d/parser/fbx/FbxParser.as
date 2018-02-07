@@ -350,6 +350,7 @@ package gl3d.parser.fbx
 							if (jid == -1) {
 								jid = skin.joints.length;
 								skin.joints.push(joint);
+								skin.jointNames.push(joint.name);
 								var transPos:Array = FbxTools.getFloats(FbxTools.get(subDef, "Transform"));
 								transPoss.push(transPos);
 							}
@@ -500,6 +501,7 @@ package gl3d.parser.fbx
 		}
 		
 		public function loadAnimation(afbx:FbxParser) :void {
+			animc = null;
 			var timeSpanStop:Number = 46186158000;
 			if (globalSettings){
 				for each(var p:Object in FbxTools.getAll(globalSettings, "Properties70.P").concat(FbxTools.getAll(globalSettings, "Properties60.Property")) ) {
@@ -514,7 +516,7 @@ package gl3d.parser.fbx
 			
 			var animDatas:Object = { };
 			for each(var a:Object in FbxTools.getAll(afbx.root,"Objects.AnimationStack") ){
-				var name:String = FbxTools.getName(a);
+				name = FbxTools.getName(a);
 				var animData:Object = { };
 				animDatas[name] = animData;
 				var	animNode:Object = afbx.getChild(a, "AnimationLayer");
@@ -555,10 +557,14 @@ package gl3d.parser.fbx
 				var anim:SkinAnimation = new SkinAnimation;
 				anim.name = name;
 				animc.add(anim);
-				anim.targets = skinNodes;
+				//anim.targets = skinNodes;
+				anim.targetNames = new Vector.<String>;
+				for each(var sn:Node3D in  skinNodes){
+					anim.targetNames.push(sn.name);
+				}
 				for each(animDataBase in animData) {
 					var track:Track = new Track;
-					track.target = animDataBase.target.obj;
+					track.targetName = animDataBase.target.obj.name;
 					anim.tracks.push(track);
 					for (var i:int = 0; i < animDataBase.times.length; i++ ) {
 						if (animDataBase.times[i] is Array) {
