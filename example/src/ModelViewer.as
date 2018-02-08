@@ -378,7 +378,7 @@ package
 				view.scene.addChild(node);
 				
 				var cnode:Node3D = curnode.clone();
-				node.addChild(cnode);
+				//node.addChild(cnode);
 				cnode.x = 200;
 			}
 		}

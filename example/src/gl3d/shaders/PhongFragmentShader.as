@@ -197,7 +197,7 @@ package gl3d.shaders
 			}else {
 				n = normal;
 			}
-			var cosTheta:Var = sat(dp3(n,l));
+			var cosTheta:Var = sat(add(mul(.5,dp3(n,l)),.5));
 			if(material.specularAble||material.reflectTexture){
 				e = pvs.eyeDirectionVarying;
 				if (material.normalMapAble) {

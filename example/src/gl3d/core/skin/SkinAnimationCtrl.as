@@ -10,7 +10,7 @@ package gl3d.core.skin
 	{
 		public var anim:SkinAnimation;
 		public var anims:Array = [];
-		public var startTime:Number = 0;
+		private var startTime:Number = 0;
 		public var time:Number = 0;
 		public var animtime:Number = 0;
 		public var playing:Boolean = true;
@@ -25,24 +25,40 @@ package gl3d.core.skin
 				if(playing){
 					this.time = time;
 				}
-				var t:Number = ((this.time-startTime) / 1000) % anim.maxTime;
-				if (isNaN(t)) {
-					t = 0;
+				if (startTime==-1){
+					startTime = time;
+				}
+				
+				var t:Number = (time-startTime) / 1000;
+				while (t > anim.maxTime){
+					startTime += anim.maxTime*1000;
+					t -= anim.maxTime;
 				}
 				anim.update(t,node);
 			}
 		}
 		
+		public function play(name:String):void{
+			startTime =-1;
+			for each(var a:SkinAnimation in anims){
+				if (a.name==name){
+					anim = a;
+					break;
+				}
+			}
+			playing = true;
+		}
+		
 		public function add(anim:SkinAnimation):void {
 			this.anim = anim;
 			anims.push(anim);
+			play(null);
 		}
 		
 		override public function clone():Ctrl 
 		{
 			var c:SkinAnimationCtrl = new SkinAnimationCtrl;
 			c.add(anim.clone());
-			c.startTime = 1000 * Math.random();
 			return c;
 		}
 	}

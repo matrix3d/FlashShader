@@ -517,6 +517,7 @@ package gl3d.parser.fbx
 			var animDatas:Object = { };
 			for each(var a:Object in FbxTools.getAll(afbx.root,"Objects.AnimationStack") ){
 				name = FbxTools.getName(a);
+				trace("animation name",name);
 				var animData:Object = { };
 				animDatas[name] = animData;
 				var	animNode:Object = afbx.getChild(a, "AnimationLayer");
