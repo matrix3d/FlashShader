@@ -29,6 +29,7 @@ package gl3d.core.skin
 		public var name:String;
 		static public var sh:Number = 5000;
 		static public var sh2:Number = sh * sh;
+		public var timeline:SkinAnimTimeLine = new SkinAnimTimeLine;
 		public function SkinAnimation() 
 		{
 			

@@ -501,7 +501,7 @@ package gl3d.parser.fbx
 		}
 		
 		public function loadAnimation(afbx:FbxParser) :void {
-			animc = null;
+			//animc = null;
 			var timeSpanStop:Number = 46186158000;
 			if (globalSettings){
 				for each(var p:Object in FbxTools.getAll(globalSettings, "Properties70.P").concat(FbxTools.getAll(globalSettings, "Properties60.Property")) ) {
@@ -549,7 +549,7 @@ package gl3d.parser.fbx
 			}
 			
 			for (name in animDatas) {
-				animData in animDatas[name];
+				animData = animDatas[name];
 				if (animc==null) {
 					rootNode.controllers = new Vector.<Ctrl>;
 					animc = new SkinAnimationCtrl;

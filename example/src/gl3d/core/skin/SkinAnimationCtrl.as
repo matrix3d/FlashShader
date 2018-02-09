@@ -26,19 +26,34 @@ package gl3d.core.skin
 					this.time = time;
 				}
 				if (startTime==-1){
-					startTime = time;
+					startTime = this.time;
 				}
 				
-				var t:Number = (time-startTime) / 1000;
-				while (t > anim.maxTime){
-					startTime += anim.maxTime*1000;
+				var t:Number = (this.time-startTime) / 1000;
+				while (playing&&t > anim.maxTime){
+					if (anim.timeline.update(t / anim.maxTime)){//如果脚本中断操作，则退出
+						this.time = startTime+anim.maxTime * 1000 * anim.timeline.exitTime;
+						anim.update(anim.timeline.exitTime*anim.maxTime,node);
+						return;
+					}
+					anim.timeline.nextloop();
+					//超过一圈
+					startTime += anim.maxTime * 1000;
 					t -= anim.maxTime;
+					if (anim.maxTime<=0){
+						break;
+					}
 				}
-				anim.update(t,node);
+				if (anim.timeline.update(t / anim.maxTime)){
+					this.time = startTime+anim.maxTime * 1000 * anim.timeline.exitTime;
+					anim.update(anim.timeline.exitTime*anim.maxTime, node);
+				}else{
+					anim.update(t, node);
+				}
 			}
 		}
 		
-		public function play(name:String):void{
+		public function play(name:String,transitionTime:int):SkinAnimation{
 			startTime =-1;
 			for each(var a:SkinAnimation in anims){
 				if (a.name==name){
@@ -47,12 +62,17 @@ package gl3d.core.skin
 				}
 			}
 			playing = true;
+			return anim;
+		}
+		
+		public function stop():void{
+			playing = false;
 		}
 		
 		public function add(anim:SkinAnimation):void {
 			this.anim = anim;
 			anims.push(anim);
-			play(null);
+			play(null,0);
 		}
 		
 		override public function clone():Ctrl 
