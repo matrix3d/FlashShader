@@ -603,9 +603,14 @@ package gl3d.parser.fbx
 					}
 					anim.maxTime = anim.maxTime > maxTime?anim.maxTime:maxTime;
 				}
+				anim.tracks.sort(sortTrackFun);
 			}
 		}
-		
+		private function sortTrackFun(t0:Track, t1:Track):int{
+			var arr:Array = [t0.targetName, t1.targetName];
+			arr.sort();
+			return t0.targetName == arr[0]?1: -1;
+		}
 		private function sortFrameFun(f0:TrackFrame, f1:TrackFrame):int{
 			if (f0.time<f1.time){
 				return -1;

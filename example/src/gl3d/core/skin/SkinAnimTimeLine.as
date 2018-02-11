@@ -1,12 +1,13 @@
 package gl3d.core.skin 
 {
+	import gl3d.core.Node3D;
 	/**
 	 * ...
 	 * @author lizhi
 	 */
 	public class SkinAnimTimeLine 
 	{
-		private static var scripts:Array = [];
+		private var scripts:Array = [];
 		public var exitTime:Number;
 		public function SkinAnimTimeLine() 
 		{
@@ -24,19 +25,25 @@ package gl3d.core.skin
 			}
 		}
 		
-		public function update(t:Number):Boolean{
+		public function update(t:Number/*,ctrl:SkinAnimationCtrl,anim:SkinAnimation,node:Node3D*/,funs:Array):void{
 			//trace("update");
 			for (var i:int = scripts.length-1; i >= 0;i-- ){
 				var s:SkinAnimFrameScript = scripts[i];
-				if (!s.exeover&&s.time<t){
+				if (!s.exeover&&s.time<=t){
 					s.exeover = true;
-					if (s.exec()){
-						exitTime = s.time;
-						return true;
-					}
+					funs.push(s);
+					
+					//*if (*//*s.exec()/*/
+						//exitTime = s.time;
+						//if(anim==ctrl.anim){
+						//	ctrl.time = ctrl.startTime+anim.maxTime * 1000 * exitTime;
+						//	anim.update(exitTime*anim.maxTime,node);
+						//}
+						//return true;
+					//}
 				}
 			}
-			return false;
+			//return false;
 		}
 		
 		public function addFrameScript(script:SkinAnimFrameScript):void{

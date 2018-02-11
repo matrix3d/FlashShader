@@ -28,9 +28,10 @@ package
 			fbx = new FbxParser(new m1);
 			fbx.loadAnimation(new FbxParser(new m2));
 			
-			fbx.animc.anims[0].name = "a1";
-			fbx.animc.anims[1].name = "a2";
-			fbx.animc.anims[2].name = "a3";
+			if(fbx.animc.anims[1].name=="mixamo.com")
+			fbx.animc.anims[1].name = "a1";
+			if(fbx.animc.anims[2].name=="mixamo.com")
+			fbx.animc.anims[2].name = "a1";
 			var node:Node3D = new Node3D;
 			node.setScale(.01, .01, .01);
 			node.addChild(fbx.rootNode);
@@ -41,20 +42,20 @@ package
 		override public function initUI():void 
 		{
 			var vbox:VBox = new VBox(this);
+			new PushButton(vbox, 0, 0, "mixamo.com", onA);
 			new PushButton(vbox, 0, 0, "a1", onA);
-			new PushButton(vbox, 0, 0, "a2", onA);
-			new PushButton(vbox, 0, 0, "a3", onA);
 		}
 		
 		private function onA(e:Event):void 
 		{
 			var name:String = (e.currentTarget as PushButton).label;
-			var anim:SkinAnimation = fbx.animc.play(name,2);
+			var anim:SkinAnimation = fbx.animc.play(name,.3);
 			anim.timeline.clear();
 			anim.timeline.addFrameScript(new SkinAnimFrameScript(1,
 				function ():void{
-					fbx.animc.stop();
-				},true
+					trace(1);
+					//fbx.animc.stop();
+				}
 			));
 		}
 	}
