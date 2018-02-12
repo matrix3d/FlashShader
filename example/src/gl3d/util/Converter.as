@@ -8,9 +8,16 @@ package gl3d.util
 	 */
 	public class Converter 
 	{
-		private var upConversion:String;
+		public static var XtoY:int = 1;
+		public static var XtoZ:int = 2;
+		public static var YtoX:int = 3;
+		public static var YtoZ:int = 4;
+		public static var ZtoX:int = 5;
+		public static var ZtoY:int = 6;
+		
+		private var upConversion:int;
 		private var sign:Vector3D;
-		public function Converter(upConversion:String,sign:Vector3D=null) 
+		public function Converter(upConversion:int,sign:Vector3D=null) 
 		{
 			this.sign = sign;
 			this.upConversion = upConversion;
@@ -26,34 +33,34 @@ package gl3d.util
 		}
 		public function fixCoords( data:Object, offset:int = 0):void {
 			switch ( upConversion ) {
-				case 'XtoY':
+				case XtoY:
 					var tmp:Number = data[offset  ];
 					data[ offset ] =  data[ offset+1 ];
 					data[ offset+1 ] = tmp;
 					break;
-				case 'XtoZ':
+				case XtoZ:
 					tmp = data[offset+ 2 ];
 					data[offset+ 2 ] = data[ offset+1 ];
 					data[offset+ 1 ] = data[ offset ];
 					data[ offset] = tmp;
 					break;
-				case 'YtoX':
+				case YtoX:
 					tmp = data[ offset ];
 					data[ offset ] = data[ offset+1 ];
 					data[ offset+1 ] =  tmp;
 					break;
-				case 'YtoZ':
+				case YtoZ:
 					tmp = data[ offset+1 ];
 					data[ offset+1 ] =  data[ offset+2 ];
 					data[ offset+2 ] = tmp;
 					break;
-				case 'ZtoX':
+				case ZtoX:
 					tmp = data[ offset ];
 					data[ offset ] = data[ offset+1 ];
 					data[ offset+1 ] = data[ offset+2 ];
 					data[ offset+2 ] = tmp;
 					break;
-				case 'ZtoY':
+				case ZtoY:
 					tmp = data[ offset+1 ];
 					data[offset+ 1 ] = data[ offset+2 ];
 					data[ offset+2 ] =  tmp;
@@ -68,58 +75,74 @@ package gl3d.util
 			}
 		}
 		
-		
+		private static var helpvec16:Vector.<Number> = new Vector.<Number>(16);
+		private static var helparr3:Array = [];
 		public function getConvertedMat4(m:Matrix3D):Matrix3D {
 			if (upConversion||sign) {
-				var data2:Vector.<Number> = new Vector.<Number>(16);
-				m.copyRawDataTo(data2, 0, true);
-				var data:Array = [];
-				for (var i:int = 0; i < 16;i++ ) {
-					data[i] = data2[i];
-				}
+				var data:Vector.<Number> = helpvec16;
+				m.copyRawDataTo(data, 0, true);
+				//var data:Array = [];
+				//for (var i:int = 0; i < 16;i++ ) {
+				//	data[i] = data2[i];
+				//}
 				
 				// First fix rotation and scale
 				// Columns first
-				var arr:Array = [ data[ 0 ], data[ 4 ], data[ 8 ] ];
+				var arr:Array = helparr3;
+				arr[0] = data[0];
+				arr[1] = data[4];
+				arr[2] = data[8];
 				fixCoords( arr);
 				data[ 0 ] = arr[ 0 ];
 				data[ 4 ] = arr[ 1 ];
 				data[ 8 ] = arr[ 2 ];
-				arr = [ data[ 1 ], data[ 5 ], data[ 9 ] ];
+				arr[0] = data[ 1 ]
+				arr[1] = data[ 5 ]
+				arr[2]=data[ 9 ];
 				fixCoords( arr);
 				data[ 1 ] = arr[ 0 ];
 				data[ 5 ] = arr[ 1 ];
 				data[ 9 ] = arr[ 2 ];
-				arr = [ data[ 2 ], data[ 6 ], data[ 10 ] ];
+				arr[0] = data[ 2 ]
+				arr[1] = data[ 6 ]
+				arr[2]=data[ 10 ];
 				fixCoords( arr);
 				data[ 2 ] = arr[ 0 ];
 				data[ 6 ] = arr[ 1 ];
 				data[ 10 ] = arr[ 2 ];
 				// Rows second
-				arr = [ data[ 0 ], data[ 1 ], data[ 2 ] ];
+				arr [0] =  data[ 0 ]
+				arr[1] = data[ 1 ]
+				arr[2]=data[ 2 ] ;
 				fixCoords( arr);
 				data[ 0 ] = arr[ 0 ];
 				data[ 1 ] = arr[ 1 ];
 				data[ 2 ] = arr[ 2 ];
-				arr = [ data[ 4 ], data[ 5 ], data[ 6 ] ];
+				arr[0] =  data[ 4 ]
+				arr[1] = data[ 5 ]
+				arr[2]=data[ 6 ] ;
 				fixCoords( arr);
 				data[ 4 ] = arr[ 0 ];
 				data[ 5 ] = arr[ 1 ];
 				data[ 6 ] = arr[ 2 ];
-				arr = [ data[ 8 ], data[ 9 ], data[ 10 ] ];
+				arr[0] =  data[ 8 ]
+				arr[1] = data[ 9 ]
+				arr[2]=data[ 10 ] ;
 				fixCoords( arr);
 				data[ 8 ] = arr[ 0 ];
 				data[ 9 ] = arr[ 1 ];
 				data[ 10 ] = arr[ 2 ];
 
 				// Now fix translation
-				arr = [ data[ 3 ], data[ 7 ], data[ 11 ] ];
+				arr[0] =  data[ 3 ]
+				arr[1] = data[ 7 ]
+				arr[2]=data[ 11 ] ;
 				fixCoords( arr);
 				data[ 3 ] = arr[ 0 ];
 				data[ 7 ] = arr[ 1 ];
 				data[ 11 ] = arr[ 2 ];
 				
-				m.copyRawDataFrom(Vector.<Number>(data), 0, true);
+				m.copyRawDataFrom(data, 0, true);
 			}
 			return m;
 		}

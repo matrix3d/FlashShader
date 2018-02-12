@@ -55,7 +55,7 @@ package gl3d.parser.fbx
 				init(obj);
 			}
 			if(parserMesh){
-				converter = new Converter(null, new Vector3D(1, 1, -1));
+				converter = new Converter(0, new Vector3D(1, 1, -1));
 				rootNode = makeObject();
 			}
 			if(parserAnim){
@@ -153,7 +153,26 @@ package gl3d.parser.fbx
 			//if ( d["GeometricTranslation"] != null ) {
 				//m.appendTranslation(d["GeometricTranslation"].x, d["GeometricTranslation"].y, d["GeometricTranslation"].z);
 			//}
-			return converter.getConvertedMat4(m);
+			return getConvertedMat4(m);
+		}
+		
+		private static var helpvec16:Vector.<Number> = new Vector.<Number>(16);
+		private function getConvertedMat4(m:Matrix3D):Matrix3D{
+			m.copyRawDataTo(helpvec16, 0, true);
+			helpvec16[8] *=-1;
+			helpvec16[9] *=-1;
+			helpvec16[2] *=-1;
+			helpvec16[6] *=-1;
+			helpvec16[11] *=-1;
+			m.copyRawDataFrom(helpvec16, 0, true);
+			return m;
+		}
+		
+		public function convertedVec3s(data:Object):Object {
+			for (var i:int = 0, len:int = data.length; i < len;i+=3 ) {
+				data[i + 2] *=-1;
+			}
+			return data;
 		}
 		
 		private function isHasJoint(o:Object):Boolean {
@@ -206,7 +225,7 @@ package gl3d.parser.fbx
 								drawable.source = new DrawableSource;
 								drawable.source.index = prim.objs[i][0];
 								if (posData==null) {
-									posData = converter.convertedVec3s(prim.vertices) as Array;
+									posData = convertedVec3s(prim.vertices) as Array;
 								}
 								drawable.source.pos = posData;
 								if (prim.objs[i][1]) {
@@ -292,7 +311,7 @@ package gl3d.parser.fbx
 					if (t) {
 						m.appendTranslation(t.x, t.y, t.z);
 					}
-					m = converter.getConvertedMat4(m);
+					m = getConvertedMat4(m);
 					for each(submesh in (o.obj as Node3D).children) {
 						submesh.matrix.copyFrom(m);
 					}
@@ -418,7 +437,7 @@ package gl3d.parser.fbx
 			for (i = 0; i < transPoss.length;i++ ) {
 				var m:Matrix3D = new Matrix3D;
 				m.copyRawDataFrom(Vector.<Number>(transPoss[i]));
-				converter.getConvertedMat4(m);
+				getConvertedMat4(m);
 				skin.joints[i].invBindMatrix.copyFrom(m);
 			}
 			

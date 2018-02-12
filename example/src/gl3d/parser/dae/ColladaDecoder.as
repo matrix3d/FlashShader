@@ -57,13 +57,13 @@ package gl3d.parser.dae
 			
 			switch (xml.asset.up_axis.text().charAt(0)) {
 				case 'X':
-					converter = new Converter("XtoY");
+					converter = new Converter(Converter.XtoY);
 					break;
 				case 'Y':
-					converter = new Converter(null);
+					converter = new Converter(0);
 					break;
 				case 'Z':
-					converter = new Converter("ZtoY");
+					converter = new Converter(Converter.ZtoY);
 					break;
 			}
 			

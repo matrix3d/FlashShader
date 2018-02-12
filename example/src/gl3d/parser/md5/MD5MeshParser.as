@@ -25,7 +25,7 @@ package gl3d.parser.md5
 		public var animc:SkinAnimationCtrl;
 		public function MD5MeshParser(txt:String) 
 		{
-			var converter:Converter=new Converter("ZtoY");
+			var converter:Converter=new Converter(Converter.ZtoY);
 			var decoder:MD5MeshDecoder = new MD5MeshDecoder(txt);
 			var jointQs:Array = [];
 			if(decoder.joints.length)

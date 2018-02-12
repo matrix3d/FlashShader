@@ -23,17 +23,21 @@ package
 		
 		override public function initNode():void 
 		{
-			[Embed(source = "assets/fbx/Standing 2H Magic Area Attack 02 (2).fbx", mimeType = "application/octet-stream")]var m2:Class;
-			[Embed(source = "assets/fbx/Dying.fbx", mimeType = "application/octet-stream")]var m1:Class;
+			[Embed(source = "assets/fbx/pearl.fbx", mimeType = "application/octet-stream")]var m1:Class;
+			[Embed(source = "assets/fbx/Walking.fbx", mimeType = "application/octet-stream")]var m2:Class;
+			[Embed(source = "assets/fbx/Mma Kick.fbx", mimeType = "application/octet-stream")]var m3:Class;
+			[Embed(source = "assets/fbx/Idle.fbx", mimeType = "application/octet-stream")]var m4:Class;
 			fbx = new FbxParser(new m1);
+			fbx.animc.anims[fbx.animc.anims.length-1].name = "TPos";
 			fbx.loadAnimation(new FbxParser(new m2));
+			fbx.animc.anims[fbx.animc.anims.length-1].name = "Walking";
+			fbx.loadAnimation(new FbxParser(new m3));
+			fbx.animc.anims[fbx.animc.anims.length-1].name = "Mma Kick";
+			fbx.loadAnimation(new FbxParser(new m4));
+			fbx.animc.anims[fbx.animc.anims.length-1].name = "Idle";
 			
-			if(fbx.animc.anims[1].name=="mixamo.com")
-			fbx.animc.anims[1].name = "a1";
-			else if(fbx.animc.anims[2].name=="mixamo.com")
-			fbx.animc.anims[2].name = "a1";
 			var node:Node3D = new Node3D;
-			node.setScale(.01, .01, .01);
+			node.setScale(.02, .02, .02);
 			node.addChild(fbx.rootNode);
 			
 			view.scene.addChild(node);
@@ -42,8 +46,11 @@ package
 		override public function initUI():void 
 		{
 			var vbox:VBox = new VBox(this);
-			new PushButton(vbox, 0, 0, "mixamo.com", onA);
-			new PushButton(vbox, 0, 0, "a1", onA);
+			vbox.scaleX = vbox.scaleY = 2;
+			new PushButton(vbox, 0, 0, "TPos", onA);
+			new PushButton(vbox, 0, 0, "Walking", onA);
+			new PushButton(vbox, 0, 0, "Mma Kick", onA);
+			new PushButton(vbox, 0, 0, "Idle", onA);
 		}
 		
 		private function onA(e:Event):void 

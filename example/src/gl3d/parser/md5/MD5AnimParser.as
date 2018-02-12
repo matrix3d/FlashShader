@@ -20,7 +20,7 @@ package gl3d.parser.md5
 		public function MD5AnimParser(txt:String,md5:MD5MeshParser) 
 		{
 			
-			var converter:Converter=new Converter("ZtoY");
+			var converter:Converter=new Converter(Converter.ZtoY);
 			var decoder:MD5AnimDecoder = new MD5AnimDecoder(txt);
 			anim = new SkinAnimation();
 			if (md5.animc==null) {
