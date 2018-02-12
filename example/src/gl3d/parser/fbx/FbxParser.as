@@ -522,7 +522,7 @@ package gl3d.parser.fbx
 		public function loadAnimation(afbx:FbxParser) :void {
 			//animc = null;
 			var timeSpanStop:Number = 46186158000;
-			if (globalSettings){
+			if (afbx.globalSettings){
 				for each(var p:Object in FbxTools.getAll(globalSettings, "Properties70.P").concat(FbxTools.getAll(globalSettings, "Properties60.Property")) ) {
 					var name:String = String(p.props[0]);
 					switch( name) {

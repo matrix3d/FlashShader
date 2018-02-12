@@ -40,7 +40,7 @@ package gl3d.parser.fbx
 			return data
 		}
 		
-		private function unpack_array(read:ByteArray, t:String):Array {
+		private function unpack_array(read:ByteArray, t:int):Array {
 			var length:int = read.readUnsignedInt();
 			var encoding:int = read.readUnsignedInt();
 			var comp_len:int = read.readUnsignedInt();
@@ -60,39 +60,39 @@ package gl3d.parser.fbx
 			return data_array;
 		}
 		
-		private function read_data_dict(r:ByteArray, t:String):Object {
+		private function read_data_dict(r:ByteArray, t:int):Object {
 			switch(t) {
-				case "Y":
+				case 89/*"Y"*/:
 					return r.readShort();
-				case "B":
+				case 66/*"B"*/:
 					return r.readByte();
-				case "C":
+				case 67/*"C"*/:
 					return r.readBoolean();
-				case "I":
+				case 73/*"I"*/:
 					return r.readInt();
-				case "F":
+				case 70/*"F"*/:
 					return r.readFloat();
-				case "D":
+				case 68/*"D"*/:
 					return r.readDouble();
-				case "L":
+				case 76/*"L"*/:
 					return readLong(r)//[r.readUnsignedInt(),r.readUnsignedInt()];
-				case "R":
+				case 82/*"R"*/:
 					var b:ByteArray = new ByteArray;
 					b.endian = Endian.LITTLE_ENDIAN;
 					var size:int = r.readUnsignedInt();
 					r.readBytes(b, 0, size);
 					b.position = 0;
 					return b;
-				case "S":
+				case 83/*"S"*/:
 					size = r.readUnsignedInt();
 					return r.readUTFBytes(size);
-				case "f":
-				case "i":
-				case "d":
-				case "l":
-				case "b":
-				case "c":
-					return unpack_array(r, t.toUpperCase());		
+				case 102/*"f"*/:
+				case 105/*"i"*/:
+				case 100/*"d"*/:
+				case 108/*"l"*/:
+				case 98/*"b"*/:
+				case 99/*"c"*/:
+					return unpack_array(r, t-32/*.toUpperCase()*/);		
 			}
 			return null;
 		}
@@ -122,8 +122,8 @@ package gl3d.parser.fbx
 			var elem_subtree:Array = [];                        //# elem children (if any)
 
 			for (var i:int = 0; i < prop_count;i++) {
-				var data_type:String = read.readUTFBytes(1);
-				elem_props_data[i] = read_data_dict(read, data_type);
+				//var data_type:String = read.readUTFBytes(1);
+				elem_props_data[i] = read_data_dict(read, read.readByte()/*data_type*/);
 				//elem_props_type[i] = data_type;
 			}
 
