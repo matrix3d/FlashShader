@@ -23,14 +23,14 @@ package
 		
 		override public function initNode():void 
 		{
-			[Embed(source = "assets/fbx/Standing 2H Magic Area Attack 02 (2).fbx", mimeType = "application/octet-stream")]var m1:Class;
-			[Embed(source = "assets/fbx/Dying.fbx", mimeType = "application/octet-stream")]var m2:Class;
+			[Embed(source = "assets/fbx/Standing 2H Magic Area Attack 02 (2).fbx", mimeType = "application/octet-stream")]var m2:Class;
+			[Embed(source = "assets/fbx/Dying.fbx", mimeType = "application/octet-stream")]var m1:Class;
 			fbx = new FbxParser(new m1);
 			fbx.loadAnimation(new FbxParser(new m2));
 			
 			if(fbx.animc.anims[1].name=="mixamo.com")
 			fbx.animc.anims[1].name = "a1";
-			if(fbx.animc.anims[2].name=="mixamo.com")
+			else if(fbx.animc.anims[2].name=="mixamo.com")
 			fbx.animc.anims[2].name = "a1";
 			var node:Node3D = new Node3D;
 			node.setScale(.01, .01, .01);

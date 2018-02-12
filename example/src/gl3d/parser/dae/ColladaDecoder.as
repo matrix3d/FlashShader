@@ -299,7 +299,6 @@ package gl3d.parser.dae
 				}
 				var part:AnimationPart = new AnimationPart;
 				var track:Track = new Track;
-				anim.tracks.push(track);
 				for each(var channelXML:XML in animXML.channel) {
 					var can:Channel = new Channel;
 					var samplerXML:XML = animXML.sampler.(@id == (channelXML.@source.substr(1)))[0];
@@ -323,6 +322,7 @@ package gl3d.parser.dae
 					}
 					if (result) {
 						track.target = id2node[result[1]];
+						anim.tracks[result[1]]=track;
 						for (var i:int = 0; i < can.input.length; i++ ) {
 							if (anim.maxTime < can.input[i]) {
 								anim.maxTime = can.input[i];

@@ -1,5 +1,6 @@
 package gl3d.core.skin 
 {
+	import flash.display.Sprite;
 	import flash.geom.Matrix3D;
 	import flash.geom.Utils3D;
 	import flash.geom.Vector3D;
@@ -18,7 +19,7 @@ package gl3d.core.skin
 	 */
 	public class SkinAnimation
 	{
-		public var tracks:Vector.<Track> = new Vector.<Track>;
+		public var tracks:Object={};//Vector.<Track> = new Vector.<Track>;
 		public var bindShapeMatrix:Matrix3D;
 		public var targets:Vector.<Node3D>;
 		public var targetNames:Vector.<String>;
@@ -50,7 +51,7 @@ package gl3d.core.skin
 					f2.matrix = f.matrix.clone();
 					t2.frames.push(f2);
 				}
-				c.tracks.push(t2);
+				c.tracks[t.targetName] = t2;// .push(t2);
 			}
 			c.bindShapeMatrix = bindShapeMatrix;
 			c.maxTime = maxTime;

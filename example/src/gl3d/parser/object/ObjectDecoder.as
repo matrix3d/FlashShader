@@ -177,8 +177,8 @@ package gl3d.parser.object
 					}
 					for each(var tobj:Object in anim.track) {
 						var track:Track = new Track;
-						nanim.tracks.push(track);
 						track.target = name2node[tobj.target];
+						nanim.tracks[tobj.target]=(track);
 						for each(var fObj:Object in tobj.frame) {
 							var f:TrackFrame = new TrackFrame;
 							track.frames.push(f);

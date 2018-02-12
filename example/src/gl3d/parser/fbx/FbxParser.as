@@ -566,7 +566,7 @@ package gl3d.parser.fbx
 				for each(animDataBase in animData) {
 					var track:Track = new Track;
 					track.targetName = animDataBase.target.obj.name;
-					anim.tracks.push(track);
+					anim.tracks[track.targetName] = track;//.push(track);
 					for (var i:int = 0; i < animDataBase.times.length; i++ ) {
 						if (animDataBase.times[i] is Array) {
 							var timeValue:Number = animDataBase.times[i][0]+0x100000000*animDataBase.times[i][1];
@@ -603,13 +603,13 @@ package gl3d.parser.fbx
 					}
 					anim.maxTime = anim.maxTime > maxTime?anim.maxTime:maxTime;
 				}
-				anim.tracks.sort(sortTrackFun);
+				//anim.tracks.sort(sortTrackFun);
 			}
 		}
 		private function sortTrackFun(t0:Track, t1:Track):int{
 			var arr:Array = [t0.targetName, t1.targetName];
 			arr.sort();
-			return t0.targetName == arr[0]?1: -1;
+			return t0.targetName == arr[0]?-1: 1;
 		}
 		private function sortFrameFun(f0:TrackFrame, f1:TrackFrame):int{
 			if (f0.time<f1.time){

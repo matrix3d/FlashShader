@@ -78,18 +78,18 @@ package gl3d.core.skin
 			playing = true;
 			
 			if (fanim){
-				if (transitionTime>0&&anim&&anim.tracks.length&&fanim.tracks.length){
+				if (transitionTime>0&&anim/*&&anim.tracks.length&&fanim.tracks.length*/){
 					if (transitionAnim==null){
 						transitionAnim = new SkinAnimation;
 						transitionAnim.name = "__transition";
 						transitionAnim.targetNames = fanim.targetNames;
-						transitionAnim.tracks = new Vector.<Track>;//fanim.tracks;
+						//transitionAnim.tracks = {};//new Vector.<Track>;//fanim.tracks;
 						transitionAnim.timeline.addFrameScript(new SkinAnimFrameScript(1,
 							function ():void{
 								play(waitAnimAfterTransition, 0);
 							}
 						));
-						for each(var t:Track in fanim.tracks){//过渡只需要2帧，先初始化放进去，等下调整时间和矩阵
+						/*for each(var t:Track in fanim.tracks){//过渡只需要2帧，先初始化放进去，等下调整时间和矩阵
 							var t2:Track = new Track;
 							t2.targetName = t.targetName;
 							var f2:TrackFrame = new TrackFrame;
@@ -101,18 +101,39 @@ package gl3d.core.skin
 							f2.time = 0;
 							f2.matrix = new Matrix3D;
 							t2.frames.push(f2);
-							transitionAnim.tracks.push(t2);
-						}
+							transitionAnim.tracks[t2.targetName] = t2;//.push(t2);
+						}*/
 					}
 					transitionAnim.timeline.nextloop();
-					for (var i:int = 0; i < transitionAnim.tracks.length;i++ ){
-						t = transitionAnim.tracks[i];
-						f2 = t.frames[0];
-						f2.matrix.copyFrom(anim.tracks[i].target.matrix);
+					for (var tname:String in fanim.tracks){
+						var t:Track = transitionAnim.tracks[tname];
+						if (t==null){
+							t = new Track;
+							t.targetName = tname;
+							var f2:TrackFrame = new TrackFrame;
+							f2.time = 0;
+							f2.matrix = new Matrix3D;
+							t.frames.push(f2);
+							
+							f2 = new TrackFrame;
+							f2.time = 0;
+							f2.matrix = new Matrix3D;
+							t.frames.push(f2);
+							transitionAnim.tracks[tname] = t;
+						}
 						
-						f2 = t.frames[1];
-						f2.matrix.copyFrom(fanim.tracks[i].frames[0].matrix);
-						f2.time = transitionTime;
+						var t2:Track = anim.tracks[tname];
+						if(t2){
+							f2 = t.frames[0];
+							f2.matrix.copyFrom(t2.target.matrix);
+						}
+						
+						t2 = fanim.tracks[tname];
+						if(t2){
+							f2 = t.frames[1];
+							f2.matrix.copyFrom(t2.frames[0].matrix);
+							f2.time = transitionTime;
+						}
 					}
 					transitionAnim.maxTime = transitionTime;
 					anim = transitionAnim;

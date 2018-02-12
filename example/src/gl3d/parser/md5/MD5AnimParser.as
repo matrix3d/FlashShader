@@ -37,10 +37,10 @@ package gl3d.parser.md5
 				for (var j:int = 0; j < decoder.jointInfos.length; j++ ) {
 					if (i == 0) {
 						var track:Track = new Track;
-						anim.tracks.push(track);
+						anim.tracks[md5.skin.joints[j]]=track;
 						track.target = md5.skin.joints[j];
 					}
-					track = anim.tracks[j];
+					track = anim.tracks[md5.skin.joints[j]];
 					var info:Array = decoder.jointInfos[j];
 					var baseframe:Array = decoder.baseFrameJoints[j];
 					q.tran.x = baseframe[0];

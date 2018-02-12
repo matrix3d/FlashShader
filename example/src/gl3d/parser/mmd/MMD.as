@@ -167,7 +167,7 @@ package gl3d.parser.mmd
 					if (track==null) {
 						track = name2track[node.name] = new Track;
 						track.target = node;
-						anim.tracks.push(track);
+						anim.tracks[node.name]=track//.tracks.push(track);
 					}
 					var frame:TrackFrame = new TrackFrame;
 					q.x = key.rot[0];
