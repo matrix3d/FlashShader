@@ -46,7 +46,8 @@ package gl3d.shaders
 				if (material.wireframeAble) {
 					var tp:Var = mov(pvs.targetPositionVarying);
 					var a3:Var = smoothstep(0, fwidth(tp), tp);
-					var wireframeColor:Var = mul(sub( 1 , min(min(a3.x, a3.y), a3.z).xxx ) , this.wireframeColor);
+					//var wireframeColor:Var = mul(sub( 1 , min(min(a3.x, a3.y), a3.z).xxx ) , this.wireframeColor);
+					var notWireframeValue:Var = min(min(a3.x, a3.y), a3.z).xxx;
 				}
 				var diffColor:Var = getDiffColor();
 				if (material.lightAble&&material.view.lights.length) {
@@ -84,16 +85,19 @@ package gl3d.shaders
 					}
 					sat(phongColor.xyz, phongColor.xyz);
 					mov(diffColor.w, phongColor.w);
-					if (wireframeColor) {
-						add(wireframeColor,mul(phongColor, diffColor),diffColor);
-					}else {
-						mul(phongColor, diffColor, diffColor);
-					}
-				}else {
+					//if (notWireframeValue) {
+					//	add(wireframeColor,mul(phongColor, diffColor),diffColor);
+					//}else {
+					mul(phongColor, diffColor, diffColor);
+					//}
+				}/*else {
 					if (wireframeColor) {
 						add(diffColor, wireframeColor, diffColor);
 					}
-				}
+				}*/
+					if (material.wireframeAble){
+						add(mul(notWireframeValue,diffColor),mul(sub(1,notWireframeValue),wireframeColor),diffColor);
+					}
 				if (material.reflectTexture) {
 					var refc:Var = tex(pvs.reflected, reflectSampler, null,material.reflectTexture.flags);
 					mul(diffColor.xyz,refc.xyz,diffColor.xyz);

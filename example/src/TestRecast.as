@@ -16,13 +16,12 @@ package
 	import org.recast4j.detour.FindNearestPolyResult;
 	import org.recast4j.detour.FindPathResult;
 	import org.recast4j.detour.MeshTile;
+	import org.recast4j.detour.NavMeshQuery;
 	import org.recast4j.detour.QueryFilter;
 	import org.recast4j.detour.StraightPathItem;
 	import org.recast4j.detour.Tupple2;
 	import org.recast4j.recast.PolyMeshDetail;
 	import org.recast4j.recast.RecastMeshDetail;
-	import test.AbstractDetourTest;
-	import test.RecastSoloMeshTest;
 	/**
 	 * ...
 	 * @author lizhi
@@ -33,30 +32,35 @@ package
 		private var node:Node3D;
 		private var startNode:Node3D;
 		private var endNode:Node3D;
-		private var rsmtest:RecastSoloMeshTest;
+		private var rsmtest:MDetour;
 		private var pathWrapper:Node3D;
 		private var cubeDrawable:Drawable = Meshs.sphere()
 		private var dfM:Material = new Material;
+		private var dfM2:Material = new Material;
 		public function TestRecast() 
 		{
 			dfM.color.setTo(0, 1, 1);
+			dfM2.color.setTo(0, 1, 0);
 		}
 		
 		override public function initNode():void 
 		{
-			rsmtest = new RecastSoloMeshTest();
-			rsmtest.testDungeonWatershed();
-			rsmtest.setUp();
+			rsmtest = new MDetour();
+			obj = new OBJParser(MDetour.getOBJ(
+			"dungeon.obj"
+			//"nav_test.obj"
+			));
+			//rsmtest.testDungeonWatershed();
+			rsmtest.setUp(obj);
 			
 			var res:FindNearestPolyResult = rsmtest.query.findNearestPoly([0,0,0],[0,0,0],new QueryFilter);
 			trace(res.getNearestRef());
 			//return;
-			var mesh:PolyMeshDetail = rsmtest.m_dmesh; 
+			var mesh:PolyMeshDetail = rsmtest.builder.m_dmesh;
+			//rsmtest.builder
 			node = new Node3D;
-			view.scene.addChild(node);
-			node.material = new Material;
-			//node.material.culling = Context3DTriangleFace.NONE;
-			node.material.wireframeAble = true;
+			
+			//var mesh:Object = {};
 			
 			var ins:Vector.<uint> = new Vector.<uint>;
 			for (var m:int= 0; m < mesh.nmeshes; m++) {
@@ -74,12 +78,12 @@ package
 				verts[i+2] *= -1;
 			}
 			node.drawable = Meshs.createDrawable(ins, verts).unpackedDrawable;
+			view.scene.addChild(node);
+			node.material = new Material;
+			//node.material.culling = Context3DTriangleFace.NONE;
+			node.material.wireframeAble = true;
 			
-			obj = new OBJParser(AbstractDetourTest.getOBJ(
-			"dungeon.obj"
-			//"nav_test.obj"
-			));
-			view.scene.addChild(obj.target);
+			//view.scene.addChild(obj.target);
 			
 			stage.addEventListener(MouseEvent.CLICK, stage_click);
 			
@@ -122,7 +126,7 @@ package
 				pathWrapper.children.length = 0;
 				if (startRef.getNearestRef()&&endRef.getNearestRef()){
 					var res:FindPathResult= rsmtest.query.findPath(startRef.getNearestRef(), endRef.getNearestRef(), startPos, endPos, new QueryFilter);
-					var path:Array = rsmtest.query.findStraightPath(startPos, endPos, res.getRefs(), 0xffffffff);
+					var path:Array = rsmtest.query.findStraightPath(startPos, endPos, res.getRefs(), NavMeshQuery.DT_STRAIGHTPATH_ALL_CROSSINGS);
 					var lastItem:StraightPathItem;
 					for each(var item:StraightPathItem in path){
 						if (lastItem){
@@ -133,7 +137,7 @@ package
 							for (var i:int = 0; i <= len;i++ ){
 								var p:Node3D = new Node3D;
 								pathWrapper.addChild(p);
-								p.material = dfM;
+								p.material = (i==0||i==len)?dfM:dfM2;
 								p.drawable = cubeDrawable;
 								var np:Array = [vstart[0]+vd[0]*i/len,vstart[1]+vd[1]*i/len,vstart[2]+vd[2]*i/len];
 								p.setPosition(np[0],np[1],np[2]);
@@ -149,6 +153,73 @@ package
 			trace(getTimer()-t,"ms");
 		}
 		
+	}
+
+}
+
+
+import flash.display.Sprite;
+import gl3d.core.DrawableSource;
+import gl3d.parser.obj.OBJParser;
+import org.recast4j.detour.MeshData;
+import org.recast4j.detour.NavMesh;
+import org.recast4j.detour.NavMeshQuery;
+import org.recast4j.detour.RecastNavMeshBuilder;
+import org.recast4j.recast.InputGeom;
+import test.ObjImporter;
+import org.recast4j.recast.PartitionType;
+
+  class MDetour{
+	 
+	  public var builder:RecastNavMeshBuilder;
+	protected var nmd:MeshData;
+	public var query:NavMeshQuery;
+	public var navmesh:NavMesh;
+
+	public function setUp(op:OBJParser):void {
+		//var dugeon:String = getOBJ("dungeon.obj");
+		
+		//var op:OBJParser = new OBJParser(dugeon);
+		var db:DrawableSource = op.target.children[0].drawable.source;
+		
+		//op.target.children[0].drawable = op.target.children[0].drawable.unpackedDrawable;
+		//op.target.children[0].material.wireframeAble = true;
+		//op.target.children[0].material.lightAble = false;
+		
+		
+		var tri:Array = [];
+		for each(var f:Array in db.index){
+			for each(var i:int in f){
+				tri.push(i);
+			}
+		}
+		var pos:Array = [];
+		for (i = 0; i < db.pos.length;i+=3 ){
+			pos.push(
+			db.pos[i],
+			db.pos[i+1],
+			-db.pos[i+2]
+			);
+		}
+		var geom:InputGeom = new InputGeom(pos,tri);
+		
+		//new ObjImporter().load(dugeon)
+		builder=new RecastNavMeshBuilder(geom, PartitionType.WATERSHED,
+				0.3, 0.2, 2.0, 0.6, 0.9, 45.0, 8, 20, 12.0, 1.3, 6, 6.0, 1.0)
+		nmd = builder.getMeshData();
+		navmesh = new NavMesh();
+		navmesh.init2(nmd, 0);
+		query = new NavMeshQuery(navmesh);
+
+	}
+	
+	public static function getOBJ(name:String):String {
+		[Embed(source="../../../recast4j/src/test/dungeon.obj", mimeType="application/octet-stream")]var c1:Class;
+		switch(name){
+			case "dungeon.obj":
+				return new c1 + "";
+		}
+		return null;
 	}
 
 }

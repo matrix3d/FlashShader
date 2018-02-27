@@ -87,6 +87,22 @@ package
 		public var lights:Array = [];
 		public function BaseExample() 
 		{
+			if (stage){
+				init();
+			}else{
+				addEventListener(Event.ADDED_TO_STAGE, addedToStage);
+			}
+		}
+		
+		private function addedToStage(e:Event=null):void 
+		{
+			removeEventListener(Event.ADDED_TO_STAGE, addedToStage);
+			init();
+		}
+		
+		private function init():void 
+		{
+			
 			if (Multitouch.supportsTouchEvents&&Multitouch.maxTouchPoints) {
 				Multitouch.inputMode = MultitouchInputMode.TOUCH_POINT;
 				debug = new TextField;
@@ -171,7 +187,7 @@ package
 			material.reflectTexture
 			material.specularAble = true;
 			material.lightAble = true;
-			material.wireframeAble = false;
+			material.wireframeAble = true;
 			material.toonAble = false;
 			material.alphaThreshold = .1;
 			material.blurSize = 2;
@@ -244,7 +260,7 @@ package
 			teapot.drawable = 
 			//Meshs.cube();
 			//Meshs.sphere();
-			Teapot.teapot();
+			Teapot.teapot().unpackedDrawable;
 			view.scene.addChild(teapot);
 			//teapot.scaleX = teapot.scaleY = teapot.scaleZ = .1;
 			for (var i:int = 0; i < 0;i++ ){
