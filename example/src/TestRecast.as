@@ -10,12 +10,14 @@ package
 	import gl3d.core.Material;
 	import gl3d.core.Node3D;
 	import gl3d.ctrl.ArcBallCtrl;
+	import gl3d.ctrl.FirstPersonCtrl;
 	import gl3d.meshs.Meshs;
 	import gl3d.meshs.Teapot;
 	import gl3d.parser.obj.OBJParser;
 	import org.recast4j.detour.FindNearestPolyResult;
 	import org.recast4j.detour.FindPathResult;
 	import org.recast4j.detour.MeshTile;
+	import org.recast4j.detour.MoveAlongSurfaceResult;
 	import org.recast4j.detour.NavMeshQuery;
 	import org.recast4j.detour.QueryFilter;
 	import org.recast4j.detour.StraightPathItem;
@@ -47,8 +49,6 @@ package
 		{
 			rsmtest = new MDetour();
 			obj = new OBJParser(MDetour.getOBJ(
-			"dungeon.obj"
-			//"nav_test.obj"
 			));
 			//rsmtest.testDungeonWatershed();
 			rsmtest.setUp(obj);
@@ -105,6 +105,14 @@ package
 			
 		}
 		
+		override public function initCtrl():void 
+		{
+			fc = new FirstPersonCtrl(view.camera, stage);
+			fc.speed = 1;
+			fc.movementFunc = movementFunc;
+			view.ctrls.push(fc);
+		}
+		
 		private function stage_click(e:MouseEvent):void 
 		{
 			var rayOrigin:Vector3D = new Vector3D;
@@ -121,8 +129,13 @@ package
 				
 				var startPos:Array = [pix.x, pix.y, -pix.z];
 				var endPos:Array = [endNode.x, endNode.y, -endNode.z];
-				var startRef:FindNearestPolyResult = rsmtest.query.findNearestPoly(startPos, [0, 0, 0], new QueryFilter);
-				var endRef:FindNearestPolyResult = rsmtest.query.findNearestPoly(endPos, [0, 0, 0], new QueryFilter);
+				
+				//-18.479512557460225,5.3972947218038065,-9.266612016926862 -17.804872735687603,6.558672425970901,-14.481498600718094 0 208
+				//startPos = [ -18.479512557460225, 5.3972947218038065, -9.266612016926862];
+				//endPos = [-17.804872735687603,6.558672425970901,-14.481498600718094];
+				
+				var startRef:FindNearestPolyResult = rsmtest.query.findNearestPoly(startPos, [1, 1, 1], new QueryFilter);
+				var endRef:FindNearestPolyResult = rsmtest.query.findNearestPoly(endPos, [1, 1, 1], new QueryFilter);
 				pathWrapper.children.length = 0;
 				if (startRef.getNearestRef()&&endRef.getNearestRef()){
 					var res:FindPathResult= rsmtest.query.findPath(startRef.getNearestRef(), endRef.getNearestRef(), startPos, endPos, new QueryFilter);
@@ -160,6 +173,7 @@ package
 
 import flash.display.Sprite;
 import gl3d.core.DrawableSource;
+import gl3d.core.Node3D;
 import gl3d.parser.obj.OBJParser;
 import org.recast4j.detour.MeshData;
 import org.recast4j.detour.NavMesh;
@@ -180,7 +194,6 @@ import org.recast4j.recast.PartitionType;
 		//var dugeon:String = getOBJ("dungeon.obj");
 		
 		//var op:OBJParser = new OBJParser(dugeon);
-		var db:DrawableSource = op.target.children[0].drawable.source;
 		
 		//op.target.children[0].drawable = op.target.children[0].drawable.unpackedDrawable;
 		//op.target.children[0].material.wireframeAble = true;
@@ -188,20 +201,28 @@ import org.recast4j.recast.PartitionType;
 		
 		
 		var tri:Array = [];
-		for each(var f:Array in db.index){
-			for each(var i:int in f){
-				tri.push(i);
-			}
-		}
 		var pos:Array = [];
-		for (i = 0; i < db.pos.length;i+=3 ){
-			pos.push(
-			db.pos[i],
-			db.pos[i+1],
-			-db.pos[i+2]
-			);
+		var startI:int = 0;
+		for each(var c:Node3D in op.target.children){
+			var db:DrawableSource = c.drawable.source;
+			for each(var f:Array in db.index){
+				var len:int = f.length;
+				for (var i:int = 2; i < len;i++ ) {
+					tri.push(f[0]+startI,f[i-1]+startI,f[i]+startI);
+				}
+			}
+			for (i = 0; i < db.pos.length;i+=3 ){
+				pos.push(
+				db.pos[i],
+				db.pos[i+1],
+				-db.pos[i+2]
+				);
+			}
+			startI = pos.length / 3;
 		}
 		var geom:InputGeom = new InputGeom(pos,tri);
+		//var oi:ObjImporter = new ObjImporter;
+		//geom = oi.load(getOBJ());
 		
 		//new ObjImporter().load(dugeon)
 		builder=new RecastNavMeshBuilder(geom, PartitionType.WATERSHED,
@@ -213,13 +234,12 @@ import org.recast4j.recast.PartitionType;
 
 	}
 	
-	public static function getOBJ(name:String):String {
-		[Embed(source="../../../recast4j/src/test/dungeon.obj", mimeType="application/octet-stream")]var c1:Class;
-		switch(name){
-			case "dungeon.obj":
+	public static function getOBJ():String {
+		[Embed(source="../../../recast4j/src/test/nav_test.obj", mimeType="application/octet-stream")]var c1:Class;
+		//[Embed(source="../../../recast4j/src/test/dungeon.obj", mimeType="application/octet-stream")]var c1:Class;
 				return new c1 + "";
-		}
-		return null;
+		
+		//return null;
 	}
 
 }

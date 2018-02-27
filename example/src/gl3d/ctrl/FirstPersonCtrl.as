@@ -84,7 +84,7 @@ package gl3d.ctrl
 			}
 		}
 		
-		override public function update(time:int,node:Node3D):void
+		override public function update(time:int,n:Node3D):void
 		{
 			if(isMouseDown){
 				rotation.y = lastRotation.y + (stagePos.x - lastPos.x)*rotSpeed;

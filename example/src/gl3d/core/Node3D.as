@@ -1,6 +1,5 @@
 package gl3d.core
 {
-	import Vector;
 	import flash.geom.Matrix3D;
 	import flash.geom.Rectangle;
 	import flash.geom.Vector3D;
