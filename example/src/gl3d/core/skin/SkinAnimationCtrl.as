@@ -123,9 +123,11 @@ package gl3d.core.skin
 						}
 						
 						var t2:Track = anim.tracks[tname];
-						if(t2){
-							f2 = t.frames[0];
-							f2.matrix.copyFrom(t2.target.matrix);
+						if (t2){
+							if(t2.target){
+								f2 = t.frames[0];
+								f2.matrix.copyFrom(t2.target.matrix);
+							}
 						}
 						
 						t2 = fanim.tracks[tname];

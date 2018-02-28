@@ -21,13 +21,13 @@ package gl3d.ctrl
 			
 		}
 		
-		override public function update(time:int):void 
+		override public function update(time:int,n:Node3D):void 
 		{
 			help.identity();
 			help.appendRotation(45, Vector3D.X_AXIS);
 			var v:Vector3D = new Vector3D(0, 0, -1);
 			v = help.transformVector(v);
-			v.scaleBy(30);
+			v.scaleBy(60);
 			help.appendTranslation(v.x, v.y, v.z);
 			help.appendTranslation(target.x, target.y, target.z);
 			//help2.recompose(Vector.<Vector3D>([target.trs[0],isRotation?target.trs[1]:new Vector3D(0,0,0),new Vector3D(1,1,1)]));

@@ -12,6 +12,7 @@ package
 	import gl3d.core.Fog;
 	import gl3d.core.InstanceMaterial;
 	import gl3d.core.shaders.GLShader;
+	import gl3d.core.skin.SkinAnimation;
 	import gl3d.ctrl.ArcBallCtrl;
 	import gl3d.ctrl.Ctrl;
 	import gl3d.ctrl.FirstPersonCtrl;
@@ -21,6 +22,7 @@ package
 	import gl3d.core.Node3D;
 	import gl3d.meshs.Teapot;
 	import gl3d.parser.dae.ColladaDecoder;
+	import gl3d.parser.fbx.FbxParser;
 	import gl3d.parser.obj.OBJEncoder;
 	import gl3d.pick.TerrainPicking;
 	import gl3d.shaders.PhongVertexShader;
@@ -31,7 +33,7 @@ package
 	 * ...
 	 * @author lizhi
 	 */
-	public class TestTerrain extends BaseExample
+	public class TestRPG extends BaseExample
 	{
 		private var terrain:Node3D;
 		private var player:Node3D;
@@ -43,15 +45,16 @@ package
 		private var p:ColladaDecoder;
 		//private var materialInstance:InstanceMaterial = new InstanceMaterial;
 		private var tempbmd:BitmapData ;
-		public function TestTerrain() 
+		private var fbx:FbxParser;
+		public function TestRPG() 
 		{
 		}
 		
 		override public function initCtrl():void 
 		{
-				//view.ctrls=Vector.<Ctrl>([new FollowCtrl(player,view.camera)]);
+				view.ctrls=Vector.<Ctrl>([new FollowCtrl(player,view.camera)]);
 				//}else {
-					view.ctrls=Vector.<Ctrl>([new FirstPersonCtrl(view.camera,stage)]);
+				//	view.ctrls=Vector.<Ctrl>([new FirstPersonCtrl(view.camera,stage)]);
 				//}
 			
 		}
@@ -116,7 +119,8 @@ package
 			
 			targetCube = new Node3D;
 			targetCube.material = new Material;
-			targetCube.material.color.x = 0;
+			targetCube.material.diffTexture = new TextureSet(new BitmapData(1, 1, false, 0xff0000));
+			//targetCube.material.color.x = 0;
 			targetCube.drawable = Teapot.teapot();
 			targetCube.scaleX = targetCube.scaleY = targetCube.scaleZ = .3;
 			view.scene.addChild(targetCube);
@@ -124,17 +128,35 @@ package
 			
 			//System.setClipboard(OBJEncoder.encode(terrain.drawable));
 			
-			[Embed(source = "assets/astroBoy_walk_Max.dae", mimeType = "application/octet-stream")]var c:Class;
-			//[Embed(source = "assets/test.FBX.dae", mimeType = "application/octet-stream")]var c:Class;
+			
+			[Embed(source = "assets/fbx/pearl.fbx", mimeType = "application/octet-stream")]var m1:Class;
+			[Embed(source = "assets/fbx/Walking.fbx", mimeType = "application/octet-stream")]var m2:Class;
+			[Embed(source = "assets/fbx/Mma Kick.fbx", mimeType = "application/octet-stream")]var m3:Class;
+			[Embed(source = "assets/fbx/Idle.fbx", mimeType = "application/octet-stream")]var m4:Class;
+			fbx = new FbxParser(new m1);
+			fbx.animc.anims[fbx.animc.anims.length-1].name = "TPos";
+			fbx.loadAnimation(new FbxParser(new m2));
+			fbx.animc.anims[fbx.animc.anims.length-1].name = "Walking";
+			fbx.loadAnimation(new FbxParser(new m3));
+			fbx.animc.anims[fbx.animc.anims.length-1].name = "Mma Kick";
+			fbx.loadAnimation(new FbxParser(new m4));
+			fbx.animc.anims[fbx.animc.anims.length-1].name = "Idle";
+			
+			player = new Node3D;
+			fbx.rootNode.setScale(.04, .04, .04);
+			player.addChild(fbx.rootNode);
+			
+			/*[Embed(source = "assets/astroBoy_walk_Max.dae", mimeType = "application/octet-stream")]var c:Class;
 			var ba:ByteArray = new c as ByteArray;
 			p = new ColladaDecoder(ba + "");
 			player = new Node3D;
-			player.addChild(p.scenes[0]);
+			player.addChild(p.scenes[0]);*/
+			
 			//p.root.scaleX = p.root.scaleY = p.root.scaleZ = .05;
 			//p.scenes[0].setRotation( -90, 0, 0);// -Math.PI / 2 ;
 			//p.root.rotationY = 0;// -Math.PI;
 			view.scene.addChild(player);
-			//addNode(30);
+			//addNode(3);
 		}
 		
 		private function addNode(num:int):void {
@@ -200,6 +222,9 @@ package
 			
 			if (terrain.rayMeshTest(rayOrigin, rayDirection,pix)) {
 				moving = true;
+				
+				var anim:SkinAnimation = fbx.animc.play("Walking",.03);
+				
 				targetCube.x = pix.x;
 				targetCube.y = pix.y;
 				targetCube.z = pix.z;
@@ -228,6 +253,8 @@ package
 					player.x = pix.x;
 					player.z = pix.z;
 					moving = false;
+					
+					var anim:SkinAnimation = fbx.animc.play("Idle",.3);
 				}else {
 					var v:Vector3D = pix.subtract(player.world.position);
 					v.normalize();

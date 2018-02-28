@@ -18,9 +18,9 @@ package gl3d.core
 	 */
 	public class Node3D
 	{
-		private static var _toRad:Number = Math.PI / 180;
+		private static const _toRad:Number = Math.PI / 180;
 		
-		private static var _toAng:Number = 180 / Math.PI;
+		private static const _toAng:Number = 180 / Math.PI;
 		public var parent:Node3D;
 		public var _world:Matrix3D = new Matrix3D;
 		public var _world2local:Matrix3D = new Matrix3D;
@@ -28,9 +28,7 @@ package gl3d.core
 		public var children:Vector.<Node3D> = new Vector.<Node3D>;
 		public var mask:Node3D;
 		public var scissorRectangle:Rectangle;
-		public var renderChildren:Vector.<Node3D> = new Vector.<Node3D>;
 		public var drawable:Drawable;
-		public var posVelocityDrawable:Drawable;//粒子的位置速度drawable
 		public var material:MaterialBase;
 		public var name:String;
 		public var picking:Picking = new AS3Picking;
@@ -48,6 +46,7 @@ package gl3d.core
 		public var visible:Boolean = true;
 		
 		//粒子属性
+		public var posVelocityDrawable:Drawable;//粒子的位置速度drawable
 		public var startTime:int = 0;//动画开始的时间
 		public var randomTime:Boolean = false;
 		public var lifeTimeRange:Vector3D = new Vector3D(1000, 1000);//生命周期范围
@@ -114,10 +113,10 @@ package gl3d.core
 				{
 					(material || this.material).draw(this, view);
 				}
-				for each (var child:Node3D in renderChildren)
+				/*for each (var child:Node3D in renderChildren)
 				{
 					child.update(view, material);
-				}
+				}*/
 				if (mask){
 					Mask.stopMask(view, mask);
 				}

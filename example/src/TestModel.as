@@ -40,6 +40,10 @@ package
 			node.setScale(.02, .02, .02);
 			node.addChild(fbx.rootNode);
 			
+			var cloned:Node3D = fbx.rootNode.clone();
+			node.addChild(cloned);
+			cloned.x += 100;
+			
 			view.scene.addChild(node);
 		}
 		

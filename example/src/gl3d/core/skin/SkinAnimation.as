@@ -40,9 +40,16 @@ package gl3d.core.skin
 			var c:SkinAnimation = new SkinAnimation;
 			//c.tracks = tracks;
 			//if(targetNames)
-			c.targetNames = targetNames.slice();
+			if(targetNames){
+				c.targetNames = targetNames.slice();
+			}else{
+				c.targetNames = new Vector.<String>;
+				for each(var t:Track in tracks){
+					c.targetNames.push(t.targetName);
+				}
+			}
 			c.name = name;
-			for each(var t:Track in tracks){
+			for each(t in tracks){
 				var t2:Track = new Track;
 				t2.targetName = t.targetName;
 				for each(var f:TrackFrame in t.frames){

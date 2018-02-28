@@ -105,7 +105,7 @@ package gl3d.shaders
 				if(material.fogAble){
 					var fog:Fog = material.view.fog;
 					if (fog.mode != Fog.FOG_NONE) {
-						var d:Var = distance(uniformCameraPos(), pvs.modelPosVarying, 3);
+						var d:Var = distance(uniformCameraPos(), div(pvs.modelPosVarying.xyz,pvs.modelPosVarying.w), 3);
 						if (fog.mode == Fog.FOG_EXP) {
 							var f:Var = rcp(exp(mul(d, fog.density)));
 						}else if (fog.mode==Fog.FOG_EXP2) {

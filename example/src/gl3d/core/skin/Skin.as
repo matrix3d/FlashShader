@@ -82,10 +82,10 @@ package gl3d.core.skin
 			skin.maxWeight = maxWeight;
 			if(jointNames.length){
 				skin.jointNames = jointNames.slice();
-			}
-			
-			for each(var j:Node3D in joints){
-				skin.jointNames.push(j.name);
+			}else{
+				for each(var j:Node3D in joints){
+					skin.jointNames.push(j.name);
+				}
 			}
 			
 			skin.ikNames = ikNames.slice();

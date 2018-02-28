@@ -440,16 +440,20 @@ package as3Shader {
 			return length(sub(a, b), len,t);
 		}
 		
-		public function length(a:Object,len:int=2, t:Var = null):Var {
-			var c:Var = mul(a, a);
-			var arr:Array = [c.x,c.y];
-			if (len>2) {
-				arr.push(c.z);
+		public function length(a:Object, len:int = 2, t:Var = null):Var {
+			if(len==2){
+				var c:Var = mul(a, a);
+				var arr:Array = [c.x,c.y];
+				if (len>2) {
+					arr.push(c.z);
+				}
+				if (len>3) {
+					arr.push(c.w);
+				}
+				return sqt(add2(arr), t);
 			}
-			if (len>3) {
-				arr.push(c.w);
-			}
-			return sqt(add2(arr),t);
+			return sqt(dp3(a,a),t);
+			
 			//return sqt(dp4(a,a).x, t);
 		}
 		
