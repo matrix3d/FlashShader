@@ -8,6 +8,7 @@ package gl3d.core.shaders
 	import gl3d.core.Light;
 	import gl3d.core.Material;
 	import gl3d.core.renders.GL;
+	import gl3d.util.Matrix3DUtils;
 	/**
 	 * ...
 	 * @author lizhi
@@ -17,6 +18,7 @@ package gl3d.core.shaders
 		public var v:Var;
 		private var index:int;
 		private var as3shader:GLAS3Shader;
+		private var tempPos:Vector3D = new Vector3D;
 		public function GLBinder(as3shader:GLAS3Shader,v:Var,index:int=0) 
 		{
 			this.as3shader = as3shader;
@@ -39,7 +41,7 @@ package gl3d.core.shaders
 		
 		public function bindLightPosUniform(shader:GLShader, material:Material,isLastSameMaterial:Boolean):void {
 			if (!isLastSameMaterial) {
-				var pos:Vector3D = material.view.lights[index].world.position;
+				var pos:Vector3D = Matrix3DUtils.getPosition(material.view.lights[index].world,tempPos);// .position;
 				pos.w = 1;
 				material.view.renderer.gl3d.setProgramConstantsFromVector3D(as3shader.programType, v.index,pos);
 			}
@@ -55,7 +57,7 @@ package gl3d.core.shaders
 		}
 		public function bindCameraPosUniform(shader:GLShader, material:Material,isLastSameMaterial:Boolean):void {
 			if (!isLastSameMaterial) {
-				var pos:Vector3D = material.camera.world.position;
+				var pos:Vector3D = Matrix3DUtils.getPosition(material.camera.world, tempPos);// .getPosition();//.world.position;
 				material.view.renderer.gl3d.setProgramConstantsFromVector3D(as3shader.programType, v.index,pos);
 			}
 		}
@@ -86,15 +88,17 @@ package gl3d.core.shaders
 			}
 		}
 		public function bindJointsQuatUniform(shader:GLShader, material:Material,isLastSameMaterial:Boolean):void {
-			material.view.renderer.gl3d.setProgramConstantsFromVector(as3shader.programType, v.index,material.node.skin.skinFrame.quaternions);
+			/*if(!isLastSameMaterial)*/material.view.renderer.gl3d.setProgramConstantsFromVector(as3shader.programType, v.index,material.node.skin.skinFrame.quaternions);
 		}
 		public function bindJointsMatrixUniform(shader:GLShader, material:Material,isLastSameMaterial:Boolean):void {
 			//if (v.used) {
+			//if(!isLastSameMaterial){
 				var mats:Vector.<Matrix3D> = material.node.skin.skinFrame.matrixs;
 				var start:int = v.index;
 				for (var i:int = 0; i < mats.length;i++ ) {
 					material.view.renderer.gl3d.setProgramConstantsFromMatrix(Context3DProgramType.VERTEX, start+i*4, mats[i], true);
 				}
+			//}
 			//}
 		}
 		public function bindMaterialColorUniform(shader:GLShader, material:Material,isLastSameMaterial:Boolean):void {

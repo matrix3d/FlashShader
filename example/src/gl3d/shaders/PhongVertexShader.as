@@ -86,10 +86,10 @@ package gl3d.shaders
 						joint = joint.c(c);
 						if (material.node.skin.useHalfFloat){
 							var v:Var = mov(joints.c(joint));
-							var h:Var = mul(v, SkinAnimation.sh);
+							var h:Var = v;//mul(v, SkinAnimation.sh);
 							var l:Var = frc(h);
 							h = sub(h, l);
-							var jqt:Var = sub(mul(h, 40 / SkinAnimation.sh), 20);
+							var jqt:Var = sub(div(1000000,h), 200);
 							var jq:Var = sub(mul(l, 2 ), 1);
 						}else{
 							jq = joints.c(joint);

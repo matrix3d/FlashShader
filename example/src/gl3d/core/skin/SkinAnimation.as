@@ -28,8 +28,6 @@ package gl3d.core.skin
 		static private var q1:Quaternion= new Quaternion;
 		static private var q2:Quaternion = new Quaternion;
 		public var name:String;
-		static public var sh:Number = 5000;
-		static public var sh2:Number = sh * sh;
 		public var timeline:SkinAnimTimeLine = new SkinAnimTimeLine;
 		public function SkinAnimation() 
 		{
@@ -76,25 +74,6 @@ package gl3d.core.skin
 			return q1.toMatrix(target);
 		}
 		
-		
-		/**
-		 * t -100 100, q -1 1
-		 */
-		private function test(t:Number, q:Number):Array{
-			var t2:Number = int((t + 20) / 40 * sh)/sh;
-			var q2:Number = (q + 1) / 2 / sh;
-			var v:Number = t2 + q2;
-			var b:ByteArray = new ByteArray;
-			b.writeFloat(v);
-			b.position = 0;
-			var v2:Number = b.readFloat();
-			var t3:Number = int(v2 * sh) / sh;
-			var q4:Number = (v2 - t3) * sh;
-			var t4:Number = t3 * 40 - 20;
-			q4 = q4 * 2 - 1;
-			return [t4,q4];
-		}
-		
 		private function getChildByName(node:Node3D,name:String):Node3D{
 			if (node.name == name) return node;
 			for each(var c:Node3D in node.children){
@@ -138,10 +117,17 @@ package gl3d.core.skin
 					}
 				}
 			}
-			
+			var lastSkin:Skin;
 			for each(var target:Node3D in targets){
 				var world2local:Matrix3D = target.world2local;
 				if (target.skin == null) continue;
+				
+				if (lastSkin==target.skin){
+					break;
+				}
+				
+				lastSkin = target.skin;
+				
 				if (target.skin.skinFrame == null) target.skin.skinFrame = new SkinFrame;
 				target.skin.skinFrame.quaternions.length = target.skin.skinFrame.matrixs.length * (target.skin.useHalfFloat?4:8);
 				updateIK(target.skin.iks,target);
@@ -158,34 +144,63 @@ package gl3d.core.skin
 					}
 				}
 				
-				for (var i:int = 0; i < target.skin.joints.length;i++ ) {
-					var joint:Joint = target.skin.joints[i];
-					var matrix:Matrix3D = target.skin.skinFrame.matrixs[i];
+				var js:Vector.<Joint> = target.skin.joints;
+				var ms:Vector.<Matrix3D> = target.skin.skinFrame.matrixs;
+				var useHF:Boolean = target.skin.useHalfFloat;
+				var useQuat:Boolean = target.skin.useQuat;
+				var l:int = js.length;
+				for (var i:int = 0; i <l ;i++ ) {
+					var joint:Joint = js[i];
+					var matrix:Matrix3D = ms[i];
 					matrix.copyFrom(target.matrix);
 					matrix.append(joint.invBindMatrix);
 					matrix.append(joint.world);
 					matrix.append(world2local);
 					
-					if(target.skin.useQuat){
+					if(useQuat){
 						q.fromMatrix(matrix);
 						var qs:Vector.<Number> = target.skin.skinFrame.quaternions;
 						var r:Vector3D = q.tran;
 						var s:Vector3D = q.scale;
-						if (target.skin.useHalfFloat){
+						if (useHF){
+							/*var qsb:ByteArray = target.skin.skinFrame.halfQuaternions;
+							qsb.position = i * 8 * 4;
+							qsb.writeInt((q.x+1)/2*0xff);
+							qsb.writeInt((q.y+1)/2*0xff);
+							qsb.writeInt((q.z+1)/2*0xff);
+							qsb.writeInt((q.w + 1) / 2 * 0xff);
+							qsb.writeInt((r.x/s.x + 20) / 40 * 0xff);
+							qsb.writeInt((r.y/s.y + 20) / 40 * 0xff);
+							qsb.writeInt((r.z/s.z + 20) / 40 * 0xff);
+							qsb.writeInt(0);*/
 							var i4:int = i * 4;
-							qs[i4++] =  (int((r.x/s.x + 20) / 40 * sh) + (q.x + 1) / 2) / sh;
+							/*qs[i4++] =  (int((r.x/s.x + 20) / 40 * sh) + (q.x + 1) / 2) / sh;
 							qs[i4++] =  (int((r.y/s.y + 20) / 40 * sh) + (q.y + 1) / 2) / sh;
 							qs[i4++] =  (int((r.z/s.z + 20) / 40 * sh) + (q.z + 1) / 2) / sh;
-							qs[i4++] = ((q.w + 1) / 2) / sh;
+							qs[i4++] = ((q.w + 1) / 2) / sh;*/
+							
+							qs[i4++] =  int(1000000/(r.x/s.x +200)) + (q.x + 1) / 2 ;
+							qs[i4++] =  int(1000000/(r.y/s.y+200)) + (q.y + 1) / 2 ;
+							qs[i4++] =  int(1000000/(r.z/s.z +200)) + (q.z + 1) / 2 ;
+							qs[i4++] = (q.w + 1) / 2;
+							/*if (qs[i4-4]<0){
+								throw "fdasf"
+							}if (qs[i4-3]<0){
+								throw "fdasf"
+							}if (qs[i4-2]<0){
+								throw "fdasf"
+							}if (qs[i4-1]<0){
+								throw "fdasf"
+							}*/
 						}else{
 							var i8:int = i * 8;
 							qs[i8++] = q.x;
 							qs[i8++] = q.y;
 							qs[i8++] = q.z;
 							qs[i8++] = q.w;
-							qs[i8++] = r.x/s.x;
-							qs[i8++] = r.y/s.y;
-							qs[i8++] = r.z/s.z;
+							qs[i8++] = r.x / s.x;
+							qs[i8++] = r.y / s.y;
+							qs[i8++] = r.z / s.z;
 							qs[i8] = 0;
 						}
 					}
@@ -229,13 +244,13 @@ package gl3d.core.skin
 											var qy:Array = HFloat.half2float2Agal(HFloat.toHalfFloat2(r.y/s.y,q.y));
 											var qz:Array = HFloat.half2float2Agal(HFloat.toHalfFloat2(r.z/s.z,q.z));
 											var qw:Array = HFloat.half2float2Agal(HFloat.toHalfFloat(q.w));*/
-											q.x = test(r.x/s.x,q.x)[1];
+											/*q.x = test(r.x/s.x,q.x)[1];
 											q.y = test(r.y/s.y,q.y)[1];
 											q.z = test(r.z/s.z,q.z)[1];
 											q.w = test(0,q.w)[1];
 											q.tran.x = test(r.x/s.x,q.x)[0];
 											q.tran.y = test(r.y/s.y,q.y)[0];
-											q.tran.z = test(r.z/s.z,q.z)[0];
+											q.tran.z = test(r.z/s.z,q.z)[0];*/
 										}
 										vr = q.rotatePoint(pos);
 										vr = vr.add(q.tran);
