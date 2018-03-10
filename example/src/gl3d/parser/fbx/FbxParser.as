@@ -545,18 +545,19 @@ package gl3d.parser.fbx
 					var cname:String = FbxTools.getName(cn);
 					if( model == null ) continue;
 					var data:Array = afbx.getChilds(cn, "AnimationCurve");
-					if( data.length == 0 ) continue;
-					var times:Array = FbxTools.getFloats(FbxTools.get(data[0], "KeyTime"));
 					if (data.length != 3) {
 						continue;
 					}
-					var x:Object = FbxTools.getFloats(FbxTools.get(data[0],"KeyValueFloat"));
-					var y:Object = FbxTools.getFloats(FbxTools.get(data[1],"KeyValueFloat"));
-					var z:Object = FbxTools.getFloats(FbxTools.get(data[2], "KeyValueFloat"));
+					var times:Array = FbxTools.getFloats(FbxTools.get(data[0], "KeyTime"));
+					var x:Array = FbxTools.getFloats(FbxTools.get(data[0],"KeyValueFloat"));
+					//var timesY:Array = FbxTools.getFloats(FbxTools.get(data[1], "KeyTime"));
+					var y:Array = FbxTools.getFloats(FbxTools.get(data[1],"KeyValueFloat"));
+					//var timesZ:Array = FbxTools.getFloats(FbxTools.get(data[2], "KeyTime"));
+					var z:Array = FbxTools.getFloats(FbxTools.get(data[2], "KeyValueFloat"));
 					var mid:String = FbxTools.getId(model);
 					var animDataBase:Object= animData[mid] = animData[mid] || { };
-					animDataBase[cname] = [x, y, z];
-					animDataBase.times = times;
+					animDataBase[cname] = [times, x, y, z];
+					//animDataBase.times = times;
 					var targetName:String = FbxTools.getName(model);
 					animDataBase.target = name2object[targetName];
 					if (animDataBase.target==null){
@@ -586,36 +587,37 @@ package gl3d.parser.fbx
 					var track:Track = new Track;
 					track.targetName = animDataBase.target.obj.name;
 					anim.tracks[track.targetName] = track;//.push(track);
-					for (var i:int = 0; i < animDataBase.times.length; i++ ) {
-						if (animDataBase.times[i] is Array) {
-							var timeValue:Number = animDataBase.times[i][0]+0x100000000*animDataBase.times[i][1];
-						}else {
-							timeValue = animDataBase.times[i];
+					
+					var timesrt:Object = {};//time:{s:,r:t};
+					var srtNames:Array = ["S", "R", "T"];
+					for each(var srtName:String in srtNames){
+						var srtArr:Array = animDataBase[srtName];
+						if (srtArr){
+							times = srtArr[0];
+							for (var i:int = 0; i < times.length; i++ ) {
+								var timeValue:Number = times[i];
+								if (srtArr[1][i]&&srtArr[2][i]&&srtArr[3][i]){
+									if (timesrt[timeValue]==null){
+										timesrt[timeValue] = {};
+									}
+									timesrt[timeValue][srtName] = new Vector3D(srtArr[1][i], srtArr[2][i], srtArr[3][i]);
+								}
+							}
 						}
-						var time:Number = timeValue / timeSpanStop;
-						//time = i / 30;
-						var s:Array = animDataBase.S;
-						var r:Array = animDataBase.R;
-						var t:Array = animDataBase.T;
+					}
+					
+					for (var timeValueStr:String in timesrt) {
+						var time:Number = Number(timeValueStr) / timeSpanStop;
 						var frame:TrackFrame = new TrackFrame;
-						var sv:Vector3D=null;
-						var rv:Vector3D=null;
-						var tv:Vector3D=null;
-						if (s&&s[0][i]!=null&&s[1][i]!=null&&s[2][i]!=null) {
-							sv=new Vector3D(s[0][i], s[1][i], s[2][i]);
-						}
-						if (r&&r[0][i]!=null&& r[1][i]!=null&& r[2][i]!=null) {
-							rv=new Vector3D(r[0][i], r[1][i], r[2][i]);
-						}
-						if(t&&t[0][i]!=null&& t[1][i]!=null&& t[2][i]!=null){
-							tv=new Vector3D(t[0][i], t[1][i], t[2][i]);
-						}
+						var sv:Vector3D=timesrt[timeValueStr].S;
+						var rv:Vector3D=timesrt[timeValueStr].R;
+						var tv:Vector3D=timesrt[timeValueStr].T;
 						
 						frame.matrix = getMatrix(animDataBase.target.m, sv, rv, tv);
 						frame.time = time;
 						track.frames.push(frame);
 					}
-					//track.frames.sort(sortFrameFun);
+					track.frames.sort(sortFrameFun);
 					var maxTime:Number = 0;
 					if (track.frames.length){
 						maxTime = track.frames[track.frames.length - 1].time;

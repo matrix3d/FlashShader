@@ -27,7 +27,6 @@ package
 	import gl3d.pick.TerrainPicking;
 	import gl3d.shaders.PhongVertexShader;
 	import gl3d.shaders.TerrainPhongFragmentShader;
-	import gl3d.shaders.TerrainPhongGLShader;
 	import gl3d.core.TextureSet;
 	/**
 	 * ...
@@ -52,7 +51,7 @@ package
 		
 		override public function initCtrl():void 
 		{
-				view.ctrls=Vector.<Ctrl>([new FollowCtrl(player,view.camera)]);
+				view.ctrls=Vector.<Ctrl>([new FollowCtrl(player,view.camera,stage)]);
 				//}else {
 				//	view.ctrls=Vector.<Ctrl>([new FirstPersonCtrl(view.camera,stage)]);
 				//}
@@ -61,6 +60,7 @@ package
 		
 		override public function initNode():void {
 			addSky();
+			view.antiAlias = 0;
 			view.fog.mode = Fog.FOG_LINEAR;
 			view.fog.start = 100;
 			view.fog.end = 200;
@@ -129,7 +129,7 @@ package
 			//System.setClipboard(OBJEncoder.encode(terrain.drawable));
 			
 			
-			[Embed(source = "assets/fbx/pearl.fbx", mimeType = "application/octet-stream")]var m1:Class;
+			/*[Embed(source = "assets/fbx/pearl.fbx", mimeType = "application/octet-stream")]var m1:Class;
 			[Embed(source = "assets/fbx/Walking.fbx", mimeType = "application/octet-stream")]var m2:Class;
 			[Embed(source = "assets/fbx/Mma Kick.fbx", mimeType = "application/octet-stream")]var m3:Class;
 			[Embed(source = "assets/fbx/Idle.fbx", mimeType = "application/octet-stream")]var m4:Class;
@@ -141,9 +141,15 @@ package
 			fbx.animc.anims[fbx.animc.anims.length-1].name = "Mma Kick";
 			fbx.loadAnimation(new FbxParser(new m4));
 			fbx.animc.anims[fbx.animc.anims.length-1].name = "Idle";
+			fbx.rootNode.setScale(.05, .05, .05);*/
+			
+			[Embed(source = "assets/fbx/dave/Dave.fbx", mimeType = "application/octet-stream")]var davec:Class;
+			fbx = new FbxParser(new davec);
+			fbx.animc.play("Armature|Walk", 0);
+			fbx.rootNode.setScale(.1, .1, .1);
 			
 			player = new Node3D;
-			fbx.rootNode.setScale(.04, .04, .04);
+			
 			player.addChild(fbx.rootNode);
 			
 			/*[Embed(source = "assets/astroBoy_walk_Max.dae", mimeType = "application/octet-stream")]var c:Class;
@@ -156,7 +162,7 @@ package
 			//p.scenes[0].setRotation( -90, 0, 0);// -Math.PI / 2 ;
 			//p.root.rotationY = 0;// -Math.PI;
 			view.scene.addChild(player);
-			//addNode(3);
+			addNode(20);
 		}
 		
 		private function addNode(num:int):void {
@@ -168,6 +174,9 @@ package
 				changeMaterial(clone);
 				(new Node3D).addChild(clone);*/
 				var clone:Node3D = player.clone();
+				//clone.scaleX *= 2;
+				//clone.scaleY *= 2;
+				//clone.scaleZ *= 2;
 				players.push(clone);
 				
 				//changeMaterial(clone);
@@ -221,9 +230,12 @@ package
 			view.camera.computePickRayDirectionMouse(mouseX, mouseY, stage.stageWidth, stage.stageHeight, rayOrigin, rayDirection);
 			
 			if (terrain.rayMeshTest(rayOrigin, rayDirection,pix)) {
+				if (moving == false){
+					var anim:SkinAnimation = fbx.animc.play("Walking",.03);
+				}
 				moving = true;
 				
-				var anim:SkinAnimation = fbx.animc.play("Walking",.03);
+				
 				
 				targetCube.x = pix.x;
 				targetCube.y = pix.y;

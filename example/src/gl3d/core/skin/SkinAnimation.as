@@ -19,7 +19,8 @@ package gl3d.core.skin
 	 */
 	public class SkinAnimation
 	{
-		public var tracks:Object={};//Vector.<Track> = new Vector.<Track>;
+		public var isCache:Boolean = true;
+		public var tracks:Object = {};//Vector.<Track> = new Vector.<Track>;
 		public var bindShapeMatrix:Matrix3D;
 		public var targets:Vector.<Node3D>;
 		public var targetNames:Vector.<String>;
@@ -29,6 +30,7 @@ package gl3d.core.skin
 		static private var q2:Quaternion = new Quaternion;
 		public var name:String;
 		public var timeline:SkinAnimTimeLine = new SkinAnimTimeLine;
+		public var trackRoot:Node3D;//骨骼根节点
 		public function SkinAnimation() 
 		{
 			
@@ -105,8 +107,35 @@ package gl3d.core.skin
 				}else {
 					track.target.matrix.copyFrom(f.matrix);
 				}
-				track.target.updateTransforms(true);
+				//track.target.updateTransforms(true);
 			}
+			
+			if (trackRoot == null){
+				for each(track in tracks) {
+					var tp:Node3D = track.target.parent;
+					while (tp){
+						var isHaveParent:Boolean = false;
+						for each(var track2:Track in tracks){
+							if (tp == track2.target){
+								isHaveParent = true;
+								break;
+							}
+						}
+						if (isHaveParent){
+							break;
+						}
+						tp = tp.parent;
+					}
+					if (!isHaveParent){
+						trackRoot = track.target;
+						break;
+					}
+				}
+			}
+			//for each(var tt:Node3D in trackRoots){
+				trackRoot.updateTransforms(true);
+			//}
+			
 			
 			if (targets==null&&targetNames){
 				targets = new Vector.<Node3D>;
@@ -119,9 +148,9 @@ package gl3d.core.skin
 			}
 			var lastSkin:Skin;
 			for each(var target:Node3D in targets){
-				var world2local:Matrix3D = target.world2local;
 				if (target.skin == null) continue;
-				
+				target.skin.trackRoot = trackRoot;
+				var world2local:Matrix3D = target.world2local//trackRoot.world2local;
 				if (lastSkin==target.skin){
 					break;
 				}
@@ -152,10 +181,9 @@ package gl3d.core.skin
 				for (var i:int = 0; i <l ;i++ ) {
 					var joint:Joint = js[i];
 					var matrix:Matrix3D = ms[i];
-					matrix.copyFrom(target.matrix);
-					matrix.append(joint.invBindMatrix);
+					matrix.copyFrom(joint.invBindMatrix);
 					matrix.append(joint.world);
-					matrix.append(world2local);
+					matrix.append(trackRoot.world2local);
 					
 					if(useQuat){
 						q.fromMatrix(matrix);

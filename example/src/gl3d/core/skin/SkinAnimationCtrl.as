@@ -81,6 +81,7 @@ package gl3d.core.skin
 				if (transitionTime>0&&anim/*&&anim.tracks.length&&fanim.tracks.length*/){
 					if (transitionAnim==null){
 						transitionAnim = new SkinAnimation;
+						transitionAnim.isCache = false;
 						transitionAnim.name = "__transition";
 						transitionAnim.targetNames = fanim.targetNames;
 						//transitionAnim.tracks = {};//new Vector.<Track>;//fanim.tracks;

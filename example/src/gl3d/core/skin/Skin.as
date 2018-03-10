@@ -20,8 +20,9 @@ package gl3d.core.skin
 		public var ikNames:Vector.<String> = new Vector.<String>;
 		public var iks:Vector.<Joint> = new Vector.<Joint>;
 		public var useQuat:Boolean = true;
-		public var useHalfFloat:Boolean = true;
+		public var useHalfFloat:Boolean = false;
 		public var useCpu:Boolean = false;
+		public var trackRoot:Node3D;//骨骼根节点
 		public function Skin() 
 		{
 			
