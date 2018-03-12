@@ -14,6 +14,8 @@ package gl3d.core.skin
 	{
 		public static var MAX_WEIGHT:int = 4;
 		public var skinFrame:SkinFrame;
+		public var cacheFrame:SkinFrame;
+		public var cache:Object = {};//动画名字：｛frameID:skinFrame｝
 		public var maxWeight:int;
 		public var jointNames:Vector.<String> = new Vector.<String>;
 		public var joints:Vector.<Joint>= new Vector.<Joint>;
@@ -22,7 +24,7 @@ package gl3d.core.skin
 		public var useQuat:Boolean = true;
 		public var useHalfFloat:Boolean = false;
 		public var useCpu:Boolean = false;
-		public var trackRoot:Node3D;//骨骼根节点
+		public var jointRoot:Node3D;//骨骼根节点
 		public function Skin() 
 		{
 			
@@ -80,6 +82,7 @@ package gl3d.core.skin
 		public function clone():Skin 
 		{
 			var skin:Skin = new Skin;
+			skin.cache = cache;
 			skin.maxWeight = maxWeight;
 			if(jointNames.length){
 				skin.jointNames = jointNames.slice();

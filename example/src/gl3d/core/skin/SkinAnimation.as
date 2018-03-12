@@ -30,7 +30,7 @@ package gl3d.core.skin
 		static private var q2:Quaternion = new Quaternion;
 		public var name:String;
 		public var timeline:SkinAnimTimeLine = new SkinAnimTimeLine;
-		public var trackRoot:Node3D;//骨骼根节点
+		//public var trackRoot:Node3D;//骨骼根节点
 		public function SkinAnimation() 
 		{
 			
@@ -87,13 +87,83 @@ package gl3d.core.skin
 			return null;
 		}
 		
+		private function updateJointRoot(skin:Skin):void{
+			if (skin.jointRoot == null){
+				var depthJoints:Object = {};
+				var mind:int = 100000;
+				for each(var jtrack:Track in tracks){
+					var jnode:Node3D = jtrack.target;
+					var d:int = 0;
+					var findnode:Node3D = jnode;
+					while (findnode){
+						findnode = findnode.parent;
+						d++;
+					}
+					if (depthJoints[d]==null){
+						depthJoints[d] = [];
+						mind = Math.min(mind,d);
+					}
+					depthJoints[d].push(jnode);
+				}
+				var minDepthJoints:Array = depthJoints[mind];
+				while (true){
+					if (minDepthJoints.length == 1){
+						minDepthJoints[0].visible = false;
+						skin.jointRoot = minDepthJoints[0].parent;
+						break;
+					}
+					var temp:Array = [];
+					for each(jnode in minDepthJoints){
+						findnode = jnode.parent;
+						if (temp.indexOf(findnode)==-1){
+							temp.push(findnode);
+						}
+					}
+					minDepthJoints = temp;
+				}
+			}
+		}
+		
 		public function update(t:Number,node:Node3D):void 
 		{
-			for each(var track:Track in tracks) {
+			if (targets==null&&targetNames){//根据targetname生成target
+				targets = new Vector.<Node3D>;
+				for each(var tname:String in targetNames){
+					var tn:Node3D = getChildByName(node, tname);
+					if (tn){
+						targets.push(tn);
+					}
+				}
+			}
+			for each(var track:Track in tracks) {//检查target是否存在
 				if (track.target==null){
 					track.target = getChildByName(node, track.targetName);
 				}
-				
+			}
+			if (isCache){//缓存
+				var tid:int = int(t * 1000 / 60);
+				var needCache:Boolean = false;
+				for each(var target:Node3D in targets){
+					if (target.skin == null) continue;
+					
+					updateJointRoot(target.skin);
+					
+					if (target.skin.cache[name]==null){
+						needCache = true;
+					}else{
+						target.skin.cacheFrame = target.skin.cache[name][tid];
+						if (target.skin.cacheFrame==null){
+							needCache = true;
+						}
+					}
+				}
+				if (!needCache){
+					return;
+				}
+				t = tid * 60 / 1000;
+			}
+			
+			for each(track in tracks) {//更新动画
 				var last:TrackFrame = null;
 				var f:TrackFrame = null;
 				for each(f in track.frames) {
@@ -107,58 +177,31 @@ package gl3d.core.skin
 				}else {
 					track.target.matrix.copyFrom(f.matrix);
 				}
-				//track.target.updateTransforms(true);
 			}
 			
-			if (trackRoot == null){
-				for each(track in tracks) {
-					var tp:Node3D = track.target.parent;
-					while (tp){
-						var isHaveParent:Boolean = false;
-						for each(var track2:Track in tracks){
-							if (tp == track2.target){
-								isHaveParent = true;
-								break;
-							}
-						}
-						if (isHaveParent){
-							break;
-						}
-						tp = tp.parent;
-					}
-					if (!isHaveParent){
-						trackRoot = track.target;
-						break;
-					}
-				}
-			}
-			//for each(var tt:Node3D in trackRoots){
-				trackRoot.updateTransforms(true);
-			//}
 			
-			
-			if (targets==null&&targetNames){
-				targets = new Vector.<Node3D>;
-				for each(var tname:String in targetNames){
-					var tn:Node3D = getChildByName(node, tname);
-					if (tn){
-						targets.push(tn);
-					}
-				}
-			}
 			var lastSkin:Skin;
+			var first:Boolean = true;
 			for each(var target:Node3D in targets){
 				if (target.skin == null) continue;
-				target.skin.trackRoot = trackRoot;
-				var world2local:Matrix3D = target.world2local//trackRoot.world2local;
 				if (lastSkin==target.skin){
 					break;
 				}
-				
 				lastSkin = target.skin;
-				
-				if (target.skin.skinFrame == null) target.skin.skinFrame = new SkinFrame;
-				target.skin.skinFrame.quaternions.length = target.skin.skinFrame.matrixs.length * (target.skin.useHalfFloat?4:8);
+				var currentFrame:SkinFrame;
+				if(isCache){
+					target.skin.cacheFrame = new SkinFrame;
+					currentFrame = target.skin.cacheFrame;
+					if (target.skin.cache[name]==null){
+						target.skin.cache[name] = [];
+					}
+					target.skin.cache[name][tid] = currentFrame;
+				}else{
+					target.skin.cacheFrame = null;
+					if (target.skin.skinFrame == null) target.skin.skinFrame = new SkinFrame;
+					currentFrame = target.skin.skinFrame;
+				}
+				currentFrame.quaternions.length = currentFrame.matrixs.length * (target.skin.useHalfFloat?4:8);
 				updateIK(target.skin.iks,target);
 				
 				if (target.skin.joints.length<target.skin.jointNames.length){
@@ -166,15 +209,23 @@ package gl3d.core.skin
 						target.skin.joints[i] = getChildByName(node, target.skin.jointNames[i]);
 					}
 				}
-				if (target.skin.skinFrame.matrixs.length == 0) {
+				
+				updateJointRoot(target.skin);
+				
+				if(first){
+					target.skin.jointRoot.updateTransforms(true);
+					first = false;
+				}
+				
+				if (currentFrame.matrixs.length == 0) {
 					var nj:int = target.skin.joints.length;
 					for (i = 0; i < nj;i++ ) {
-						target.skin.skinFrame.matrixs.push(new Matrix3D);
+						currentFrame.matrixs.push(new Matrix3D);
 					}
 				}
 				
 				var js:Vector.<Joint> = target.skin.joints;
-				var ms:Vector.<Matrix3D> = target.skin.skinFrame.matrixs;
+				var ms:Vector.<Matrix3D> = currentFrame.matrixs;
 				var useHF:Boolean = target.skin.useHalfFloat;
 				var useQuat:Boolean = target.skin.useQuat;
 				var l:int = js.length;
@@ -183,43 +234,20 @@ package gl3d.core.skin
 					var matrix:Matrix3D = ms[i];
 					matrix.copyFrom(joint.invBindMatrix);
 					matrix.append(joint.world);
-					matrix.append(trackRoot.world2local);
+					matrix.append(target.skin.jointRoot.world2local);
 					
 					if(useQuat){
 						q.fromMatrix(matrix);
-						var qs:Vector.<Number> = target.skin.skinFrame.quaternions;
+						var qs:Vector.<Number> = currentFrame.quaternions;
 						var r:Vector3D = q.tran;
 						var s:Vector3D = q.scale;
 						if (useHF){
-							/*var qsb:ByteArray = target.skin.skinFrame.halfQuaternions;
-							qsb.position = i * 8 * 4;
-							qsb.writeInt((q.x+1)/2*0xff);
-							qsb.writeInt((q.y+1)/2*0xff);
-							qsb.writeInt((q.z+1)/2*0xff);
-							qsb.writeInt((q.w + 1) / 2 * 0xff);
-							qsb.writeInt((r.x/s.x + 20) / 40 * 0xff);
-							qsb.writeInt((r.y/s.y + 20) / 40 * 0xff);
-							qsb.writeInt((r.z/s.z + 20) / 40 * 0xff);
-							qsb.writeInt(0);*/
 							var i4:int = i * 4;
-							/*qs[i4++] =  (int((r.x/s.x + 20) / 40 * sh) + (q.x + 1) / 2) / sh;
-							qs[i4++] =  (int((r.y/s.y + 20) / 40 * sh) + (q.y + 1) / 2) / sh;
-							qs[i4++] =  (int((r.z/s.z + 20) / 40 * sh) + (q.z + 1) / 2) / sh;
-							qs[i4++] = ((q.w + 1) / 2) / sh;*/
 							
 							qs[i4++] =  int(1000000/(r.x/s.x +200)) + (q.x + 1) / 2 ;
 							qs[i4++] =  int(1000000/(r.y/s.y+200)) + (q.y + 1) / 2 ;
 							qs[i4++] =  int(1000000/(r.z/s.z +200)) + (q.z + 1) / 2 ;
 							qs[i4++] = (q.w + 1) / 2;
-							/*if (qs[i4-4]<0){
-								throw "fdasf"
-							}if (qs[i4-3]<0){
-								throw "fdasf"
-							}if (qs[i4-2]<0){
-								throw "fdasf"
-							}if (qs[i4-1]<0){
-								throw "fdasf"
-							}*/
 						}else{
 							var i8:int = i * 8;
 							qs[i8++] = q.x;

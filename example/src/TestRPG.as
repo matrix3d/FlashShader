@@ -146,7 +146,7 @@ package
 			[Embed(source = "assets/fbx/dave/Dave.fbx", mimeType = "application/octet-stream")]var davec:Class;
 			fbx = new FbxParser(new davec);
 			fbx.animc.play("Armature|Walk", 0);
-			fbx.rootNode.setScale(.1, .1, .1);
+			fbx.rootNode.setScale(2, 2, 2);
 			
 			player = new Node3D;
 			
@@ -198,7 +198,7 @@ package
 				var rayOrigin:Vector3D = new Vector3D;
 				var rayDirection:Vector3D = new Vector3D;
 				var pix:Vector3D = new Vector3D;
-				view.camera.computePickRayDirectionMouse(mouseX, mouseY, stage.stageWidth, stage.stageHeight, rayOrigin, rayDirection);
+				view.camera.computePickRayDirectionMouse(mouseX, mouseY, view.stage3dWidth, view.stage3dHeight, rayOrigin, rayDirection);
 				
 				var c:int = 1;
 				var t:int = getTimer();
@@ -227,7 +227,7 @@ package
 			var rayOrigin:Vector3D = new Vector3D;
 			var rayDirection:Vector3D = new Vector3D;
 			var pix:Vector3D = new Vector3D;
-			view.camera.computePickRayDirectionMouse(mouseX, mouseY, stage.stageWidth, stage.stageHeight, rayOrigin, rayDirection);
+			view.camera.computePickRayDirectionMouse(mouseX, mouseY, view.stage3dWidth, view.stage3dHeight, rayOrigin, rayDirection);
 			
 			if (terrain.rayMeshTest(rayOrigin, rayDirection,pix)) {
 				if (moving == false){

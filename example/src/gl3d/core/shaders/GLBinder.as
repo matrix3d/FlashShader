@@ -89,16 +89,16 @@ package gl3d.core.shaders
 		}
 		
 		public function bindJointModelUniform(shader:GLShader, material:Material,isLastSameMaterial:Boolean):void {
-			material.view.renderer.gl3d.setProgramConstantsFromMatrix(as3shader.programType, v.index,material.node.skin.trackRoot.world,true);
+			material.view.renderer.gl3d.setProgramConstantsFromMatrix(as3shader.programType, v.index,material.node.skin.jointRoot.world,true);
 		}
 		
 		public function bindJointsQuatUniform(shader:GLShader, material:Material,isLastSameMaterial:Boolean):void {
-			/*if(!isLastSameMaterial)*/material.view.renderer.gl3d.setProgramConstantsFromVector(as3shader.programType, v.index,material.node.skin.skinFrame.quaternions);
+			/*if(!isLastSameMaterial)*/material.view.renderer.gl3d.setProgramConstantsFromVector(as3shader.programType, v.index,(material.node.skin.cacheFrame||material.node.skin.skinFrame).quaternions);
 		}
 		public function bindJointsMatrixUniform(shader:GLShader, material:Material,isLastSameMaterial:Boolean):void {
 			//if (v.used) {
 			//if(!isLastSameMaterial){
-				var mats:Vector.<Matrix3D> = material.node.skin.skinFrame.matrixs;
+				var mats:Vector.<Matrix3D> = (material.node.skin.cacheFrame||material.node.skin.skinFrame).matrixs;
 				var start:int = v.index;
 				for (var i:int = 0; i < mats.length;i++ ) {
 					material.view.renderer.gl3d.setProgramConstantsFromMatrix(Context3DProgramType.VERTEX, start+i*4, mats[i], true);

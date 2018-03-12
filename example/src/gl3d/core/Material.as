@@ -33,7 +33,7 @@ package gl3d.core {
 			this.node = node;
 			if (node.drawable&&shader) {
 				var context:GL = view.renderer.gl3d;
-				var hasSkin:Boolean = node.skin && node.skin.skinFrame&&!node.skin.useCpu;
+				var hasSkin:Boolean = node.skin && (node.skin.cacheFrame||node.skin.skinFrame)&&!node.skin.useCpu;
 				if (gpuSkin!=hasSkin) {
 					invalid = true;
 					gpuSkin = hasSkin;
