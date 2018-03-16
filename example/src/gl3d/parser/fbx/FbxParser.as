@@ -369,7 +369,7 @@ package gl3d.parser.fbx
 							if (jid == -1) {
 								jid = skin.joints.length;
 								skin.joints.push(joint);
-								skin.jointNames.push(joint.name);
+								//skin.jointNames.push(joint.name);
 								var transPos:Array = FbxTools.getFloats(FbxTools.get(subDef, "Transform"));
 								transPoss.push(transPos);
 							}
@@ -585,8 +585,9 @@ package gl3d.parser.fbx
 				}
 				for each(animDataBase in animData) {
 					var track:Track = new Track;
-					track.targetName = animDataBase.target.obj.name;
-					anim.tracks[track.targetName] = track;//.push(track);
+					track.target = animDataBase.target.obj;
+					//track.targetName = animDataBase.target.obj.name;
+					anim.tracks[animDataBase.target.obj.name] = track;//.push(track);
 					
 					var timesrt:Object = {};//time:{s:,r:t};
 					var srtNames:Array = ["S", "R", "T"];
@@ -627,11 +628,11 @@ package gl3d.parser.fbx
 				//anim.tracks.sort(sortTrackFun);
 			}
 		}
-		private function sortTrackFun(t0:Track, t1:Track):int{
+		/*private function sortTrackFun(t0:Track, t1:Track):int{
 			var arr:Array = [t0.targetName, t1.targetName];
 			arr.sort();
 			return t0.targetName == arr[0]?-1: 1;
-		}
+		}*/
 		private function sortFrameFun(f0:TrackFrame, f1:TrackFrame):int{
 			if (f0.time<f1.time){
 				return -1;

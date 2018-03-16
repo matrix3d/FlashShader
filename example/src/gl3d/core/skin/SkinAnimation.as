@@ -42,14 +42,15 @@ package gl3d.core.skin
 			//if(targetNames)
 			if(targetNames){
 				c.targetNames = targetNames.slice();
-			}else{
+			}/*else{
 				c.targetNames = new Vector.<String>;
 				for each(var t:Track in tracks){
-					c.targetNames.push(t.targetName);
+					c.targetNames.push(t.);
 				}
-			}
+			}*/
 			c.name = name;
-			for each(t in tracks){
+			c.tracks = tracks;
+			/*for each(t in tracks){
 				var t2:Track = new Track;
 				t2.targetName = t.targetName;
 				for each(var f:TrackFrame in t.frames){
@@ -59,7 +60,7 @@ package gl3d.core.skin
 					t2.frames.push(f2);
 				}
 				c.tracks[t.targetName] = t2;// .push(t2);
-			}
+			}*/
 			c.bindShapeMatrix = bindShapeMatrix;
 			c.maxTime = maxTime;
 			return c;
@@ -109,7 +110,17 @@ package gl3d.core.skin
 				while (true){
 					if (minDepthJoints.length == 1){
 						minDepthJoints[0].visible = false;
-						skin.jointRoot = minDepthJoints[0].parent;
+						skin.jointRoot = minDepthJoints[0];//.parent;
+						var j:Joint = minDepthJoints[0];
+						while (true){
+							if (j.parent&&j.parent is Joint){
+								j = j.parent as Joint;
+							}else{
+								break;
+							}
+						}
+						skin.jointRoot = j;
+						(skin.jointRoot as Joint).isRoot = true;
 						break;
 					}
 					var temp:Array = [];
@@ -135,11 +146,11 @@ package gl3d.core.skin
 					}
 				}
 			}
-			for each(var track:Track in tracks) {//检查target是否存在
+			/*for each(var track:Track in tracks) {//检查target是否存在
 				if (track.target==null){
 					track.target = getChildByName(node, track.targetName);
 				}
-			}
+			}*/
 			if (isCache){//缓存
 				var tid:int = int(t * 1000 / 60);
 				var needCache:Boolean = false;
@@ -163,7 +174,7 @@ package gl3d.core.skin
 				t = tid * 60 / 1000;
 			}
 			
-			for each(track in tracks) {//更新动画
+			for each(var track:Track in tracks) {//更新动画
 				var last:TrackFrame = null;
 				var f:TrackFrame = null;
 				for each(f in track.frames) {
@@ -204,11 +215,11 @@ package gl3d.core.skin
 				currentFrame.quaternions.length = currentFrame.matrixs.length * (target.skin.useHalfFloat?4:8);
 				updateIK(target.skin.iks,target);
 				
-				if (target.skin.joints.length<target.skin.jointNames.length){
+				/*if (target.skin.joints.length<target.skin.jointNames.length){
 					for (i = 0; i < target.skin.jointNames.length;i++ ){
 						target.skin.joints[i] = getChildByName(node, target.skin.jointNames[i]);
 					}
-				}
+				}*/
 				
 				updateJointRoot(target.skin);
 				
@@ -234,7 +245,7 @@ package gl3d.core.skin
 					var matrix:Matrix3D = ms[i];
 					matrix.copyFrom(joint.invBindMatrix);
 					matrix.append(joint.world);
-					matrix.append(target.skin.jointRoot.world2local);
+					//matrix.append(target.skin.jointRoot.world2local);
 					
 					if(useQuat){
 						q.fromMatrix(matrix);

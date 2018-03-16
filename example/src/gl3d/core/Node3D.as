@@ -40,8 +40,8 @@ package gl3d.core
 		private var _position:Vector3D = new Vector3D;
 		private var trs: Vector.<Vector3D> = Vector.<Vector3D>([_position,_rotation,_scale]);
 		private var dirtyMatrix:Boolean = false;
-		private var dirtyWrold:Boolean = false;
-		private var dirtyInv:Boolean = false;
+		protected var dirtyWrold:Boolean = false;
+		protected var dirtyInv:Boolean = false;
 		private var dirtyRotScale:Boolean = false;
 		public var visible:Boolean = true;
 		
@@ -410,7 +410,9 @@ package gl3d.core
 			for each (var child:Node3D in children)
 			{
 				//if (child.type != "JOINT")
-					node.addChild(child.clone(/*addRender*/));
+				var childCloned:Node3D = child.clone();
+				if(childCloned)
+					node.addChild(childCloned);
 			}
 			return node;
 		}

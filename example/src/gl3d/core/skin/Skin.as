@@ -17,9 +17,9 @@ package gl3d.core.skin
 		public var cacheFrame:SkinFrame;
 		public var cache:Object = {};//动画名字：｛frameID:skinFrame｝
 		public var maxWeight:int;
-		public var jointNames:Vector.<String> = new Vector.<String>;
+		//public var jointNames:Vector.<String> = new Vector.<String>;
 		public var joints:Vector.<Joint>= new Vector.<Joint>;
-		public var ikNames:Vector.<String> = new Vector.<String>;
+		//public var ikNames:Vector.<String> = new Vector.<String>;
 		public var iks:Vector.<Joint> = new Vector.<Joint>;
 		public var useQuat:Boolean = true;
 		public var useHalfFloat:Boolean = false;
@@ -84,15 +84,17 @@ package gl3d.core.skin
 			var skin:Skin = new Skin;
 			skin.cache = cache;
 			skin.maxWeight = maxWeight;
-			if(jointNames.length){
+			/*if(jointNames.length){
 				skin.jointNames = jointNames.slice();
 			}else{
 				for each(var j:Node3D in joints){
 					skin.jointNames.push(j.name);
 				}
-			}
+			}*/
+			skin.joints = joints;
 			
-			skin.ikNames = ikNames.slice();
+			//skin.ikNames = ikNames.slice();
+			skin.iks = iks;
 			skin.useCpu = useCpu;
 			skin.useHalfFloat = useHalfFloat;
 			skin.useQuat = useQuat;

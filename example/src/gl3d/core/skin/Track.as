@@ -9,7 +9,7 @@ package gl3d.core.skin
 	{
 		public var frames:Vector.<TrackFrame>=new Vector.<TrackFrame>;
 		public var target:Node3D;
-		public var targetName:String;
+		//public var targetName:String;
 		public function Track() 
 		{
 			

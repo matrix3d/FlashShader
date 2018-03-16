@@ -110,7 +110,8 @@ package gl3d.core.skin
 						var t:Track = transitionAnim.tracks[tname];
 						if (t==null){
 							t = new Track;
-							t.targetName = tname;
+							t.target = fanim.tracks[tname].target;
+							//t.targetName = tname;
 							var f2:TrackFrame = new TrackFrame;
 							f2.time = 0;
 							f2.matrix = new Matrix3D;

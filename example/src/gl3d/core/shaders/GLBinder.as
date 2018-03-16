@@ -89,7 +89,8 @@ package gl3d.core.shaders
 		}
 		
 		public function bindJointModelUniform(shader:GLShader, material:Material,isLastSameMaterial:Boolean):void {
-			material.view.renderer.gl3d.setProgramConstantsFromMatrix(as3shader.programType, v.index,material.node.skin.jointRoot.world,true);
+			bindModelUniform(shader, material, isLastSameMaterial);
+			//material.view.renderer.gl3d.setProgramConstantsFromMatrix(as3shader.programType, v.index,material.node.skin.jointRoot.world,true);
 		}
 		
 		public function bindJointsQuatUniform(shader:GLShader, material:Material,isLastSameMaterial:Boolean):void {

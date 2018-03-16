@@ -323,7 +323,7 @@ package gl3d.parser.dae
 					if (result) {
 						track.target = id2node[result[1]];
 						anim.tracks[result[1]] = track;
-						track.targetName = result[1];
+						//track.targetName = result[1];
 						for (var i:int = 0; i < can.input.length; i++ ) {
 							if (anim.maxTime < can.input[i]) {
 								anim.maxTime = can.input[i];
