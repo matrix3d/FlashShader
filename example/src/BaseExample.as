@@ -82,7 +82,7 @@ package
 		public var teapot:Node3D;
 		public var material:Material = new Material;
 		public var _post:String;
-		public var gamepad:Gamepad=new Gamepad;
+		//public var gamepad:Gamepad=new Gamepad;
 		public var fc:FirstPersonCtrl;
 		public var lights:Array = [];
 		public function BaseExample() 
@@ -289,10 +289,10 @@ package
 		}
 		
 		public function initUI():void {
-			if(Multitouch.supportsTouchEvents&&Multitouch.maxTouchPoints)
+		/*	if(Multitouch.supportsTouchEvents&&Multitouch.maxTouchPoints)
 			addChild(gamepad);
 			gamepad.x = 200;
-			gamepad.y = 200;
+			gamepad.y = 200;*/
 			addChild(stats);
 		}
 		
@@ -338,10 +338,10 @@ package
 			}
 			view.updateCtrl();
 			view.render(getTimer());
-			if (gamepad) {
+			/*if (gamepad) {
 				if(fc)fc.inputSpeed = gamepad.speed;
 				if(ac)ac.inputSpeed = gamepad.speed;
-			}
+			}*/
 		}
 		
 		public function get useTexture():Boolean

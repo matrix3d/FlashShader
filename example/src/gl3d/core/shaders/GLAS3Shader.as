@@ -62,7 +62,7 @@ package gl3d.core.shaders
 			binds.push([binder,binder.bindModelUniform]);
 			return u;
 		}
-		public function uniformJointModel():Var {
+		/*public function uniformJointModel():Var {
 			var name:String = "ujointmodel";
 			if (getNamedVar(name)) return getNamedVar(name);
 			var u:Var = matrix();
@@ -70,7 +70,7 @@ package gl3d.core.shaders
 			var binder:GLBinder = new GLBinder(this, u);
 			binds.push([binder,binder.bindJointModelUniform]);
 			return u;
-		}
+		}*/
 		public function uniformView():Var {
 			var name:String = "uview";
 			if (getNamedVar(name)) return getNamedVar(name);

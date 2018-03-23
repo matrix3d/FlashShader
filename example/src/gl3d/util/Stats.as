@@ -24,6 +24,7 @@ package gl3d.util
 		public var lastTime:int = -10000;
 		public var maxMem:int = 0;
 		private var fpss:Array = [];
+		private var counter:int = 0;
 		public function Stats(view:Object=null) 
 		{
 			this.view = view;
@@ -95,10 +96,11 @@ package gl3d.util
 			var mem:int = System.totalMemoryNumber / 1024 / 1024;
 			if (mem > maxMem) maxMem = mem;
 			text += "\nmem : " + mem + " / " + maxMem;
-			if(text!=tf.text){
-			tf.text = text;
 			
-			var fpsGrapHeight:Number = 10;
+			if(text!=tf.text&&(counter%60)==0){
+				tf.text = text;
+			
+				var fpsGrapHeight:Number = 10;
 				graphics.clear();
 				graphics.beginFill(0xffffff, .7);
 				var w:Number = tf.width;
@@ -117,6 +119,7 @@ package gl3d.util
 					}
 				}
 			}
+			counter++;
 		}
 		
 	}

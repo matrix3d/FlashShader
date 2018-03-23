@@ -83,7 +83,7 @@ package
 			//node.material.culling = Context3DTriangleFace.NONE;
 			node.material.wireframeAble = true;
 			
-			//view.scene.addChild(obj.target);
+			view.scene.addChild(obj.target);
 			
 			stage.addEventListener(MouseEvent.CLICK, stage_click);
 			

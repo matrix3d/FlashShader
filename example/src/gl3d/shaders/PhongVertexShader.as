@@ -58,6 +58,7 @@ package gl3d.shaders
 			targetPosition = buffTargetPosition();
 			weight = buffWeights();
 			
+			model = uniformModel();
 			world2local = uniformWorld2Local();
 			view = uniformView();
 			perspective = uniformPerspective();
@@ -67,10 +68,6 @@ package gl3d.shaders
 			var norm:Var = this.norm;
 			var pos:Var = mov(this.pos);
 			if (material.gpuSkin) {
-				
-				
-				model = uniformJointModel();
-				
 				if (material.node.skin.useQuat) {
 					joint = buffJoints();
 					if (!material.node.skin.useHalfFloat){
@@ -123,8 +120,6 @@ package gl3d.shaders
 				if (material.lightAble) {
 					norm = nrm(resultNorm);
 				}
-			}else{
-				model = uniformModel();
 			}
 			
 			if (material.node.scaleFromTo||material.node.rotationStartAndSpeed||(material.node.posVelocityDrawable&&material.node.posVelocityDrawable.norm)){

@@ -146,7 +146,8 @@ package
 			[Embed(source = "assets/fbx/dave/Dave.fbx", mimeType = "application/octet-stream")]var davec:Class;
 			fbx = new FbxParser(new davec);
 			fbx.animc.play("Armature|Walk", 0);
-			fbx.rootNode.setScale(2, 2, 2);
+			fbx.rootNode.setScale(0.01, 0.01, 0.01);
+			fbx.rootNode.setRotation(-90, 0, 0);
 			
 			player = new Node3D;
 			
@@ -162,7 +163,7 @@ package
 			//p.scenes[0].setRotation( -90, 0, 0);// -Math.PI / 2 ;
 			//p.root.rotationY = 0;// -Math.PI;
 			view.scene.addChild(player);
-			addNode(20);
+			addNode(80);
 		}
 		
 		private function addNode(num:int):void {
