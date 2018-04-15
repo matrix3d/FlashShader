@@ -100,7 +100,7 @@ package gl3d.parser.fbx
 		private function readLong(read:ByteArray):Number{
 			var l:uint= read.readUnsignedInt();
 			//read.position += 4;
-			var h:uint = read.readUnsignedInt();
+			var h:int = read.readInt();
 			return l+h*0x100000000;
 		}
 		
