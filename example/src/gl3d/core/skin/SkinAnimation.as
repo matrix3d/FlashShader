@@ -94,17 +94,19 @@ package gl3d.core.skin
 				var mind:int = 100000;
 				for each(var jtrack:Track in tracks){
 					var jnode:Node3D = jtrack.target;
-					var d:int = 0;
-					var findnode:Node3D = jnode;
-					while (findnode){
-						findnode = findnode.parent;
-						d++;
+					if(jnode is Joint){
+						var d:int = 0;
+						var findnode:Node3D = jnode;
+						while (findnode){
+							findnode = findnode.parent;
+							d++;
+						}
+						if (depthJoints[d]==null){
+							depthJoints[d] = [];
+							mind = Math.min(mind,d);
+						}
+						depthJoints[d].push(jnode);
 					}
-					if (depthJoints[d]==null){
-						depthJoints[d] = [];
-						mind = Math.min(mind,d);
-					}
-					depthJoints[d].push(jnode);
 				}
 				var minDepthJoints:Array = depthJoints[mind];
 				while (true){
