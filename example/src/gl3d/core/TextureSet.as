@@ -82,7 +82,7 @@ package gl3d.core {
 				bmd = new BitmapData(w, h, bak.transparent, 0);
 				bmd.draw(bak, new Matrix(w / bak.width, 0, 0, h / bak.height), null, null, null,true);
 			}
-			while (w > 0||h>0) {
+			while (w > 0&&h>0) {
 				if (level == 0) {
 					uploadFromBitmapData(texture, bmd, side, level);
 					
@@ -90,7 +90,7 @@ package gl3d.core {
 						break;
 					}
 				}else {
-					temp = new BitmapData(Math.max(w,1), Math.max(h,1), bmd.transparent, 0);
+					temp = new BitmapData(w, h, bmd.transparent, 0);
 					temp.draw(bmd, new Matrix(temp.width / bmd.width, 0, 0, temp.height / bmd.height));
 					uploadFromBitmapData(texture, temp, side, level);
 					temp.dispose();
