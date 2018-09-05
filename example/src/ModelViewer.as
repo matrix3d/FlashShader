@@ -377,7 +377,7 @@ package
 				node.scaleZ = defScale;
 				view.scene.addChild(node);
 				
-				var cnode:Node3D = curnode.clone();
+				var cnode:Node3D = curnode.clone()||curnode;
 				//node.addChild(cnode);
 				cnode.x = 200;
 			}
