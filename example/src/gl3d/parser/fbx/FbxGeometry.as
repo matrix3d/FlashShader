@@ -17,7 +17,10 @@ package gl3d.parser.fbx{
 			this.vertices = vertices = vertices || FbxTools.getFloats(FbxTools.get(root, "Vertices"));
 			if(root){
 				for each(var v:Object in FbxTools.getAll(root,"LayerElementUV") ) {
-					var uvi:Array = FbxTools.getInts(FbxTools.get(v,"UVIndex", true));
+					var uvidata:Object = FbxTools.get(v, "UVIndex", true);
+					if(uvidata){
+						var uvi:Array = FbxTools.getInts(uvidata);
+					}
 					uv = FbxTools.getFloats(FbxTools.get(v, "UV"));
 					for (var k:int = 0; k < uv.length; k += 2 ) {
 						uv[k+1] = 1 - uv[k+1];
