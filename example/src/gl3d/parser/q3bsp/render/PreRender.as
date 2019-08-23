@@ -6,13 +6,16 @@ package gl3d.parser.q3bsp.render
 	import gl3d.core.Node3D;
 	import gl3d.core.TextureSet;
 	import gl3d.core.VertexBufferSet;
+	import gl3d.core.shaders.GLShader;
 	import gl3d.meshs.Meshs;
 	import gl3d.parser.q3bsp.Q3BSP;
 	import gl3d.parser.q3bsp.Q3BSPFace;
 	import gl3d.parser.q3bsp.Q3BSPLightmap;
 	import gl3d.parser.q3bsp.Q3BSPTexture;
 	import gl3d.parser.q3bsp.Q3BSPVertex;
+	import gl3d.shaders.LightMapFragmentShader;
 	import gl3d.shaders.LightMapGLShader;
+	import gl3d.shaders.LightMapVertexShader;
 	import gl3d.util.Utils;
 	/**
 	 * ...
@@ -80,7 +83,7 @@ package gl3d.parser.q3bsp.render
 					var node:Node3D = new Node3D;
 					node.drawable = d;
 					node.material = new Material;
-					(node.material as Material).shader = new LightMapGLShader;
+					(node.material as Material).shader = new GLShader(new LightMapVertexShader(), new LightMapFragmentShader(node.material as Material));;
 					node.material.diffTexture = diffTexture
 					node.material.lightmapTexture = lightmapTexture
 					target.addChild(node);

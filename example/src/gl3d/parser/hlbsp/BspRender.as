@@ -10,8 +10,11 @@ package gl3d.parser.hlbsp
 	import gl3d.core.TextureSet;
 	import gl3d.core.VertexBufferSet;
 	import gl3d.core.View3D;
+	import gl3d.core.shaders.GLShader;
 	import gl3d.meshs.Meshs;
+	import gl3d.shaders.LightMapFragmentShader;
 	import gl3d.shaders.LightMapGLShader;
+	import gl3d.shaders.LightMapVertexShader;
 	
 	/**
 	 * ...
@@ -112,7 +115,9 @@ package gl3d.parser.hlbsp
 			target.drawable = drawable;
 			drawable.uv2 = new VertexBufferSet(Vector.<Number>(lightmapCoords), 2);
 			target.material = new Material;
-			(target.material as Material).shader = new LightMapGLShader;
+			target.material.diffTexture = new TextureSet(new BitmapData(1, 1));
+			target.material.lightmapTexture = new TextureSet(new BitmapData(1, 1));
+			(target.material as Material).shader = new GLShader(new LightMapVertexShader(), new LightMapFragmentShader(target.material as Material));// new LightMapGLShader;
 		}
 		
 		/**

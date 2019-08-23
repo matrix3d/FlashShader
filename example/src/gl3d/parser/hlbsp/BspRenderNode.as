@@ -7,6 +7,7 @@ package gl3d.parser.hlbsp
 	import gl3d.core.MaterialBase;
 	import gl3d.core.Node3D;
 	import gl3d.core.View3D;
+	import gl3d.ctrl.Ctrl;
 	/**
 	 * ...
 	 * @author lizhi
@@ -24,6 +25,7 @@ package gl3d.parser.hlbsp
 			render = new BspRender(this);
 			render.preRender();
 			
+			controllers = new Vector.<Ctrl>();
 			//addChild(render.target);
 		}
 		override public function update(view:View3D, material:MaterialBase = null):void  

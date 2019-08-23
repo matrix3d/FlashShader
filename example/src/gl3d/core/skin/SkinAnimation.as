@@ -195,7 +195,7 @@ package gl3d.core.skin
 			
 			var lastSkin:Skin;
 			var first:Boolean = true;
-			for each(var target:Node3D in targets){
+			for each(target in targets){
 				if (target.skin == null) continue;
 				if (lastSkin==target.skin){
 					break;

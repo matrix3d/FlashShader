@@ -81,7 +81,7 @@ package
 		
 		override public function initUI():void {
 			super.initUI();
-			if (aui.parent) aui.parent.removeChild(aui);
+			//if (aui.parent) aui.parent.removeChild(aui);
 			
 			resetTexMenu();
 			image = new Bitmap;
