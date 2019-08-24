@@ -14,22 +14,29 @@ package gl3d.parser.hlbsp
 	 */
 	public class BspRenderNode extends Node3D
 	{
+		private var culling:Boolean;
 		public var bsp:Bsp;
 		public var view:View3D;
 		public var render:BspRender;
-		public function BspRenderNode(b:ByteArray,view:View3D) 
+		public function BspRenderNode(b:ByteArray,view:View3D,culling:Boolean=true) 
 		{
+			this.culling = culling;
 			this.view = view;
 			bsp=new Bsp;
 			bsp.loadBSP(b);
+			
 			render = new BspRender(this);
 			render.preRender();
+			if(culling){
+				controllers = new Vector.<Ctrl>();
+			}else{
+				addChild(render.renderAll());
+			}
 			
-			controllers = new Vector.<Ctrl>();
-			//addChild(render.target);
 		}
 		override public function update(view:View3D, material:MaterialBase = null):void  
 		{
+			if (!culling) return;
 			world.copyFrom(matrix);
 			if (parent) {
 				world.append(parent.world);

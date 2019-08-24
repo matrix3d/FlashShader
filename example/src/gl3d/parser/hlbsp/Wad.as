@@ -199,6 +199,11 @@ package gl3d.parser.hlbsp
 				gl.bindTexture(gl.TEXTURE_2D, null);
 			});*/
 			
+			if (width > 0 && height > 0){
+				
+			}else{
+				return null;
+			}
 			var texture:BitmapData = new BitmapData(width, height);
 			texture.lock();
 			for (i = 0; i < textureData.length;i+=4 ) {

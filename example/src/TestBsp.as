@@ -91,6 +91,11 @@ package
 			var vbox:VBox = new VBox(this, 5, 5);
 			new PushButton(vbox, 0, 0, "loadbsp", loadbsp);
 			new PushButton(vbox, 0, 0, "loadwad", loadwad);
+			new PushButton(vbox, 0, 0, "tojson", function():void{
+				var obj:Array = bsp.render.toOBJ();
+				var fr:FileReference = new FileReference;
+				fr.save(obj[0], "test.obj");
+			});
 			file.addEventListener(Event.SELECT, file_select);
 			file.addEventListener(Event.COMPLETE, file_complete);
 		}
@@ -153,11 +158,11 @@ package
 					bsp.parent.children.splice(bsp.parent.children.indexOf(bsp), 1);
 				}
 			}
-			bsp = new BspRenderNode(b, view);
+			bsp = new BspRenderNode(b, view,true);
 			view.scene.addChild(bsp);
 			bsp.scaleX = bsp.scaleY = bsp.scaleZ = .1;
 			bsp.scaleX *= -1;
-			bsp.setRotation(90,  0,0);
+			bsp.setRotation(-90,  0,0);
 			if (ts) {
 				bsp.bsp.loadedWads = bsp.bsp.loadedWads.concat(ts);
 			}

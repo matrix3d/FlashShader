@@ -29,6 +29,11 @@ package gl3d.parser.hlbsp
 		private var view:View3D;
 		private var bspRenderNode:BspRenderNode;
 		
+		private var vertices:Array;
+		private var texCoords:Array;
+		private var lightmapCoords:Array;
+		private var normals:Array;
+		
 		public function BspRender(bspRenderNode:BspRenderNode)
 		{
 			this.bspRenderNode = bspRenderNode;
@@ -39,10 +44,10 @@ package gl3d.parser.hlbsp
 		
 		public function preRender():void
 		{
-			var vertices:Array = new Array();
-			var texCoords:Array = new Array();
-			var lightmapCoords:Array = new Array();
-			var normals:Array = new Array();
+			vertices = new Array();
+			texCoords = new Array();
+			lightmapCoords = new Array();
+			normals = new Array();
 			
 			indexs = [];
 			
@@ -118,6 +123,136 @@ package gl3d.parser.hlbsp
 			target.material.diffTexture = new TextureSet(new BitmapData(1, 1));
 			target.material.lightmapTexture = new TextureSet(new BitmapData(1, 1));
 			(target.material as Material).shader = new GLShader(new LightMapVertexShader(), new LightMapFragmentShader(target.material as Material));// new LightMapGLShader;
+		}
+		
+		/**
+		 * 
+		 * @return 0 obj,1 mtl
+		 */
+		public function toOBJ(name:String = "",mtllib:String=""):Array{
+			var mtl:String = "";
+			var t2f:Object = {};
+			for each(var faceIndex:int in bsp.markSurfaces){
+				var face:BspFace = bsp.faces[faceIndex];
+				
+				if (face.styles[0] == 0xFF)
+					continue; // Skip sky faces
+				var texInfo:BspTextureInfo = bsp.textureInfos[face.textureInfo];
+				if (t2f[texInfo.mipTexture]==null){
+					t2f[texInfo.mipTexture] = [];
+					
+					var bmd:BitmapData = bsp.textureLookup[texInfo.mipTexture];
+					var m:BspMipTexture = bsp.mipTextures[texInfo.mipTexture]; 
+					var mname:String = ((bmd&&bmd!=bsp.whiteTexture)?name:"") + m.name;
+					
+					mtl += "newmtl " + mname+"\r\n"
+					+"Kd 1.0000 1.0000 1.0000\r\n"
+					+"illum 0\r\n"
+					+"map_Kd "+mname+".png\r\n"
+					
+				}
+				t2f[texInfo.mipTexture].push(faceIndex);
+			}
+			
+			var obj:String = "# objencode v0.1\r\n";
+			obj += "mtllib "+mtllib + "\r\n";
+			var drawable:Drawable = target.drawable;
+			var v:Vector.<Number> = drawable.pos.data;
+			for (var i:int = 0; i < v.length;i+=3 ) {
+				obj +="v "+ v[i]+" "+v[i+1]+" "+(v[i+2])+"\r\n";
+			}
+			var vt:Vector.<Number> = drawable.uv.data;
+			for (i = 0; i < vt.length;i+=2 ) {
+				obj +="vt "+ vt[i]+" "+(1-vt[i+1])+"\r\n";
+			}
+			obj += "s off\r\n";
+			for (var tid:int in t2f){
+				var bmd:BitmapData = bsp.textureLookup[tid];
+				var m:BspMipTexture = bsp.mipTextures[tid];
+				var mname:String = ((bmd&&bmd!=bsp.whiteTexture)?name:"") + m.name;
+				obj += "g " + mname + "\r\n"
+				+"usemtl " + mname + "\r\n";
+				for each(faceIndex in t2f[tid]){
+					var face:BspFace = bsp.faces[faceIndex];
+					if (face.styles[0] == 0xFF)
+						continue; // Skip sky faces
+					var texInfo:BspTextureInfo = bsp.textureInfos[face.textureInfo];
+					
+					// if the light map offset is not -1 and the lightmap lump is not empty, there are lightmaps
+					var lightmapAvailable:Boolean = face.lightmapOffset != -1 && bsp.header.lumps[Bsp.LUMP_LIGHTING].length > 0;
+					//gl.activeTexture(gl.TEXTURE1);
+					//gl.bindTexture(gl.TEXTURE_2D, this.lightmapLookup[faceIndex]);
+					var ins:Vector.<uint>=  (indexs[faceIndex] as IndexBufferSet).data;
+					
+					for (i = 0; i < ins.length; i += 3 ) {
+						var i0:int = ins[i]+ 1;
+						var i1:int = ins[i+1]+ 1;
+						var i2:int = ins[i+2]+1;
+						obj +="f "+ i0+"/"+i0+" "+ i1+"/"+i1+" "+ i2+"/"+i2+"\r\n"
+					}
+				}
+			}
+			return [obj,mtl];
+		}
+		
+		public function renderAll():Node3D{
+			var t2f:Object = {};
+			for each(var faceIndex:int in bsp.markSurfaces){
+				var face:BspFace = bsp.faces[faceIndex];
+				
+				if (face.styles[0] == 0xFF)
+					continue; // Skip sky faces
+				var texInfo:BspTextureInfo = bsp.textureInfos[face.textureInfo];
+				if (t2f[texInfo.mipTexture]==null){
+					t2f[texInfo.mipTexture] = [];
+				}
+				t2f[texInfo.mipTexture].push(faceIndex);
+			}
+			
+			var n:Node3D = new Node3D;
+			for (var tid:int in t2f){
+				var color:Vector3D = new Vector3D(Math.random(), Math.random(), Math.random(), 1);
+				for each(faceIndex in t2f[tid]){
+					var face:BspFace = bsp.faces[faceIndex];
+					if (face.styles[0] == 0xFF)
+						continue; // Skip sky faces
+					var texInfo:BspTextureInfo = bsp.textureInfos[face.textureInfo];
+					
+					// if the light map offset is not -1 and the lightmap lump is not empty, there are lightmaps
+					var lightmapAvailable:Boolean = face.lightmapOffset != -1 && bsp.header.lumps[Bsp.LUMP_LIGHTING].length > 0;
+					//gl.activeTexture(gl.TEXTURE1);
+					//gl.bindTexture(gl.TEXTURE_2D, this.lightmapLookup[faceIndex]);
+					var bmd:BitmapData= bsp.textureLookup[texInfo.mipTexture];
+					var lbmd:BitmapData = bsp.lightmapLookup[faceIndex];
+					
+					var target:Node3D = new Node3D;
+					
+					var drawable:Drawable = new Drawable;//Meshs.createDrawable(null, Vector.<Number>(vertices), Vector.<Number>(texCoords),Vector.<Number>(normals),null);
+					drawable.uv = this.target.drawable.uv;
+					drawable.pos = this.target.drawable.pos;
+					drawable.uv2 = this.target.drawable.uv2;
+					drawable.norm = this.target.drawable.norm;
+					target.drawable = drawable;
+					target.material = new Material;
+					
+					target.drawable.index = indexs[faceIndex];
+					var texture:TextureSet = bmd2texture[bmd];
+					var ltexture:TextureSet = bmd2texture[lbmd];
+					if (texture==null) {
+						texture=bmd2texture[bmd]=new TextureSet(bmd);
+					}
+					if (ltexture==null) {
+						ltexture=bmd2texture[lbmd]=new TextureSet(lbmd);
+					}
+					//target.material.diffTexture = texture;
+					//target.material.lightmapTexture = ltexture;
+					
+					target.material.color = color;
+					//(target.material as Material).shader = new GLShader(new LightMapVertexShader(), new LightMapFragmentShader(target.material as Material));
+					n.addChild(target);
+				}
+			}
+			return n;
 		}
 		
 		/**
