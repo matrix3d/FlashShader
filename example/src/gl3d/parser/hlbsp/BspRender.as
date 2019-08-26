@@ -1,7 +1,11 @@
 package gl3d.parser.hlbsp
 {
 	import flash.display.BitmapData;
+	import flash.display.PNGEncoderOptions;
+	import flash.geom.Point;
+	import flash.geom.Rectangle;
 	import flash.geom.Vector3D;
+	import flash.net.FileReference;
 	import flash.utils.Dictionary;
 	import gl3d.core.Drawable;
 	import gl3d.core.IndexBufferSet;
@@ -15,6 +19,7 @@ package gl3d.parser.hlbsp
 	import gl3d.shaders.LightMapFragmentShader;
 	import gl3d.shaders.LightMapGLShader;
 	import gl3d.shaders.LightMapVertexShader;
+	import org.villekoskela.utils.RectanglePacker;
 	
 	/**
 	 * ...
@@ -34,6 +39,8 @@ package gl3d.parser.hlbsp
 		private var lightmapCoords:Array;
 		private var normals:Array;
 		
+		private var min2maxLightmap:Object = {};//key id ,value bmd
+		private var min2maxid:Object = {};
 		public function BspRender(bspRenderNode:BspRenderNode)
 		{
 			this.bspRenderNode = bspRenderNode;
@@ -44,6 +51,43 @@ package gl3d.parser.hlbsp
 		
 		public function preRender():void
 		{
+			//合并lightmap贴图
+			var rps:Array = [];
+			var rp:RectanglePacker;// = new RectanglePacker(2048, 2048);
+			var maxbmd:BitmapData;
+			var min2maxrect:Object = {};//key id,value rectagele
+			for (var i:int = 0; i < bsp.lightmapLookup.length;i++ ){
+				var bmd:BitmapData = bsp.lightmapLookup[i] as BitmapData;
+				if (bmd){
+					while(true){
+						if (rp==null){
+							rp = new RectanglePacker(2048, 2048, 1);
+							rps.push(rp);
+							maxbmd = new BitmapData(2048, 2048, true,0);
+						}
+						var count:int = rp.rectangleCount;
+						rp.insertRectangle(bmd.width, bmd.height, i);
+						rp.packRectangles(false);
+						if (rp.rectangleCount<=count){
+							rp = null;
+						}else{
+							min2maxid[i] = rps.length-1;
+							min2maxLightmap[i] = maxbmd;
+							var rect:Rectangle = new Rectangle;
+							min2maxrect[i] = rp.getRectangle(rp.rectangleCount - 1, rect);
+							maxbmd.copyPixels(bmd, bmd.rect, new Point(rect.x, rect.y));
+							break;
+						}
+					}
+				}
+			}
+			
+			//var f:FileReference = new FileReference;
+			//f.save(maxbmd.encode(maxbmd.rect, new PNGEncoderOptions), "1.png");
+			
+			
+			//////////////////////////
+			
 			vertices = new Array();
 			texCoords = new Array();
 			lightmapCoords = new Array();
@@ -57,6 +101,7 @@ package gl3d.parser.hlbsp
 			// for each face
 			for (var i:int = 0; i < bsp.faces.length; i++)
 			{
+				rect = min2maxrect[i];
 				var face:BspFace = bsp.faces[i];
 				var index:Vector.<uint> = new Vector.<uint>;
 				indexs[i] = new IndexBufferSet(index);
@@ -100,8 +145,15 @@ package gl3d.parser.hlbsp
 					texCoords.push(texCoord.s);
 					texCoords.push(texCoord.t);
 					
-					lightmapCoords.push(lightmapCoord.s);
-					lightmapCoords.push(lightmapCoord.t);
+					//根据st计算出新的st
+					if(rect){
+						lightmapCoords.push(rect.x/2048+rect.width/2048*lightmapCoord.s);
+						lightmapCoords.push(rect.y / 2048 + rect.height / 2048 * lightmapCoord.t);
+					}else{
+						///////////
+						lightmapCoords.push(lightmapCoord.s);
+						lightmapCoords.push(lightmapCoord.t);
+					}
 					
 					normals.push(normal.x);
 					normals.push(normal.y);
@@ -199,34 +251,33 @@ package gl3d.parser.hlbsp
 			var t2f:Object = {};
 			for each(var faceIndex:int in bsp.markSurfaces){
 				var face:BspFace = bsp.faces[faceIndex];
-				
 				if (face.styles[0] == 0xFF)
 					continue; // Skip sky faces
 				var texInfo:BspTextureInfo = bsp.textureInfos[face.textureInfo];
-				if (t2f[texInfo.mipTexture]==null){
-					t2f[texInfo.mipTexture] = [];
+				var key:uint = (texInfo.mipTexture << 16) | min2maxid[faceIndex];
+				if (t2f[key]==null){
+					t2f[key] = [];
 				}
-				t2f[texInfo.mipTexture].push(faceIndex);
+				t2f[key].push(faceIndex);
 			}
 			
 			var n:Node3D = new Node3D;
-			for (var tid:int in t2f){
-				var color:Vector3D = new Vector3D(Math.random(), Math.random(), Math.random(), 1);
-				for each(faceIndex in t2f[tid]){
+			for (var keyv:String in t2f){
+				key = parseInt(keyv);
+				var tid:int = key >> 16;
+				var i2:Array = [];
+				for each(faceIndex in t2f[keyv]){
 					var face:BspFace = bsp.faces[faceIndex];
 					if (face.styles[0] == 0xFF)
 						continue; // Skip sky faces
-					var texInfo:BspTextureInfo = bsp.textureInfos[face.textureInfo];
-					
-					// if the light map offset is not -1 and the lightmap lump is not empty, there are lightmaps
-					var lightmapAvailable:Boolean = face.lightmapOffset != -1 && bsp.header.lumps[Bsp.LUMP_LIGHTING].length > 0;
-					//gl.activeTexture(gl.TEXTURE1);
-					//gl.bindTexture(gl.TEXTURE_2D, this.lightmapLookup[faceIndex]);
-					var bmd:BitmapData= bsp.textureLookup[texInfo.mipTexture];
-					var lbmd:BitmapData = bsp.lightmapLookup[faceIndex];
-					
+					for each(var ii:uint in (indexs[faceIndex] as IndexBufferSet).data){
+						i2.push(ii);
+					}
+				}
+				
+				if(i2.length>0){
 					var target:Node3D = new Node3D;
-					
+						
 					var drawable:Drawable = new Drawable;//Meshs.createDrawable(null, Vector.<Number>(vertices), Vector.<Number>(texCoords),Vector.<Number>(normals),null);
 					drawable.uv = this.target.drawable.uv;
 					drawable.pos = this.target.drawable.pos;
@@ -235,7 +286,11 @@ package gl3d.parser.hlbsp
 					target.drawable = drawable;
 					target.material = new Material;
 					
-					target.drawable.index = indexs[faceIndex];
+					var bmd:BitmapData= bsp.textureLookup[tid];
+					var lbmd:BitmapData = min2maxLightmap[key&0xffff];
+					
+					target.drawable.index = new IndexBufferSet(Vector.<uint>(i2));
+					
 					var texture:TextureSet = bmd2texture[bmd];
 					var ltexture:TextureSet = bmd2texture[lbmd];
 					if (texture==null) {
@@ -244,12 +299,11 @@ package gl3d.parser.hlbsp
 					if (ltexture==null) {
 						ltexture=bmd2texture[lbmd]=new TextureSet(lbmd);
 					}
-					//target.material.diffTexture = texture;
-					//target.material.lightmapTexture = ltexture;
-					
-					target.material.color = color;
-					//(target.material as Material).shader = new GLShader(new LightMapVertexShader(), new LightMapFragmentShader(target.material as Material));
+					target.material.diffTexture = texture;
+					target.material.lightmapTexture = ltexture;
 					n.addChild(target);
+					(target.material as Material).shader = new GLShader(new LightMapVertexShader(), new LightMapFragmentShader(target.material as Material));// new LightMapGLShader;
+		
 				}
 			}
 			return n;
@@ -461,7 +515,7 @@ package gl3d.parser.hlbsp
 			//gl.activeTexture(gl.TEXTURE1);
 			//gl.bindTexture(gl.TEXTURE_2D, this.lightmapLookup[faceIndex]);
 			var bmd:BitmapData= bsp.textureLookup[texInfo.mipTexture];
-			var lbmd:BitmapData= bsp.lightmapLookup[faceIndex];
+			var lbmd:BitmapData = min2maxLightmap[faceIndex];//bsp.lightmapLookup[faceIndex];
 			target.drawable.index = indexs[faceIndex];
 			var texture:TextureSet = bmd2texture[bmd];
 			var ltexture:TextureSet = bmd2texture[lbmd];

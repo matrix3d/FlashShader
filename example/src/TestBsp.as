@@ -158,7 +158,7 @@ package
 					bsp.parent.children.splice(bsp.parent.children.indexOf(bsp), 1);
 				}
 			}
-			bsp = new BspRenderNode(b, view,true);
+			bsp = new BspRenderNode(b, view,false);
 			view.scene.addChild(bsp);
 			bsp.scaleX = bsp.scaleY = bsp.scaleZ = .1;
 			bsp.scaleX *= -1;
