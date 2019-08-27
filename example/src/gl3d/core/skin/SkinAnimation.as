@@ -175,7 +175,6 @@ package gl3d.core.skin
 				}
 				t = tid * 60 / 1000;
 			}
-			
 			for each(var track:Track in tracks) {//更新动画
 				var last:TrackFrame = null;
 				var f:TrackFrame = null;
@@ -191,7 +190,7 @@ package gl3d.core.skin
 					track.target.matrix.copyFrom(f.matrix);
 				}
 			}
-			
+			targets[0].updateTransforms(true);
 			
 			var lastSkin:Skin;
 			var first:Boolean = true;

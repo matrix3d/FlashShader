@@ -91,7 +91,7 @@ package
 			var vbox:VBox = new VBox(this, 5, 5);
 			new PushButton(vbox, 0, 0, "loadbsp", loadbsp);
 			new PushButton(vbox, 0, 0, "loadwad", loadwad);
-			new PushButton(vbox, 0, 0, "tojson", function():void{
+			new PushButton(vbox, 0, 0, "toobj", function():void{
 				var obj:Array = bsp.render.toOBJ();
 				var fr:FileReference = new FileReference;
 				fr.save(obj[0], "test.obj");
