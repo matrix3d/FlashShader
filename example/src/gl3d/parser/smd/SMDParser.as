@@ -19,6 +19,7 @@ package gl3d.parser.smd
 	import gl3d.core.skin.TrackFrame;
 	import gl3d.ctrl.Ctrl;
 	import gl3d.meshs.Meshs;
+	import gl3d.util.MatLoadMsg;
 	/**
 	 * ...
 	 * @author lizhi
@@ -28,7 +29,7 @@ package gl3d.parser.smd
 		public var joints:Array;
 		public var jointMap:Object = {};
 		public var target:Node3D=new Node3D;
-		public function SMDParser(txt:String,mesh:SMDParser=null) 
+		public function SMDParser(txt:String,mesh:SMDParser=null,path:String="") 
 		{
 			var decoder:SMDDecoder = new SMDDecoder(txt);
 			var skin:Skin = new Skin;
@@ -42,8 +43,8 @@ package gl3d.parser.smd
 				var n:Joint = new Joint(arr[1]);
 				n.type = "JOINT";
 				jointMap[arr[1]] = n;
-				n.drawable = drawable;
-				n.material = m;
+				//n.drawable = drawable;
+				//n.material = m;
 				joints[arr[0]] = n;
 				if (arr[2]==-1){
 					jroot.addChild(n);
@@ -100,8 +101,9 @@ package gl3d.parser.smd
 				var node:Node3D = new Node3D;
 				node.skin = skin;
 				node.material = new Material;
-				[Embed(source = "../../../assets/smd/ARTIC_Working1.png")]var c:Class;
-				node.material.diffTexture = new TextureSet((new c as Bitmap).bitmapData);
+				new MatLoadMsg(path+(decoder.triangless[0][0] as String).replace(/\..*$/g,".png"),null,node.material);
+				/*[Embed(source = "../../../assets/smd/ARTIC_Working1.png")]var c:Class;
+				node.material.diffTexture = new TextureSet((new c as Bitmap).bitmapData);*/
 				node.drawable = Meshs.createDrawable(indexs, poss, uvs, norms);
 				node.drawable.joint = new VertexBufferSet(js,1);
 				node.drawable.weight = new VertexBufferSet(ws,1);
@@ -117,7 +119,7 @@ package gl3d.parser.smd
 				var anim:SkinAnimation = new SkinAnimation;
 				anim.isCache = false;
 				animc.add(anim);
-				anim.maxTime = decoder.skeletons.length/1000*60;
+				anim.maxTime = decoder.skeletons.length/1000*24;
 				anim.targets = Vector.<Node3D>([mesh.target.children[0]]);
 				for (var i:int = 0; i < decoder.skeletons.length;i++ ){
 					var darr:Array = decoder.skeletons[i];
