@@ -190,7 +190,6 @@ package gl3d.core.skin
 					track.target.matrix.copyFrom(f.matrix);
 				}
 			}
-			targets[0].updateTransforms(true);
 			
 			var lastSkin:Skin;
 			var first:Boolean = true;
@@ -235,7 +234,6 @@ package gl3d.core.skin
 						currentFrame.matrixs.push(new Matrix3D);
 					}
 				}
-				
 				var js:Vector.<Joint> = target.skin.joints;
 				var ms:Vector.<Matrix3D> = currentFrame.matrixs;
 				var useHF:Boolean = target.skin.useHalfFloat;

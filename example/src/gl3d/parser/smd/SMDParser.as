@@ -10,6 +10,9 @@ package gl3d.parser.smd
 	import gl3d.core.Material;
 	import gl3d.core.Node3D;
 	import gl3d.core.TextureSet;
+	import gl3d.core.VertexBufferSet;
+	import gl3d.core.skin.Joint;
+	import gl3d.core.skin.Skin;
 	import gl3d.core.skin.SkinAnimation;
 	import gl3d.core.skin.SkinAnimationCtrl;
 	import gl3d.core.skin.Track;
@@ -28,14 +31,16 @@ package gl3d.parser.smd
 		public function SMDParser(txt:String,mesh:SMDParser=null) 
 		{
 			var decoder:SMDDecoder = new SMDDecoder(txt);
-			
+			var skin:Skin = new Skin;
+			skin.maxWeight = 1;
 			var jroot:Node3D = new Node3D;
 			joints = [];
 			var drawable:Drawable = Meshs.cube();
 			var m:Material = new Material;
 			m.passCompareMode = Context3DCompareMode.ALWAYS;
 			for each(var arr:Array in decoder.nodes){
-				var n:Node3D = new Node3D(arr[1]);
+				var n:Joint = new Joint(arr[1]);
+				n.type = "JOINT";
 				jointMap[arr[1]] = n;
 				n.drawable = drawable;
 				n.material = m;
@@ -46,27 +51,34 @@ package gl3d.parser.smd
 					joints[arr[2]].addChild(n);
 				}
 			}
+			skin.joints = Vector.<Joint>(joints);
 			
 			for each(var tarr:Array in decoder.skeletons[0]){
-				/*var cn:Node3D = joints[tarr[0]];
-				cn.setPosition(tarr[1], tarr[2], tarr[3]);
+				var cn:Joint = joints[tarr[0]];
+				/*cn.setPosition(tarr[1], tarr[2], tarr[3]);
 				cn.setRotation(tarr[4] * 180 / Math.PI, tarr[5] * 180 / Math.PI, tarr[6] * 180 / Math.PI);*/
 				var ma:Matrix3D = new Matrix3D;
 				ma.appendRotation(tarr[4]* 180 / Math.PI,Vector3D.X_AXIS);
 				ma.appendRotation(tarr[5]* 180 / Math.PI,Vector3D.Y_AXIS);
 				ma.appendRotation(tarr[6]* 180 / Math.PI, Vector3D.Z_AXIS);
 				ma.appendTranslation(tarr[1], tarr[2], tarr[3]);
-				(joints[tarr[0]] as Node3D).matrix = ma;
+				cn.matrix = ma;
+				cn.invBindMatrix.copyFrom(cn.world);
+				cn.invBindMatrix.invert();
 			}
 			
 			var indexs:Vector.<uint> = new Vector.<uint>();
 			var poss:Vector.<Number> = new Vector.<Number>;
 			var uvs:Vector.<Number> = new Vector.<Number>();
 			var norms:Vector.<Number> = new Vector.<Number>;
+			var js:Vector.<Number> = new Vector.<Number>;
+			var ws:Vector.<Number> = new Vector.<Number>;
 			for (var i:int = 0; i < decoder.triangless.length;i++ ){
 				var v0:Array = decoder.triangless[i][1];
 				var v1:Array = decoder.triangless[i][2];
 				var v2:Array = decoder.triangless[i][3];
+				js.push(v0[0], v1[0], v2[0]);
+				ws.push(1, 1, 1);
 				poss.push(
 					v0[1], v0[2], v0[3],
 					v1[1], v1[2], v1[3],
@@ -86,13 +98,15 @@ package gl3d.parser.smd
 			}
 			if(indexs.length>0){
 				var node:Node3D = new Node3D;
+				node.skin = skin;
 				node.material = new Material;
 				[Embed(source = "../../../assets/smd/ARTIC_Working1.png")]var c:Class;
 				node.material.diffTexture = new TextureSet((new c as Bitmap).bitmapData);
 				node.drawable = Meshs.createDrawable(indexs, poss, uvs, norms);
+				node.drawable.joint = new VertexBufferSet(js,1);
+				node.drawable.weight = new VertexBufferSet(ws,1);
 				target.addChild(node);
 			}
-			
 			
 			target.addChild(jroot);
 			
@@ -104,7 +118,7 @@ package gl3d.parser.smd
 				anim.isCache = false;
 				animc.add(anim);
 				anim.maxTime = decoder.skeletons.length/1000*60;
-				anim.targets = Vector.<Node3D>(mesh.joints);
+				anim.targets = Vector.<Node3D>([mesh.target.children[0]]);
 				for (var i:int = 0; i < decoder.skeletons.length;i++ ){
 					var darr:Array = decoder.skeletons[i];
 					for each( tarr in darr){
