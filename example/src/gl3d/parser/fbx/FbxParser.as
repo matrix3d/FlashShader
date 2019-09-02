@@ -7,6 +7,7 @@ package gl3d.parser.fbx
 	import gl3d.core.Drawable;
 	import gl3d.core.DrawableSource;
 	import gl3d.core.Material;
+	import gl3d.core.MaterialBase;
 	import gl3d.core.Node3D;
 	import gl3d.core.skin.Joint;
 	import gl3d.core.skin.Skin;
@@ -240,6 +241,8 @@ package gl3d.parser.fbx
 								submesh.material = new Material;
 								var material:Object = getChilds(o.model, "Material")[i];
 								
+								
+								
 								if(material){
 									var materialObj:Object = { };
 									for each(var p:Object in FbxTools.getAll(material, "Properties70.P").concat(FbxTools.getAll(material, "Properties60.Property"))) {
@@ -258,37 +261,22 @@ package gl3d.parser.fbx
 									if (materialObj.AmbientColor) {
 										submesh.material.ambient.setTo(materialObj.AmbientColor.x,materialObj.AmbientColor.y,materialObj.AmbientColor.z);
 									}
-									
 									var tex:Object = getChild(material, "Texture") ;
 									if (tex) {
-										var texPath:String = String(FbxTools.get(tex, "FileName").props[0]);
-										var video:Object = getChild(tex, "Video");
-										if (video){
-											var videoObj:Object = FbxTools.get(video, "Content", true);
-											if (videoObj&&videoObj.props){
-												var videoByte:ByteArray = videoObj.props[0] as ByteArray;
-											}
-										}
-										new MatLoadMsg(texPath,videoByte, submesh.material);
 									}else{
 										var texlt = getChild(material, "LayeredTexture");
 										if (texlt){
 											var texs:Array = getChilds(texlt, "Texture");
 											for each(tex in texs){
-												 texPath = String(FbxTools.get(tex, "FileName").props[0]);
-												 video = getChild(tex, "Video");
-												if (video){
-													 videoObj = FbxTools.get(video, "Content", true);
-													if (videoObj&&videoObj.props){
-														 videoByte = videoObj.props[0] as ByteArray;
-													}
-												}
-												new MatLoadMsg(texPath,videoByte, submesh.material);
 												break;//只显示一个贴图，不支持多贴图
 											}
-											//trace(tex);
-											//var texPath:String = String(FbxTools.get(tex, "FileName").props[0]);
+										}else{
+											var md:Object = getParent(material, "Model");//模型上的贴图
+											tex = getChild(md, "Texture") ;
 										}
+									}
+									if (tex){
+										bindTexture(tex, submesh.material);
 									}
 								}
 								//break;
@@ -359,6 +347,18 @@ package gl3d.parser.fbx
 			}
 
 			return scene.children.length == 1 ? scene.children[0] : scene;
+		}
+		
+		private function bindTexture(tex:Object,material:MaterialBase):void{
+			var texPath:String = String(FbxTools.get(tex, "FileName").props[0]);
+			var video:Object = getChild(tex, "Video");
+			if (video){
+				var videoObj:Object = FbxTools.get(video, "Content", true);
+				if (videoObj&&videoObj.props){
+					var videoByte:ByteArray = videoObj.props[0] as ByteArray;
+				}
+			}
+			new MatLoadMsg(texPath,videoByte, material);
 		}
 		
 		private function createSkin(o:Object, hgeom:Object):void {
