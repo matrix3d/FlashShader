@@ -186,7 +186,7 @@ package gl3d.core.skin
 				}
 				if (f && last) {
 					interpolate(last.matrix, f.matrix, (t - last.time) / (f.time-last.time), track.target.matrix);
-				}else {
+				}else if(f){
 					track.target.matrix.copyFrom(f.matrix);
 				}
 			}

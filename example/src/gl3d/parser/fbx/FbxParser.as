@@ -52,6 +52,11 @@ package gl3d.parser.fbx
 			}
 			root = { name : "Root", props : [0, "Root", "Root"], childs :childs };
 			
+			var header:Object= FbxTools.get(root, "FBXHeaderExtension");
+			if (header){
+				//trace(JSON.stringify(header, null, 4));
+			}
+			
 			for each(var obj:Object in root.childs) {
 				init(obj);
 			}
@@ -249,7 +254,9 @@ package gl3d.parser.fbx
 										name = String(p.props[0]);
 										switch( name) {
 										case "AmbientColor":
+										case "Ambient":
 										case "DiffuseColor":
+										case "Diffuse":
 											var l:int = p.props.length;
 											materialObj[name] = new Vector3D(p.props[l-3], p.props[l-2], p.props[l-1]);
 											break;
@@ -261,18 +268,28 @@ package gl3d.parser.fbx
 									if (materialObj.AmbientColor) {
 										submesh.material.ambient.setTo(materialObj.AmbientColor.x,materialObj.AmbientColor.y,materialObj.AmbientColor.z);
 									}
-									var tex:Object = getChild(material, "Texture") ;
+									/*if (materialObj.Diffuse) {
+										submesh.material.color.setTo(materialObj.Diffuse.x,materialObj.Diffuse.y,materialObj.Diffuse.z);
+									}
+									if (materialObj.Ambient) {
+										submesh.material.ambient.setTo(materialObj.Ambient.x,materialObj.Ambient.y,materialObj.Ambient.z);
+									}*/
+									var tex:Object = getChild(material, "Texture",false,"diffuse") ;
 									if (tex) {
 									}else{
 										var texlt = getChild(material, "LayeredTexture");
 										if (texlt){
 											var texs:Array = getChilds(texlt, "Texture");
 											for each(tex in texs){
+												trace("贴图layered里来");
 												break;//只显示一个贴图，不支持多贴图
 											}
 										}else{
 											var md:Object = getParent(material, "Model");//模型上的贴图
 											tex = getChild(md, "Texture") ;
+											if (tex){
+												trace("贴图模型里来");
+											}
 										}
 									}
 									if (tex){
@@ -505,8 +522,16 @@ package gl3d.parser.fbx
 			return p[0];
 		}
 
-		public function getChild( node : Object, nodeName : String, opt : Boolean=false ):Object {
+		public function getChild( node : Object, nodeName : String, opt : Boolean=false ,sort:String=null):Object {
 			var c:Array = getChilds(node, nodeName);
+			if (sort){
+				for each(var cc:Object in c){
+					var n:String = FbxTools.getName(cc);
+					if (n&&n.toLocaleLowerCase().indexOf(sort)!=-1){
+						return cc;
+					}
+				}
+			}
 			return c[0];
 		}
 
