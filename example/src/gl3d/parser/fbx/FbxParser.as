@@ -244,7 +244,6 @@ package gl3d.parser.fbx
 									var materialObj:Object = { };
 									for each(var p:Object in FbxTools.getAll(material, "Properties70.P").concat(FbxTools.getAll(material, "Properties60.Property"))) {
 										name = String(p.props[0]);
-										//trace(name);
 										switch( name) {
 										case "AmbientColor":
 										case "DiffuseColor":
@@ -271,6 +270,25 @@ package gl3d.parser.fbx
 											}
 										}
 										new MatLoadMsg(texPath,videoByte, submesh.material);
+									}else{
+										var texlt = getChild(material, "LayeredTexture");
+										if (texlt){
+											var texs:Array = getChilds(texlt, "Texture");
+											for each(tex in texs){
+												 texPath = String(FbxTools.get(tex, "FileName").props[0]);
+												 video = getChild(tex, "Video");
+												if (video){
+													 videoObj = FbxTools.get(video, "Content", true);
+													if (videoObj&&videoObj.props){
+														 videoByte = videoObj.props[0] as ByteArray;
+													}
+												}
+												new MatLoadMsg(texPath,videoByte, submesh.material);
+												break;//只显示一个贴图，不支持多贴图
+											}
+											//trace(tex);
+											//var texPath:String = String(FbxTools.get(tex, "FileName").props[0]);
+										}
 									}
 								}
 								//break;

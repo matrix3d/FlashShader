@@ -41,6 +41,7 @@ package
 	import gl3d.parser.obj.OBJParser;
 	import gl3d.parser.object.ObjectDecoder;
 	import gl3d.parser.object.ObjectEncoder;
+	import gl3d.parser.smd.SMDParser;
 	import gl3d.util.Utils;
 	/**
 	 * ...
@@ -50,6 +51,8 @@ package
 	{
 		private var file:FileReference;
 		private var mmd:MMD;
+		private var smd:SMDParser;
+		private var smdbyte:String;
 		private var vmd:VMD;
 		private var loader2url:Dictionary = new Dictionary;
 		private var md5mesh:MD5MeshParser;
@@ -66,6 +69,7 @@ package
 		private var expWin:Window;
 		private var expMeshUI:CheckBox;
 		private var expAnimUI:CheckBox;
+		private var expNormUI:CheckBox;
 		private var objectd:ObjectDecoder;
 		public function ModelViewer() 
 		{
@@ -170,6 +174,8 @@ package
 				expMeshUI.selected = true;
 				expAnimUI = new CheckBox(vbox, 0, 0, "anim");
 				expAnimUI.selected = true;
+				expNormUI = new CheckBox(vbox, 0, 0, "norm");
+				expNormUI.selected = false;
 				new PushButton(vbox, 0, 0, "do export", onDoExp);
 				expWin.setSize(vbox.width + 20, vbox.height + 50);
 				expWin.addEventListener(Event.CLOSE, expWin_close);
@@ -185,7 +191,7 @@ package
 				var io:ObjectEncoder = new ObjectEncoder;
 				var bak:Matrix3D = node.matrix;
 				node.matrix = new Matrix3D;
-				var obj:Object = io.exportNode(node,expMeshUI.selected,expAnimUI.selected);
+				var obj:Object = io.exportNode(node,expMeshUI.selected,expAnimUI.selected,expNormUI.selected);
 				node.matrix = bak;
 				var out:Object;
 				switch(fmtUI.selectedItem) {
@@ -309,6 +315,17 @@ package
 					if (md5mesh) {
 						var md5a:MD5AnimParser = new MD5AnimParser(byte+"", md5mesh);
 						anim = md5mesh.animc;
+					}
+					break;
+				case "smd":
+					if (!isBrowseAnim){
+						smdbyte = byte+"";
+						smd = new SMDParser(smdbyte);
+						curnode = smd.target;
+					}else{
+						smd = new SMDParser(smdbyte);
+						curnode = smd.target;
+						new SMDParser(byte+"", smd);
 					}
 					break;
 				case "dae":

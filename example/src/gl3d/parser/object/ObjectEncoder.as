@@ -33,7 +33,7 @@ package gl3d.parser.object
 			
 		}
 		
-		public function exportNode(node:Node3D, isExpMesh:Boolean, isExpAnim:Boolean):Object {
+		public function exportNode(node:Node3D, isExpMesh:Boolean, isExpAnim:Boolean,isExpNorm:Boolean):Object {
 			var hierarchy:Object = exportHierarchy(node);
 			if(isExpMesh){	
 				var geoms2:Array = [];
@@ -51,6 +51,9 @@ package gl3d.parser.object
 						}
 						if (d.weight) {
 							dobj.weight = vec2arr(d.weight.data);
+						}
+						if (isExpNorm){
+							dobj.norm = vec2arr(d.norm.data);
 						}
 					}
 				}

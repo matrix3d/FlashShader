@@ -26,7 +26,9 @@ package gl3d.util
 		public function MatLoadMsg(url:String,byte:ByteArray,mat:MaterialBase) 
 		{
 			sourceURL = url;
-			url = url.substring( url.lastIndexOf("\\") + 1, url.lastIndexOf(".")) + ".png";
+			if (url.toLocaleLowerCase().indexOf(".jpg")==-1){
+				url = url.substring( url.lastIndexOf("\\") + 1, url.lastIndexOf(".")) + ".png";
+			}
 			this.url = url;
 			trace(url);
 			this.mat = mat;
