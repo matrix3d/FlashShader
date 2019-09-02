@@ -228,8 +228,8 @@ package gl3d.parser.fbx
 									posData = convertedVec3s(prim.vertices) as Array;
 								}
 								drawable.source.pos = posData;
+								drawable.source.uv = prim.uv;
 								if (prim.objs[i][1]) {
-									drawable.source.uv = prim.uv;
 									drawable.source.uvIndex = prim.objs[i][1];
 								}
 								var submesh:Node3D = new Node3D;// o.obj as Node3D;
