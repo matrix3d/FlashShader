@@ -252,6 +252,7 @@ package gl3d.parser.fbx
 									var materialObj:Object = { };
 									for each(var p:Object in FbxTools.getAll(material, "Properties70.P").concat(FbxTools.getAll(material, "Properties60.Property"))) {
 										name = String(p.props[0]);
+										//trace(p.props);
 										switch( name) {
 										case "AmbientColor":
 										case "Ambient":
@@ -588,15 +589,17 @@ package gl3d.parser.fbx
 					var cname:String = FbxTools.getName(cn);
 					if( model == null ) continue;
 					var data:Array = afbx.getChilds(cn, "AnimationCurve");
-					if (data.length != 3) {
+					if (data.length <1) {
 						continue;
 					}
 					var times:Array = FbxTools.getFloats(FbxTools.get(data[0], "KeyTime"));
-					var x:Array = FbxTools.getFloats(FbxTools.get(data[0],"KeyValueFloat"));
-					//var timesY:Array = FbxTools.getFloats(FbxTools.get(data[1], "KeyTime"));
-					var y:Array = FbxTools.getFloats(FbxTools.get(data[1],"KeyValueFloat"));
-					//var timesZ:Array = FbxTools.getFloats(FbxTools.get(data[2], "KeyTime"));
-					var z:Array = FbxTools.getFloats(FbxTools.get(data[2], "KeyValueFloat"));
+					var x:Array = FbxTools.getFloats(FbxTools.get(data[0], "KeyValueFloat"));
+					if(data[1]){
+						var y:Array = FbxTools.getFloats(FbxTools.get(data[1], "KeyValueFloat"));
+					}
+					if(data[2]){
+						var z:Array = FbxTools.getFloats(FbxTools.get(data[2], "KeyValueFloat"));
+					}
 					var mid:String = FbxTools.getId(model);
 					var animDataBase:Object= animData[mid] = animData[mid] || { };
 					animDataBase[cname] = [times, x, y, z];
@@ -640,12 +643,27 @@ package gl3d.parser.fbx
 							times = srtArr[0];
 							for (var i:int = 0; i < times.length; i++ ) {
 								var timeValue:Number = times[i];
-								if (srtArr[1][i]&&srtArr[2][i]&&srtArr[3][i]){
+								if (srtName=="S"){
+									var tv:Vector3D = new Vector3D(1, 1, 1);
+								}else{
+									tv = new Vector3D;
+								}
+								//if (srtArr[1][i]&&srtArr[2][i]&&srtArr[3][i]){
 									if (timesrt[timeValue]==null){
 										timesrt[timeValue] = {};
 									}
-									timesrt[timeValue][srtName] = new Vector3D(srtArr[1][i], srtArr[2][i], srtArr[3][i]);
-								}
+									
+									if (srtArr[1]&&srtArr[1][i]!=null){
+										tv.x = srtArr[1][i];
+									}
+									if (srtArr[2]&&srtArr[2][i]!=null){
+										tv.y = srtArr[2][i];
+									}
+									if (srtArr[3]&&srtArr[3][i]!=null){
+										tv.z = srtArr[3][i];
+									}
+									timesrt[timeValue][srtName] = tv;//new Vector3D(srtArr[1][i], srtArr[2][i], srtArr[3][i]);
+								//}
 							}
 						}
 					}

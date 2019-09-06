@@ -318,6 +318,7 @@ package
 					}
 					break;
 				case "smd":
+					defScale = .1;
 					if (!isBrowseAnim){
 						smdbyte = byte+"";
 						smd = new SMDParser(smdbyte);

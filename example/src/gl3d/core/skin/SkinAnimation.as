@@ -153,6 +153,9 @@ package gl3d.core.skin
 					track.target = getChildByName(node, track.targetName);
 				}
 			}*/
+			if (targets.length==0){
+				isCache = false;
+			}
 			if (isCache){//缓存
 				var tid:int = int(t * 1000 / 60);
 				var needCache:Boolean = false;
@@ -190,7 +193,6 @@ package gl3d.core.skin
 					track.target.matrix.copyFrom(f.matrix);
 				}
 			}
-			
 			var lastSkin:Skin;
 			var first:Boolean = true;
 			for each(target in targets){

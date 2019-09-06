@@ -19,6 +19,7 @@ package gl3d.parser.smd
 	import gl3d.core.skin.TrackFrame;
 	import gl3d.ctrl.Ctrl;
 	import gl3d.meshs.Meshs;
+	import gl3d.util.Converter;
 	import gl3d.util.MatLoadMsg;
 	/**
 	 * ...
@@ -31,6 +32,7 @@ package gl3d.parser.smd
 		public var target:Node3D=new Node3D;
 		public function SMDParser(txt:String,mesh:SMDParser=null,path:String="") 
 		{
+			var converter:Converter=new Converter(Converter.ZtoY,new Vector3D(1, 1, -1));
 			var decoder:SMDDecoder = new SMDDecoder(txt);
 			var skin:Skin = new Skin;
 			skin.maxWeight = 1;
@@ -63,6 +65,7 @@ package gl3d.parser.smd
 				ma.appendRotation(tarr[5]* 180 / Math.PI,Vector3D.Y_AXIS);
 				ma.appendRotation(tarr[6]* 180 / Math.PI, Vector3D.Z_AXIS);
 				ma.appendTranslation(tarr[1], tarr[2], tarr[3]);
+				ma = converter.getConvertedMat4(ma);
 				cn.matrix = ma;
 				cn.invBindMatrix.copyFrom(cn.world);
 				cn.invBindMatrix.invert();
@@ -97,6 +100,8 @@ package gl3d.parser.smd
 				);
 				indexs.push(i*3,i*3+2,i*3+1);
 			}
+			converter.convertedVec3s(poss);
+			converter.convertedVec3s(norms);
 			if(indexs.length>0){
 				var node:Node3D = new Node3D;
 				node.skin = skin;
@@ -132,11 +137,11 @@ package gl3d.parser.smd
 						track = anim.tracks[tarr[0]];
 						var frame:TrackFrame = new TrackFrame;
 						ma=new Matrix3D;
-						frame.matrix = ma;
 						ma.appendRotation(tarr[4]* 180 / Math.PI,Vector3D.X_AXIS);
 						ma.appendRotation(tarr[5]* 180 / Math.PI,Vector3D.Y_AXIS);
 						ma.appendRotation(tarr[6]* 180 / Math.PI, Vector3D.Z_AXIS);
 						ma.appendTranslation(tarr[1], tarr[2], tarr[3]);
+						frame.matrix = converter.getConvertedMat4(ma);
 						frame.time = i/1000*60;
 						track.frames.push(frame);
 					}
