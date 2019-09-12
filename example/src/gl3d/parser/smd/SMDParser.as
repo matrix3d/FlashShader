@@ -32,7 +32,7 @@ package gl3d.parser.smd
 		public var target:Node3D=new Node3D;
 		public function SMDParser(txt:String,mesh:SMDParser=null,path:String="") 
 		{
-			var converter:Converter=new Converter(Converter.ZtoY,new Vector3D(1, 1, -1));
+			var converter:Converter = new Converter(0);// Converter.ZtoY, new Vector3D(1, 1, -1));
 			var decoder:SMDDecoder = new SMDDecoder(txt);
 			var skin:Skin = new Skin;
 			skin.maxWeight = 1;
