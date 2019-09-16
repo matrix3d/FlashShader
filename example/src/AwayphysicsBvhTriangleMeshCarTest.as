@@ -12,12 +12,14 @@ package {
 	import gl3d.core.Material;
 	import gl3d.core.Node3D;
 	import gl3d.core.TextureSet;
+	import gl3d.core.shaders.GLShader;
 	import gl3d.ctrl.Ctrl;
 	import gl3d.ctrl.FirstPersonCtrl;
 	import gl3d.ctrl.FollowCtrl;
 	import gl3d.meshs.Meshs;
 	import gl3d.meshs.ShapeBuilder;
-	import gl3d.shaders.TerrainPhongGLShader;
+	import gl3d.shaders.PhongVertexShader;
+	import gl3d.shaders.TerrainPhongFragmentShader;
 
 	import flash.display.Sprite;
 	import flash.events.Event;
@@ -70,7 +72,7 @@ package {
 			
 			var bmd:BitmapData = new BitmapData(128, 128, false, 0xff0000);
 			bmd.perlinNoise(3, 3, 10, 1, false, false);
-			var byte:ByteArray = bmd.getPixels(bmd.rect);
+			/*var byte:ByteArray = bmd.getPixels(bmd.rect);
 			for (var i:int = 0; i < byte.length;i+=4 ) {
 				var a:uint = byte[i];
 				var r:uint = byte[i+1];
@@ -89,15 +91,16 @@ package {
 				byte[i + 3] = b
 			}
 			byte.position = 0;
-			bmd.setPixels(bmd.rect, byte);
+			bmd.setPixels(bmd.rect, byte);*/
 			var texture:TextureSet=new TextureSet(bmd);
 			
 			var node:Node3D = new Node3D;
 			node.drawable = Meshs.terrain(64, new Vector3D(100000, 100000, 100000));
 			node.material = new Material;
+			node.material.terrainScale = new Vector3D(10000, 10000, 10000);
 			node.material.diffTexture = texture;
 			node.material.terrainTextureSets = [getTerrainTexture(c0), getTerrainTexture(c1), getTerrainTexture(c2), getTerrainTexture(c3)];
-			(node.material as Material).shader = new TerrainPhongGLShader();
+			material.shader = new GLShader(new PhongVertexShader,new TerrainPhongFragmentShader);
 			physicsRoot.addChild(node);
 			
 			var sceneShape : AWPBvhTriangleMeshShape = new AWPBvhTriangleMeshShape(node.drawable.index.data,node.drawable.pos.data);
@@ -113,7 +116,7 @@ package {
 			var numx : int = 10;
 			var numy : int = 5;
 			var numz : int = 1;
-			for (i = 0; i < numx; i++ ) {
+			for (var i:int = 0; i < numx; i++ ) {
 				for (var j : int = 0; j < numz; j++ ) {
 					for (var k : int = 0; k < numy; k++ ) {
 						// create boxes
@@ -137,7 +140,7 @@ package {
 			var css:Array = createCarShape();
 			carnode=css[1]
 			physicsRoot.addChild(carnode);
-			view.ctrls = Vector.<Ctrl>([new FollowCtrl(player,view.camera)]);
+			view.ctrls = Vector.<Ctrl>([new FollowCtrl(player,view.camera,stage)]);
 			var carShape : AWPCompoundShape = css[0];
 			var carBody : AWPRigidBody = new AWPRigidBody(carShape, new GL3DObject(carnode), 1200);
 			carBody.activationState = AWPCollisionObject.DISABLE_DEACTIVATION;

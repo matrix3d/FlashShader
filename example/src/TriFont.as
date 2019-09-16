@@ -40,6 +40,7 @@ package
 		
 		override public function initNode():void 
 		{
+			trace("1");
 			var arr:Array= Font.enumerateFonts(true);
 			
 			addSky();
@@ -130,6 +131,7 @@ package
 				screenMesh.graphics.lineTo(vertices[triangles[i+2]].x, vertices[triangles[i+2]].y);
 				screenMesh.graphics.lineTo(vertices[triangles[i]].x, vertices[triangles[i]].y);
 			}*/
+			trace(2);
 		}
 		
 		override public function enterFrame(e:Event):void 
@@ -141,6 +143,7 @@ package
 		
 		static public function extractMeshFromBitmap(bmpData:BitmapData, vertices:Vector.<Point>, triangles:Vector.<int>,constraineds:Object):void
 		{
+			trace(3);
 			var i:int;
 			var j:int;
 			
@@ -233,6 +236,7 @@ package
 				
 				facesDone[currFace] = true;
 			}
+			trace(4);
 		}
 		
 	}

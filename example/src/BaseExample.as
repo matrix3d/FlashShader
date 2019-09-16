@@ -180,7 +180,7 @@ package
 			material.normalMapAble = false;
 			material.color.setTo(1, 1, 1);
 			//material.alpha = .5;
-			material.blendMode = BlendMode.LAYER;
+			//material.blendMode = BlendMode.LAYER;
 			material.culling = Context3DTriangleFace.NONE;
 			material.ambient.setTo(.5, .5, .5);
 			material.specularPower = 10;

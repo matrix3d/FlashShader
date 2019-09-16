@@ -1,5 +1,6 @@
 package 
 {
+	import com.bit101.utils.MinimalConfigurator;
 	import flash.display.Bitmap;
 	import flash.display.BitmapData;
 	import flash.display.Sprite;
@@ -20,19 +21,15 @@ package
 	 * ...
 	 * @author lizhi
 	 */
-	public class Test extends BaseExample
+	public class Test extends Sprite
 	{
 		public function Test() 
 		{
+			onChange();
 		}
-		
-		override public function initNode():void 
+		public function onChange(a:String="dddd") : void
 		{
-			[Embed(source = "assets/cube_with_diffuse_texture.3DS", mimeType = "application/octet-stream")]
-			//[Embed(source = "assets/cube_with_specular_texture.3DS", mimeType = "application/octet-stream")]
-			var c:Class;
-			var p:A3DSParser = new A3DSParser(new c as ByteArray);
-			view.scene.addChild(p.root);
+			trace(a);
 		}
 	}
 

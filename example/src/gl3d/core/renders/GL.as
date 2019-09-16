@@ -3,6 +3,7 @@ package gl3d.core.renders
 	import flash.display.BitmapData;
 	import flash.display3D.Context3D;
 	import flash.display3D.Context3DCompareMode;
+	import flash.display3D.Context3DFillMode;
 	import flash.display3D.Context3DTextureFormat;
 	import flash.display3D.IndexBuffer3D;
 	import flash.display3D.Program3D;
@@ -142,6 +143,10 @@ package gl3d.core.renders
 		}
 		public function setProgramConstantsFromVector(programType : String, firstRegister : int, data : Vector.<Number>, numRegisters : int = -1) : void {
 			context.setProgramConstantsFromVector(programType, firstRegister, data, numRegisters);
+		}
+		public function setFillMode(fillMode:String):void 
+		{
+			//context.setFillMode(fillMode);
 		}
 		public function setProgramConstantsFromVector3D(programType : String, firstRegister : int, data : Vector3D) : void {
 			tempvec4[0] = data.x;

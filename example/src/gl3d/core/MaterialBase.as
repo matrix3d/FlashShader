@@ -3,6 +3,7 @@ package gl3d.core
 	import flash.display.BlendMode;
 	import flash.display3D.Context3DBlendFactor;
 	import flash.display3D.Context3DCompareMode;
+	import flash.display3D.Context3DFillMode;
 	import flash.display3D.Context3DTriangleFace;
 	import flash.geom.Vector3D;
 	/**
@@ -56,6 +57,7 @@ package gl3d.core
 		public var border:Boolean = false;
 		public var borderColor:Vector3D = new Vector3D(1, 0, 0, 1);
 		public var isBillbard:Boolean = false;
+		public var fillMode:String = Context3DFillMode.SOLID;
 		//public var isStretched:Boolean = false;//基于速度缩放
 		public function MaterialBase() 
 		{

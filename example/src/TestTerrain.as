@@ -25,7 +25,6 @@ package
 	import gl3d.pick.TerrainPicking;
 	import gl3d.shaders.PhongVertexShader;
 	import gl3d.shaders.TerrainPhongFragmentShader;
-	import gl3d.shaders.TerrainPhongGLShader;
 	import gl3d.core.TextureSet;
 	/**
 	 * ...
