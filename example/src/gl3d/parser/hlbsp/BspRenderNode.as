@@ -23,14 +23,14 @@ package gl3d.parser.hlbsp
 			this.culling = culling;
 			this.view = view;
 			bsp=new Bsp;
-			bsp.loadBSP(b);
-			
-			render = new BspRender(this);
-			render.preRender();
-			if(culling){
-				controllers = new Vector.<Ctrl>();
-			}else{
-				addChild(render.renderAll());
+			if(bsp.loadBSP(b)){
+				render = new BspRender(this);
+				render.preRender();
+				if(culling){
+					controllers = new Vector.<Ctrl>();
+				}else{
+					addChild(render.renderAll());
+				}
 			}
 			
 		}
