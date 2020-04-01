@@ -38,8 +38,9 @@ package gl3d.parser.fbx
 		public var converter:Converter;
 		public var animc:SkinAnimationCtrl;
 		public var globalSettings:Object;
-		public function FbxParser(data:Object,parserMesh:Boolean=true,parserAnim:Boolean=true) 
+		public function FbxParser(data:Object,parserMesh:Boolean=true,parserAnim:Boolean=true,basetexurl:String="") 
 		{
+			this.basetexurl = basetexurl;
 			if (data is ByteArray) {
 				decoder = new FbxBinDecoder(data as ByteArray);
 				if(decoder.isBin){
@@ -162,6 +163,7 @@ package gl3d.parser.fbx
 			return getConvertedMat4(m);
 		}
 		
+		private var basetexurl:String;
 		private static var helpvec16:Vector.<Number> = new Vector.<Number>(16);
 		private function getConvertedMat4(m:Matrix3D):Matrix3D{
 			m.copyRawDataTo(helpvec16, 0, true);
@@ -376,7 +378,7 @@ package gl3d.parser.fbx
 					var videoByte:ByteArray = videoObj.props[0] as ByteArray;
 				}
 			}
-			new MatLoadMsg(texPath,videoByte, material);
+			new MatLoadMsg(texPath,videoByte, material,basetexurl);
 		}
 		
 		private function createSkin(o:Object, hgeom:Object):void {

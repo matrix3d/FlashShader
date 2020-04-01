@@ -23,11 +23,13 @@ package gl3d.util
 		private var loader:Loader;
 		private var url:String;
 		private var sourceURL:String;
-		public function MatLoadMsg(url:String,byte:ByteArray,mat:MaterialBase) 
+		public function MatLoadMsg(url:String,byte:ByteArray,mat:MaterialBase,baseurl:String="") 
 		{
 			sourceURL = url;
+			var url = url.substring(url.lastIndexOf("\\") + 1);
+			url=url.substring(url.lastIndexOf("/") + 1);
 			if (url.toLocaleLowerCase().indexOf(".jpg")==-1){
-				url = url.substring( url.lastIndexOf("\\") + 1, url.lastIndexOf(".")) + ".png";
+				url = url.substring(0, url.lastIndexOf(".")) + ".png";
 			}
 			this.url = url;
 			trace(url);
@@ -38,7 +40,7 @@ package gl3d.util
 			if(byte){
 				loader.loadBytes(byte);
 			}else{
-				loader.load(new URLRequest(url));
+				loader.load(new URLRequest(baseurl+url));
 			}
 		}
 		

@@ -154,8 +154,8 @@ package gl3d.parser.mmd
 			anim.targets = skinNodes;
 			if (animc == null) {
 				animc = new SkinAnimationCtrl;
-				node.controllers = new Vector.<Ctrl>;
-				node.controllers.push(animc);
+				this.node.controllers = new Vector.<Ctrl>;
+				this.node.controllers.push(animc);
 			}
 			animc.add(anim);
 			anim.maxTime = 0;

@@ -109,30 +109,32 @@ package gl3d.core.skin
 					}
 				}
 				var minDepthJoints:Array = depthJoints[mind];
-				while (true){
-					if (minDepthJoints.length == 1){
-						minDepthJoints[0].visible = false;
-						skin.jointRoot = minDepthJoints[0];//.parent;
-						var j:Joint = minDepthJoints[0];
-						while (true){
-							if (j.parent&&j.parent is Joint){
-								j = j.parent as Joint;
-							}else{
-								break;
+				if(minDepthJoints){
+					while (true){
+						if (minDepthJoints.length == 1){
+							minDepthJoints[0].visible = false;
+							skin.jointRoot = minDepthJoints[0];//.parent;
+							var j:Joint = minDepthJoints[0];
+							while (true){
+								if (j.parent&&j.parent is Joint){
+									j = j.parent as Joint;
+								}else{
+									break;
+								}
+							}
+							skin.jointRoot = j;
+							(skin.jointRoot as Joint).isRoot = true;
+							break;
+						}
+						var temp:Array = [];
+						for each(jnode in minDepthJoints){
+							findnode = jnode.parent;
+							if (temp.indexOf(findnode)==-1){
+								temp.push(findnode);
 							}
 						}
-						skin.jointRoot = j;
-						(skin.jointRoot as Joint).isRoot = true;
-						break;
+						minDepthJoints = temp;
 					}
-					var temp:Array = [];
-					for each(jnode in minDepthJoints){
-						findnode = jnode.parent;
-						if (temp.indexOf(findnode)==-1){
-							temp.push(findnode);
-						}
-					}
-					minDepthJoints = temp;
 				}
 			}
 		}
@@ -225,7 +227,7 @@ package gl3d.core.skin
 				
 				updateJointRoot(target.skin);
 				
-				if(first){
+				if(first&&target.skin.jointRoot){
 					target.skin.jointRoot.updateTransforms(true);
 					first = false;
 				}
