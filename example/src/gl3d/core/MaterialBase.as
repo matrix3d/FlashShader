@@ -57,7 +57,7 @@ package gl3d.core
 		public var border:Boolean = false;
 		public var borderColor:Vector3D = new Vector3D(1, 0, 0, 1);
 		public var isBillbard:Boolean = false;
-		public var fillMode:String = Context3DFillMode.SOLID;
+		public var fillMode:String = "solid";//Context3DFillMode.SOLID;
 		//public var isStretched:Boolean = false;//基于速度缩放
 		public function MaterialBase() 
 		{

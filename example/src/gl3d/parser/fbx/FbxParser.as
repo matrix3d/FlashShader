@@ -590,9 +590,22 @@ package gl3d.parser.fbx
 					var model:Object = afbx.getParent(cn, "Model", true);
 					var cname:String = FbxTools.getName(cn);
 					if( model == null ) continue;
+					var mid:String = FbxTools.getId(model);
+					var animDataBase:Object= animData[mid] = animData[mid] || { };
+					
+					//animDataBase.times = times;
+					var targetName:String = FbxTools.getName(model);
+					animDataBase.target = name2object[targetName];
+					if (animDataBase.target==null){
+						trace("can not find anim target name", targetName);
+						animData[mid] = null;
+						delete animData[mid];
+					}
 					var data:Array = afbx.getChilds(cn, "AnimationCurve");
 					if (data.length <1) {
 						continue;
+					}else{
+						
 					}
 					var times:Array = FbxTools.getFloats(FbxTools.get(data[0], "KeyTime"));
 					var x:Array = FbxTools.getFloats(FbxTools.get(data[0], "KeyValueFloat"));
@@ -602,17 +615,7 @@ package gl3d.parser.fbx
 					if(data[2]){
 						var z:Array = FbxTools.getFloats(FbxTools.get(data[2], "KeyValueFloat"));
 					}
-					var mid:String = FbxTools.getId(model);
-					var animDataBase:Object= animData[mid] = animData[mid] || { };
 					animDataBase[cname] = [times, x, y, z];
-					//animDataBase.times = times;
-					var targetName:String = FbxTools.getName(model);
-					animDataBase.target = name2object[targetName];
-					if (animDataBase.target==null){
-						trace("can not find anim target name", targetName);
-						animData[mid] = null;
-						delete animData[mid];
-					}
 				}
 			}
 			
