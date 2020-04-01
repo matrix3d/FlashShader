@@ -35,8 +35,10 @@ package gl3d.ctrl
 		private var lastDistancePos:Point=new Point;
 		public var distance:Number = 10;
 		public var lookat:Vector3D = new Vector3D();
+		public var prelookat:Vector3D = new Vector3D();
 		private var helpV:Vector3D = new Vector3D;
 		private var nowMouseDownEvents:Array = [];
+		private var lastMidDownPos:Point = new Point;
 		public function ArcBallCtrl(node:Node3D,stage:Stage) 
 		{
 			position.copyFrom(node.matrix.position);
@@ -47,9 +49,35 @@ package gl3d.ctrl
 			this.node = node;
 			stage.addEventListener(GLTouchEvent.TOUCH_BEGIN, stage_mouseDown);
 			stage.addEventListener(MouseEvent.MOUSE_WHEEL, stage_mouseWheel);
+			stage.addEventListener(MouseEvent.MIDDLE_MOUSE_DOWN, stage_middleMouseDown);
 			
 			stage.addEventListener(KeyboardEvent.KEY_DOWN, stage_keyDown);
 			stage.addEventListener(KeyboardEvent.KEY_UP, stage_keyUp);
+		}
+		
+		private function stage_middleMouseDown(e:MouseEvent):void 
+		{
+			stage.addEventListener(MouseEvent.MIDDLE_MOUSE_UP, stage_middleMouseUp);
+			stage.addEventListener(MouseEvent.MOUSE_MOVE, stage_mouseMove);
+			lastMidDownPos.setTo(stage.mouseX, stage.mouseY);
+		}
+		
+		private function stage_mouseMove(e:MouseEvent):void 
+		{
+			var v3d:Vector3D = new Vector3D( -(stage.mouseX - lastMidDownPos.x) / stage.stageWidth*10, (stage.mouseY - lastMidDownPos.y) / stage.stageHeight*10);
+			v3d=node.world.deltaTransformVector(v3d);
+			lookat.x += v3d.x;
+			lookat.y += v3d.y;
+			lookat.z += v3d.z;
+			//lookat.x -= (stage.mouseX - lastMidDownPos.x)/10;
+			//lookat.y += (stage.mouseY - lastMidDownPos.y) / 10;
+			lastMidDownPos.setTo(stage.mouseX, stage.mouseY);
+		}
+		
+		private function stage_middleMouseUp(e:MouseEvent):void 
+		{
+			stage.removeEventListener(MouseEvent.MIDDLE_MOUSE_UP, stage_middleMouseUp);
+			stage.removeEventListener(MouseEvent.MOUSE_MOVE, stage_mouseMove);
 		}
 		
 		private function stage_keyUp(e:KeyboardEvent):void

@@ -129,7 +129,7 @@ package
 			//System.setClipboard(OBJEncoder.encode(terrain.drawable));
 			
 			
-			/*[Embed(source = "assets/fbx/pearl.fbx", mimeType = "application/octet-stream")]var m1:Class;
+			[Embed(source = "assets/fbx/pearl.fbx", mimeType = "application/octet-stream")]var m1:Class;
 			[Embed(source = "assets/fbx/Walking.fbx", mimeType = "application/octet-stream")]var m2:Class;
 			[Embed(source = "assets/fbx/Mma Kick.fbx", mimeType = "application/octet-stream")]var m3:Class;
 			[Embed(source = "assets/fbx/Idle.fbx", mimeType = "application/octet-stream")]var m4:Class;
@@ -141,13 +141,13 @@ package
 			fbx.animc.anims[fbx.animc.anims.length-1].name = "Mma Kick";
 			fbx.loadAnimation(new FbxParser(new m4));
 			fbx.animc.anims[fbx.animc.anims.length-1].name = "Idle";
-			fbx.rootNode.setScale(.05, .05, .05);*/
+			fbx.rootNode.setScale(.05, .05, .05);
 			
-			[Embed(source = "assets/fbx/dave/Dave.fbx", mimeType = "application/octet-stream")]var davec:Class;
+			/*[Embed(source = "assets/fbx/dave/Dave.fbx", mimeType = "application/octet-stream")]var davec:Class;
 			fbx = new FbxParser(new davec);
 			fbx.animc.play("Armature|Walk", 0);
 			fbx.rootNode.setScale(0.01, 0.01, 0.01);
-			fbx.rootNode.setRotation(-90, 0, 0);
+			fbx.rootNode.setRotation(-90, 0, 0);*/
 			
 			player = new Node3D;
 			
