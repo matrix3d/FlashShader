@@ -26,7 +26,11 @@ package gl3d.core.renders
 	 */
 	public class GL 
 	{
-		private var context:Context3D;
+		
+		public var customFillMode:String;
+		public var customSourceFactor:String;
+		public var customDestinationFactor:String;
+		public var context:Context3D;
 		
 		public var lastBuffMaxIndex:int = 0;
 		public var nowBuffMaxIndex:int = 0;
@@ -121,7 +125,7 @@ package gl3d.core.renders
 			context.present();
 		}
 		public function setBlendFactors(sourceFactor : String, destinationFactor : String) : void {
-			context.setBlendFactors(sourceFactor, destinationFactor);
+			context.setBlendFactors(customSourceFactor||sourceFactor, customDestinationFactor||destinationFactor);
 		}
 		public function setColorMask(red : Boolean, green : Boolean, blue : Boolean, alpha : Boolean) : void {
 			context.setColorMask(red, green, blue, alpha);
@@ -146,7 +150,7 @@ package gl3d.core.renders
 		}
 		public function setFillMode(fillMode:String):void 
 		{
-			//context.setFillMode(fillMode);
+			context.setFillMode(customFillMode||fillMode);
 		}
 		public function setProgramConstantsFromVector3D(programType : String, firstRegister : int, data : Vector3D) : void {
 			tempvec4[0] = data.x;
