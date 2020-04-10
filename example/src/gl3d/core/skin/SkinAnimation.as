@@ -19,7 +19,7 @@ package gl3d.core.skin
 	 */
 	public class SkinAnimation
 	{
-		public var isCache:Boolean = true;
+		public var isCache:Boolean = false;
 		public var tracks:Object = {};//Vector.<Track> = new Vector.<Track>;
 		public var bindShapeMatrix:Matrix3D;
 		public var targets:Vector.<Node3D>;
@@ -29,6 +29,8 @@ package gl3d.core.skin
 		static private var q1:Quaternion= new Quaternion;
 		static private var q2:Quaternion = new Quaternion;
 		public var name:String;
+		public static var ID:int = 1;
+		public var id:int = ID++;
 		public var timeline:SkinAnimTimeLine = new SkinAnimTimeLine;
 		//public var trackRoot:Node3D;//骨骼根节点
 		public function SkinAnimation() 
@@ -166,10 +168,10 @@ package gl3d.core.skin
 					
 					updateJointRoot(target.skin);
 					
-					if (target.skin.cache[name]==null){
+					if (target.skin.cache[id]==null){
 						needCache = true;
 					}else{
-						target.skin.cacheFrame = target.skin.cache[name][tid];
+						target.skin.cacheFrame = target.skin.cache[id][tid];
 						if (target.skin.cacheFrame==null){
 							needCache = true;
 						}

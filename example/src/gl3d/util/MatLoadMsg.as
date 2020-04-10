@@ -1,5 +1,6 @@
 package gl3d.util 
 {
+	import com.magi.image.codec.TgaDecoder;
 	import flash.display.Bitmap;
 	import flash.display.BitmapData;
 	import flash.display.Loader;
@@ -30,9 +31,12 @@ package gl3d.util
 		public function MatLoadMsg(url:String,byte:ByteArray,mat:MaterialBase) 
 		{
 			sourceURL = url;
+			
+			var isTga:Boolean = url.toLocaleLowerCase().indexOf(".tga") !=-1;
+			
 			var url = url.substring(url.lastIndexOf("\\") + 1);
-			url=url.substring(url.lastIndexOf("/") + 1);
-			if (url.toLocaleLowerCase().indexOf(".jpg")==-1){
+				url=url.substring(url.lastIndexOf("/") + 1);
+			if (url.toLocaleLowerCase().indexOf(".jpg")==-1||!isTga){
 				url = url.substring(0, url.lastIndexOf(".")) + ".png";
 			}
 			this.url = url;
@@ -52,15 +56,21 @@ package gl3d.util
 					smat.addEventListener(IOErrorEvent.IO_ERROR, smat_ioError);
 				}
 			}else{
-				fullurl2mat[fullurl] = this;
-				loader = new Loader;
-				loader.contentLoaderInfo.addEventListener(Event.COMPLETE, loader_complete);
-				loader.contentLoaderInfo.addEventListener(IOErrorEvent.IO_ERROR, loader_ioError);
-				addEventListener(IOErrorEvent.IO_ERROR, ioError);
-				if(byte){
-					loader.loadBytes(byte);
+				if (isTga){
+					var dc:TgaDecoder = new TgaDecoder;
+					dc.Decode(byte, false);
+					compBmd(dc.bitmapData);
 				}else{
-					loader.load(new URLRequest(fullurl));
+					fullurl2mat[fullurl] = this;
+					loader = new Loader;
+					loader.contentLoaderInfo.addEventListener(Event.COMPLETE, loader_complete);
+					loader.contentLoaderInfo.addEventListener(IOErrorEvent.IO_ERROR, loader_ioError);
+					addEventListener(IOErrorEvent.IO_ERROR, ioError);
+					if(byte){
+						loader.loadBytes(byte);
+					}else{
+						loader.load(new URLRequest(fullurl));
+					}
 				}
 			}
 			
@@ -90,6 +100,10 @@ package gl3d.util
 		private function loader_complete(e:Event):void 
 		{
 			var bmd:BitmapData = (loader.content as Bitmap).bitmapData;
+			compBmd(bmd);
+		}
+		
+		private function compBmd(bmd:BitmapData){
 			if (mat){
 				diff=new TextureSet(bmd);
 				mat.diffTexture = diff;
@@ -97,7 +111,7 @@ package gl3d.util
 				(mat as Material).shader=new GLShader(new PhongVertexShader,new PhongFragmentShader)
 				mat.invalid = true;
 			}
-			dispatchEvent(e);
+			dispatchEvent(new Event(Event.COMPLETE));
 		}
 	}
 
