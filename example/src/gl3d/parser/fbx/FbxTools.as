@@ -47,10 +47,12 @@ package gl3d.parser.fbx {
 							++_g1;
 							var _g2 : int = 0;
 							var _g3 : Array = n1.childs;
-							while(_g2 < _g3.length) {
-								var c : * = _g3[_g2];
-								++_g2;
-								if(c.name == p) out.push(c);
+							if(_g3){
+								while(_g2 < _g3.length) {
+									var c : * = _g3[_g2];
+									++_g2;
+									if(c.name == p) out.push(c);
+								}
 							}
 						}
 					};
