@@ -10,19 +10,35 @@ package gl3d.core.skin
 	public class Joint extends Node3D
 	{
 		public var invBindMatrix:Matrix3D = new Matrix3D;
+		
+		
+		
+		private var _sourceMatrix:Matrix3D;
 		public var ik:IK;
 		public var isRoot:Boolean = false;
 		public function Joint(name:String=null ) 
 		{
 			super(name);
 		}
-		
+		public function get sourceMatrix():Matrix3D 
+		{
+			if (_sourceMatrix==null){
+				_sourceMatrix = matrix.clone();
+			}
+			return _sourceMatrix;
+		}
 		override public function clone():Node3D 
 		{
 			return null;
 			/*var c:Joint = super.clone() as Joint;
 			c.invBindMatrix.copyFrom(invBindMatrix);
 			return c;*/
+		}
+		
+		public function reset():void 
+		{
+			matrix.copyFrom(sourceMatrix);
+			matrix = matrix;
 		}
 		
 		//虽然joint在显示列表上，但是只是在骨骼根节点截断

@@ -9,6 +9,7 @@ package gl3d.core.skin
 	 */
 	public class SkinAnimationCtrl extends Ctrl
 	{
+		public var dirty:Boolean = true;
 		public var anim:SkinAnimation;
 		public var anims:Array = [];
 		public var startTime:Number = 0;
@@ -24,6 +25,19 @@ package gl3d.core.skin
 		
 		override public function update(time:int,node:Node3D):void 
 		{
+			if (dirty){
+				dirty = false;
+				resetJoint(node);
+				function resetJoint(j:Node3D):void{
+					if (j is Joint){
+						(j as Joint).reset();
+					}
+					for each(var c:Node3D in j.children){
+						resetJoint(c);
+					}
+				}
+			}
+			
 			if (anim) {
 				var funs:Array = [];
 				if(playing){
@@ -61,6 +75,7 @@ package gl3d.core.skin
 		}
 		
 		public function playIndex(i:int,transitionTime:Number):SkinAnimation{
+			dirty = true;
 			var fanim:SkinAnimation = anims[i];
 			if (fanim==null){
 				return null;

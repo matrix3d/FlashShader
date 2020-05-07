@@ -3,6 +3,7 @@ package gl3d.parser.fbx
 	import flash.geom.Matrix3D;
 	import flash.geom.Vector3D;
 	import flash.net.FileReference;
+	import flash.system.System;
 	import flash.utils.ByteArray;
 	import gl3d.core.Drawable;
 	import gl3d.core.DrawableSource;
@@ -52,6 +53,7 @@ package gl3d.parser.fbx
 				childs = decoder.childs;
 			}
 			root = { name : "Root", props : [0, "Root", "Root"], childs :childs };
+			//System.setClipboard(JSON.stringify(childs));
 			
 			var header:Object= FbxTools.get(root, "FBXHeaderExtension");
 			if (header){
