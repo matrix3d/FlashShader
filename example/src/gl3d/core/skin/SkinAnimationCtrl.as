@@ -60,21 +60,12 @@ package gl3d.core.skin
 			}
 		}
 		
-		/**
-		 * 
-		 * @param	name
-		 * @param	transitionTime 过渡时间s
-		 * @return
-		 */
-		public function play(name:String,transitionTime:Number):SkinAnimation{
-			startTime =-1;
-			var fanim:SkinAnimation;
-			for each(var a:SkinAnimation in anims){
-				if (a.name==name){
-					fanim = a;
-					break;
-				}
+		public function playIndex(i:int,transitionTime:Number):SkinAnimation{
+			var fanim:SkinAnimation = anims[i];
+			if (fanim==null){
+				return null;
 			}
+			startTime =-1;
 			playing = true;
 			
 			if (fanim){
@@ -141,13 +132,31 @@ package gl3d.core.skin
 					}
 					transitionAnim.maxTime = transitionTime;
 					anim = transitionAnim;
-					waitAnimAfterTransition = name;
+					waitAnimAfterTransition = fanim.name;
 				}else{
 					anim = fanim;
 				}
 			}
 			
 			return fanim;
+		}
+		
+		/**
+		 * 
+		 * @param	name
+		 * @param	transitionTime 过渡时间s
+		 * @return
+		 */
+		public function play(name:String,transitionTime:Number):SkinAnimation{
+			var i:int = 0;
+			for each(var a:SkinAnimation in anims){
+				if (a.name==name){
+					return playIndex(i, transitionTime);
+					break;
+				}
+				i++;
+			}
+			return null;
 		}
 		
 		public function stop():void{
