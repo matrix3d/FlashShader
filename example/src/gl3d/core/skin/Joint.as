@@ -10,9 +10,6 @@ package gl3d.core.skin
 	public class Joint extends Node3D
 	{
 		public var invBindMatrix:Matrix3D = new Matrix3D;
-		
-		
-		
 		private var _sourceMatrix:Matrix3D;
 		public var ik:IK;
 		public var isRoot:Boolean = false;

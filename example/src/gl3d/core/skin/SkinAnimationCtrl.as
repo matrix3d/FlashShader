@@ -112,6 +112,7 @@ package gl3d.core.skin
 						}*/
 					}
 					transitionAnim.timeline.nextloop();
+					
 					for (var tname:String in fanim.tracks){
 						var t:Track = transitionAnim.tracks[tname];
 						if (t==null){
@@ -134,7 +135,16 @@ package gl3d.core.skin
 						if (t2){
 							if(t2.target){
 								f2 = t.frames[0];
-								f2.matrix.copyFrom(t2.target.matrix);
+								var j:Joint = t2.target as Joint;
+								var m:Matrix3D = anim.jointMatrixs[j.name];
+								if(m){
+									f2.matrix.copyFrom(m);
+								}else{
+									anim = fanim;
+									return fanim;
+								}
+								//var m:Matrix3D = (anim.skin.cacheFrame || anim.skin.skinFrame).matrixs[j.msIndex];
+								//f2.matrix.copyFrom(m);
 							}
 						}
 						
@@ -187,7 +197,11 @@ package gl3d.core.skin
 		override public function clone():Ctrl 
 		{
 			var c:SkinAnimationCtrl = new SkinAnimationCtrl;
-			c.add(anim.clone());
+			for (var i:int = 0; i < anims.length;i++ ){
+				var ac:SkinAnimation = anims[i].clone();
+				c.add(ac);
+			}
+			c.play(anim.name, 0);
 			return c;
 		}
 	}

@@ -19,8 +19,11 @@ package gl3d.core.skin
 	 */
 	public class SkinAnimation
 	{
-		public var isCache:Boolean = false;
+		public static var IsCacheDef:Boolean = true;//默认缓存动画
+		public var isCache:Boolean = IsCacheDef;
 		public var tracks:Object = {};//Vector.<Track> = new Vector.<Track>;
+		public var jointMatrixs:Object = {};
+		public var jointMatrixsCache:Object = {};
 		public var bindShapeMatrix:Matrix3D;
 		public var targets:Vector.<Node3D>;
 		public var targetNames:Vector.<String>;
@@ -51,7 +54,9 @@ package gl3d.core.skin
 				}
 			}*/
 			c.name = name;
+			c.id = id;
 			c.tracks = tracks;
+			c.jointMatrixsCache = jointMatrixsCache;
 			/*for each(t in tracks){
 				var t2:Track = new Track;
 				t2.targetName = t.targetName;
@@ -172,6 +177,7 @@ package gl3d.core.skin
 						needCache = true;
 					}else{
 						target.skin.cacheFrame = target.skin.cache[id][tid];
+						jointMatrixs = jointMatrixsCache[tid];
 						if (target.skin.cacheFrame==null){
 							needCache = true;
 						}
@@ -192,6 +198,10 @@ package gl3d.core.skin
 					last = f;
 				}
 				if (f && last) {
+					//使用矩阵
+					//track.target.matrix.copyFrom(f.matrix);
+					//last.matrix.interpolateTo(track.target.matrix, (t - last.time) / (f.time-last.time));
+					//使用四元数
 					interpolate(last.matrix, f.matrix, (t - last.time) / (f.time-last.time), track.target.matrix);
 				}else if(f){
 					track.target.matrix.copyFrom(f.matrix);
@@ -199,6 +209,11 @@ package gl3d.core.skin
 			}
 			var lastSkin:Skin;
 			var first:Boolean = true;
+			if(isCache){
+				if(jointMatrixsCache[tid]==null)
+				jointMatrixsCache[tid] = {};
+				jointMatrixs = jointMatrixsCache[tid];
+			}
 			for each(target in targets){
 				if (target.skin == null) continue;
 				if (lastSkin==target.skin){
@@ -209,10 +224,10 @@ package gl3d.core.skin
 				if(isCache){
 					target.skin.cacheFrame = new SkinFrame;
 					currentFrame = target.skin.cacheFrame;
-					if (target.skin.cache[name]==null){
-						target.skin.cache[name] = [];
+					if (target.skin.cache[id]==null){
+						target.skin.cache[id] = [];
 					}
-					target.skin.cache[name][tid] = currentFrame;
+					target.skin.cache[id][tid] = currentFrame;
 				}else{
 					target.skin.cacheFrame = null;
 					if (target.skin.skinFrame == null) target.skin.skinFrame = new SkinFrame;
@@ -248,6 +263,14 @@ package gl3d.core.skin
 				for (var i:int = 0; i <l ;i++ ) {
 					var joint:Joint = js[i];
 					var matrix:Matrix3D = ms[i];
+					
+					var jm:Matrix3D = jointMatrixs[joint.name];
+					if (jm==null){
+						jm = new Matrix3D;
+						jointMatrixs[joint.name] = jm;
+					}
+					jm.copyFrom(joint.matrix);
+					
 					matrix.copyFrom(joint.invBindMatrix);
 					matrix.append(joint.world);
 					//matrix.append(target.skin.jointRoot.world2local);

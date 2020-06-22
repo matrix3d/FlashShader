@@ -12,7 +12,9 @@ package
 	import gl3d.core.Fog;
 	import gl3d.core.InstanceMaterial;
 	import gl3d.core.shaders.GLShader;
+	import gl3d.core.skin.AnimBinder;
 	import gl3d.core.skin.SkinAnimation;
+	import gl3d.core.skin.SkinAnimationCtrl;
 	import gl3d.ctrl.ArcBallCtrl;
 	import gl3d.ctrl.Ctrl;
 	import gl3d.ctrl.FirstPersonCtrl;
@@ -164,6 +166,15 @@ package
 			//p.root.rotationY = 0;// -Math.PI;
 			view.scene.addChild(player);
 			addNode(80);
+			
+			var weapon:Node3D = new Node3D;
+			weapon.material = new Material;
+			weapon.material.diffTexture = new TextureSet(new BitmapData(1, 1, false, 0xff0000));
+			//targetCube.material.color.x = 0;
+			weapon.drawable = Teapot.teapot();
+			view.scene.addChild(weapon);
+			weapon.controllers = new Vector.<Ctrl>();
+			weapon.controllers.push(new AnimBinder(fbx.animc,"RightHandRing1"));
 		}
 		
 		private function addNode(num:int):void {
@@ -232,16 +243,21 @@ package
 			
 			if (terrain.rayMeshTest(rayOrigin, rayDirection,pix)) {
 				if (moving == false){
-					var anim:SkinAnimation = fbx.animc.play("Walking",.03);
+					play("Walking",.03);
 				}
 				moving = true;
-				
-				
-				
 				targetCube.x = pix.x;
 				targetCube.y = pix.y;
 				targetCube.z = pix.z;
 				this.pix.copyFrom(pix);
+			}
+		}
+		
+		public function play(name:String, transitionTime:Number):void{
+			var anim:SkinAnimation = fbx.animc.play(name, transitionTime);
+			for each(var p:Node3D in players){
+				var anc:SkinAnimationCtrl = p.children[0].controllers[0] as SkinAnimationCtrl;
+				anc.play(name, transitionTime);
 			}
 		}
 		
@@ -267,7 +283,7 @@ package
 					player.z = pix.z;
 					moving = false;
 					
-					var anim:SkinAnimation = fbx.animc.play("Idle",.3);
+					play("Idle",.3);
 				}else {
 					var v:Vector3D = pix.subtract(player.world.position);
 					v.normalize();
