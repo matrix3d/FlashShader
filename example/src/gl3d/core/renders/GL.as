@@ -148,9 +148,10 @@ package gl3d.core.renders
 		public function setProgramConstantsFromVector(programType : String, firstRegister : int, data : Vector.<Number>, numRegisters : int = -1) : void {
 			context.setProgramConstantsFromVector(programType, firstRegister, data, numRegisters);
 		}
+		
 		public function setFillMode(fillMode:String):void 
 		{
-			context.setFillMode(customFillMode||fillMode);
+			//context["setFillMode"](customFillMode||fillMode);
 		}
 		public function setProgramConstantsFromVector3D(programType : String, firstRegister : int, data : Vector3D) : void {
 			tempvec4[0] = data.x;
