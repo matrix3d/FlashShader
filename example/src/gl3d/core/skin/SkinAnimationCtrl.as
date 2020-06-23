@@ -18,6 +18,7 @@ package gl3d.core.skin
 		public var playing:Boolean = true;
 		public var transitionAnim:SkinAnimation;
 		private var waitAnimAfterTransition:String;//过渡后需要播放的动画
+		private var funs:Array;
 		public function SkinAnimationCtrl() 
 		{
 			
@@ -37,9 +38,12 @@ package gl3d.core.skin
 					}
 				}
 			}
+			for each(var fun:SkinAnimFrameScript in funs){
+				fun.exec();
+			}
 			
 			if (anim) {
-				var funs:Array = [];
+				funs = [];
 				if(playing){
 					this.time = time;
 				}
@@ -68,13 +72,10 @@ package gl3d.core.skin
 					//anim.update(anim.timeline.exitTime*anim.maxTime, node);
 				//}
 				anim.update(t, node);
-				for each(var fun:SkinAnimFrameScript in funs){
-					fun.exec();
-				}
 			}
 		}
 		
-		public function playIndex(i:int,transitionTime:Number):SkinAnimation{
+		public function playIndex(i:int,transitionTime:Number/*,startRatio:Number=0*/):SkinAnimation{
 			dirty = true;
 			var fanim:SkinAnimation = anims[i];
 			if (fanim==null){
@@ -136,9 +137,9 @@ package gl3d.core.skin
 							if(t2.target){
 								f2 = t.frames[0];
 								var j:Joint = t2.target as Joint;
-								var m:Matrix3D = anim.jointMatrixs[j.name];
-								if(m){
-									f2.matrix.copyFrom(m);
+								var ms:Array = anim.jointMatrixs[j.name]//[0];
+								if(ms){
+									f2.matrix.copyFrom(ms[0]);
 								}else{
 									anim = fanim;
 									return fanim;
@@ -159,6 +160,7 @@ package gl3d.core.skin
 					anim = transitionAnim;
 					waitAnimAfterTransition = fanim.name;
 				}else{
+					//startTime = time-fanim.maxTime * (1-startRatio);
 					anim = fanim;
 				}
 			}
@@ -172,11 +174,11 @@ package gl3d.core.skin
 		 * @param	transitionTime 过渡时间s
 		 * @return
 		 */
-		public function play(name:String,transitionTime:Number):SkinAnimation{
+		public function play(name:String,transitionTime:Number/*,startRatio:Number=0*/):SkinAnimation{
 			var i:int = 0;
 			for each(var a:SkinAnimation in anims){
 				if (a.name==name){
-					return playIndex(i, transitionTime);
+					return playIndex(i, transitionTime/*,startRatio*/);
 					break;
 				}
 				i++;

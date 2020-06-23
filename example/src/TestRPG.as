@@ -13,8 +13,10 @@ package
 	import gl3d.core.InstanceMaterial;
 	import gl3d.core.shaders.GLShader;
 	import gl3d.core.skin.AnimBinder;
+	import gl3d.core.skin.Joint;
 	import gl3d.core.skin.SkinAnimation;
 	import gl3d.core.skin.SkinAnimationCtrl;
+	import gl3d.core.skin.Track;
 	import gl3d.ctrl.ArcBallCtrl;
 	import gl3d.ctrl.Ctrl;
 	import gl3d.ctrl.FirstPersonCtrl;
@@ -165,16 +167,37 @@ package
 			//p.scenes[0].setRotation( -90, 0, 0);// -Math.PI / 2 ;
 			//p.root.rotationY = 0;// -Math.PI;
 			view.scene.addChild(player);
-			addNode(80);
+			addNode(50);
 			
 			var weapon:Node3D = new Node3D;
 			weapon.material = new Material;
-			weapon.material.diffTexture = new TextureSet(new BitmapData(1, 1, false, 0xff0000));
+			weapon.material.diffTexture = new TextureSet(new BitmapData(1, 1, false, 0xff00));
 			//targetCube.material.color.x = 0;
 			weapon.drawable = Teapot.teapot();
 			view.scene.addChild(weapon);
 			weapon.controllers = new Vector.<Ctrl>();
-			weapon.controllers.push(new AnimBinder(fbx.animc,"RightHandRing1"));
+			
+			var jj:Joint;
+			for each(var anim:SkinAnimation in fbx.animc.anims){
+				for each(var t:Track in anim.tracks){
+					var jname:String = 
+					"LeftForeArm"
+					//"RightHandRing1"
+					;
+					if (t.target.name==jname){
+						jj = t.target as Joint;
+						if (jj){
+							break;
+						}
+					}
+				}
+				if (jj){
+					break;
+				}
+			}
+			
+			weapon.controllers.push(new AnimBinder(fbx.animc, jj));
+			fbx.rootNode.addChild(weapon);
 		}
 		
 		private function addNode(num:int):void {
@@ -254,10 +277,11 @@ package
 		}
 		
 		public function play(name:String, transitionTime:Number):void{
-			var anim:SkinAnimation = fbx.animc.play(name, transitionTime);
+			transitionTime = .5;
+			var anim:SkinAnimation = fbx.animc.play(name, transitionTime*Math.random());
 			for each(var p:Node3D in players){
 				var anc:SkinAnimationCtrl = p.children[0].controllers[0] as SkinAnimationCtrl;
-				anc.play(name, transitionTime);
+				anc.play(name, transitionTime*Math.random());
 			}
 		}
 		

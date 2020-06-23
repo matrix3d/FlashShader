@@ -167,17 +167,19 @@ package gl3d.core.skin
 			}
 			if (isCache){//缓存
 				var tid:int = int(t * 1000 / 60);
+				if(jointMatrixsCache[tid]==null){
+					jointMatrixsCache[tid] = {};
+				}
+				jointMatrixs = jointMatrixsCache[tid];
 				var needCache:Boolean = false;
 				for each(var target:Node3D in targets){
 					if (target.skin == null) continue;
-					
 					updateJointRoot(target.skin);
 					
 					if (target.skin.cache[id]==null){
 						needCache = true;
 					}else{
 						target.skin.cacheFrame = target.skin.cache[id][tid];
-						jointMatrixs = jointMatrixsCache[tid];
 						if (target.skin.cacheFrame==null){
 							needCache = true;
 						}
@@ -209,11 +211,6 @@ package gl3d.core.skin
 			}
 			var lastSkin:Skin;
 			var first:Boolean = true;
-			if(isCache){
-				if(jointMatrixsCache[tid]==null)
-				jointMatrixsCache[tid] = {};
-				jointMatrixs = jointMatrixsCache[tid];
-			}
 			for each(target in targets){
 				if (target.skin == null) continue;
 				if (lastSkin==target.skin){
@@ -248,7 +245,6 @@ package gl3d.core.skin
 					target.skin.jointRoot.updateTransforms(true);
 					first = false;
 				}
-				
 				if (currentFrame.matrixs.length == 0) {
 					var nj:int = target.skin.joints.length;
 					for (i = 0; i < nj;i++ ) {
@@ -263,17 +259,17 @@ package gl3d.core.skin
 				for (var i:int = 0; i <l ;i++ ) {
 					var joint:Joint = js[i];
 					var matrix:Matrix3D = ms[i];
-					
-					var jm:Matrix3D = jointMatrixs[joint.name];
-					if (jm==null){
-						jm = new Matrix3D;
-						jointMatrixs[joint.name] = jm;
-					}
-					jm.copyFrom(joint.matrix);
-					
 					matrix.copyFrom(joint.invBindMatrix);
 					matrix.append(joint.world);
 					//matrix.append(target.skin.jointRoot.world2local);
+					
+					var jms:Array = jointMatrixs[joint.name];
+					if (jms==null){
+						jms = [new Matrix3D,new Matrix3D];//new Matrix3D;
+						jointMatrixs[joint.name] = jms;
+					}
+					jms[0].copyFrom(joint.matrix);
+					jms[1].copyFrom(joint.world);
 					
 					if(useQuat){
 						q.fromMatrix(matrix);
@@ -318,6 +314,7 @@ package gl3d.core.skin
 						var x:Number = 0;
 						var y:Number = 0;
 						var z:Number = 0;
+						var w:Number = 0;
 						var nx:Number = 0;
 						var ny:Number = 0;
 						var nz:Number = 0;
@@ -327,7 +324,7 @@ package gl3d.core.skin
 							var jointIndex:int = target.drawable.joint.data[i * target.skin.maxWeight + j];
 							if(jointIndex!=-1){
 								var weight:Number = target.drawable.weight.data[i * target.skin.maxWeight + j];
-								matrix = target.skin.skinFrame.matrixs[jointIndex];
+								matrix = (target.skin.cacheFrame|| target.skin.skinFrame).matrixs[jointIndex];
 								if (weight != 0) {
 									if(!target.skin.useQuat){
 										var vr:Vector3D = matrix.transformVector(pos);
@@ -351,9 +348,11 @@ package gl3d.core.skin
 										vr = vr.add(q.tran);
 										nr = q.rotatePoint(norm);
 									}
+									
 									x += vr.x*weight;
 									y += vr.y*weight;
 									z += vr.z * weight;
+									w += vr.w * weight;
 									
 									nx += nr.x*weight;
 									ny += nr.y*weight;
@@ -361,9 +360,10 @@ package gl3d.core.skin
 								}
 							}
 						}
-						outpos[i * 3] = x;
-						outpos[i*3+1] = y;
-						outpos[i * 3 + 2] = z;
+						
+						outpos[i * 3] = x/w;
+						outpos[i*3+1] = y/w;
+						outpos[i * 3 + 2] = z/w;
 						var len:Number = Math.sqrt(nx * nx + ny * ny + nz * nz);
 						nx /= len;
 						ny /= len;
