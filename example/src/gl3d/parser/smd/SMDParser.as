@@ -106,7 +106,7 @@ package gl3d.parser.smd
 				var node:Node3D = new Node3D;
 				node.skin = skin;
 				node.material = new Material;
-				new MatLoadMsg(path+(decoder.triangless[0][0] as String).replace(/\..*$/g,".png"),null,node.material);
+				new MatLoadMsg(path+(decoder.triangless[0][0] as String)/*.replace(/\..*$/g,".png")*/,null,node.material);
 				/*[Embed(source = "../../../assets/smd/ARTIC_Working1.png")]var c:Class;
 				node.material.diffTexture = new TextureSet((new c as Bitmap).bitmapData);*/
 				node.drawable = Meshs.createDrawable(indexs, poss, uvs, norms);

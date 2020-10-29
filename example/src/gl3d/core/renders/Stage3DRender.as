@@ -49,6 +49,7 @@ package gl3d.core.renders
 				if (agalVersion == 2){
 					pfs.unshift(Context3DProfile.STANDARD_CONSTRAINED);
 					pfs.unshift(Context3DProfile.STANDARD);
+					pfs.unshift(Context3DProfile.STANDARD_EXTENDED);
 				}
 				for (var i:int = pfs.length - 1; i >= 0;i-- ) {
 					if (pfs[i]==null) {
@@ -82,7 +83,7 @@ package gl3d.core.renders
 				view.profile = stage3d.context3D.profile;
 			}
 			view.driverInfo = gl3d.driverInfo;
-			if (view.profile==Context3DProfile.STANDARD||view.profile==Context3DProfile.STANDARD_CONSTRAINED) {
+			if (view.profile==Context3DProfile.STANDARD||view.profile==Context3DProfile.STANDARD_CONSTRAINED||view.profile==Context3DProfile.STANDARD_EXTENDED) {
 				agalVersion = 2;
 			}else {
 				agalVersion = 1;

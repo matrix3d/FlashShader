@@ -32,13 +32,17 @@ package gl3d.util
 		{
 			sourceURL = url;
 			
-			var isTga:Boolean = url.toLocaleLowerCase().indexOf(".tga") !=-1;
-			
-			var url = url.substring(url.lastIndexOf("\\") + 1);
-				url=url.substring(url.lastIndexOf("/") + 1);
-			if (url.toLocaleLowerCase().indexOf(".jpg")==-1||!isTga){
-				url = url.substring(0, url.lastIndexOf(".")) + ".png";
+			var obj:Object =/\.(\w+?)$/g.exec(url);
+			var ext:String = "";
+			if (obj){
+				var ext:String = obj[1];
 			}
+			var isTga:Boolean = ext.toLowerCase() == "tga";//url.toLocaleLowerCase().indexOf(".tga") !=-1;
+			var url = url.substring(url.lastIndexOf("\\") + 1);
+			url=url.substring(url.lastIndexOf("/") + 1);
+			/*if (url.toLocaleLowerCase().indexOf(".jpg")==-1&&!isTga){
+				url = url.substring(0, url.lastIndexOf(".")) + ".png";
+			}*/
 			this.url = url;
 			trace(url);
 			this.mat = mat;

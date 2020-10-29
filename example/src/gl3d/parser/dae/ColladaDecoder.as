@@ -15,6 +15,7 @@ package gl3d.parser.dae
 	import gl3d.ctrl.Ctrl;
 	import gl3d.meshs.Meshs;
 	import gl3d.util.Converter;
+	import gl3d.util.MatLoadMsg;
 	/**
 	 * ...
 	 * @author lizhi
@@ -281,6 +282,17 @@ package gl3d.parser.dae
 						var exml:XML = effects[effname];
 						var color:Array = str2Floats(exml.profile_COMMON.technique.phong.specular.color);
 						var ambient:Array = str2Floats(exml.profile_COMMON.technique.phong.ambient.color);
+						var tname:String = exml.profile_COMMON.technique.phong.diffuse.texture[0].@texture;
+						if (tname){
+							tname = tname.replace(/\-sampler$/, "");
+							var img:Object = images[tname];
+							if (img){
+								var url:String = img.init_from;
+								if(url){
+									new MatLoadMsg(url,null, childNode.material);
+								}
+							}
+						}
 						childNode.material.color.setTo(color[0],color[1],color[2]);
 						childNode.material.ambient.setTo(ambient[0],ambient[1],ambient[2]);
 					}
