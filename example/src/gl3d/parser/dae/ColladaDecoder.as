@@ -272,7 +272,8 @@ package gl3d.parser.dae
 					}
 					
 					var childNode:Node3D = new Node3D;
-					childNode.drawable = Meshs.createDrawable(Vector.<uint>(inc), Vector.<Number>(vs2), null, null);
+					childNode.drawable = Meshs.createDrawable(Vector.<uint>(inc), Vector.<Number>(vs2),null, null);
+					//childNode.drawable.uv;// Meshs.computeUV(childNode.drawable);
 					childNode.material = new Material;
 					
 					var materialName:String = triangleXML.@material;
@@ -280,8 +281,10 @@ package gl3d.parser.dae
 						var mxml:XML = materials[materialName];
 						var effname:String = (mxml.instance_effect[0].@url).substr(1);
 						var exml:XML = effects[effname];
-						var color:Array = str2Floats(exml.profile_COMMON.technique.phong.specular.color);
-						var ambient:Array = str2Floats(exml.profile_COMMON.technique.phong.ambient.color);
+						//var color:Array = str2Floats(exml.profile_COMMON.technique.phong.specular.color);
+						//var ambient:Array = str2Floats(exml.profile_COMMON.technique.phong.ambient.color);
+						//childNode.material.color.setTo(color[0],color[1],color[2]);
+						//childNode.material.ambient.setTo(ambient[0],ambient[1],ambient[2]);
 						var tname:String = exml.profile_COMMON.technique.phong.diffuse.texture[0].@texture;
 						if (tname){
 							tname = tname.replace(/\-sampler$/, "");
@@ -293,8 +296,6 @@ package gl3d.parser.dae
 								}
 							}
 						}
-						childNode.material.color.setTo(color[0],color[1],color[2]);
-						childNode.material.ambient.setTo(ambient[0],ambient[1],ambient[2]);
 					}
 					node.addChild(childNode);
 				}

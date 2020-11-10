@@ -167,7 +167,7 @@ package
 			//p.scenes[0].setRotation( -90, 0, 0);// -Math.PI / 2 ;
 			//p.root.rotationY = 0;// -Math.PI;
 			view.scene.addChild(player);
-			addNode(50);
+			addNode(100);
 			
 			var weapon:Node3D = new Node3D;
 			weapon.material = new Material;
@@ -202,13 +202,18 @@ package
 		
 		private function addNode(num:int):void {
 			while(num-->0){
-				var d:int = 3;
+				var d:int = 30;
 				/*var clone:Node3D = player.clone(true);
 				players.push(clone);
 				
 				changeMaterial(clone);
 				(new Node3D).addChild(clone);*/
 				var clone:Node3D = player.clone();
+				clone.setPosition(
+				d*(Math.random()-.5),
+				0,//d*(Math.random()-.5),
+				d * (Math.random() - .5)
+				)
 				//clone.scaleX *= 2;
 				//clone.scaleY *= 2;
 				//clone.scaleZ *= 2;

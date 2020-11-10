@@ -279,10 +279,10 @@ package gl3d.core.skin
 						if (useHF){
 							var i4:int = i * 4;
 							
-							qs[i4++] =  int(1000000/(r.x/s.x +200)) + (q.x + 1) / 2 ;
-							qs[i4++] =  int(1000000/(r.y/s.y+200)) + (q.y + 1) / 2 ;
-							qs[i4++] =  int(1000000/(r.z/s.z +200)) + (q.z + 1) / 2 ;
-							qs[i4++] = (q.w + 1) / 2;
+							qs[i4++] = (q.x + 1) * 0.499 + Math.ceil(r.x / s.x * 10 ); //int(1000000/(r.x/s.x +200)) + (q.x + 1) / 2 ;
+							qs[i4++] = (q.y + 1) * 0.499 + Math.ceil(r.y / s.y * 10 ); //int(1000000/(r.y/s.y+200)) + (q.y + 1) / 2 ;
+							qs[i4++] = (q.z + 1) * 0.499 + Math.ceil(r.z / s.z * 10 ); //int(1000000/(r.z/s.z +200)) + (q.z + 1) / 2 ;
+							qs[i4++] = (q.w + 1) * 0.499;//(q.w + 1) / 2;
 						}else{
 							var i8:int = i * 8;
 							qs[i8++] = q.x;
