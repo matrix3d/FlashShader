@@ -20,6 +20,13 @@ package gl3d.core
 			
 		}
 		
+		public static function getIndex(ins:Array):Array{
+			var newIndex = [];
+			for (var i:int = 0; i < ins.length;i+=3 ){
+				newIndex.push([ins[i],ins[i+1],ins[i+2]]);
+			}
+			return newIndex;
+		}
 	}
 
 }

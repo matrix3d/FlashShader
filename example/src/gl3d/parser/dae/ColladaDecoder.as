@@ -2,6 +2,7 @@ package gl3d.parser.dae
 {
 	import flash.geom.Matrix3D;
 	import gl3d.core.Drawable;
+	import gl3d.core.DrawableSource;
 	import gl3d.core.skin.Joint;
 	import gl3d.core.Material;
 	import gl3d.core.Node3D;
@@ -221,23 +222,31 @@ package gl3d.parser.dae
 		{
 			var vs:Array = str2Floats(getVerticesById((nodeXML.mesh.vertices.@id), nodeXML.mesh[0]).float_array.text());
 			var vs2:Array = converter.convertedVec3s(vs) as Array;
+			
+			var vmap:Object = {};
+			
 			for each(var faceXML:XML in nodeXML.mesh.children()) {
 				var name:String = faceXML.localName();
 				if (name == "polylist" || name == "triangles") {
 					var triangleXML:XML = faceXML;
-					var inc:Vector.<uint> = new Vector.<uint>;
-					var uvinc:Vector.<uint> = new Vector.<uint>;
+					var inc:Array = [];//new Vector.<uint>;
+					var uvinc:Array = [];// new Vector.<uint>;
 					var parray:Array = str2Floats(triangleXML.p);
 					var maxOffset:int = 0;
 					var vertexOffset:int = 0;
 					var uvOffset:int = 0;
+					var vertexID:String;
+					var uvID:String;
 					for each(var childXML:XML in triangleXML.input) {
 						var offset:int = parseInt(childXML.@offset);
 						if (offset > maxOffset) maxOffset = offset;
+						var vid:String = childXML.@source;
 						if (childXML.@semantic=="VERTEX") {
 							vertexOffset = offset;
+							vertexID = vid;
 						}else if (childXML.@semantic=="TEXCOORD") {
 							uvOffset = offset;
+							uvID = vid;
 						}
 					}
 					var adder:int = maxOffset + 1;
@@ -272,8 +281,26 @@ package gl3d.parser.dae
 					}
 					
 					var childNode:Node3D = new Node3D;
-					childNode.drawable = Meshs.createDrawable(Vector.<uint>(inc), Vector.<Number>(vs2),null, null);
-					//childNode.drawable.uv;// Meshs.computeUV(childNode.drawable);
+					childNode.drawable = new Drawable;//Meshs.createDrawable(Vector.<uint>(inc), Vector.<Number>(vs2),null, null);
+					childNode.drawable.source = new DrawableSource;
+					childNode.drawable.source.index = DrawableSource.getIndex(inc);
+					childNode.drawable.source.pos = vs2;
+					if(uvID){
+						var uvarr:Array = vmap[uvID];
+						if (uvarr==null){
+							uvarr = str2Floats(getVerticesById(uvID.substr(1), nodeXML.mesh[0]).float_array.text());
+							vmap[uvID] = uvarr;
+							for (var i:int = 0; i < uvarr.length;i+=2 ){
+								var temp:Number = uvarr[i+1];
+								//uvarr[i] =uvarr[i+1];
+								uvarr[i + 1] =1-temp; 
+							}
+						}
+						if(uvarr){
+							childNode.drawable.source.uv = uvarr;
+							childNode.drawable.source.uvIndex = DrawableSource.getIndex(uvinc);
+						}
+					}
 					childNode.material = new Material;
 					
 					var materialName:String = triangleXML.@material;
@@ -292,7 +319,7 @@ package gl3d.parser.dae
 							if (img){
 								var url:String = img.init_from;
 								if(url){
-									new MatLoadMsg(url,null, childNode.material);
+									//new MatLoadMsg(url,null, childNode.material);
 								}
 							}
 						}
