@@ -258,7 +258,7 @@ package gl3d.meshs
 						var newvb:VertexBufferSet = newDrawable[name];
 						if(newvb==null)
 						newvb = newDrawable[name] = new VertexBufferSet(new Vector.<Number>(idata.length * vb.data32PerVertex), vb.data32PerVertex);
-						var d:int=vb.data32PerVertex
+						var d:int = vb.data32PerVertex;
 						for (var j:int = 0; j < d; j++) {
 							newvb.data[i * d+j] = vb.data[idata[i]*d+j];
 							newvb.data[(i+1) * d+j] = vb.data[idata[i+1]*d+j];
@@ -386,9 +386,11 @@ package gl3d.meshs
 				ny = norm[i+1];
 				nz = norm[i+2];
 				var distance:Number = Math.sqrt(nx * nx + ny * ny + nz * nz);
+				if(distance>0){
 				norm[i] /= distance;
 				norm[i+1] /= distance;
 				norm[i + 2] /= distance;
+				}
 			}
 			return new VertexBufferSet(norm,3);
 		}
