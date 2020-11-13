@@ -20,7 +20,7 @@ package gl3d.core
 		private var _writeDepth:Boolean = false;
 		public var ambientAble:Boolean = true;
 		public var specularAble:Boolean = true;
-		public var ambient:Vector3D =new Vector3D(.2, .2, .2, 0);
+		public var ambient:Vector3D =new Vector3D(0, 0, 0, 0);
 		public var specularPower:Number = 50;
 		private var _toonAble:Boolean = false;
 		public var toonStep:Number = 2;
