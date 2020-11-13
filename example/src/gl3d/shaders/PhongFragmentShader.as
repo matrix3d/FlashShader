@@ -80,6 +80,9 @@ package gl3d.shaders
 							phongColor = add(phongColor, curPhongColor);
 						}
 					}
+					if (phongColor){
+						phongColor = add(phongColor,ambientColor);
+					}
 					if (material.toonAble) {
 						phongColor = div(floor(add(.5,mul(material.toonStep, phongColor))),material.toonStep);
 					}
@@ -212,9 +215,9 @@ package gl3d.shaders
 				var cosAlpha:Var = sat(dp3(e, r));
 			}
 			if (material.specularAble) {
-				return add(ambientColor, mul2([lightColor, add(cosTheta, pow(cosAlpha, specularPow)), lightPower]));
+				return  mul2([lightColor, add(cosTheta, pow(cosAlpha, specularPow)), lightPower]);
 			}else {
-				return add(ambientColor, mul2([lightColor, cosTheta, lightPower]));
+				return mul2([lightColor, cosTheta, lightPower]);
 			}
 			return null;
 		}
