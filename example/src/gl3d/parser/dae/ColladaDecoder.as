@@ -319,7 +319,7 @@ package gl3d.parser.dae
 							if (img){
 								var url:String = img.init_from;
 								if(url){
-									//new MatLoadMsg(url,null, childNode.material);
+									new MatLoadMsg(url,null, childNode.material);
 								}
 							}
 						}
