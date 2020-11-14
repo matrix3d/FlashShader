@@ -187,8 +187,8 @@ package gl3d.parser.dae
 				for each(var count:int in vcount ) {
 					if (maxWeight < count) maxWeight = count;
 				}
-				var js:Vector.<Number> = new Vector.<Number>;
-				var ws:Vector.<Number> = new Vector.<Number>;
+				var js:Array = [];// new Vector.<Number>;
+				var ws:Array = [];//new Vector.<Number>;
 				var k:int = 0;
 				for each(count in vcount ) {
 					for (i = 0; i < count; i++ ) {
@@ -209,8 +209,10 @@ package gl3d.parser.dae
 					for each(var childNode:Node3D in skinNode.children) {
 						childNode.skin = skin;
 						var drawable:Drawable = childNode.drawable;
-						drawable.joint=new  VertexBufferSet(Vector.<Number>(js),maxWeight);
-						drawable.weight=new  VertexBufferSet(Vector.<Number>(ws),maxWeight);
+						drawable.source.joint = js;
+						drawable.source.weight = ws;
+						//drawable.joint=new  VertexBufferSet(Vector.<Number>(js),maxWeight);
+						//drawable.weight=new  VertexBufferSet(Vector.<Number>(ws),maxWeight);
 					}
 				}else {
 					trace("error:maxWeight=",maxWeight);
@@ -313,13 +315,19 @@ package gl3d.parser.dae
 						//childNode.material.color.setTo(color[0],color[1],color[2]);
 						//childNode.material.ambient.setTo(ambient[0],ambient[1],ambient[2]);
 						var tname:String = exml.profile_COMMON.technique.phong.diffuse.texture[0].@texture;
+						//animXML.sampler.(@id == (channelXML.@source.substr(1)))[0];
 						if (tname){
-							tname = tname.replace(/\-sampler$/, "");
-							var img:Object = images[tname];
-							if (img){
-								var url:String = img.init_from;
-								if(url){
-									new MatLoadMsg(url,null, childNode.material);
+							var sampler:String= exml.profile_COMMON.newparam.(@sid == tname).sampler2D.source[0];
+							if (sampler){
+								var surface:String = exml.profile_COMMON.newparam.(@sid == sampler).surface.init_from[0];
+								if (surface){
+									var img:Object = images[surface];
+									if (img){
+										var url:String = img.init_from;
+										if(url){
+											new MatLoadMsg(url,null, childNode.material);
+										}
+									}
 								}
 							}
 						}
