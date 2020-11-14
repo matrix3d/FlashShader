@@ -289,13 +289,15 @@ package gl3d.parser.dae
 					childNode.drawable.source.pos = vs2;
 					if(uvID){
 						var uvarr:Array = vmap[uvID];
-						if (uvarr==null){
-							uvarr = str2Floats(getVerticesById(uvID.substr(1), nodeXML.mesh[0]).float_array.text());
+						if (uvarr == null){
+							var vsxml:XML = getVerticesById(uvID.substr(1), nodeXML.mesh[0]);
+							var suvarr = str2Floats(vsxml.float_array.text());
+							var stride:int=parseInt(vsxml.technique_common.accessor.@stride)
+							uvarr = [];
 							vmap[uvID] = uvarr;
-							for (var i:int = 0; i < uvarr.length;i+=2 ){
-								var temp:Number = uvarr[i+1];
-								//uvarr[i] =uvarr[i+1];
-								uvarr[i + 1] =1-temp; 
+							for (var i:int = 0; i < suvarr.length;i+=stride ){
+								uvarr[i] =suvarr[i];
+								uvarr[i + 1] =1-suvarr[i+1]; 
 							}
 						}
 						if(uvarr){
@@ -311,9 +313,9 @@ package gl3d.parser.dae
 						var effname:String = (mxml.instance_effect[0].@url).substr(1);
 						var exml:XML = effects[effname];
 						//var color:Array = str2Floats(exml.profile_COMMON.technique.phong.specular.color);
-						//var ambient:Array = str2Floats(exml.profile_COMMON.technique.phong.ambient.color);
+						var ambient:Array = str2Floats(exml.profile_COMMON.technique.phong.ambient.color);
 						//childNode.material.color.setTo(color[0],color[1],color[2]);
-						//childNode.material.ambient.setTo(ambient[0],ambient[1],ambient[2]);
+						childNode.material.ambient.setTo(ambient[0],ambient[1],ambient[2]);
 						var tname:String = exml.profile_COMMON.technique.phong.diffuse.texture[0].@texture;
 						//animXML.sampler.(@id == (channelXML.@source.substr(1)))[0];
 						if (tname){
