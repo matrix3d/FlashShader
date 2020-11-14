@@ -192,13 +192,23 @@ package gl3d.parser.dae
 				var k:int = 0;
 				for each(count in vcount ) {
 					for (i = 0; i < count; i++ ) {
-						js.push(v[k++]);
-						ws.push(weights[v[k++]]);
+						if(i<Skin.MAX_WEIGHT){
+							js.push(v[k++]);
+							ws.push(weights[v[k++]]);
+						}else{
+							k += 2;
+						}
 					}
-					for (; i < maxWeight;i++ ) {
+					for (; i < maxWeight; i++ ) {
+						if(i<Skin.MAX_WEIGHT){
 						js.push(0);
 						ws.push(0);
+						}
 					}
+				}
+				if (maxWeight > Skin.MAX_WEIGHT) {
+					trace("error:maxWeight=",maxWeight);
+					maxWeight = Skin.MAX_WEIGHT;
 				}
 				if (maxWeight <= Skin.MAX_WEIGHT) {
 					skinNodes.push(skinNode);	
@@ -316,7 +326,13 @@ package gl3d.parser.dae
 						var ambient:Array = str2Floats(exml.profile_COMMON.technique.phong.ambient.color);
 						//childNode.material.color.setTo(color[0],color[1],color[2]);
 						childNode.material.ambient.setTo(ambient[0],ambient[1],ambient[2]);
-						var tname:String = exml.profile_COMMON.technique.phong.diffuse.texture[0].@texture;
+						var technique:XMLList = exml.profile_COMMON.technique;
+						var phong:XMLList = technique.phong;
+						if (phong.length()==0){
+							phong = technique.blinn;
+						}
+						var tname:String = phong.diffuse.texture.@texture;
+						
 						//animXML.sampler.(@id == (channelXML.@source.substr(1)))[0];
 						if (tname){
 							var sampler:String= exml.profile_COMMON.newparam.(@sid == tname).sampler2D.source[0];
