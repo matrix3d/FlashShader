@@ -107,7 +107,7 @@ package
 				Multitouch.inputMode = MultitouchInputMode.TOUCH_POINT;
 				debug = new TextField;
 				debug.mouseEnabled = debug.mouseWheelEnabled = false;
-				addChild(debug);
+				//addChild(debug);
 				debug.width = stage.stageWidth;
 				debug.height = stage.stageHeight;
 				//console.textfield = debug;
