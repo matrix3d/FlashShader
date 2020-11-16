@@ -305,9 +305,9 @@ package gl3d.parser.dae
 							var stride:int=parseInt(vsxml.technique_common.accessor.@stride)
 							uvarr = [];
 							vmap[uvID] = uvarr;
-							for (var i:int = 0; i < suvarr.length;i+=stride ){
-								uvarr[i] =suvarr[i];
-								uvarr[i + 1] =1-suvarr[i+1]; 
+							for (var i:int = 0; i < suvarr.length/stride;i++ ){
+								uvarr[2*i] =suvarr[stride*i];
+								uvarr[2*i + 1] =-suvarr[stride*i+1]; 
 							}
 						}
 						if(uvarr){
