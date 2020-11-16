@@ -325,7 +325,7 @@ package gl3d.parser.dae
 						//var color:Array = str2Floats(exml.profile_COMMON.technique.phong.specular.color);
 						var ambient:Array = str2Floats(exml.profile_COMMON.technique.phong.ambient.color);
 						//childNode.material.color.setTo(color[0],color[1],color[2]);
-						childNode.material.ambient.setTo(ambient[0],ambient[1],ambient[2]);
+						if(ambient&&ambient.length>=3)childNode.material.ambient.setTo(ambient[0],ambient[1],ambient[2]);
 						var technique:XMLList = exml.profile_COMMON.technique;
 						var phong:XMLList = technique.phong;
 						if (phong.length()==0){
