@@ -7,6 +7,8 @@ package gl3d.util
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
 	import flash.events.IOErrorEvent;
+	import flash.net.URLLoader;
+	import flash.net.URLLoaderDataFormat;
 	import flash.net.URLRequest;
 	import flash.utils.ByteArray;
 	import gl3d.core.Material;
@@ -26,6 +28,7 @@ package gl3d.util
 		private var mat:MaterialBase;
 		private var diff:TextureSet;
 		private var loader:Loader;
+		private var uloader:URLLoader;
 		private var url:String;
 		private var sourceURL:String;
 		public function MatLoadMsg(url:String,byte:ByteArray,mat:MaterialBase) 
@@ -61,9 +64,19 @@ package gl3d.util
 				}
 			}else{
 				if (isTga){
-					var dc:TgaDecoder = new TgaDecoder;
-					dc.Decode(byte, false);
-					compBmd(dc.bitmapData);
+					if (byte){
+						var dc:TgaDecoder = new TgaDecoder;
+						dc.Decode(byte, false);
+						compBmd(dc.bitmapData);
+					}else{
+						fullurl2mat[fullurl] = this;
+						uloader = new URLLoader;
+						uloader.dataFormat = URLLoaderDataFormat.BINARY;
+						uloader.addEventListener(Event.COMPLETE, loader_complete2);
+						uloader.addEventListener(IOErrorEvent.IO_ERROR, loader_ioError);
+						addEventListener(IOErrorEvent.IO_ERROR, ioError);
+						uloader.load(new URLRequest(fullurl));
+					}
 				}else{
 					fullurl2mat[fullurl] = this;
 					loader = new Loader;
@@ -105,6 +118,12 @@ package gl3d.util
 		{
 			var bmd:BitmapData = (loader.content as Bitmap).bitmapData;
 			compBmd(bmd);
+		}
+		private function loader_complete2(e:Event):void 
+		{
+			var dc:TgaDecoder = new TgaDecoder;
+			dc.Decode(uloader.data as ByteArray, false);
+			compBmd(dc.bitmapData);
 		}
 		
 		private function compBmd(bmd:BitmapData){

@@ -49,7 +49,7 @@ package gl3d.parser.obj
 						pushVert(vs, data);
 						break;
 					case "vt":
-						pushVert(vts, data);
+						pushUV(vts, data);
 						break;
 					case "vn":
 						pushVert(vns, data);
@@ -76,6 +76,9 @@ package gl3d.parser.obj
 		
 		private function pushVert(arr:Array,data:Array):void {
 			arr.push(parseFloat(data[1]),parseFloat(data[2]),parseFloat(data[3]));
+		}
+		private function pushUV(arr:Array,data:Array):void {
+			arr.push(parseFloat(data[1]),parseFloat(data[2]));
 		}
 		
 		private function createObj():Object {

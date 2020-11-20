@@ -66,11 +66,17 @@ package gl3d.parser.obj
 							newPos.push(oldPos[i+1]);
 							newPos.push(-oldPos[i+2]);
 						}
-						decoder.vs;
-						drawable.source.uv = decoder.vts;
+						
+						var newUV:Array= drawable.source.uv = [];
+						var oldUV:Array = decoder.vts;
+						for (var i:int = 0, len:int = oldUV.length;i<len; i += 2) {
+							newUV.push(oldUV[i]);
+							newUV.push(-oldUV[i+1]);
+						}
+						
 						drawable.source.index = [];
 						var haveUV:Boolean = false;
-						if (g.f && g.f[0]  &&g.f[0][1]!=null) {
+						if (g.f && g.f[0]  &&g.f[0][0]&&g.f[0][0][0]!=null) {
 							var uvI:Array= drawable.source.uvIndex = [];
 							haveUV = true;
 						}
