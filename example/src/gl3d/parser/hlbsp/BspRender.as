@@ -181,7 +181,10 @@ package gl3d.parser.hlbsp
 		 * 
 		 * @return 0 obj,1 mtl
 		 */
-		public function toOBJ(name:String = "",mtllib:String=""):Array{
+		public function toOBJ(name:String = "", mtllib:String = ""):Array{
+			//bsp.textureCoordinates[i]; uv
+			//bsp.vertices
+			
 			var mtl:String = "";
 			var t2f:Object = {};
 			for each(var faceIndex:int in bsp.markSurfaces){
@@ -208,15 +211,32 @@ package gl3d.parser.hlbsp
 			
 			var obj:String = "# objencode v0.1\r\n";
 			obj += "mtllib "+mtllib + "\r\n";
-			var drawable:Drawable = target.drawable;
-			var v:Vector.<Number> = drawable.pos.data;
-			for (var i:int = 0; i < v.length;i+=3 ) {
-				obj +="v "+ v[i]+" "+v[i+1]+" "+(v[i+2])+"\r\n";
+			//var drawable:Drawable = target.drawable;
+			//var v:Vector.<Number> = drawable.pos.data;
+			//for (var i:int = 0; i < v.length;i+=3 ) {
+			//	obj +="v "+ v[i]+" "+v[i+1]+" "+(v[i+2])+"\r\n";
+			//}
+			//var vt:Vector.<Number> = drawable.uv.data;
+			//for (i = 0; i < vt.length;i+=2 ) {
+			//	obj +="vt "+ vt[i]+" "+(1-vt[i+1])+"\r\n";
+			//}
+			for each(var v:Vector3D in bsp.vertices){
+				obj +="v "+ v.x+" "+v.y+" "+v.z+"\r\n";
 			}
-			var vt:Vector.<Number> = drawable.uv.data;
-			for (i = 0; i < vt.length;i+=2 ) {
-				obj +="vt "+ vt[i]+" "+(1-vt[i+1])+"\r\n";
+			var uvmap:Object = {};
+			var k:int = 0;
+			for (var i:int = 0; i < bsp.faces.length; i++)
+			{
+				var face:BspFace = bsp.faces[i];
+				var faceTexCoords:Array = bsp.textureCoordinates[i];
+				for (var j:int = 0; j < face.edges; j++)
+				{
+					var texCoord:Object = faceTexCoords[j];
+					obj += "vt " + texCoord.s + " " + (-texCoord.t) + "\r\n";
+					uvmap[i + "," + j] = k++;
+				}
 			}
+			
 			obj += "s off\r\n";
 			for (var tid:int in t2f){
 				var bmd:BitmapData = bsp.textureLookup[tid];
@@ -228,20 +248,41 @@ package gl3d.parser.hlbsp
 					var face:BspFace = bsp.faces[faceIndex];
 					if (face.styles[0] == 0xFF)
 						continue; // Skip sky faces
-					var texInfo:BspTextureInfo = bsp.textureInfos[face.textureInfo];
+					//var texInfo:BspTextureInfo = bsp.textureInfos[face.textureInfo];
 					
 					// if the light map offset is not -1 and the lightmap lump is not empty, there are lightmaps
-					var lightmapAvailable:Boolean = face.lightmapOffset != -1 && bsp.header.lumps[Bsp.LUMP_LIGHTING].length > 0;
+					//var lightmapAvailable:Boolean = face.lightmapOffset != -1 && bsp.header.lumps[Bsp.LUMP_LIGHTING].length > 0;
 					//gl.activeTexture(gl.TEXTURE1);
 					//gl.bindTexture(gl.TEXTURE_2D, this.lightmapLookup[faceIndex]);
-					var ins:Vector.<uint>=  (indexs[faceIndex] as IndexBufferSet).data;
+					//var ins:Vector.<uint>=  (indexs[faceIndex] as IndexBufferSet).data;
 					
-					for (i = 0; i < ins.length; i += 3 ) {
-						var i0:int = ins[i]+ 1;
-						var i1:int = ins[i+1]+ 1;
-						var i2:int = ins[i+2]+1;
-						obj +="f "+ i0+"/"+i0+" "+ i1+"/"+i1+" "+ i2+"/"+i2+"\r\n"
+					//for (i = 0; i < ins.length; i += 3 ) {
+					//	var i0:int = ins[i]+ 1;
+					//	var i1:int = ins[i+1]+ 1;
+					//	var i2:int = ins[i+2]+1;
+					//	obj +="f "+ i0+"/"+i0+" "+ i1+"/"+i1+" "+ i2+"/"+i2+"\r\n"
+					//}
+					
+					obj += "f";
+					for (var j:int = face.edges-1; j>=0; j--)
+					{
+						var edgeIndex:int = bsp.surfEdges[face.firstEdge + j]; // This gives the index into the edge lump
+						
+						var vertexIndex:int;
+						if (edgeIndex > 0)
+						{
+							var edge:BspEdge = bsp.edges[edgeIndex];
+							vertexIndex = edge.vertices[0];
+						}
+						else
+						{
+							edgeIndex *= -1;
+							edge = bsp.edges[edgeIndex];
+							vertexIndex = edge.vertices[1];
+						}
+						obj += " " + (vertexIndex + 1) + "/" + (uvmap[faceIndex + "," + j]);
 					}
+					obj += "\r\n";
 				}
 			}
 			return [obj,mtl];
