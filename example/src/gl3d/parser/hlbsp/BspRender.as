@@ -138,7 +138,7 @@ package gl3d.parser.hlbsp
 					var lightmapCoord:Object = faceLightmapCoords[j];
 					
 					// Write to buffers
-					vertices.push(vertex.x);
+					vertices.push(-vertex.x);
 					vertices.push(vertex.y);
 					vertices.push(vertex.z);
 					
@@ -181,7 +181,7 @@ package gl3d.parser.hlbsp
 		 * 
 		 * @return 0 obj,1 mtl
 		 */
-		public function toOBJ(name:String = "", mtllib:String = ""):Array{
+		public function toOBJ(name:String = "", mtllib:String = "",marge:Boolean=false):Array{
 			//bsp.textureCoordinates[i]; uv
 			//bsp.vertices
 			
@@ -220,11 +220,30 @@ package gl3d.parser.hlbsp
 			//for (i = 0; i < vt.length;i+=2 ) {
 			//	obj +="vt "+ vt[i]+" "+(1-vt[i+1])+"\r\n";
 			//}
-			for each(var v:Vector3D in bsp.vertices){
-				obj +="v "+ v.x+" "+v.y+" "+v.z+"\r\n";
+			var vmap:Object = {};
+			var i2newi:Object = {};
+			var newv:Array = [];
+			for (var i:int = 0; i < bsp.vertices.length;i++ ){
+				var v:Vector3D = bsp.vertices[i];
+				if (marge){
+					//v.x = Math.round(v.x);
+					//v.y = Math.round(v.y);
+					//v.z = Math.round(v.z);
+				}
+				var vid:String = v.x + "," + v.y + "," + v.z;
+				if (vmap[vid]==null){
+					vmap[vid] = newv.length;
+					newv.push(v);
+					obj +="v "+ v.x+" "+v.y+" "+v.z+"\r\n";
+				}else{
+					//trace(1);
+				}
+				i2newi[i] = vmap[vid];
 			}
+			
 			var uvmap:Object = {};
-			var k:int = 0;
+			var uvi2newi:Object = {};
+			var newuv:Array = [];
 			for (var i:int = 0; i < bsp.faces.length; i++)
 			{
 				var face:BspFace = bsp.faces[i];
@@ -232,8 +251,13 @@ package gl3d.parser.hlbsp
 				for (var j:int = 0; j < face.edges; j++)
 				{
 					var texCoord:Object = faceTexCoords[j];
-					obj += "vt " + texCoord.s + " " + (-texCoord.t) + "\r\n";
-					uvmap[i + "," + j] = k++;
+					var vid:String = texCoord.s + "," + texCoord.t;
+					if (uvmap[vid]==null){
+						uvmap[vid] = newuv.length;
+						newuv.push(texCoord);
+						obj += "vt " + texCoord.s + " " + (1-texCoord.t) + "\r\n";
+					}
+					uvi2newi[i + "," + j] = uvmap[vid];
 				}
 			}
 			
@@ -241,9 +265,11 @@ package gl3d.parser.hlbsp
 			for (var tid:int in t2f){
 				var bmd:BitmapData = bsp.textureLookup[tid];
 				var m:BspMipTexture = bsp.mipTextures[tid];
-				var mname:String = ((bmd&&bmd!=bsp.whiteTexture)?name:"") + m.name;
+				var mname:String = ((bmd && bmd != bsp.whiteTexture)?name:"") + m.name;
+				if(!marge){
 				obj += "g " + mname + "\r\n"
 				+"usemtl " + mname + "\r\n";
+				}
 				for each(faceIndex in t2f[tid]){
 					var face:BspFace = bsp.faces[faceIndex];
 					if (face.styles[0] == 0xFF)
@@ -280,7 +306,10 @@ package gl3d.parser.hlbsp
 							edge = bsp.edges[edgeIndex];
 							vertexIndex = edge.vertices[1];
 						}
-						obj += " " + (vertexIndex + 1) + "/" + (uvmap[faceIndex + "," + j]);
+						obj += " " + (i2newi[vertexIndex] + 1);
+						if(!marge){
+							obj += "/" + (uvi2newi[faceIndex + "," + j]+1);
+						}
 					}
 					obj += "\r\n";
 				}
