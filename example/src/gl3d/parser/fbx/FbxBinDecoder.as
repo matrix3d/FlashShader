@@ -136,7 +136,10 @@ package gl3d.parser.fbx
 				}
 			}
 			if (read.position != end_offset){
-				throw "scope length not reached, something is wrong";
+				if(end_offset<read.length){
+					read.position = end_offset;
+				}
+				trace("scope length not reached, something is wrong");
 			}
 			var out:Object = { name:elem_id, props:elem_props_data };
 			if (elem_props_data.length) {
