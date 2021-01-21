@@ -2,6 +2,7 @@ package gl3d.parser.md5
 {
 	import flash.geom.Matrix3D;
 	import gl3d.core.math.Quaternion;
+	import gl3d.core.skin.Joint;
 	import gl3d.core.skin.Skin;
 	import gl3d.core.skin.SkinAnimation;
 	import gl3d.core.skin.SkinAnimationCtrl;
@@ -17,8 +18,12 @@ package gl3d.parser.md5
 	public class MD5AnimParser 
 	{
 		public var anim:SkinAnimation
+		private var jointMap:Object = {};
 		public function MD5AnimParser(txt:String,md5:MD5MeshParser) 
 		{
+			for each(var jo:Joint in md5.skin.joints){
+				jointMap[jo.name] = jo;
+			}
 			
 			var converter:Converter=new Converter(Converter.ZtoY);
 			var decoder:MD5AnimDecoder = new MD5AnimDecoder(txt);
@@ -32,16 +37,21 @@ package gl3d.parser.md5
 			anim.maxTime = decoder.components.length / decoder.frameRate;
 			anim.targets = md5.skinNodes;
 			var q:Quaternion = new Quaternion;
-			for (var i:int = 0; i < decoder.components.length;i++ ) {
+			for (var i:int = 0; i < decoder.components.length; i++ ) {//多少帧
 				var component:Array = decoder.components[i];
 				for (var j:int = 0; j < decoder.jointInfos.length; j++ ) {
-					if (i == 0) {
-						var track:Track = new Track;
-						anim.tracks[md5.skin.joints[j]]=track;
-						track.target = md5.skin.joints[j];
-					}
-					track = anim.tracks[md5.skin.joints[j]];
 					var info:Array = decoder.jointInfos[j];
+					var jname:String = info[0];
+					if (anim.tracks[jname] == null) {//第一帧找到joint
+						var target:Joint = jointMap[jname];
+						if (target==null){
+							continue;
+						}
+						var track:Track = new Track;
+						anim.tracks[jname]=track;
+						track.target = target;
+					}
+					track = anim.tracks[jname];
 					var baseframe:Array = decoder.baseFrameJoints[j];
 					q.tran.x = baseframe[0];
 					q.tran.y = baseframe[1];
