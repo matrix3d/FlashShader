@@ -6,6 +6,7 @@ package gl3d.parser.mmd
 	import flash.utils.Dictionary;
 	import gl3d.core.Drawable;
 	import gl3d.core.IndexBufferSet;
+	import gl3d.core.MaterialBase;
 	import gl3d.core.skin.IK;
 	import gl3d.core.skin.IKLink;
 	import gl3d.core.skin.Joint;
@@ -21,6 +22,7 @@ package gl3d.parser.mmd
 	import gl3d.ctrl.Ctrl;
 	import gl3d.meshs.Meshs;
 	import gl3d.parser.mmd.PMX;
+	import gl3d.util.MatLoadMsg;
 	import gl3d.util.Matrix3DUtils;
 	/**
 	 * ...
@@ -49,7 +51,8 @@ package gl3d.parser.mmd
 				var weights:Array = v.skin.weights;
 				var uv:Array = v.uv;
 				vs.push(pos[0], pos[1], pos[2]);
-				uv.push(uv[0], uv[1]);
+				uvs.push(uv[0], uv[1]);
+				//uvs.push(Math.random(), Math.random());
 				for (var i:int = 0; i < sbones.length;i++ ) {
 					js.push(sbones[i]);
 					ws.push(weights[i]);
@@ -113,7 +116,7 @@ package gl3d.parser.mmd
 			
 			skin.joints = bones;
 			
-			var drawable:Drawable = Meshs.createDrawable(null, vs, null, null);
+			var drawable:Drawable = Meshs.createDrawable(null, vs, uvs, null);
 			drawable.joint = new VertexBufferSet(js,pmx.maxWeight );
 			drawable.weight = new VertexBufferSet(ws, pmx.maxWeight );
 			
@@ -129,6 +132,7 @@ package gl3d.parser.mmd
 				var child:Node3D = new Node3D;
 				child.drawable = new Drawable;
 				child.drawable.pos = drawable.pos;
+				child.drawable.uv = drawable.uv;
 				child.drawable.joint = drawable.joint;
 				child.drawable.weight = drawable.weight;
 				child.drawable.index = new IndexBufferSet(indices);
@@ -140,6 +144,10 @@ package gl3d.parser.mmd
 				child.material.ambient.x = material.ambient[0];
 				child.material.ambient.y = material.ambient[1];
 				child.material.ambient.z = material.ambient[2];
+				var texture:Object = pmx.textures[material.texture];
+				if (texture){
+					bindTexture(texture.path as String, child.material);
+				}
 				node.addChild(child);
 				Skin.optimize(child);
 				skinNodes.push(child);
@@ -147,6 +155,9 @@ package gl3d.parser.mmd
 				child.skin.iks = iks;
 				iks = null;
 			}
+		}
+		private function bindTexture(texPath:String,material:MaterialBase):void{
+			new MatLoadMsg(texPath,null, material,false);
 		}
 		
 		public function bind(vmd:VMD):SkinAnimation {

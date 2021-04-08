@@ -167,7 +167,7 @@ package
 			//p.scenes[0].setRotation( -90, 0, 0);// -Math.PI / 2 ;
 			//p.root.rotationY = 0;// -Math.PI;
 			view.scene.addChild(player);
-			addNode(100);
+			addNode(256);
 			
 			var weapon:Node3D = new Node3D;
 			weapon.material = new Material;

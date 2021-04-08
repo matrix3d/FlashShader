@@ -31,7 +31,7 @@ package gl3d.util
 		private var uloader:URLLoader;
 		private var url:String;
 		private var sourceURL:String;
-		public function MatLoadMsg(url:String,byte:ByteArray,mat:MaterialBase) 
+		public function MatLoadMsg(url:String,byte:ByteArray,mat:MaterialBase,formatUrl:Boolean=true) 
 		{
 			sourceURL = url;
 			
@@ -41,8 +41,10 @@ package gl3d.util
 				var ext:String = obj[1];
 			}
 			var isTga:Boolean = ext.toLowerCase() == "tga";//url.toLocaleLowerCase().indexOf(".tga") !=-1;
+			if(formatUrl){
 			var url = url.substring(url.lastIndexOf("\\") + 1);
-			url=url.substring(url.lastIndexOf("/") + 1);
+			url = url.substring(url.lastIndexOf("/") + 1);
+			}
 			/*if (url.toLocaleLowerCase().indexOf(".jpg")==-1&&!isTga){
 				url = url.substring(0, url.lastIndexOf(".")) + ".png";
 			}*/
