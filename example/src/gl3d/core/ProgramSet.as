@@ -29,7 +29,7 @@ package gl3d.core {
 		{
 			if (invalid||this.context!=context) {
 				program = context.createProgram();
-				//try{
+				try{
 				if (vcode is String){
 					var vbyte:ByteArray = new ByteArray;
 					vbyte.writeUTFBytes(vcode as String);
@@ -40,9 +40,10 @@ package gl3d.core {
 					fbyte = fcode as ByteArray;
 				}
 				program.upload(vbyte,fbyte);
-				//}catch (err:Error){
-					
-				//}
+				}catch (err:Error){
+					program = null;
+					trace(err.getStackTrace());
+				}
 				invalid = false;
 				this.context = context;
 			}

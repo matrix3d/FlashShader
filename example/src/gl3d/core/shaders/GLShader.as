@@ -153,6 +153,12 @@ package gl3d.core.shaders
 			}
 			if (programSet) {
 				programSet.update(material.view.renderer.gl3d);
+				if (programSet.program == null){
+					doDebug(vs);
+					doDebug(fs);
+					return;
+				}
+				
 				if(!isLastSameMaterial){
 					material.view.renderer.gl3d.setProgram(programSet.program);
 					material.view.renderer.gl3d.setDepthTest(material.depthMask, material.passCompareMode);

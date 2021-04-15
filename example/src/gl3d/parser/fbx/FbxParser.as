@@ -36,7 +36,7 @@ package gl3d.parser.fbx
 		public var hobjects:Object;
 		public var rootNode:Node3D
 		public var skinNodes:Vector.<Node3D> = new Vector.<Node3D>;
-		public var converter:Converter;
+		//public var converter:Converter;
 		public var animc:SkinAnimationCtrl;
 		public var globalSettings:Object;
 		public function FbxParser(data:Object,parserMesh:Boolean=true,parserAnim:Boolean=true) 
@@ -64,7 +64,7 @@ package gl3d.parser.fbx
 				init(obj);
 			}
 			if(parserMesh){
-				converter = new Converter(0, new Vector3D(1, 1, -1));
+				//converter = new Converter(0, new Vector3D(1, 1, -1));
 				rootNode = makeObject();
 			}
 			if(parserAnim){

@@ -83,6 +83,7 @@ package gl3d.core.renders
 				view.profile = stage3d.context3D.profile;
 			}
 			view.driverInfo = gl3d.driverInfo;
+			trace(view.profile, view.driverInfo);
 			if (view.profile==Context3DProfile.STANDARD||view.profile==Context3DProfile.STANDARD_CONSTRAINED||view.profile==Context3DProfile.STANDARD_EXTENDED) {
 				agalVersion = 2;
 			}else {

@@ -3,6 +3,7 @@ package gl3d.parser.object
 	import flash.geom.Matrix3D;
 	import flash.utils.Dictionary;
 	import gl3d.core.Drawable;
+	import gl3d.core.DrawableSource;
 	import gl3d.core.Material;
 	import gl3d.core.math.Quaternion;
 	import gl3d.core.Node3D;
@@ -13,6 +14,7 @@ package gl3d.parser.object
 	import gl3d.core.skin.Track;
 	import gl3d.core.skin.TrackFrame;
 	import gl3d.ctrl.Ctrl;
+	import gl3d.util.Converter;
 	/**
 	 * ...
 	 * @author lizhi
@@ -27,8 +29,10 @@ package gl3d.parser.object
 		private var node2id:Dictionary = new Dictionary;
 		private var node2name:Dictionary = new Dictionary;
 		private var useSource:Boolean;
-		public function ObjectEncoder(useSource:Boolean=true) 
+		private var convert:Converter;
+		public function ObjectEncoder(useSource:Boolean=true,convert:Converter=null) 
 		{
+			this.convert = convert;
 			this.useSource = useSource;
 			
 		}
@@ -38,13 +42,30 @@ package gl3d.parser.object
 			if(isExpMesh){	
 				var geoms2:Array = [];
 				for each(var d:Drawable in geoms) {
-					if(d.source&&useSource){
-						geoms2.push({source:d.source});
+					if (d.source && useSource){
+						var ns:DrawableSource = d.source;
+						if (convert){
+							var newns:DrawableSource = new DrawableSource;
+							newns.alpha = ns.alpha;
+							newns.color = ns.color;
+							newns.index = ns.index;
+							newns.joint = ns.joint;
+							newns.pos = convert.convertedVec3s(ns.pos.slice()) as Array;
+							newns.uv = ns.uv;
+							newns.uv2 = ns.uv2;
+							newns.uvIndex = ns.uvIndex;
+							newns.weight = ns.weight;
+							ns = newns;
+						}
+						geoms2.push({source:ns});
 					}else {
 						var dobj:Object = { };
 						geoms2.push(dobj);
 						dobj.index = vec2arr(d.index.data);
 						dobj.pos = vec2arr(d.pos.data);
+						if (convert){
+							convert.convertedVec3s(dobj.pos);
+						}
 						dobj.uv = vec2arr(d.uv.data);
 						if (d.joint) {
 							dobj.joint = vec2arr(d.joint.data);
@@ -95,7 +116,11 @@ package gl3d.parser.object
 							tObj.target = node2name[t.target];
 							tObj.frame = [];
 							for each(var f:TrackFrame in t.frames) {
-								tObj.frame.push({matrix:vec2arr(f.matrix.rawData),time:f.time});
+								var m:Matrix3D = f.matrix;
+								if (convert){
+									m = convert.getConvertedMat4(m);
+								}
+								tObj.frame.push({matrix:vec2arr(m.rawData),time:f.time});
 							}
 							animObj.track.push(tObj);
 						}
@@ -161,10 +186,18 @@ package gl3d.parser.object
 			
 			if (node is Joint) {
 				nodeObj.isJoint = true;
-				nodeObj.invBindMatrix = vec2arr((node as Joint).invBindMatrix.rawData);
+				var jm:Matrix3D = (node as Joint).invBindMatrix;
+				if (convert){
+					jm = convert.getConvertedMat4(jm);
+				}
+				nodeObj.invBindMatrix = vec2arr(jm.rawData);
 			}
 			//else{
-				nodeObj.matrix = vec2arr(node.matrix.rawData);
+			var m:Matrix3D = node.matrix;
+			if (convert){
+				m = convert.getConvertedMat4(m);
+			}
+			nodeObj.matrix = vec2arr(m.rawData);
 			//}
 			if (node.children.length) {
 				nodeObj.children = [];
