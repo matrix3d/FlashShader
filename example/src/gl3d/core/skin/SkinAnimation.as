@@ -20,6 +20,7 @@ package gl3d.core.skin
 	public class SkinAnimation
 	{
 		public static var IsCacheDef:Boolean = true;//默认缓存动画
+		public static var minDepthJointsVisable:Boolean = true;//跟节点不渲染
 		public var isCache:Boolean = IsCacheDef;
 		public var tracks:Object = {};//Vector.<Track> = new Vector.<Track>;
 		public var jointMatrixs:Object = {};
@@ -119,7 +120,7 @@ package gl3d.core.skin
 				if(minDepthJoints){
 					while (true){
 						if (minDepthJoints.length == 1){
-							minDepthJoints[0].visible = false;
+							minDepthJoints[0].visible = minDepthJointsVisable;
 							skin.jointRoot = minDepthJoints[0];//.parent;
 							var j:Joint = minDepthJoints[0];
 							while (true){
