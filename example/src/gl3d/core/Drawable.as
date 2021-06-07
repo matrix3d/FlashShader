@@ -155,6 +155,9 @@ package gl3d.core {
 					if (source.weight) {
 						var sweight:Array = [];
 					}
+					if (source.color){
+						var scolor:Array = [];
+					}
 					
 					var sUV:Array = [];
 					var len:int = source.index.length;
@@ -182,6 +185,13 @@ package gl3d.core {
 										sweight.push(source.weight[oldI * maxWeight+k]);
 									}
 								}
+								
+								if (scolor){
+									for (var k:int = 0; k < 4;k++ ){
+										scolor.push(source.color[oldI*4+k]);
+									}
+								}
+								
 								sUV.push(source.uv[oldUVI * 2], source.uv[oldUVI * 2 + 1]);
 								if(smooting){
 									oldh2newi[hash] = newi;
@@ -202,6 +212,9 @@ package gl3d.core {
 					}
 					if (sweight) {
 						_weight = new VertexBufferSet(Vector.<Number>(sweight), maxWeight);
+					}
+					if (scolor) {
+						color = new VertexBufferSet(Vector.<Number>(scolor), 4);
 					}
 					_uv = new VertexBufferSet(Vector.<Number>(sUV), 2);
 				}

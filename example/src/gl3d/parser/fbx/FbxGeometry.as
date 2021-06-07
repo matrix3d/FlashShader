@@ -10,12 +10,25 @@ package gl3d.parser.fbx{
 		public var drawables:Array;
 		public var nodes:Array = [];
 		public var uv:Array;
+		public var color:Array;
 		public var objs:Array = [];
 		public function FbxGeometry( root:Object,vertices:Array=null,polygons:Array=null) {
 			this.root = root;
 			this.polygons=polygons = polygons||FbxTools.getInts(FbxTools.get(root, "PolygonVertexIndex"));
 			this.vertices = vertices = vertices || FbxTools.getFloats(FbxTools.get(root, "Vertices"));
 			if(root){
+				for each(var v:Object in FbxTools.getAll(root,"LayerElementColor") ) {
+					var coloridata:Object = FbxTools.get(v, "ColorIndex", true);
+					if(coloridata){
+						var colori:Array = FbxTools.getInts(coloridata);
+					}
+					color = FbxTools.getFloats(FbxTools.get(v, "Colors"));
+					//for (var k:int = 0; k < color.length; k += 4 ) {
+					//	color[k+1] = 1 - uv[k+1];
+					//}
+					break;
+				}
+				
 				for each(var v:Object in FbxTools.getAll(root,"LayerElementUV") ) {
 					var uvidata:Object = FbxTools.get(v, "UVIndex", true);
 					if(uvidata){

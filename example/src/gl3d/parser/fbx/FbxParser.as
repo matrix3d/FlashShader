@@ -239,6 +239,9 @@ package gl3d.parser.fbx
 								}
 								drawable.source.pos = posData;
 								drawable.source.uv = prim.uv;
+								if (prim.uv){
+									drawable.source.color = prim.color;
+								}
 								if (prim.objs[i][1]) {
 									drawable.source.uvIndex = prim.objs[i][1];
 								}
