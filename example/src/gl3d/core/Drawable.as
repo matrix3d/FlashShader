@@ -170,6 +170,9 @@ package gl3d.core {
 							}
 							var oldI:int = source.index[i][j];
 							var oldUVI:int = source.uvIndex[i][j];
+							if (source.colorIndex){
+								var oldColorI:int = source.colorIndex[i][j];
+							}
 							if(smooting){
 								var hash:String = oldI + " " + oldUVI;
 								var newi:Object = oldh2newi[hash];
@@ -187,9 +190,7 @@ package gl3d.core {
 								}
 								
 								if (scolor){
-									for (var k:int = 0; k < 4;k++ ){
-										scolor.push(source.color[oldI*4+k]);
-									}
+									scolor.push(source.color[oldColorI*4],source.color[oldColorI*4+1],source.color[oldColorI*4+2],source.color[oldColorI*4+3]);
 								}
 								
 								sUV.push(source.uv[oldUVI * 2], source.uv[oldUVI * 2 + 1]);

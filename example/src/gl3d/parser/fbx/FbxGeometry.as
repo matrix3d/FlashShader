@@ -16,7 +16,7 @@ package gl3d.parser.fbx{
 			this.root = root;
 			this.polygons=polygons = polygons||FbxTools.getInts(FbxTools.get(root, "PolygonVertexIndex"));
 			this.vertices = vertices = vertices || FbxTools.getFloats(FbxTools.get(root, "Vertices"));
-			if(root){
+			if (root){
 				for each(var v:Object in FbxTools.getAll(root,"LayerElementColor") ) {
 					var coloridata:Object = FbxTools.get(v, "ColorIndex", true);
 					if(coloridata){
@@ -51,6 +51,7 @@ package gl3d.parser.fbx{
 			
 			var indexA:Array;
 			var uvindex:Array;
+			var colorindex:Array
 			var tcounter:int = 0;
 			for (var i:int = 0; i < p.length;i++ ){
 				var index:int = p[i];
@@ -68,9 +69,13 @@ package gl3d.parser.fbx{
 						if (uvi) {
 							obj[1] = [];
 						}
+						if (colori){
+							obj[2] = [];
+						}
 					}
 					indexA = obj[0];
 					uvindex = obj[1];
+					colorindex = obj[2];
 					tcounter += total - 2;
 					prev = i + 1;
 					p[i] ^= -1;
@@ -80,10 +85,17 @@ package gl3d.parser.fbx{
 						var uvf:Array = [];
 						uvindex.push(uvf);
 					}
+					if (colori){
+						var colorf:Array = [];
+						colorindex.push(colorf);
+					}
 					for (var j:int = 0; j < total;j++ ) {
 						f.push(p[start + j]);
 						if(uvi){
 							uvf.push(uvi[start + j]);
+						}
+						if (colori){
+							colorf.push(colori[start+j]);
 						}
 					}
 				}

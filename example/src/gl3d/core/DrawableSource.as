@@ -11,6 +11,7 @@ package gl3d.core
 		public var joint:Array;
 		public var weight:Array;
 		public var uvIndex:Array;
+		public var colorIndex:Array;
 		public var uv:Array;
 		public var uv2:Array;
 		public var color:Array;

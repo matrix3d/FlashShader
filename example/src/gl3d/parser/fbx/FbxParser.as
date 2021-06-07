@@ -239,11 +239,14 @@ package gl3d.parser.fbx
 								}
 								drawable.source.pos = posData;
 								drawable.source.uv = prim.uv;
-								if (prim.uv){
+								if (prim.color){
 									drawable.source.color = prim.color;
 								}
 								if (prim.objs[i][1]) {
 									drawable.source.uvIndex = prim.objs[i][1];
+								}
+								if (prim.objs[i][2]) {
+									drawable.source.colorIndex = prim.objs[i][2];
 								}
 								var submesh:Node3D = new Node3D;// o.obj as Node3D;
 								submesh.name = (o.obj as Node3D).name+"."+i;
