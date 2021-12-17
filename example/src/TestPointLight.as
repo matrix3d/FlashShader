@@ -88,11 +88,11 @@ package
 			{
 				light = new RotLight();
 				light.name = "light" + i;
-				light.shadowMapEnabled = false;
+				light.shadowMapEnabled = true;
 				lights.push(light);
 				view.scene.addChild(light);
 				
-				/*var size:int = 100;
+				var size:int = 100;
 				quat = new Node3D(inum+"quat"+i);
 				quat.material = new Material;
 				quat.material.diffTexture = new TextureSet(new BitmapData(1,1,false,0xffffff*Math.random()))//light.shadowMap;
@@ -104,7 +104,7 @@ package
 				quat.x = size + i * ((size*2)+1);
 				quat.y = -size;
 				view.scene.addChild(quat);
-				quats.push(quat);*/
+				quats.push(quat);
 			}
 		}
 		

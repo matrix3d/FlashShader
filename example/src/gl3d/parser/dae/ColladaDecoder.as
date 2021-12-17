@@ -1,6 +1,7 @@
 package gl3d.parser.dae 
 {
 	import flash.geom.Matrix3D;
+	import flash.geom.Vector3D;
 	import gl3d.core.Drawable;
 	import gl3d.core.DrawableSource;
 	import gl3d.core.skin.Joint;
@@ -57,7 +58,12 @@ package gl3d.parser.dae
 			controllers =parserLibrary("library_controllers","controller"); 
 			visualScenes = parserLibrary("library_visual_scenes", "visual_scene"); 
 			
-			switch (xml.asset.up_axis.text().charAt(0)) {
+			var up_axistext:String = xml.asset.up_axis.text();
+			if (up_axistext.length>0){
+				up_axistext = up_axistext.charAt(0);
+			}
+			
+			switch (up_axistext) {
 				case 'X':
 					converter = new Converter(Converter.XtoY);
 					break;
@@ -67,6 +73,8 @@ package gl3d.parser.dae
 				case 'Z':
 					converter = new Converter(Converter.ZtoY);
 					break;
+				default:
+					converter = new Converter(0,new Vector3D(1,1,-1));
 			}
 			
 			for each(var sceneNodeXML:XML in instanceScenesXML) {

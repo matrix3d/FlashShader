@@ -96,7 +96,7 @@ package
 	import gl3d.shaders.PhongVertexShader;
 	
 	//https://rendermeapangolin.wordpress.com/2015/04/27/ocean-modelisation-gerstner/
-	class MyVertexShader extends GLAS3Shader
+	/*class MyVertexShader extends GLAS3Shader
 	{
 		public var posV:Var;
 		public function MyVertexShader() 
@@ -165,10 +165,10 @@ package
 			var norm:Var = add(mul(nrm(crs(dx, dy)),.5),.5);
 			oc = norm;
 		}
-	}
+	}*/
 	
 	//光照
-	/*class MyVertexShader extends GLAS3Shader
+	class MyVertexShader extends GLAS3Shader
 	{
 		public var lightVary:Var;
 		public var normalVary:Var;
@@ -271,7 +271,7 @@ package
 			}
 			mov(color,oc);
 		}
-	}*/
+	}
 	
 	//ddx ddy 法线
 	/*class MyVertexShader extends GLAS3Shader
