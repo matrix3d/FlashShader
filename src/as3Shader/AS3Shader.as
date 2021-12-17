@@ -399,7 +399,7 @@ package as3Shader {
 				var bv:Var=object2Var(b)
 				line.push(bv);
 			}
-			if (av && bv && av.type == Var.TYPE_C && bv.type == Var.TYPE_C) {
+			if (av && bv && av.type == Var.TYPE_C && bv.type == Var.TYPE_C&&av.data&&bv.data) {
 				return np.doop(op,av,bv);
 				//throw "can not all the a,b type const"
 			}
