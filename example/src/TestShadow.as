@@ -40,7 +40,7 @@ package
 			node.material.ambient.setTo(.3, .3, .3);
 			node.material.receiveShadows = true;
 			node.material.castShadow = true;
-			node.drawable = Meshs.cube();
+			node.drawable = Meshs.cube(0.1,10,3);
 			node.y =-.7;
 			view.scene.addChild(node);
 			
@@ -50,7 +50,7 @@ package
 			node.material.receiveShadows = true;
 			node.material.castShadow = true;
 			node.drawable = Meshs.sphere();
-			node.setScale(3, 3, 3);
+			node.setScale(1.5, 1.5, 1.5);
 			node.y =2;
 			node.x = 1.5;
 			view.scene.addChild(node);
@@ -147,7 +147,8 @@ package
 				//light.matrix.appendRotation(light.speed, light.axis);
 				//light.x = light.z = 0;
 				//light.y = 2.5;
-				light.x = 100 * Math.sin(getTimer() / 1000);
+				light.x = 30 * Math.sin(getTimer() / 1000);
+				light.z = 100 * Math.sin(getTimer() / 600);
 				light.updateTransforms();
 			}
 			super.enterFrame(e);

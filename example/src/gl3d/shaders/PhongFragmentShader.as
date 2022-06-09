@@ -68,11 +68,18 @@ package gl3d.shaders
 						if (light.shadowMapEnabled && material.receiveShadows) {
 							debug("shadowstart");
 							var shadowLightPos:Var = pvs.shadowLightPoss[i];
+							//是否超过贴图边界 此段代码注释掉，因为直接改变包围盒即可忽略掉这个问题
+							//var absShadowLightPos:Var = abs(shadowLightPos);
+							//var maxAbsShadowLightPos:Var = max(absShadowLightPos.x, absShadowLightPos.y);
+							//var isChaoBianJie:Var= slt(1, maxAbsShadowLightPos);//超边为1，否则为0
+							
 							var shadowLightXY:Var = add(mul(div(shadowLightPos.xy, shadowLightPos.w), [.5, -.5]), .5);
 							var shadowLightDepth:Var = tex(shadowLightXY, samplerShadowmaps(i));
+							//shadowLightDepth = add(shadowLightDepth, mul(1000,isChaoBianJie.x));
 							var curDepth:Var = div(shadowLightPos.z, shadowLightPos.w);
 							
-							curPhongColor = mul(curPhongColor, slt(curDepth, shadowLightDepth));
+							var shadowColor:Number = 0.3;
+							curPhongColor = mul(curPhongColor,add(mul(slt(curDepth, shadowLightDepth),1-shadowColor),shadowColor));
 							//curPhongColor = curDepth; //shadowLightDepth;// shadowLightDepth;//  mul(curDepth,  shadowLightDepth);
 							
 							debug("shadowend");
