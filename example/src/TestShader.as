@@ -168,7 +168,7 @@ package
 	}*/
 	
 	//光照
-	class MyVertexShader extends GLAS3Shader
+	/*class MyVertexShader extends GLAS3Shader
 	{
 		public var lightVary:Var;
 		public var normalVary:Var;
@@ -271,7 +271,7 @@ package
 			}
 			mov(color,oc);
 		}
-	}
+	}*/
 	
 	//ddx ddy 法线
 	/*class MyVertexShader extends GLAS3Shader
@@ -313,7 +313,7 @@ package
 	}*/
 	
 	//cell shader
-	/*class MyVertexShader extends GLAS3Shader
+	class MyVertexShader extends GLAS3Shader
 	{
 		public var norm:Var;
 		public function MyVertexShader() 
@@ -334,19 +334,18 @@ package
 	}
 	class MyFragmentShader extends GLAS3Shader
 	{
-		private var vs:MyVertexShader;
-		
-		public function MyFragmentShader(vs:MyVertexShader) 
+		public function MyFragmentShader() 
 		{
 			super(Context3DProgramType.FRAGMENT);
-			this.vs = vs;
 			
 		}
 
 		override public function build():void 
 		{
 			sge(abs(dp3(vs.norm,[0,0,1])),.5, oc);
+			//mov(1, oc);
+			//sge(mov(2), 1, oc);
 		}
-	}*/
+	}
 	
 

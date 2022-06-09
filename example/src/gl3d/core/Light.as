@@ -14,7 +14,7 @@ package gl3d.core {
 		public var lightType:int;
 		public var color:Vector3D = new Vector3D(1, 1, 1, 1);
 		public var shadowMapEnabled:Boolean = false;
-		public var shadowMapSize:int = 512;
+		public var shadowMapSize:int = 2048;
 		public var shadowMap:TextureSet = new TextureSet(null,false,false,true,false,false,null);
 		private var _shadowCamera:Camera3D = new Camera3D;
 		public var distance:Number = 10;
@@ -51,7 +51,7 @@ package gl3d.core {
 			//_shadowCamera.matrix.pointAt(new Vector3D(x, y, z), Vector3D.Z_AXIS, new Vector3D(0, -1, 0));
 			Matrix3DUtils.lookAt(_shadowCamera.matrix, x, y, z,Vector3D.Z_AXIS);
 			_shadowCamera.updateTransforms();
-			_shadowCamera.orthoLH(5, 5, -2.5, 2.5);
+			_shadowCamera.orthoLH(5, 5, 2.5, -2.5);
 			return _shadowCamera;
 		}
 	}
