@@ -4,26 +4,26 @@
   <output>
     <movie outputType="Application" />
     <movie input="" />
-    <movie path="bin\FlashShader.swf" />
-    <movie fps="60" />
+    <movie path="bin\FlashShaderAIR2.swf" />
+    <movie fps="30" />
     <movie width="800" />
     <movie height="600" />
-    <movie version="31" />
-    <movie minorVersion="0" />
-    <movie platform="Flash Player" />
+    <movie version="33" />
+    <movie minorVersion="1" />
+    <movie platform="AIR" />
     <movie background="#FFFFFF" />
-    <movie preferredSDK="AIR 33.1.1;33.1.1;" />
   </output>
   <!-- Other classes to be compiled into your SWF -->
   <classpaths>
     <class path="src" />
+	
     <class path="..\src" />
     <class path="..\..\recast4j\src" />
   </classpaths>
   <!-- Build options -->
   <build>
     <option accessible="False" />
-    <option advancedTelemetry="True" />
+    <option advancedTelemetry="False" />
     <option allowSourcePathOverlap="False" />
     <option benchmark="False" />
     <option es="False" />
@@ -37,7 +37,7 @@
     <option showInvalidCSS="True" />
     <option showDeprecationWarnings="True" />
     <option showUnusedTypeSelectorWarnings="True" />
-    <option strict="False" />
+    <option strict="True" />
     <option useNetwork="True" />
     <option useResourceBundleMetadata="True" />
     <option warnings="False" />
@@ -45,7 +45,7 @@
     <option linkReport="" />
     <option loadExterns="" />
     <option staticLinkRSL="True" />
-    <option additional="-swf-version=30" />
+    <option additional="" />
     <option compilerConstants="CONFIG::js_only,false&#xA;CONFIG::as_only,true" />
     <option minorVersion="" />
   </build>
@@ -91,10 +91,11 @@
   <!-- Other project options -->
   <options>
     <option showHiddenPaths="False" />
-    <option testMovie="OpenDocument" />
-    <option testMovieCommand="bin/FlashShader.swf" />
+    <option testMovie="Custom" />
+    <option testMovieCommand="bat\RunApp.bat" />
   </options>
   <!-- Plugin storage -->
+  
   <storage>
     <entry key="at_enabled"><![CDATA[1]]></entry>
     <entry key="at_password"><![CDATA[]]></entry>
