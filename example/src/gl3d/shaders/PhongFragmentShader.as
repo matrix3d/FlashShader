@@ -84,7 +84,7 @@ package gl3d.shaders
 						}
 					}
 					if (phongColor){
-						//phongColor = add(phongColor,ambientColor);
+						phongColor = add(phongColor,ambientColor);
 					}
 					if (material.toonAble) {
 						phongColor = div(floor(add(.5,mul(material.toonStep, phongColor))),material.toonStep);

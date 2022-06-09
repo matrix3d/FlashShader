@@ -3,6 +3,7 @@ package gl3d.core.renders
 	import flash.display.BitmapData;
 	import flash.display.Stage3D;
 	import flash.display3D.Context3DTextureFormat;
+	import flash.display3D.Context3DTriangleFace;
 	import flash.display3D.textures.CubeTexture;
 	import flash.display3D.textures.RectangleTexture;
 	import flash.display3D.textures.Texture;
@@ -139,6 +140,7 @@ package gl3d.core.renders
 						if (depthMaterial==null) {
 							depthMaterial = new Material;
 							depthMaterial.writeDepth = true;
+							depthMaterial.culling = Context3DTriangleFace.FRONT;
 						}
 						depthMaterial.materialCamera = light.shadowCamera;
 						for each(var node:Node3D in collects) {

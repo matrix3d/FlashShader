@@ -3,6 +3,7 @@ package
 	import com.bit101.components.PushButton;
 	import flash.display.BitmapData;
 	import flash.events.Event;
+	import flash.utils.getTimer;
 	import gl3d.core.Camera3D;
 	import gl3d.core.Light;
 	import gl3d.core.Material;
@@ -36,7 +37,7 @@ package
 			addSky();
 			var node:Node3D = new Node3D("sphere");
 			node.material = new Material;
-			node.material.ambient.setTo(.5, .5, .5);
+			node.material.ambient.setTo(.3, .3, .3);
 			node.material.receiveShadows = true;
 			node.material.castShadow = true;
 			node.drawable = Meshs.cube();
@@ -45,11 +46,23 @@ package
 			
 			var node:Node3D = new Node3D("sphere");
 			node.material = new Material;
-			node.material.ambient.setTo(.5, .5, .5);
+			node.material.ambient.setTo(.3, .3, .3);
 			node.material.receiveShadows = true;
 			node.material.castShadow = true;
-			node.drawable = Meshs.cube();
-			node.y =-.3;
+			node.drawable = Meshs.sphere();
+			node.setScale(3, 3, 3);
+			node.y =2;
+			node.x = 1.5;
+			view.scene.addChild(node);
+			
+			
+			var node:Node3D = new Node3D("sphere");
+			node.material = new Material;
+			node.material.ambient.setTo(.3, .3, .3);
+			node.material.receiveShadows = true;
+			node.material.castShadow = true;
+			node.drawable = Meshs.sphere();
+			node.y =-0.3;
 			node.x = 1.5;
 			view.scene.addChild(node);
 			
@@ -60,8 +73,8 @@ package
 			plane.material.castShadow = true;
 			plane.material.receiveShadows = true;
 			plane.drawable = Meshs.plane(30);
-			plane.drawable = Meshs.cube(30, 0.01, 30);
-			//plane.setRotation(90, 0, 0);
+			//plane.drawable = Meshs.cube(30, 30, 0.01);
+			plane.setRotation(90, 0, 0);
 			plane.y = -1.5;
 			view.scene.addChild(plane);
 			//addChild(new Stats(view));
@@ -102,7 +115,8 @@ package
 			{
 				light = new RotLight();
 				light.x = light.y = light.z = 0;
-				light.y = 1;
+				light.y = 100;
+				light.x = 100;
 				light.name = "light" + i;
 				light.shadowMapEnabled = true;
 				lights.push(light);
@@ -129,12 +143,13 @@ package
 		override public function enterFrame(e:Event):void 
 		{
 			//trace("-----------");
-			/*for each(var light:RotLight in lights) {
-				light.matrix.appendRotation(light.speed, light.axis);
+			for each(var light:RotLight in lights) {
+				//light.matrix.appendRotation(light.speed, light.axis);
 				//light.x = light.z = 0;
 				//light.y = 2.5;
+				light.x = 100 * Math.sin(getTimer() / 1000);
 				light.updateTransforms();
-			}*/
+			}
 			super.enterFrame(e);
 		}
 		
