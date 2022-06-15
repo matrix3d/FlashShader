@@ -147,8 +147,8 @@ package
 				//light.matrix.appendRotation(light.speed, light.axis);
 				//light.x = light.z = 0;
 				//light.y = 2.5;
-				light.x = 30 * Math.sin(getTimer() / 1000);
-				light.z = 100 * Math.sin(getTimer() / 600);
+				light.x = 22//30 * Math.sin(getTimer() / 1000);
+				light.z = -62;// 100 * Math.sin(getTimer() / 600);
 				light.updateTransforms();
 			}
 			super.enterFrame(e);
