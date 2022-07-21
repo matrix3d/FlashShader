@@ -342,7 +342,8 @@ package
 
 		override public function build():void 
 		{
-			sge(abs(dp3(vs.norm,[0,0,1])),.5, oc);
+			sge(abs(dp3((vs as MyVertexShader).norm,[0,0,1])),.5, oc);
+			//oc= sge(abs(dp3((vs as MyVertexShader).norm,[0,0,1])),[.5,.5,.5,.5]);
 			//mov(1, oc);
 			//sge(mov(2), 1, oc);
 		}

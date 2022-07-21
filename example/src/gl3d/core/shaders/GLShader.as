@@ -109,7 +109,9 @@ package gl3d.core.shaders
 			
 			if (debug&&vs&&fs) {
 				trace(this);
+				trace(vs);
 				doDebug(vs);
+				trace(fs);
 				doDebug(fs);
 				trace();
 			}

@@ -376,7 +376,7 @@ package as3Shader {
 		
 		public function get oc():Var 
 		{
-			return new Var(Var.TYPE_OC);;
+			return new Var(Var.TYPE_OC);
 		}
 		
 		public function set oc(value:Var):void 
