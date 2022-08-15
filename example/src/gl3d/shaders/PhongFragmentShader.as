@@ -76,13 +76,15 @@ package gl3d.shaders
 							var shadowLightXY:Var = add(mul(div(shadowLightPos.xy, shadowLightPos.w), [.5, -.5]), .5);
 							var shadowLightDepth:Var = tex(shadowLightXY, samplerShadowmaps(i));
 							//shadowLightDepth = add(shadowLightDepth, mul(1000,isChaoBianJie.x));
-							var curDepth:Var = div(shadowLightPos.z, shadowLightPos.w);
+							var curDepth:Var = min(1,div(shadowLightPos.z, shadowLightPos.w));
+							curDepth = add(curDepth, -0.001);//bias
+							//var curDepth:Var = mov(0);
 							
 							var shadowColor:Number = 0.3;
 							curPhongColor = mul(curPhongColor,add(mul(slt(curDepth, shadowLightDepth),1-shadowColor),shadowColor));
 							//curPhongColor = curDepth;//  mul(curDepth,  shadowLightDepth);
 							//curPhongColor = mul(curDepth,  shadowLightDepth);
-							
+							//curPhongColor = shadowLightDepth;
 							debug("shadowend");
 						}
 						if (phongColor == null) {
