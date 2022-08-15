@@ -23,7 +23,7 @@ package
 		{
 			var node:Node3D = new Node3D;
 			node.material = new Material;
-			[Embed(source = "assets/images.jpg")]var c:Class;
+			[Embed(source = "assets/comic_source.png")]var c:Class;
 			var b:BitmapData = (new c as Bitmap).bitmapData;
 			node.drawable = plane();
 			view.scene.addChild(node);

@@ -80,7 +80,8 @@ package gl3d.shaders
 							
 							var shadowColor:Number = 0.3;
 							curPhongColor = mul(curPhongColor,add(mul(slt(curDepth, shadowLightDepth),1-shadowColor),shadowColor));
-							curPhongColor = curDepth;//  mul(curDepth,  shadowLightDepth);
+							//curPhongColor = curDepth;//  mul(curDepth,  shadowLightDepth);
+							curPhongColor = mul(curDepth,  shadowLightDepth);
 							
 							debug("shadowend");
 						}

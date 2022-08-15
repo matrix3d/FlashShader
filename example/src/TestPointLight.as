@@ -88,15 +88,17 @@ package
 			{
 				light = new RotLight();
 				light.name = "light" + i;
-				light.shadowMapEnabled = true;
+				//light.shadowMapEnabled = true;
 				lights.push(light);
 				view.scene.addChild(light);
 				
 				var size:int = 100;
 				quat = new Node3D(inum+"quat"+i);
 				quat.material = new Material;
+				if(light.shadowMapEnabled){
 				quat.material.diffTexture = new TextureSet(new BitmapData(1,1,false,0xffffff*Math.random()))//light.shadowMap;
 				quat.material.diffTexture = light.shadowMap;
+				}
 				quat.material.materialCamera = c2d;
 				quat.material.lightAble = false;
 				quat.material.castShadow = false;

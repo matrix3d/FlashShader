@@ -34,7 +34,7 @@ package
 			curve.material = m;
 			m.shader = new CurveShader;
 			m.culling = Context3DTriangleFace.NONE;
-			m.blendModel = BlendMode.LAYER;
+			m.blendMode = BlendMode.LAYER;
 			curve.drawable = Meshs.createDrawable(new <uint>[0,1,2],new <Number>[0,0,0,0,0,0,0,0,0],new <Number>[0,0,.5,0,1,1]);
 			
 			view.scene.addChild(curve);
@@ -97,9 +97,11 @@ import gl3d.core.shaders.GLShader;
 class CurveShader extends GLShader {
 	public function CurveShader() 
 	{
+		var vs:CurveVShader = new CurveVShader;
+		super(vs, new CurveFShader(vs));
 		debug = true;
 	}
-	override public function getFragmentShader(material:Material):GLAS3Shader 
+	/*override public function getFragmentShader(material:Material):GLAS3Shader 
 	{
 		return new CurveFShader(vs as CurveVShader);
 	}
@@ -107,7 +109,7 @@ class CurveShader extends GLShader {
 	override public function getVertexShader(material:Material):GLAS3Shader 
 	{
 		return new CurveVShader;
-	}
+	}*/
 }
 
 class CurveFShader extends GLAS3Shader {

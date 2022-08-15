@@ -29,7 +29,7 @@ package
 			addEventListener(Event.ENTER_FRAME, enterFrame);
 			
 			var n1:Node3D = new Node3D;
-			var shader:GLShader = new GLShader;
+			var shader:GLShader = new GLShader(null,null);
 			n1.material = new Material(shader);
 			n1.drawable = Meshs.cube(1, 1, 1);
 			

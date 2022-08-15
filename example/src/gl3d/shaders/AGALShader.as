@@ -17,6 +17,7 @@ package gl3d.shaders
 		
 		public function AGALShader(vcode:String,fcode:String) 
 		{
+			super(null, null);
 			this.fcode = fcode;
 			this.vcode = vcode;
 		}

@@ -35,7 +35,7 @@ package
 			material = new Material;
 			material.blendMode = BlendMode.ADD;
 			material.isBillbard = true;
-			material.isStretched = false;
+			//material.isStretched = false;
 			node.material = material;
 			//node.setScale(.1, .1, .1);
 			
