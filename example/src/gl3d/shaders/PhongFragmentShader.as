@@ -80,8 +80,8 @@ package gl3d.shaders
 							curDepth = add(curDepth, -0.001);//bias
 							//var curDepth:Var = mov(0);
 							
-							var shadowColor:Number = 0.3;
-							curPhongColor = mul(curPhongColor,add(mul(slt(curDepth, shadowLightDepth),1-shadowColor),shadowColor));
+							var shadowColor:Array = [0.3,0.6,0.9,1];
+							curPhongColor = mul(curPhongColor,add(mul(slt(curDepth, shadowLightDepth),sub(1,shadowColor)),shadowColor));
 							//curPhongColor = curDepth;//  mul(curDepth,  shadowLightDepth);
 							//curPhongColor = mul(curDepth,  shadowLightDepth);
 							//curPhongColor = shadowLightDepth;
