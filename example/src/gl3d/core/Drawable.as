@@ -1,6 +1,7 @@
 package gl3d.core {
 	import flash.display3D.Context3D;
 	import flash.geom.Vector3D;
+	import gl3d.core.math.Box;
 	import gl3d.core.renders.GL;
 	import gl3d.meshs.Meshs;
 	/**
@@ -30,10 +31,22 @@ package gl3d.core {
 		public var autoNormal:Boolean;
 		public var oldi2newis:Object;
 		public var smooting:Boolean = true;
+		private var _bound:Box;
 		public function Drawable(autoNormal:Boolean=true) 
 		{
 			this.autoNormal = autoNormal;
 			
+		}
+		
+		public function get bound():Box{
+			if (_bound==null){
+				_bound = new Box;
+				var vec:Vector.<Number> = pos.data;
+				for (var i = 0; i < vec.length; i += 3 ){
+					_bound.intersectionPos(vec[i], vec[i + 1], vec[i + 2]);
+				}
+			}
+			return _bound;
 		}
 		
 		public function get pos():VertexBufferSet 

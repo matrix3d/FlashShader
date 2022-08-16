@@ -49,7 +49,7 @@ package gl3d.core.shaders
 		public function bindLightShadowCameraVP(shader:GLShader, material:Material,isLastSameMaterial:Boolean):void {
 			if (!isLastSameMaterial) {
 				// TODO : 优化
-				var c:Camera3D = material.view.lights[index].shadowCamera as Camera3D;
+				var c:Camera3D = material.view.lights[index].shadowCamera;
 				var m2:Matrix3D = c.world2local.clone();
 				m2.append(c.perspective);
 				material.view.renderer.gl3d.setProgramConstantsFromMatrix(as3shader.programType,v.index,m2,true);

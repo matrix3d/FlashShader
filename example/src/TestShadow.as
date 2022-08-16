@@ -52,7 +52,7 @@ package
 			node.drawable = Meshs.sphere();
 			node.setScale(1.5, 1.5, 1.5);
 			node.y =2;
-			node.x = 1.5;
+			node.x = -10.5;
 			view.scene.addChild(node);
 			
 			
@@ -70,7 +70,7 @@ package
 			plane.material = new Material;
 			
 			plane.material.ambient.setTo(.5, .5, .5);
-			plane.material.castShadow = true;
+			plane.material.castShadow = false;
 			plane.material.receiveShadows = true;
 			plane.drawable = Meshs.plane(30);
 			//plane.drawable = Meshs.cube(30, 30, 0.01);
@@ -191,7 +191,7 @@ class RotLight extends Light {
 		
 		//color.setTo(Math.random(), Math.random(), Math.random());
 		material = new Material;
-		material.castShadow = true;
+		material.castShadow = false;
 		material.receiveShadows = true;
 		material.lightAble = true;
 		material.color.copyFrom(color);

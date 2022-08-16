@@ -49,9 +49,7 @@ package gl3d.core {
 		{
 			//_shadowCamera.matrix.position = new Vector3D(.000001);
 			//_shadowCamera.matrix.pointAt(new Vector3D(x, y, z), Vector3D.Z_AXIS, new Vector3D(0, -1, 0));
-			Matrix3DUtils.lookAt(_shadowCamera.matrix, x, y, z,Vector3D.Z_AXIS);
-			_shadowCamera.updateTransforms();
-			_shadowCamera.orthoLH(10, 10, 10, -10);
+			
 			return _shadowCamera;
 		}
 	}
