@@ -146,9 +146,9 @@ package
 			for each(var light:RotLight in lights) {
 				//light.matrix.appendRotation(light.speed, light.axis);
 				//light.x = light.z = 0;
-				//light.y = 2.5;
-				light.x = 22//30 * Math.sin(getTimer() / 1000);
-				light.z = -62;// 100 * Math.sin(getTimer() / 600);
+				light.y = 20.5;
+				light.x = 30 * Math.sin(getTimer() / 1000);
+				light.z =  50 * Math.sin(getTimer() / 600);
 				light.updateTransforms();
 			}
 			super.enterFrame(e);

@@ -24,10 +24,18 @@ package gl3d.core.math
 			//6个顶点
 			for ( var i:uint = 0; i < 8; i++ )
 			{
+				/*012
+				015
+				042
+				045
+				312
+				315
+				342
+				345*/
 				//trace( 0 + !!(i & 1),2 + !!(i & 2),4 + ! !(i & 4));
-				tempPos.x = vec[ 0 + !!(i & 1)];
-				tempPos.y = vec[ 2 + !!(i & 2)];
-				tempPos.z = vec[ 4 + ! !(i & 4)];
+				tempPos.x = vec[int(i/4)*3];
+				tempPos.y = vec[int(i%4/2)*3+1];
+				tempPos.z = vec[i%2*3+2];
 				tempPos= m.transformVector(tempPos);
 				out.intersectionPos(tempPos.x,tempPos.y,tempPos.z);
 			}

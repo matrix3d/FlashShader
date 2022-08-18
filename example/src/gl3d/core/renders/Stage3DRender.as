@@ -139,35 +139,40 @@ package gl3d.core.renders
 						}
 						
 						//bound
-						trace("-------------------")
-						var bound:Box = new Box;
+						//trace("-------------------")
+						/*var bound:Box = new Box;
 						for each(var node:Node3D in collects) {
 							if (node.material && node.material.castShadow) {
-								trace(node.drawable.bound);
+								//trace(node.drawable.bound);
 								node.drawable.bound.doTransform(node.world,bound);
 							}
-						}
-						trace(bound);
+						}*/
+						//trace(bound);
 						/*bound
 						世界bound
 						摄像机lookat
 						位置放到bound中心
 						bound计算到摄像机空间*/
 						Matrix3DUtils.lookAt(light.shadowCamera.matrix, light.x, light.y, light.z, Vector3D.Z_AXIS);
-						var bound2:Box = new Box;
-						light.shadowCamera.x=
+						//var bound2:Box = new Box;
+						//bound.doTransform(light.shadowCamera.world2local, bound2);
+						//bound.doTransform(light.shadowCamera.world, bound2);
+						//bound = bound2;
+						/*light.shadowCamera.x=
 						light.shadowCamera.y=
-						light.shadowCamera.z=0
-						bound.doTransform(light.shadowCamera.world2local, bound2);
-						trace("camera", bound2);
-						light.shadowCamera.x = bound2.vec[3] / 2 + bound2.vec[0] / 2;
-						light.shadowCamera.y = bound2.vec[4] / 2 + bound2.vec[1] / 2;
-						light.shadowCamera.z = bound2.vec[5] / 2 + bound2.vec[2] / 2;
+						light.shadowCamera.z=0*/
+						
+						//trace("camera", bound);
+						///light.shadowCamera.x = bound2.vec[3] / 2 + bound2.vec[0] / 2;
+						///light.shadowCamera.y = bound2.vec[4] / 2 + bound2.vec[1] / 2;
+						///light.shadowCamera.z = bound2.vec[5] / 2 + bound2.vec[2] / 2;
 						// .matrix;// .setPosition
 						//light.shadowCamera.matrix.copyColumnFrom(3, new Vector3D(0,0,0,1));
 						//light.shadowCamera.setPosition(0, 0, 0);// bound2.vec[3] / 2 - bound2.vec[0] / 2, bound2.vec[4] / 2 - bound2.vec[1] / 2, bound2.vec[5] / 2 - bound2.vec[2] / 2);
 						light.shadowCamera.updateTransforms();
-						light.shadowCamera.orthoLH(2*(bound2.vec[4]-bound.vec[1]), 2*(bound.vec[3]-bound.vec[0]), 10*(bound.vec[5]/2-bound.vec[2]/2) ,10*( bound.vec[2]/2-bound.vec[5]/2));
+						///light.shadowCamera.orthoLH(2*(bound2.vec[4]-bound.vec[1]), 2*(bound.vec[3]-bound.vec[0]), 10*(bound.vec[5]/2-bound.vec[2]/2) ,10*( bound.vec[2]/2-bound.vec[5]/2));
+						light.shadowCamera.orthoOffCenterRH( -light.shadowDistance, light.shadowDistance, -light.shadowDistance, light.shadowDistance, -light.shadowDistance, light.shadowDistance);
+						//light.shadowCamera.orthoOffCenterRH(bound.vec[1], bound.vec[4], bound.vec[0],bound.vec[3], bound.vec[2], bound.vec[5]);
 						
 						//trace("rtt",Utils.getID(light.shadowMap.texture));
 						gl3d.setRenderToTexture(light.shadowMap.texture, true);

@@ -44,6 +44,7 @@ package
 			
 			var plane:Node3D = new Node3D("plane");
 			plane.material = new Material;
+			plane.material.ambient.setTo(0.6, 0.6, 0.6);
 			plane.material.castShadow = true;
 			plane.material.receiveShadows = true;
 			plane.drawable = Meshs.plane(30);
@@ -88,7 +89,7 @@ package
 			{
 				light = new RotLight();
 				light.name = "light" + i;
-				//light.shadowMapEnabled = true;
+				light.shadowMapEnabled = true;
 				lights.push(light);
 				view.scene.addChild(light);
 				
