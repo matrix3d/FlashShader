@@ -68,23 +68,38 @@ package gl3d.shaders
 						if (light.shadowMapEnabled && material.receiveShadows) {
 							debug("shadowstart");
 							var shadowLightPos:Var = pvs.shadowLightPoss[i];
-							//是否超过贴图边界 此段代码注释掉，因为直接改变包围盒即可忽略掉这个问题
-							//var absShadowLightPos:Var = abs(shadowLightPos);
-							//var maxAbsShadowLightPos:Var = max(absShadowLightPos.x, absShadowLightPos.y);
-							//var isChaoBianJie:Var= slt(1, maxAbsShadowLightPos);//超边为1，否则为0
-							
-							var shadowLightXY:Var = add(mul(div(shadowLightPos.xy, shadowLightPos.w), [.5, -.5]), .5);
-							var shadowLightDepth:Var = tex(shadowLightXY, samplerShadowmaps(i));
-							//shadowLightDepth = add(shadowLightDepth, mul(1000,isChaoBianJie.x));
-							var curDepth:Var = min(1,div(shadowLightPos.z, shadowLightPos.w));
+							shadowLightPos = div(shadowLightPos.xyz,shadowLightPos.w);
+							//var shadowLightDepth:Var = tex(shadowLightXY, samplerShadowmaps(i));
+							var curDepth:Var = min(1,shadowLightPos.z);
 							curDepth = add(curDepth, -0.0001);//bias
-							//var curDepth:Var = mov(0);
+							
+							var shadowLightXY:Var = add(mul(shadowLightPos.xy, [.5, -.5]), .5);
+							var isSoft:Boolean = true;
+							//软阴影
+							/*xy 小数部分
+							1 - xy小数部分
+							4个点
+							xy整数部分 + 1
+							x1x1x0x0
+							*y1y0y1y0*/
+							if(isSoft){
+								var shadowLightTexXY:Var = mul(light.shadowMapSize,shadowLightXY);
+								var f0 = frc(shadowLightTexXY);
+								var f1 = sub(1, f0);
+								var i0 = div(sub(shadowLightTexXY.xyxy, f0), light.shadowMapSize);
+								//var i1 = i0.xyxy;
+								add(i0, 1 / light.shadowMapSize,i0.zw);
+								var c0:Var = mul2([f1.x,f1.y,slt(curDepth,tex(i0.xy, samplerShadowmaps(i)))]);
+								var c1:Var = mul2([f1.x,f0.y,slt(curDepth,tex(i0.xw, samplerShadowmaps(i)))]);
+								var c2:Var = mul2([f0.x,f1.y,slt(curDepth,tex(i0.zy, samplerShadowmaps(i)))]);
+								var c3:Var = mul2([f0.x,f0.y,slt(curDepth,tex(i0.zw, samplerShadowmaps(i)))]);
+								c0 = add2([c0, c1, c2, c3]);
+							}else{
+								var c0:Var = slt(curDepth,tex(shadowLightXY, samplerShadowmaps(i)));
+							}
 							
 							var shadowColor:Array = [0.1,0.1,0.1,1];
-							curPhongColor = mul(curPhongColor,add(mul(slt(curDepth, shadowLightDepth),sub(1,shadowColor)),shadowColor));
-							//curPhongColor = curDepth;//  mul(curDepth,  shadowLightDepth);
-							//curPhongColor = mul(curDepth,  shadowLightDepth);
-							//curPhongColor = shadowLightDepth;
+							curPhongColor = mul(curPhongColor,add(mul(c0,sub(1,shadowColor)),shadowColor));
 							debug("shadowend");
 						}
 						if (phongColor == null) {
