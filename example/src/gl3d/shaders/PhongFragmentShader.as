@@ -70,8 +70,9 @@ package gl3d.shaders
 							var shadowLightPos:Var = pvs.shadowLightPoss[i];
 							shadowLightPos = div(shadowLightPos.xyz,shadowLightPos.w);
 							//var shadowLightDepth:Var = tex(shadowLightXY, samplerShadowmaps(i));
-							var curDepth:Var = min(1,shadowLightPos.z);
-							curDepth = add(curDepth, -0.0001);//bias
+							var curDepth:Var = min(1, shadowLightPos.z);
+							var bias:Number=-0.0001
+							curDepth = add(curDepth, bias);//bias
 							
 							var shadowLightXY:Var = add(mul(shadowLightPos.xy, [.5, -.5]), .5);
 							var isSoft:Boolean = true;
@@ -89,13 +90,13 @@ package gl3d.shaders
 								var i0 = div(sub(shadowLightTexXY.xyxy, f0), light.shadowMapSize);
 								//var i1 = i0.xyxy;
 								add(i0, 1 / light.shadowMapSize,i0.zw);
-								var c0:Var = mul2([f1.x,f1.y,slt(curDepth,tex(i0.xy, samplerShadowmaps(i)))]);
-								var c1:Var = mul2([f1.x,f0.y,slt(curDepth,tex(i0.xw, samplerShadowmaps(i)))]);
-								var c2:Var = mul2([f0.x,f1.y,slt(curDepth,tex(i0.zy, samplerShadowmaps(i)))]);
-								var c3:Var = mul2([f0.x,f0.y,slt(curDepth,tex(i0.zw, samplerShadowmaps(i)))]);
+								var c0:Var = mul2([f1.x,f1.y,sge(tex(i0.xy, samplerShadowmaps(i)),curDepth)]);
+								var c1:Var = mul2([f1.x,f0.y,sge(tex(i0.xw, samplerShadowmaps(i)),curDepth)]);
+								var c2:Var = mul2([f0.x,f1.y,sge(tex(i0.zy, samplerShadowmaps(i)),curDepth)]);
+								var c3:Var = mul2([f0.x,f0.y,sge(tex(i0.zw, samplerShadowmaps(i)),curDepth)]);
 								c0 = add2([c0, c1, c2, c3]);
 							}else{
-								var c0:Var = slt(curDepth,tex(shadowLightXY, samplerShadowmaps(i)));
+								var c0:Var = sge(tex(shadowLightXY, samplerShadowmaps(i)),curDepth);
 							}
 							
 							var shadowColor:Array = [0.1,0.1,0.1,1];
